@@ -1,0 +1,10 @@
+LamaAPI/.vs/
+LamaAPI/Lama.BusinessLogic/obj/
+LamaAPI/Lama.DataAccess/obj/
+LamaAPI/Lama.Domain/obj/
+LamaAPI/Lama/obj/
+PhotoAPI/.vs/
+PhotoAPI/Photo.BusinessLogic/obj/
+PhotoAPI/Photo.DataAccess/obj/
+PhotoAPI/Photo.Domain/obj/
+PhotoAPI/Photo/obj/
