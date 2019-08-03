@@ -3,11 +3,20 @@
     display: flex
     flex-direction: column
     justify-content: center
-    width: 40%
     margin-left: auto
     margin-right: auto
 
-.container img
+.content-container
+    text-align: center
+    display: flex
+    flex-direction: column
+    justify-content: center
+    width: 40%
+    margin-left: auto
+    margin-right: auto
+    margin-bottom: 1.5rem
+
+.container > .content-container img
     margin-top: 3rem
     width: 200px
     height: 200px
@@ -33,3 +42,9 @@
     height: 3rem
     color: white
     background-color: #00D1B2
+
+.container img 
+    margin-left: 0 
+    margin-right: 0
+    max-width: 100%
+    height: auto

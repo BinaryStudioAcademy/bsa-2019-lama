@@ -11,13 +11,17 @@ import {
   MatCardModule
 } from '@angular/material';
 import { LandingLoginComponent } from './components/landing-login/landing-login.component';
+import { LandingFeatureBlockComponent } from './components/landing-feature-block/landing-feature-block.component';
+import { LandingFeaturesContainerComponent } from './components/landing-features-container/landing-features-container.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MainLandingPageComponent,
-    LandingLoginComponent
+    LandingLoginComponent,
+    LandingFeatureBlockComponent,
+    LandingFeaturesContainerComponent,
   ],
   imports: [
     BrowserModule,
