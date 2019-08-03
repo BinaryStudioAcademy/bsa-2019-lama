@@ -33,14 +33,14 @@ export class LandingFeaturesContainerComponent implements OnInit {
       title: "Make room for more memories",
       description: "Never worry about running out of space on your phone again. Photos that are safely backed up can be removed from your device’s storage in just a tap.",
       image: "https://www.google.com/photos/about/static/images/dev_management.png",
-      backgroundColor: "#00D1B2",
+      backgroundColor: "#B5FFDD",
       icon: "cloud_upload"
     },
     {
       title: "Everyone's photos, together at last",
       description: "Pool photos with friends and family using shared albums. So you never miss a moment, no matter what device everyone has.",
       image: "https://www.google.com/photos/about/static/images/charlie-2.png",
-      backgroundColor: "white",
+      backgroundColor: "#FFFCD3",
       icon: "people"
     }
   ]

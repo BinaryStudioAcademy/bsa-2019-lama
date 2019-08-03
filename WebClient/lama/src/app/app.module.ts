@@ -13,6 +13,8 @@ import {
 import { LandingLoginComponent } from './components/landing-login/landing-login.component';
 import { LandingFeatureBlockComponent } from './components/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing-features-container/landing-features-container.component';
+import { LandingBottomLoginComponent } from './components/landing-bottom-login/landing-bottom-login.component';
+import { LangingFooterComponent } from './components/langing-footer/langing-footer.component';
 
 
 @NgModule({
@@ -22,6 +24,8 @@ import { LandingFeaturesContainerComponent } from './components/landing-features
     LandingLoginComponent,
     LandingFeatureBlockComponent,
     LandingFeaturesContainerComponent,
+    LandingBottomLoginComponent,
+    LangingFooterComponent,
   ],
   imports: [
     BrowserModule,
