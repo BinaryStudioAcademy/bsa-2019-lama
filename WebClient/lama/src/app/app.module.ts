@@ -17,6 +17,8 @@ import { LandingBottomLoginComponent } from './components/landing-bottom-login/l
 import { LangingFooterComponent } from './components/langing-footer/langing-footer.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main-page-header/main-page-header.component';
+import { MainLeftActionsSidebarComponent } from './components/main-left-actions-sidebar/main-left-actions-sidebar.component';
+import { MainLeftActionItemComponent } from './components/main-left-action-item/main-left-action-item.component';
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { MainPageHeaderComponent } from './components/main-page-header/main-page
     LangingFooterComponent,
     MainPageComponent,
     MainPageHeaderComponent,
+    MainLeftActionsSidebarComponent,
+    MainLeftActionItemComponent,
   ],
   imports: [
     BrowserModule,
