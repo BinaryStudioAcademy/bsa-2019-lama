@@ -7,6 +7,7 @@ LamaAPI/Lama.Domain/obj/
 LamaAPI/Lama.Domain/bin/
 LamaAPI/Lama/obj/
 LamaAPI/Lama/bin/
+WebClient/lama/node_modules
 PhotoAPI/.vs/
 PhotoAPI/Photo.BusinessLogic/obj/
 PhotoAPI/Photo.BusinessLogic/bin/

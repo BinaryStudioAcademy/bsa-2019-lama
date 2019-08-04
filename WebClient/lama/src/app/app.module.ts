@@ -19,6 +19,11 @@ import { MainPageComponent } from './components/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main-page-header/main-page-header.component';
 import { MainLeftActionsSidebarComponent } from './components/main-left-actions-sidebar/main-left-actions-sidebar.component';
 import { MainLeftActionItemComponent } from './components/main-left-action-item/main-left-action-item.component';
+import { MainContentContainerComponent } from './components/main-content-container/main-content-container.component';
+import { MainPhotosDateBlockComponent } from './components/main-photos-date-block/main-photos-date-block.component';
+import { MainPhotosContainerComponent } from './components/main-photos-container/main-photos-container.component';
+import { MainPhotoComponent } from './components/main-photo/main-photo.component';
+import { RouterModule } from '@angular/router';
 
 
 @NgModule({
@@ -34,8 +39,13 @@ import { MainLeftActionItemComponent } from './components/main-left-action-item/
     MainPageHeaderComponent,
     MainLeftActionsSidebarComponent,
     MainLeftActionItemComponent,
+    MainContentContainerComponent,
+    MainPhotosDateBlockComponent,
+    MainPhotosContainerComponent,
+    MainPhotoComponent,
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     MatButtonModule,
     MatMenuModule,
