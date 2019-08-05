@@ -1,7 +1,11 @@
 <div  class="photos-container">
-    <div *ngFor="let item of photo_urls">
-        <main-photo [_photo]="item">
 
-        </main-photo>
+    <!--photo list-->
+    <div *ngFor="let item of photo_urls">
+        <main-photo [_photo]="item" (onClick)="photoClicked($event)"></main-photo>
     </div>
+
+    <!--modal-->
+    <template #modalPhotoContainer></template>
+
 </div>

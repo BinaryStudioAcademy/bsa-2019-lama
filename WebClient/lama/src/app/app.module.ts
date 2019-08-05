@@ -24,6 +24,7 @@ import { MainPhotosDateBlockComponent } from './components/main-photos-date-bloc
 import { MainPhotosContainerComponent } from './components/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
+import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { RouterModule } from '@angular/router';
     MainPhotosDateBlockComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    PhotoModalComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -61,6 +63,10 @@ import { RouterModule } from '@angular/router';
     MatCardModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:
+  [
+    PhotoModalComponent
+  ]
 })
 export class AppModule { }
