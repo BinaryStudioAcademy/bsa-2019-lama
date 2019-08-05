@@ -23,7 +23,6 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
-import { ModalWindowUploadComponent } from './components/main/modal-window-upload/modal-window-upload.component';
 
 
 @NgModule({
@@ -42,7 +41,6 @@ import { ModalWindowUploadComponent } from './components/main/modal-window-uploa
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    ModalWindowUploadComponent,
   ],
   imports: [
     AppRoutingModule,
