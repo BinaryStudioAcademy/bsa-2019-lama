@@ -20,10 +20,10 @@ import { MainPageHeaderComponent } from './components/main/main-page-header/main
 import { MainLeftActionsSidebarComponent } from './components/main/main-left-actions-sidebar/main-left-actions-sidebar.component';
 import { MainLeftActionItemComponent } from './components/main/main-left-action-item/main-left-action-item.component';
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
-import { MainPhotosDateBlockComponent } from './components/main/main-photos-date-block/main-photos-date-block.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
+import { ModalWindowUploadComponent } from './components/main/modal-window-upload/modal-window-upload.component';
 
 
 @NgModule({
@@ -40,9 +40,9 @@ import { RouterModule } from '@angular/router';
     MainLeftActionsSidebarComponent,
     MainLeftActionItemComponent,
     MainContentContainerComponent,
-    MainPhotosDateBlockComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    ModalWindowUploadComponent,
   ],
   imports: [
     AppRoutingModule,
