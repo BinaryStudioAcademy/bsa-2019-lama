@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { element } from 'protractor';
 
 @Component({
   selector: 'main-page-header',
@@ -7,10 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-  constructor() { }
-
+  showModal: boolean = false;
   ngOnInit() {
   }
+
+  openModal() {
+    this.showModal = true;
+  }
+
 
 
 }

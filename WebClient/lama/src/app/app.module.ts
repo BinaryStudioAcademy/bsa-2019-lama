@@ -24,6 +24,7 @@ import { MainPhotosContainerComponent } from './components/main/main-photos-cont
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
+import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { PhotoModalComponent } from './components/photo-modal/photo-modal.compon
     MainPhotosContainerComponent,
     MainPhotoComponent,
     PhotoModalComponent,
+    PhotoUploadModalComponent,
   ],
   imports: [
     AppRoutingModule,
