@@ -23,6 +23,7 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
+import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { RouterModule } from '@angular/router';
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    PhotoModalComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -59,6 +61,10 @@ import { RouterModule } from '@angular/router';
     MatCardModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:
+  [
+    PhotoModalComponent
+  ]
 })
 export class AppModule { }

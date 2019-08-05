@@ -1,5 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
+
 import { Image } from 'src/app/models/image';
+import { Photo } from 'src/app/models';
+import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
 
 @Component({
   selector: 'main-photos-container',
@@ -8,7 +11,7 @@ import { Image } from 'src/app/models/image';
 })
 export class MainPhotosContainerComponent implements OnInit {
 
-  constructor() { }
+  // properties
   @Input() photos: Image[];
   ngOnInit() {
     this.photos = [{
@@ -25,5 +28,27 @@ export class MainPhotosContainerComponent implements OnInit {
     ]
     
   }
+  
+  // fields
+  // tslint:disable-next-line: member-ordering
+  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef }) 
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
 
+  // constructors
+  constructor(resolver: ComponentFactoryResolver) 
+  {
+    this.resolver = resolver;
+  }
+
+
+  // methods
+  public photoClicked(eventArgs: Photo)
+  {
+    this.entry.clear();
+    const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
+    const componentRef = this.entry.createComponent(factory);
+    componentRef.instance.photo = eventArgs;
+    
+  }
 }

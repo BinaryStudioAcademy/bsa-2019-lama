@@ -1,5 +1,5 @@
 export interface Image {
     source: string;
-    author: string // user in future
+    author: string; // user in future
     // additional fields
 }

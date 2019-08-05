@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+
+import { Photo } from 'src/app/models';
 import { Image } from 'src/app/models/image';
 
 @Component({
@@ -8,10 +10,19 @@ import { Image } from 'src/app/models/image';
 })
 export class MainPhotoComponent implements OnInit {
 
-  constructor() { }
+  // properties
   @Input ('_photo') photo: Image;
+  @Output() onClick = new EventEmitter<Photo>();
+
+  // constructors
+  constructor() { }
 
   ngOnInit() {
   }
 
+  // methods
+  public clickPerformed(): void
+  {
+    this.onClick.emit({ imageUrl: this.photo.source });
+  }
 }
