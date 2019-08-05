@@ -24,10 +24,6 @@ export class MainLeftActionsSidebarComponent implements OnInit {
       icon: "people"
     },
     {
-      title: "Locations",
-      icon: "gps_fixed"
-    },
-    {
       title: "Places",
       icon: "place"
     },
