@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { Photo } from 'src/app/models';
+import { Image } from 'src/app/models/image';
 
 @Component({
   selector: 'main-photo',
@@ -10,7 +11,7 @@ import { Photo } from 'src/app/models';
 export class MainPhotoComponent implements OnInit {
 
   // properties
-  @Input ('_photo') photo_url: string;
+  @Input ('_photo') photo: Image;
   @Output() onClick = new EventEmitter<Photo>();
 
   // constructors
@@ -22,6 +23,6 @@ export class MainPhotoComponent implements OnInit {
   // methods
   public clickPerformed(): void
   {
-    this.onClick.emit({ imageUrl: this.photo_url });
+    this.onClick.emit({ imageUrl: this.photo.source });
   }
 }

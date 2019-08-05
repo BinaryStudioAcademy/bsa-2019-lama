@@ -12,4 +12,5 @@ export class MainPageHeaderComponent implements OnInit {
   ngOnInit() {
   }
 
+
 }
