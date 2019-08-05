@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LangingFooterComponent } from './langing-footer.component';
+import { LandingFooterComponent } from './landing-footer.component';
 
 describe('LangingFooterComponent', () => {
-  let component: LangingFooterComponent;
-  let fixture: ComponentFixture<LangingFooterComponent>;
+  let component: LandingFooterComponent;
+  let fixture: ComponentFixture<LandingFooterComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LangingFooterComponent ]
+      declarations: [ LandingFooterComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LangingFooterComponent);
+    fixture = TestBed.createComponent(LandingFooterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

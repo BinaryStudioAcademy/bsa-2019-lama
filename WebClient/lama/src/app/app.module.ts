@@ -14,7 +14,7 @@ import { LandingLoginComponent } from './components/landing/landing-login/landin
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
 import { LandingBottomLoginComponent } from './components/landing/landing-bottom-login/landing-bottom-login.component';
-import { LangingFooterComponent } from './components/landing/langing-footer/langing-footer.component';
+import { LandingFooterComponent } from './components/landing/landing-footer/landing-footer.component';
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main/main-page-header/main-page-header.component';
 import { MainLeftActionsSidebarComponent } from './components/main/main-left-actions-sidebar/main-left-actions-sidebar.component';
@@ -34,7 +34,7 @@ import { PhotoModalComponent } from './components/photo-modal/photo-modal.compon
     LandingFeatureBlockComponent,
     LandingFeaturesContainerComponent,
     LandingBottomLoginComponent,
-    LangingFooterComponent,
+    LandingFooterComponent,
     MainPageComponent,
     MainPageHeaderComponent,
     MainLeftActionsSidebarComponent,
