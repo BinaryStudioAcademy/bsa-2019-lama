@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Image } from 'src/app/models/image';
 
 @Component({
   selector: 'main-photo',
@@ -8,7 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 export class MainPhotoComponent implements OnInit {
 
   constructor() { }
-  @Input ('_photo') photo_url: string;
+  @Input ('_photo') photo: Image;
 
   ngOnInit() {
   }
