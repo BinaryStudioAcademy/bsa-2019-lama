@@ -1,9 +1,18 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Lama.Infrastructure;
 
 namespace Lama
@@ -20,10 +29,35 @@ namespace Lama
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // RabbitMQ
-            services.AddQueueService();
+            services.AddCors();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            // RabbitMQ
+            services.AddQueueService();
+            
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.Authority = Configuration["FirebaseOptions:Authority"];
+                    options.IncludeErrorDetails = true;
+                
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration["FirebaseOptions:Issuer"],
+                        ValidateAudience = true,
+                        ValidAudience = Configuration["FirebaseOptions:Audience"],
+                        ValidateLifetime = true
+                    };
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,6 +65,7 @@ namespace Lama
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true; 
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -40,6 +75,13 @@ namespace Lama
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(builder =>
+                builder.WithOrigins(Configuration["AllowedOrigin"])
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            app.UseAuthentication();
+
             app.UseMvc();
         }
     }
