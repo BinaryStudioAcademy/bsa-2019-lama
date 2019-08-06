@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { element } from 'protractor';
+
 
 @Component({
   selector: 'main-page-header',
@@ -9,8 +13,17 @@ import { Router } from '@angular/router';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-  constructor(public auth: AuthService, private router: Router) { }
 
+  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef }) 
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+  
+  // constructors
+  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver) 
+  {
+    this.resolver = resolver;
+  }
+  
   ngOnInit() {
   }
 
@@ -20,5 +33,11 @@ export class MainPageHeaderComponent implements OnInit {
              .catch(e => {console.log("user is not signed in")});
   }
 
-
+  public openModalClicked(event): void
+  {
+    this.entry.clear();
+    const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
+    const componentRef = this.entry.createComponent(factory);
+    componentRef.instance.toggleModal();    
+  }
 }
