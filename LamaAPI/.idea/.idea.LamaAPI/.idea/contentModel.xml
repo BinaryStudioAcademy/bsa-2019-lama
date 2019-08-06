@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Sgoliv\.Rider2018.3\config\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\Sgoliv\.Rider2018.3\config\extensions" t="IncludeRecursive" />
+    <e p="C:\Users\Sgoliv\.Rider2018.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\Sgoliv\.Rider2018.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Sgoliv\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_LamaAPI.-804942614.00" t="ExcludeRecursive" />
+    <e p="G:\BinaryStudioLectures\bsa-2019-lama\LamaAPI" t="IncludeFlat">
+      <e p=".dockerignore" t="Include" />
+      <e p="Lama" t="IncludeRecursive">
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="ValuesController.cs" t="Include" />
+        </e>
+        <e p="Dockerfile" t="Include" />
+        <e p="Lama.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.2" t="Include">
+              <e p="Lama.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+      </e>
+      <e p="Lama.BusinessLogic" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Class1.cs" t="Include" />
+        <e p="Interfaces" t="Include">
+          <e p="IBaseService.cs" t="Include" />
+        </e>
+        <e p="Lama.BusinessLogic.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.2" t="Include">
+              <e p="Lama.BusinessLogic.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Services" t="Include">
+          <e p="BaseService.cs" t="Include" />
+        </e>
+      </e>
+      <e p="Lama.DataAccess" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Class1.cs" t="Include" />
+        <e p="Lama.DataAccess.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.2" t="Include">
+              <e p="Lama.DataAccess.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Lama.Domain" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Class1.cs" t="Include" />
+        <e p="Lama.Domain.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.2" t="Include">
+              <e p="Lama.Domain.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="LamaAPI.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+    <e p="G:\BinaryStudioLectures\bsa-2019-lama\WebClient\Lama\node_modules" t="ExcludeRecursive">
+      <e p="@angular\animations" t="IncludeRecursive" />
+      <e p="@angular\cdk" t="IncludeRecursive" />
+      <e p="@angular\cli" t="IncludeRecursive" />
+      <e p="@angular\common" t="IncludeRecursive" />
+      <e p="@angular\compiler" t="IncludeRecursive" />
+      <e p="@angular\compiler-cli" t="IncludeRecursive" />
+      <e p="@angular\core" t="IncludeRecursive" />
+      <e p="@angular\forms" t="IncludeRecursive" />
+      <e p="@angular\material" t="IncludeRecursive" />
+      <e p="@angular\platform-browser" t="IncludeRecursive" />
+      <e p="@angular\platform-browser-dynamic" t="IncludeRecursive" />
+      <e p="@angular\router" t="IncludeRecursive" />
+      <e p="@angular-devkit\build-angular" t="IncludeRecursive" />
+      <e p="@types" t="IncludeRecursive">
+        <e p="events" t="IncludeRecursive" />
+        <e p="jasmine" t="IncludeRecursive" />
+        <e p="jasminewd2" t="IncludeRecursive" />
+        <e p="minimatch" t="IncludeRecursive" />
+        <e p="node" t="IncludeRecursive" />
+        <e p="source-list-map" t="IncludeRecursive" />
+      </e>
+      <e p="angularfire2" t="IncludeRecursive" />
+      <e p="bulma" t="IncludeRecursive" />
+      <e p="codelyzer" t="IncludeRecursive" />
+      <e p="firebase" t="IncludeRecursive" />
+      <e p="font-awesome" t="IncludeRecursive" />
+      <e p="jasmine-core" t="IncludeRecursive" />
+      <e p="jasmine-spec-reporter" t="IncludeRecursive" />
+      <e p="karma" t="IncludeRecursive" />
+      <e p="karma-chrome-launcher" t="IncludeRecursive" />
+      <e p="karma-coverage-istanbul-reporter" t="IncludeRecursive" />
+      <e p="karma-jasmine" t="IncludeRecursive" />
+      <e p="karma-jasmine-html-reporter" t="IncludeRecursive" />
+      <e p="material-design-icons" t="IncludeRecursive" />
+      <e p="protractor" t="IncludeRecursive" />
+      <e p="rxjs" t="IncludeRecursive" />
+      <e p="rxjs-compat" t="IncludeRecursive" />
+      <e p="source-map" t="IncludeRecursive" />
+      <e p="ts-node" t="IncludeRecursive" />
+      <e p="tslib" t="IncludeRecursive" />
+      <e p="tslint" t="IncludeRecursive" />
+      <e p="zone.js" t="IncludeRecursive" />
+    </e>
+  </component>
+</project>
