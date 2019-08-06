@@ -33,7 +33,8 @@ namespace Lama.DataAccess
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
                 entity.HasOne(o => o.Photo).WithOne(o => o.Album).HasForeignKey<Album>(fk => fk.CoverId);
-                entity.HasOne(o => o.User).WithMany(m => m.Albums).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Albums).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.Property(e => e.Title).IsRequired();
             });
 
             modelBuilder.Entity<Category>(entity =>
@@ -41,21 +42,23 @@ namespace Lama.DataAccess
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
                 entity.HasOne(o => o.User).WithMany(m => m.Categories).HasForeignKey(fk => fk.UserId);
+                entity.Property(e => e.Name).IsRequired();
             });
 
             modelBuilder.Entity<Comment>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Comments).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Comments).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Photo).WithMany(m => m.Comments).HasForeignKey(fk => fk.PhotoId);
+                entity.Property(e => e.Text).IsRequired();
             });
 
             modelBuilder.Entity<Favorite>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Favorites).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Favorites).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Photo).WithMany(m => m.Favorites).HasForeignKey(fk => fk.PhotoId);
             });
 
@@ -63,7 +66,7 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Likes).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Likes).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Photo).WithMany(m => m.Likes).HasForeignKey(fk => fk.PhotoId);
             });
 
@@ -71,14 +74,17 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Locations).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Locations).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Notifications).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.Notifications).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.Property(e => e.Text).IsRequired();
+                entity.Property(e => e.Date).IsRequired();
+                entity.Property(e => e.IsRead).IsRequired();
             });
 
             modelBuilder.Entity<Photo>(entity =>
@@ -91,27 +97,32 @@ namespace Lama.DataAccess
             {
                 entity.HasKey(k => new { k.PhotoId, k.AlbumId });
                 entity.HasOne(o => o.Album).WithMany(m => m.PhotoAlbums).HasForeignKey(fk => fk.AlbumId);
-                entity.HasOne(o => o.Photo).WithMany(m => m.PhotoAlbums).HasForeignKey(fk => fk.PhotoId);
+                entity.HasOne(o => o.Photo).WithMany(m => m.PhotoAlbums).HasForeignKey(fk => fk.PhotoId).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<PhotoState>(entity =>
             {
                 entity.HasKey(k => k.PhotoId);
                 entity.HasOne(o => o.Photo).WithOne(o => o.PhotoState).HasForeignKey<PhotoState>(fk => fk.PhotoId);
+                entity.Property(e => e.Height).IsRequired();
+                entity.Property(e => e.RotateDegree).IsRequired();
+                entity.Property(e => e.Width).IsRequired();
             });
 
             modelBuilder.Entity<SearchHistory>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.SearchHistories).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.SearchHistories).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                entity.Property(e => e.Text).IsRequired();
+                entity.Property(e => e.SearchDate).IsRequired();
             });
 
             modelBuilder.Entity<SharedAlbum>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.SharedAlbums).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.SharedAlbums).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Album).WithOne(o => o.SharedAlbum).HasForeignKey<SharedAlbum>(fk => fk.AlbumId);
             });
 
@@ -119,7 +130,7 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.SharedPhotos).HasForeignKey(fk => fk.UserId);
+                entity.HasOne(o => o.User).WithMany(m => m.SharedPhotos).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Photo).WithOne(m => m.SharedPhoto).HasForeignKey<SharedPhoto>(fk => fk.PhotoId);
             });
 
@@ -128,8 +139,9 @@ namespace Lama.DataAccess
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
                 entity.HasOne(o => o.Photo).WithOne(o => o.User).HasForeignKey<User>(fk => fk.AvatarId);
-
-
+                entity.Property(e => e.Email).IsRequired();
+                entity.Property(e => e.FirstName).IsRequired();
+                entity.Property(e => e.LastName).IsRequired();
             });
 
             modelBuilder.Entity<Video>(entity =>
@@ -142,12 +154,9 @@ namespace Lama.DataAccess
             modelBuilder.Entity<VideoAlbum>(entity =>
             {
                 entity.HasKey(k => new { k.VideoId, k.AlbumId });
-                entity.HasOne(o => o.Video).WithMany(m => m.VideoAlbums).HasForeignKey(fk => fk.VideoId);
+                entity.HasOne(o => o.Video).WithMany(m => m.VideoAlbums).HasForeignKey(fk => fk.VideoId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(o => o.Album).WithMany(m => m.VideoAlbums).HasForeignKey(fk => fk.AlbumId);
             });
-
-
-
         }
     }
 }
