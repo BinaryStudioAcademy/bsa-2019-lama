@@ -1,7 +1,14 @@
 <h2>Recent albums: </h2>
 <div class="albums-container">
 
-
+    <a class="album">
+        <div class="new-album" (click)="CreateAlbum($event)">
+            <a><img src="../../../../assets//icons//plus.svg" alt=""></a>
+        </div>
+        <div class="description">
+            <p>New album</p>
+        </div>
+    </a>
     <div *ngFor="let item of albums">
         <main-album [_album]="item" (onClick)="albumClicked($event)"></main-album>
     </div>

@@ -1,10 +1,9 @@
-<div class="album" (click)="clickPerformed()">
-    <img src="{{ album.imageUrl }}">
-    <div class="overlay">
-        <a><i class="material-icons">star_border</i></a>
-        <a>
-            <p>{{album.author}}</p>
-        </a>
-        <a><i class="material-icons">comment</i></a>
+<a class="link_album">
+    <div class="album" (click)="clickPerformed()">
+        <img src="{{ album.imageUrl }}">
+
     </div>
-</div>
+    <div class="description">
+        <p>{{album.name}}</p>
+    </div>
+</a>

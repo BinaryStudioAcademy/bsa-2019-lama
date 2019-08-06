@@ -75,7 +75,10 @@ export class MainAlbumsContainerComponent implements OnInit {
     this.resolver = resolver;
   }
 
-
+  public CreateAlbum(event)
+  {
+    // created album
+  }
   // methods
   public albumClicked(eventArgs: Albumn)
   {

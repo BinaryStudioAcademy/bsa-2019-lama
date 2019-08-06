@@ -11,29 +11,16 @@
     min-height: 100%
     min-width: 100%
     object-fit: cover
-.overlay
-    width: 100%
-    height: 100%
-    transition: .7s ease
-    opacity: 0
-    position: absolute
-    top: 0
-    display: flex
-    flex-direction: row
-    justify-content: space-between
-    align-items: flex-end
 
-.album:hover
-    cursor: pointer
-    
-.overlay i
-    margin: .3rem
 .album:hover img 
-    opacity: .5
+    opacity: .9
 
-.album:hover .overlay
-    background: rgba(0,0,0,0.2)
-    opacity: 1
-i, p
-    color: white
+
+.description p
+    margin: 0
+    color: rgb(74, 74, 74)
+    padding-left: 10px
     font-size: 20px
+
+.link_album:hover p
+    color: black
