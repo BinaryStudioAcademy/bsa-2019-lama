@@ -77,12 +77,14 @@
     </e>
     <e p="G:\BinaryStudioLectures\bsa-2019-lama\WebClient\Lama\node_modules" t="ExcludeRecursive">
       <e p="@angular\animations" t="IncludeRecursive" />
+      <e p="@angular\cdk" t="IncludeRecursive" />
       <e p="@angular\cli" t="IncludeRecursive" />
       <e p="@angular\common" t="IncludeRecursive" />
       <e p="@angular\compiler" t="IncludeRecursive" />
       <e p="@angular\compiler-cli" t="IncludeRecursive" />
       <e p="@angular\core" t="IncludeRecursive" />
       <e p="@angular\forms" t="IncludeRecursive" />
+      <e p="@angular\material" t="IncludeRecursive" />
       <e p="@angular\platform-browser" t="IncludeRecursive" />
       <e p="@angular\platform-browser-dynamic" t="IncludeRecursive" />
       <e p="@angular\router" t="IncludeRecursive" />
@@ -95,7 +97,11 @@
         <e p="node" t="IncludeRecursive" />
         <e p="source-list-map" t="IncludeRecursive" />
       </e>
+      <e p="angularfire2" t="IncludeRecursive" />
+      <e p="bulma" t="IncludeRecursive" />
       <e p="codelyzer" t="IncludeRecursive" />
+      <e p="firebase" t="IncludeRecursive" />
+      <e p="font-awesome" t="IncludeRecursive" />
       <e p="jasmine-core" t="IncludeRecursive" />
       <e p="jasmine-spec-reporter" t="IncludeRecursive" />
       <e p="karma" t="IncludeRecursive" />
@@ -103,8 +109,10 @@
       <e p="karma-coverage-istanbul-reporter" t="IncludeRecursive" />
       <e p="karma-jasmine" t="IncludeRecursive" />
       <e p="karma-jasmine-html-reporter" t="IncludeRecursive" />
+      <e p="material-design-icons" t="IncludeRecursive" />
       <e p="protractor" t="IncludeRecursive" />
       <e p="rxjs" t="IncludeRecursive" />
+      <e p="rxjs-compat" t="IncludeRecursive" />
       <e p="source-map" t="IncludeRecursive" />
       <e p="ts-node" t="IncludeRecursive" />
       <e p="tslib" t="IncludeRecursive" />
