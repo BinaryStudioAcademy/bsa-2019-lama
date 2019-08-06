@@ -1,0 +1,21 @@
+<div class="modal" [class.is-active]="isShown">
+    <div class="modal-background" (click)="closeModal()"></div>
+
+    <!--content-->
+    <div class="modal-content">
+        <div class="notification">
+            <div class="flex-container">
+                <div class="head flex-item">
+                    <h4 class="title is-4">Enter Album name </h4>
+                </div>
+                <div class="field flex-item">
+                    <input class="input is-primary" type="text" placeholder="Album Name">
+                </div>
+                <div class="storage">
+                    <h4 class="title is-4">Upload photo from storage</h4>
+                    <a class="button is-primary">upload</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

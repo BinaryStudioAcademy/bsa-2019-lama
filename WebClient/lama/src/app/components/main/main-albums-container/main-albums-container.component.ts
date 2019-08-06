@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Albumn } from 'src/app/models/Album/album';
+import { CreateAlbumModalComponent } from '../create-album-modal/create-album-modal.component';
 
 
 @Component({
@@ -65,13 +66,19 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
 
 
+  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef }) 
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+
   // constructors
-  constructor() {
+  constructor(resolver: ComponentFactoryResolver) {
+    this.resolver = resolver;
   }
 
   public CreateAlbum(event) {
-
-
+     this.entry.clear();
+     const factory = this.resolver.resolveComponentFactory(CreateAlbumModalComponent);
+     const componentRef = this.entry.createComponent(factory);
     // created album
   }
   // methods
