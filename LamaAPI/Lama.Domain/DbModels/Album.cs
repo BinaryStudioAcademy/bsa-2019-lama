@@ -16,7 +16,7 @@ namespace Lama.Domain.DbModels
         public string Title { get; set; }
         public string SharedLink { get; set; }
 
-        public int CoverId { get; set; }
+        public int? CoverId { get; set; }
         public int UserId { get; set; }
         
 

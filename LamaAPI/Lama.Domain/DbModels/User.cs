@@ -24,7 +24,7 @@ namespace Lama.Domain.DbModels
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int AvatarId { get; set; }
+        public int? AvatarId { get; set; }
 
         [JsonIgnore]
         public ICollection<Category> Categories { get; set; }
