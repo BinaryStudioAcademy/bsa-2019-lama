@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Albumn } from 'src/app/models/Album/album';
-import { CreateAlbumModalComponent } from '../../create-album-modal/create-album-modal.component';
 
 
 @Component({
@@ -65,25 +64,18 @@ export class MainAlbumsContainerComponent implements OnInit {
     }]
   }
 
-    // fields
-  // tslint:disable-next-line: member-ordering
-  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
-  private entry: ViewContainerRef;
-  private resolver: ComponentFactoryResolver;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver) {
-    this.resolver = resolver;
+  constructor() {
   }
 
   public CreateAlbum(event) {
-    const factory = this.resolver.resolveComponentFactory(CreateAlbumModalComponent);
-    const componentRef = this.entry.createComponent(factory);
+
+
     // created album
   }
   // methods
   public albumClicked(eventArgs: Albumn) {
-    this.entry.clear();
     //const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     //const componentRef = this.entry.createComponent(factory);
     //componentRef.instance.photo = eventArgs;  
