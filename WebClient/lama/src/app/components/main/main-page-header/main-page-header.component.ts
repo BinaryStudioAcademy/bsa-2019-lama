@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'main-page-header',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-  constructor() { }
+  constructor(public auth: AuthService, private router: Router) { }
 
   ngOnInit() {
+  }
+
+  public logOut() {
+    this.auth.doLogout()
+             .then(() => this.router.navigate(['/']))
+             .catch(e => {console.log("user is not signed in")});
   }
 
 

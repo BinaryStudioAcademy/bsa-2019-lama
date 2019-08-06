@@ -25,25 +25,22 @@ export class AuthModalComponent implements OnInit {
   }
 
   public tryGoogleLogin(){
-    console.log("try login google called");
     this.authService.loginWithGoogle()
-    .then(res => {
-      this.router.navigate(['/login']);
-    })
+    .then(() => this.afterSignIn());
   }
 
   public tryTwitterLogin(){
     this.authService.loginWithTwitter()
-    .then(res => {
-      this.router.navigate(['/login']);
-    })
+    .then(() => this.afterSignIn());
   }
 
   public tryFacebookLogin(){
     this.authService.loginWithFacebook()
-    .then(res => {
-      this.router.navigate(['/login']);
-    })
+    .then(() => this.afterSignIn());
+  }
+
+  private afterSignIn(){
+    this.router.navigate(['/login']);
   }
 
 }
