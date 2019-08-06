@@ -5,10 +5,12 @@
         Lama
     </div>
     <div class="description">
-        Free storage and automatic organization 
+        Free storage and automatic organization
         for all your memories.
     </div>
-    <button mat-flat-button routerLink="/login">Go to photos</button>
+    <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
+    <app-auth-modal *ngIf="showAuthModal" (onClose)="showAuthModal=false"></app-auth-modal>
     </div>
     <img src="../../../assets/many-photos.jpg">
+
 </div>

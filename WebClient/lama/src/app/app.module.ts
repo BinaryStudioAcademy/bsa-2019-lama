@@ -24,6 +24,13 @@ import { MainPhotosContainerComponent } from './components/main/main-photos-cont
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
+import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './services/token.interceptor';
 
 
 @NgModule({
@@ -43,11 +50,15 @@ import { PhotoModalComponent } from './components/photo-modal/photo-modal.compon
     MainPhotosContainerComponent,
     MainPhotoComponent,
     PhotoModalComponent,
+    AuthModalComponent,
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     MatButtonModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule,
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
@@ -60,7 +71,11 @@ import { PhotoModalComponent } from './components/photo-modal/photo-modal.compon
     MatIconModule,
     MatCardModule
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+  useClass: TokenInterceptor,
+  multi: true
+  }],
   bootstrap: [AppComponent],
   entryComponents:
   [
