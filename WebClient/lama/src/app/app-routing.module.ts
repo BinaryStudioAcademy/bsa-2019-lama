@@ -3,11 +3,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ProfileComponent } from './components/profile/profile.component';
 
 
 const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
   {path: 'login', component: MainPageComponent, canActivate:[AuthGuard]}];
+  {path: 'login', component: MainPageComponent},
+  {path: 'profile', component: ProfileComponent}];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

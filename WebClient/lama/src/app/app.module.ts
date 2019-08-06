@@ -33,8 +33,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
-
-
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +54,8 @@ import { TokenInterceptor } from './services/token.interceptor';
     PhotoModalComponent,
     PhotoUploadModalComponent,
     FileUploadDirective,
-    AuthModalComponent
+    AuthModalComponent,
+    ProfileComponent
   ],
   imports: [
     AppRoutingModule,
