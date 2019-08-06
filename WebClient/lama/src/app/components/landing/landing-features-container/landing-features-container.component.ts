@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FeatureBlock } from 'src/app/models/featureblock';
+import { FeatureBlock } from 'src/app/models';
 import { style } from '@angular/animations';
 
 @Component({
