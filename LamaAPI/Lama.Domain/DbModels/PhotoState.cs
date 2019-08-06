@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
     public partial class PhotoState
     {

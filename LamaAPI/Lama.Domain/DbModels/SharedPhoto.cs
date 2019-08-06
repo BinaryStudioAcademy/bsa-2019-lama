@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
-    public partial class Like
+    public partial class SharedPhoto
     {
         public int Id { get; set; }
         public int PhotoId { get; set; }

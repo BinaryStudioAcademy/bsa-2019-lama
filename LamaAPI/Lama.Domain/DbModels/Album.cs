@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
     public partial class Album
     {
@@ -9,6 +9,7 @@ namespace Lama.DataAccess.Models
         {
             PhotoAlbums = new HashSet<PhotoAlbum>();
             VideoAlbums = new HashSet<VideoAlbum>();
+            SharedAlbums = new HashSet<SharedAlbum>();
         }
 
         public int Id { get; set; }
@@ -28,6 +29,6 @@ namespace Lama.DataAccess.Models
         [JsonIgnore]
         public ICollection<VideoAlbum> VideoAlbums { get; set; }
         [JsonIgnore]
-        public SharedAlbum SharedAlbum { get; set; }
+        public ICollection<SharedAlbum> SharedAlbums { get; set; }
     }
 }

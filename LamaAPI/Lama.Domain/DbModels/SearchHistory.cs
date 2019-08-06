@@ -1,14 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
-    public partial class Notification
+    public partial class SearchHistory
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public DateTime Date { get; set; }
-        public bool IsRead { get; set; }
+        public DateTime SearchDate { get; set; }
         public int UserId { get; set; }
 
         [JsonIgnore]

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
     public partial class Video
     {

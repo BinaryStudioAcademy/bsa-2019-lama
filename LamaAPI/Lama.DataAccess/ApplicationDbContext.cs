@@ -1,4 +1,4 @@
-﻿using Lama.DataAccess.Models;
+﻿using Lama.Domain.DbModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lama.DataAccess
@@ -123,7 +123,7 @@ namespace Lama.DataAccess
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
                 entity.HasOne(o => o.User).WithMany(m => m.SharedAlbums).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(o => o.Album).WithOne(o => o.SharedAlbum).HasForeignKey<SharedAlbum>(fk => fk.AlbumId);
+                entity.HasOne(o => o.Album).WithMany(o => o.SharedAlbums).HasForeignKey(fk => fk.AlbumId);
             });
 
             modelBuilder.Entity<SharedPhoto>(entity =>
@@ -131,7 +131,7 @@ namespace Lama.DataAccess
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
                 entity.HasOne(o => o.User).WithMany(m => m.SharedPhotos).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasOne(o => o.Photo).WithOne(m => m.SharedPhoto).HasForeignKey<SharedPhoto>(fk => fk.PhotoId);
+                entity.HasOne(o => o.Photo).WithMany(m => m.SharedPhotos).HasForeignKey(fk => fk.PhotoId);
             });
 
             modelBuilder.Entity<User>(entity =>

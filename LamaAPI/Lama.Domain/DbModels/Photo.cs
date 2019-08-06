@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
     public partial class Photo
     {
@@ -11,6 +11,7 @@ namespace Lama.DataAccess.Models
             Comments = new HashSet<Comment>();
             Favorites = new HashSet<Favorite>();
             PhotoAlbums = new HashSet<PhotoAlbum>();
+            SharedPhotos = new HashSet<SharedPhoto>();
         }
 
         public int Id { get; set; }
@@ -29,7 +30,7 @@ namespace Lama.DataAccess.Models
         [JsonIgnore]
         public ICollection<PhotoAlbum> PhotoAlbums { get; set; }
         [JsonIgnore]
-        public SharedPhoto SharedPhoto { get; set; }
+        public ICollection<SharedPhoto> SharedPhotos { get; set; }
         [JsonIgnore]
         public User User { get; set; }
     }

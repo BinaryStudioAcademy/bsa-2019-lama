@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
     public partial class Category
     {
-
-
         public int Id { get; set; }
         public string Name { get; set; }
         public int UserId { get; set; }

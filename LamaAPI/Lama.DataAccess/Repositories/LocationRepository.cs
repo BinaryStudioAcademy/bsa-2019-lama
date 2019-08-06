@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Lama.DataAccess.Models;
+using Lama.Domain.DbModels;
 using Lama.DataAccess.Interfaces;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;

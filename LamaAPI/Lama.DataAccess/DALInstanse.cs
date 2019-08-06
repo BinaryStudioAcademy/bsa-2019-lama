@@ -1,5 +1,5 @@
 ﻿using System;
-using Lama.DataAccess.Models;
+using Lama.Domain.DbModels;
 using Lama.DataAccess.Interfaces;
 using Lama.DataAccess.Repositories;
 

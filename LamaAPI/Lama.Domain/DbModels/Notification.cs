@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
-namespace Lama.DataAccess.Models
+namespace Lama.Domain.DbModels
 {
-    public partial class Comment
+    public partial class Notification
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public int PhotoId { get; set; }
+        public DateTime Date { get; set; }
+        public bool IsRead { get; set; }
         public int UserId { get; set; }
 
-        [JsonIgnore]
-        public Photo Photo { get; set; }
         [JsonIgnore]
         public User User { get; set; }
     }

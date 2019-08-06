@@ -1,4 +1,4 @@
-﻿using Lama.DataAccess.Models;
+﻿using Lama.Domain.DbModels;
 
 namespace Lama.DataAccess.Interfaces
 {
