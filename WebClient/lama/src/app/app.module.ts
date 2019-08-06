@@ -55,6 +55,7 @@ import { TokenInterceptor } from './services/token.interceptor';
     PhotoModalComponent,
     PhotoUploadModalComponent,
     FileUploadDirective,
+    AuthModalComponent
   ],
   imports: [
     AppRoutingModule,
