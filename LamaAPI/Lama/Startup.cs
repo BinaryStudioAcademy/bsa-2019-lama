@@ -31,6 +31,7 @@ namespace Lama
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Connection));
 
+            services.AddScoped<DALInstanse>();
             services.AddQueueService();
 
             services.AddAuthentication(options =>

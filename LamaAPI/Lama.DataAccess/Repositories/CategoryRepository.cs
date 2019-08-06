@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.Categories.ToListAsync();
         }
 
-        public async Task<IEnumerable<Category>> FindAsync(Func<Category, bool> predicate)
+        public async Task<List<Category>> FindAsync(Func<Category, bool> predicate)
         {
-            return _db.Categories.Where(predicate);
+            return await _db.Categories.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

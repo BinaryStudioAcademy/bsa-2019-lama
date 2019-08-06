@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.SharedAlbums.ToListAsync();
         }
 
-        public async Task<IEnumerable<SharedAlbum>> FindAsync(Func<SharedAlbum, bool> predicate)
+        public async Task<List<SharedAlbum>> FindAsync(Func<SharedAlbum, bool> predicate)
         {
-            return _db.SharedAlbums.Where(predicate);
+            return await _db.SharedAlbums.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

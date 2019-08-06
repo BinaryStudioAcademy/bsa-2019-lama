@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.SearchHistories.ToListAsync();
         }
 
-        public async Task<IEnumerable<SearchHistory>> FindAsync(Func<SearchHistory, bool> predicate)
+        public async Task<List<SearchHistory>> FindAsync(Func<SearchHistory, bool> predicate)
         {
-            return _db.SearchHistories.Where(predicate);
+            return await _db.SearchHistories.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

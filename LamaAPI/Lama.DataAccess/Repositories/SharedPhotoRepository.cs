@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.SharedPhotos.ToListAsync();
         }
 
-        public async Task<IEnumerable<SharedPhoto>> FindAsync(Func<SharedPhoto, bool> predicate)
+        public async Task<List<SharedPhoto>> FindAsync(Func<SharedPhoto, bool> predicate)
         {
-            return _db.SharedPhotos.Where(predicate);
+            return await _db.SharedPhotos.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.Videos.ToListAsync();
         }
 
-        public async Task<IEnumerable<Video>> FindAsync(Func<Video, bool> predicate)
+        public async Task<List<Video>> FindAsync(Func<Video, bool> predicate)
         {
-            return _db.Videos.Where(predicate);
+            return await _db.Videos.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

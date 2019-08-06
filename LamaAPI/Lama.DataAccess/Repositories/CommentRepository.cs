@@ -47,9 +47,9 @@ namespace Lama.DataAccess.Repositories
             return await _db.Comments.ToListAsync();
         }
 
-        public async Task<IEnumerable<Comment>> FindAsync(Func<Comment, bool> predicate)
+        public async Task<List<Comment>> FindAsync(Func<Comment, bool> predicate)
         {
-            return _db.Comments.Where(predicate);
+            return await _db.Comments.Where(predicate).AsQueryable().ToListAsync();
         }
     }
 }

@@ -6,7 +6,7 @@ using Lama.DataAccess.Repositories;
 
 namespace Lama.DataAccess
 {
-    class DALInstanse : IUnitOfWork, IDisposable
+    public class DALInstanse : IUnitOfWork, IDisposable
     {
         private readonly ApplicationDbContext _db;
         private AlbumRepository _albumRepository;
