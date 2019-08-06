@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +29,7 @@ namespace Lama
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-
+            services.AddScoped<BusinessLogic.Services.PhotoService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             // RabbitMQ
             services.AddQueueService();

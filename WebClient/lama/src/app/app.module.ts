@@ -33,6 +33,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+import { HttpClientModule} from '@angular/common/http';
 
 
 
@@ -67,7 +68,8 @@ import { TokenInterceptor } from './services/token.interceptor';
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    HttpClientModule
   ],
   exports: [
     MatButtonModule,

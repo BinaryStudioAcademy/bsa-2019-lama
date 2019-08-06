@@ -13,7 +13,7 @@ export class FileService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
 
-  sendPhoto(photo: string) {
-    this.client.post<string>(`${environment.lamaApiUrl}/api/photos`, photo, this.httpOptions);
+  sendPhoto(photos: string[]) {
+    this.client.post<string[]>(`${environment.lamaApiUrl}/api/photo`, photos, this.httpOptions).subscribe((e) => console.log(e));
   }
 }

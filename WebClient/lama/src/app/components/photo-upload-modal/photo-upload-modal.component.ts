@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { read } from 'fs';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -11,9 +12,13 @@ export class PhotoUploadModalComponent implements OnInit {
   isActive: boolean;
   photos_base64: string[] = [];
 
-  constructor() { }
+  constructor(private fileService: FileService) { }
 
   ngOnInit() {
+  }
+  saveChanges() {
+    this.fileService.sendPhoto(this.photos_base64);
+    
   }
 
   async onFileSelected(event) {
