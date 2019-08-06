@@ -1,19 +1,17 @@
-LamaAPI/.vs/
-LamaAPI/Lama.BusinessLogic/obj/
-LamaAPI/Lama.BusinessLogic/bin/
-LamaAPI/Lama.DataAccess/obj/
-LamaAPI/Lama.DataAccess/bin/
-LamaAPI/Lama.Domain/obj/
-LamaAPI/Lama.Domain/bin/
-LamaAPI/Lama/obj/
-LamaAPI/Lama/bin/
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
 WebClient/lama/node_modules
-PhotoAPI/.vs/
-PhotoAPI/Photo.BusinessLogic/obj/
-PhotoAPI/Photo.BusinessLogic/bin/
-PhotoAPI/Photo.DataAccess/obj/
-PhotoAPI/Photo.DataAccess/bin/
-PhotoAPI/Photo.Domain/obj/
-PhotoAPI/Photo.Domain/bin/
-PhotoAPI/Photo/obj/
-PhotoAPI/Photo/bin/
+

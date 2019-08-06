@@ -1,15 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lama", "Lama\Lama.csproj", "{4BC28B5A-F4DD-464B-87C9-1F9013A4597F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lama", "Lama\Lama.csproj", "{4BC28B5A-F4DD-464B-87C9-1F9013A4597F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lama.DataAccess", "Lama.DataAccess\Lama.DataAccess.csproj", "{4B0E20C0-1598-4BEB-88CB-1AEEFAE7932D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lama.DataAccess", "Lama.DataAccess\Lama.DataAccess.csproj", "{4B0E20C0-1598-4BEB-88CB-1AEEFAE7932D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lama.BusinessLogic", "Lama.BusinessLogic\Lama.BusinessLogic.csproj", "{C422CF2E-FE6B-4D10-B828-B753BA84233A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lama.BusinessLogic", "Lama.BusinessLogic\Lama.BusinessLogic.csproj", "{C422CF2E-FE6B-4D10-B828-B753BA84233A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lama.Domain", "Lama.Domain\Lama.Domain.csproj", "{A3A13C7E-C31C-4297-A144-3E24C8B7514A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lama.Domain", "Lama.Domain\Lama.Domain.csproj", "{A3A13C7E-C31C-4297-A144-3E24C8B7514A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueService", "QueueService\QueueService.csproj", "{92440768-DEE8-4522-9E75-BF332EEFA10E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueService.Test", "QueueService.Test\QueueService.Test.csproj", "{4A551997-1268-4DA9-B3AC-10B8F8F34BEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{A3A13C7E-C31C-4297-A144-3E24C8B7514A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3A13C7E-C31C-4297-A144-3E24C8B7514A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3A13C7E-C31C-4297-A144-3E24C8B7514A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92440768-DEE8-4522-9E75-BF332EEFA10E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92440768-DEE8-4522-9E75-BF332EEFA10E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92440768-DEE8-4522-9E75-BF332EEFA10E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92440768-DEE8-4522-9E75-BF332EEFA10E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A551997-1268-4DA9-B3AC-10B8F8F34BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A551997-1268-4DA9-B3AC-10B8F8F34BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A551997-1268-4DA9-B3AC-10B8F8F34BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A551997-1268-4DA9-B3AC-10B8F8F34BEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
