@@ -24,6 +24,8 @@ import { MainPhotosContainerComponent } from './components/main/main-photos-cont
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
+import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
+import { FileUploadDirective } from './directives/file-upload.directive';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
@@ -31,6 +33,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+
 
 
 @NgModule({
@@ -50,7 +53,9 @@ import { TokenInterceptor } from './services/token.interceptor';
     MainPhotosContainerComponent,
     MainPhotoComponent,
     PhotoModalComponent,
-    AuthModalComponent,
+    PhotoUploadModalComponent,
+    FileUploadDirective,
+    AuthModalComponent
   ],
   imports: [
     AppRoutingModule,
@@ -79,6 +84,7 @@ import { TokenInterceptor } from './services/token.interceptor';
   bootstrap: [AppComponent],
   entryComponents:
   [
+    PhotoUploadModalComponent,
     PhotoModalComponent
   ]
 })

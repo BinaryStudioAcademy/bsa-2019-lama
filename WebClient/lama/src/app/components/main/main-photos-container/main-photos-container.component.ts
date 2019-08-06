@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
 
 import { Photo } from 'src/app/models';
 import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
+import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
 
 @Component({
   selector: 'main-photos-container',
@@ -11,6 +12,7 @@ import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
 export class MainPhotosContainerComponent implements OnInit {
 
   // properties
+  // showUploadModal: boolean = false;
   @Input() photos: Photo[];
   
   // fields
@@ -40,6 +42,19 @@ export class MainPhotosContainerComponent implements OnInit {
     
   }
   
+
+  @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef }) 
+  private entry_: ViewContainerRef;
+
+  public uploadFile(event) {
+    this.entry_.clear();
+    const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
+    const componentRef = this.entry_.createComponent(factory);
+    console.log(event);
+    componentRef.instance.onFileDropped(event)
+    componentRef.instance.toggleModal();
+  }
+
 
   // methods
   public photoClicked(eventArgs: Photo)
