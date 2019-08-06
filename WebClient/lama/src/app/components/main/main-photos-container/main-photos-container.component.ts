@@ -40,11 +40,17 @@ export class MainPhotosContainerComponent implements OnInit {
   {
     this.resolver = resolver;
   }
+
+  @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef }) 
+  private entry_: ViewContainerRef;
+
   public uploadFile(event) {
-    this.entry.clear();
+    this.entry_.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
-    const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.onFileSelected(event);
+    const componentRef = this.entry_.createComponent(factory);
+    console.log(event);
+    componentRef.instance.onFileDropped(event)
+    componentRef.instance.toggleModal();
   }
 
 

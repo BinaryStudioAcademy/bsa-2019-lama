@@ -30,6 +30,12 @@ export class PhotoUploadModalComponent implements OnInit {
       reader.readAsDataURL(photo);
     }
   }
+  onFileDropped(event) {
+    let photo = event[0];
+    const reader = new FileReader();
+    reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
+    reader.readAsDataURL(photo);
+  }
 
   toggleModal() {
     this.isActive = !this.isActive; 
