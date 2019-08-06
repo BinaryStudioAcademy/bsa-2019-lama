@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingLoginComponent implements OnInit {
 
+  showAuthModal: boolean = false;
   constructor() { }
 
   ngOnInit() {
+  }
+
+  public openAuthWindow(){
+    this.showAuthModal = true;
   }
 
 }

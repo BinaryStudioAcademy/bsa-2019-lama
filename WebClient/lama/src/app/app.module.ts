@@ -26,6 +26,14 @@ import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
 import { FileUploadDirective } from './directives/file-upload.directive';
+import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './services/token.interceptor';
+
 
 
 @NgModule({
@@ -52,6 +60,9 @@ import { FileUploadDirective } from './directives/file-upload.directive';
     AppRoutingModule,
     BrowserModule,
     MatButtonModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule,
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
@@ -64,7 +75,11 @@ import { FileUploadDirective } from './directives/file-upload.directive';
     MatIconModule,
     MatCardModule
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+  useClass: TokenInterceptor,
+  multi: true
+  }],
   bootstrap: [AppComponent],
   entryComponents:
   [
