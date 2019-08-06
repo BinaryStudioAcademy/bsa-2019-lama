@@ -7,15 +7,13 @@ import { Photo } from 'src/app/models';
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit 
-{
+export class PhotoModalComponent implements OnInit {
   @Input()
   public photo: Photo;
   public isShown: boolean;
 
   // constructors
-  constructor() 
-  {
+  constructor() {
     this.isShown = true;
   }
 
@@ -23,8 +21,7 @@ export class PhotoModalComponent implements OnInit
   }
 
   // methods
-  protected closeModal(): void
-  {
+  protected closeModal(): void {
     this.isShown = false;
   }
 }
