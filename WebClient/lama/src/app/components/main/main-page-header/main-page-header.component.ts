@@ -9,13 +9,29 @@ import { element } from 'protractor';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-  showModal: boolean = false;
+  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef }) 
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+  // constructors
+
+  constructor(resolver: ComponentFactoryResolver) 
+  {
+    this.resolver = resolver;
+  }
+
+  
   ngOnInit() {
   }
 
-  openModal() {
-    this.showModal = true;
+  public openModalClicked(event): void
+  {
+    this.entry.clear();
+    const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
+    const componentRef = this.entry.createComponent(factory);
+    componentRef.instance.toggleModal();
+    
   }
+
 
 
 

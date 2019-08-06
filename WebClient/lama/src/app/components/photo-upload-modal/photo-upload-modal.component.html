@@ -1,15 +1,15 @@
-<div class="modal upload is-active" id="upload-modal">
-    <div class="modal-background" (click)="closeModal()"></div>
+<div class="modal upload" id="upload-modal" [class.is-active]="isActive">
+    <div class="modal-background" (click)="toggleModal()"></div>
     <div class="modal-card">
         <header class="modal-card-head">
             <p class="modal-card-title">Upload photo</p>
-            <button (click)="closeModal()" class="delete" aria-label="close"></button>
+            <button (click)="toggleModal()" class="delete" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
             <figure class="image">
                 <img src="{{ photoUrl }}" id="uploaded-image">
             </figure>
-            <textarea class="textarea" placeholder="e.g. Hello world"></textarea>
+            <textarea class="textarea" placeholder="Description"></textarea>
             <div class="file">
                 <label class="file-label">
                     <input (change)="onFileSelected($event)" class="file-input" type="file" name="resume">
@@ -27,7 +27,7 @@
         </section>
         <footer class="modal-card-foot">
             <button class="button is-success">Save changes</button>
-            <button class="button" (click)="closeModal()">Cancel</button>
+            <button class="button" (click)="toggleModal()">Cancel</button>
         </footer>
     </div>
 </div>

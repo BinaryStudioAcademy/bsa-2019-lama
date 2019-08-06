@@ -25,6 +25,7 @@ import { MainPhotoComponent } from './components/main/main-photo/main-photo.comp
 import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
+import { FileUploadDirective } from './directives/file-upload.directive';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo
     MainPhotoComponent,
     PhotoModalComponent,
     PhotoUploadModalComponent,
+    FileUploadDirective,
   ],
   imports: [
     AppRoutingModule,
@@ -66,6 +68,7 @@ import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo
   bootstrap: [AppComponent],
   entryComponents:
   [
+    PhotoUploadModalComponent,
     PhotoModalComponent
   ]
 })

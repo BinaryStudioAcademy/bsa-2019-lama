@@ -8,20 +8,22 @@ import { read } from 'fs';
 })
 export class PhotoUploadModalComponent implements OnInit {
 
+  isActive: boolean;
   photoUrl: string | ArrayBuffer;
-  
-  @Output()
-  onClose = new EventEmitter();
+  // @Output()
+  // onClose = new EventEmitter();
 
-  constructor() { }
+  constructor() 
+    {
+      // this.isActive = true;
+    }
 
   ngOnInit() {
+    this.photoUrl = "https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png";
   }
 
   onFileSelected(event) {
-
     if (event.target.files.length > 0) {
-
       let photo = event.target.files[0];
       const reader = new FileReader();
       reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
@@ -29,8 +31,8 @@ export class PhotoUploadModalComponent implements OnInit {
     }
   }
 
-  closeModal() {
-    this.onClose.emit(null); 
+  toggleModal() {
+    this.isActive = !this.isActive; 
   }
 
 }
