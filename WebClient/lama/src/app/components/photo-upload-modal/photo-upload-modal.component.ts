@@ -9,36 +9,39 @@ import { read } from 'fs';
 export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
-  image: any;
-  photoUrl: string | ArrayBuffer;
-  // @Output()
-  // onClose = new EventEmitter();
+  photos_base64: string[] = [];
 
-  constructor() 
-    {
-      // this.isActive = true;
-    }
+  constructor() { }
 
   ngOnInit() {
-    this.photoUrl = "https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png";
   }
 
-  onFileSelected(event) {
+  async onFileSelected(event) {
     if (event.target.files.length > 0) {
-      let photo = event.target.files[0];
-      this.image = photo;
-      const reader = new FileReader();
-      reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
-      reader.readAsDataURL(photo);
+      let photos = event.target.files;
+      this.photos_base64 = []
+      for (let i=0; i<photos.length; i++) {
+         this.photos_base64.push(await this.toBase64(photos[i]))
+      };
     }
   }
-  onFileDropped(event) {
-    let photo = event[0];
-    const reader = new FileReader();
-    this.image = photo;
-    reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
-    reader.readAsDataURL(photo);
+  async onFileDropped(files) {
+      this.photos_base64 = []
+      for (let i=0; i<files.length; i++) {
+        this.photos_base64.push(await this.toBase64(files[i]))
+     };
   }
+
+  public toBase64(file): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  }
+  
+    
 
   toggleModal() {
     this.isActive = !this.isActive; 

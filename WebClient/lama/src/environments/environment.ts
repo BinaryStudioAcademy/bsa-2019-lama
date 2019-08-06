@@ -13,6 +13,7 @@ export const environment = {
     messagingSenderId: "363275556201",
     appId: "1:363275556201:web:52ab2e1fd986b9ca"
   },
+  lamaApiUrl: "https://localhost:44308",
   production: false
 };
 

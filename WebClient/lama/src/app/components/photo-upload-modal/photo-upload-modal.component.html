@@ -6,13 +6,16 @@
             <button (click)="toggleModal()" class="delete" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
-            <figure class="image" fileDrop (fileDropped)="onFileDropped($event)">
-                <img src="{{ photoUrl }}" id="uploaded-image">
+            <figure id="modal-image-container"class="image" fileDrop (fileDropped)="onFileDropped($event)">
+                <img *ngIf="photos_base64.length === 0" src="https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png">
+                <div *ngFor="let photoUrl of photos_base64">
+                    <img src="{{ photoUrl }}" id="uploaded-image">
+                </div>
             </figure>
             <textarea class="textarea" placeholder="Description"></textarea>
             <div class="file">
                 <label class="file-label">
-                    <input (change)="onFileSelected($event)" class="file-input" type="file" name="resume">
+                    <input (change)="onFileSelected($event)" class="file-input" type="file" accept="image/*">
                     <span class="file-cta">
                         <span class="file-icon">
                             <i class="fas fa-upload"></i>

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { Photo, ActionItem } from 'src/app/models';
+import { ActionItem } from 'src/app/models/View/action-item';
+import {  Photo } from 'src/app/models/Photo/photo';
 
 @Component({
   selector: 'app-photo-modal',
