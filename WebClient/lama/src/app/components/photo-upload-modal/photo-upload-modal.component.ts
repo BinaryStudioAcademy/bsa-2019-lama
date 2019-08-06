@@ -9,6 +9,7 @@ import { read } from 'fs';
 export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
+  image: any;
   photoUrl: string | ArrayBuffer;
   // @Output()
   // onClose = new EventEmitter();
@@ -25,6 +26,7 @@ export class PhotoUploadModalComponent implements OnInit {
   onFileSelected(event) {
     if (event.target.files.length > 0) {
       let photo = event.target.files[0];
+      this.image = photo;
       const reader = new FileReader();
       reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
       reader.readAsDataURL(photo);
@@ -33,6 +35,7 @@ export class PhotoUploadModalComponent implements OnInit {
   onFileDropped(event) {
     let photo = event[0];
     const reader = new FileReader();
+    this.image = photo;
     reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
     reader.readAsDataURL(photo);
   }
