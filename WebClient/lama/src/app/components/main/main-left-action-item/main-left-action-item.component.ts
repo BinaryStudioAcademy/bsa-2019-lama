@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActionItem } from 'src/app/models/actionsitem';
+import { ActionItem } from 'src/app/models/View/action-item';
 
 @Component({
   selector: 'main-left-action-item',

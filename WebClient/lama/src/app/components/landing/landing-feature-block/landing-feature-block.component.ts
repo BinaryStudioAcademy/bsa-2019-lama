@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ElementRef, AfterViewInit } from '@angular/core';
-import { FeatureBlock } from '../../../models/featureblock';
+import { FeatureBlock } from 'src/app/models';
 import { element } from 'protractor';
 
 @Component({
