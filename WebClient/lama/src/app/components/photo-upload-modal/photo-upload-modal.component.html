@@ -6,7 +6,7 @@
             <button (click)="toggleModal()" class="delete" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
-            <figure class="image">
+            <figure class="image" fileDrop (fileDropped)="onFileDropped($event)">
                 <img src="{{ photoUrl }}" id="uploaded-image">
             </figure>
             <textarea class="textarea" placeholder="Description"></textarea>
