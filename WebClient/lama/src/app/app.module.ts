@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router';
 import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
-import { CreateAlbumModalComponent } from './components/main/create-album-modal/create-album-modal.component';
+import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
 
 
 @NgModule({

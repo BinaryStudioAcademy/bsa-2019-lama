@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Albumn } from 'src/app/models/Album/album';
-import { CreateAlbumModalComponent } from '../create-album-modal/create-album-modal.component';
+import { CreateAlbumModalComponent } from '../../create-album-modal/create-album-modal.component';
 
 
 @Component({

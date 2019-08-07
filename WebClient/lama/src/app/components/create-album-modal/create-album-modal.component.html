@@ -15,6 +15,11 @@
                     <h4 class="title is-4">Upload photo from storage</h4>
                     <a class="button is-primary">upload</a>
                 </div>
+
+                <div class="upload-file">
+                    <h4 class="title is-4">Upload photo from device</h4>
+                    <input type='file' class="input is-primary" placeholder="Upload from pc" (change)="onSelectFile($event)" multiple>
+                </div>
             </div>
         </div>
     </div>
