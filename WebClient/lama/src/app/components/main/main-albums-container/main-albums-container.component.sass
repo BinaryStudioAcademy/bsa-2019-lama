@@ -1,0 +1,39 @@
+h2
+    font-weight: 500
+    font-size: 2rem
+    margin-left: .5rem
+.albums-container
+    display: flex
+    flex-direction: row
+    justify-content: flex-start
+    flex-wrap: wrap
+
+.new-album
+    position: relative
+    height: 15rem
+    width: 15rem    
+    border: 1px solid #00d1b2
+    border-radius: .3rem
+    margin: .5rem
+    display: flex
+    align-items: center 
+
+.new-album a
+    margin-left: auto
+    margin-right: auto
+    
+.new-album img
+    height: 36px
+    width: 36px
+
+.description p
+    margin: 0
+    color: rgb(74, 74, 74)
+    padding-left: 10px
+    font-size: 20px
+.album:hover p
+    color: black
+    
+@media screen and (max-width: 768px)
+    .albums-container
+        justify-content: center
