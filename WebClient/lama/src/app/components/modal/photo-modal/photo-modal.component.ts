@@ -44,15 +44,15 @@ export class PhotoModalComponent implements OnInit
   {
     this.defaultMenuItem =
     [
-      { title: "share",    icon: "share" },
-      { title: "remove",   icon: "clear" },
-      { title: "download", icon: "cloud_download" },
-      { title: "edit",     icon: "edit" }
+      { title: "share",    icon: "share" , route: ''},
+      { title: "remove",   icon: "clear", route: ''},
+      { title: "download", icon: "cloud_download", route: '' },
+      { title: "edit",     icon: "edit", route: '' }
     ];
     this.editingMenuItem =
     [
-      { title: "crop",   icon: "crop" },
-      { title: "rotate", icon: "rotate_left" }
+      { title: "crop",   icon: "crop", route: '' },
+      { title: "rotate", icon: "rotate_left", route: '' }
     ];
   }
 

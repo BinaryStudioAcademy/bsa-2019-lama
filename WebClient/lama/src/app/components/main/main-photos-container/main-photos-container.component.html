@@ -1,6 +1,5 @@
-
 <h2>Recent images: </h2>
-<div  class="photos-container" fileDrop (fileDropped)="uploadFile($event)">
+<div class="photos-container" fileDrop (fileDropped)="uploadFile($event)">
     <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
     <!--photo list-->
     <div *ngFor="let item of photos">
@@ -10,5 +9,4 @@
     <!--modal-->
     <template #modalPhotoContainer></template>
     <template #modalUploadPhoto></template>
-    <!-- (onPhotosUploaded)="addToList($event)" -->
 </div>
