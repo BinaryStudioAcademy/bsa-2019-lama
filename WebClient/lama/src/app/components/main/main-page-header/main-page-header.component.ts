@@ -14,16 +14,16 @@ import { element } from 'protractor';
 export class MainPageHeaderComponent implements OnInit {
 
 
-  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef }) 
+  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  
+
   // constructors
-  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver) 
+  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver)
   {
     this.resolver = resolver;
   }
-  
+
   ngOnInit() {
   }
 
@@ -38,6 +38,6 @@ export class MainPageHeaderComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.toggleModal();    
+    componentRef.instance.toggleModal();
   }
 }

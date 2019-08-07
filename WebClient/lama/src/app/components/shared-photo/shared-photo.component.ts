@@ -14,6 +14,10 @@ export class SharedPhotoComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.decodeUserData();
+  }
+
+  private decodeUserData(){
     let encodedData = this.route.snapshot.params.userData;
     let jsonData = atob(encodedData);
     this.userData = JSON.parse(jsonData);

@@ -16,6 +16,12 @@ namespace Photo.Controllers
         {
             return new string[] { "photo1", "photo2" };
         }
+        
+        [HttpGet("/shared")]
+        public ActionResult<IEnumerable<string>> GetShared()
+        {
+            return new string[] { "photo1", "photo2" };
+        }
 
         // GET api/values/5
         [HttpGet("{id}")]

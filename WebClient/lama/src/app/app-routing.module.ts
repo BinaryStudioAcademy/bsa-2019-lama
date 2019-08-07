@@ -9,7 +9,7 @@ import { SharedPhotoComponent } from './components/shared-photo/shared-photo.com
 const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
   {path: 'login', component: MainPageComponent, canActivate:[AuthGuard]},
-  {path: 'shared', component: SharedPhotoComponent}
+  {path: 'shared/:userdata', component: SharedPhotoComponent}
 ];
 
 @NgModule({

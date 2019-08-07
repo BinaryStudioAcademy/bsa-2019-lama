@@ -4,7 +4,7 @@ import { SharingService } from 'src/app/services/sharing.service';
 import { SharingUserData } from 'src/app/models/User/SharingUserData';
 
 @Component({
-  selector: 'app-shared-modal',
+  selector: 'app-share-modal',
   templateUrl: './share-modal.component.html',
   styleUrls: ['./share-modal.component.sass']
 })

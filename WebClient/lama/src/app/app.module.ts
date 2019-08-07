@@ -22,12 +22,10 @@ import { MainLeftActionItemComponent } from './components/main/main-left-action-
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
-import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
-import { PhotoModalComponent } from './components/modal/photo-modal/photo-modal.component';
 import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
 
 @NgModule({
@@ -46,8 +44,7 @@ import { SharedPhotoComponent } from './components/shared-photo/shared-photo.com
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    AuthModalComponent,
-    SharedPhotoComponent
+    SharedPhotoComponent,
   ],
   imports: [
     SharedModule,
@@ -60,7 +57,7 @@ import { SharedPhotoComponent } from './components/shared-photo/shared-photo.com
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   exports: [
     MatButtonModule,

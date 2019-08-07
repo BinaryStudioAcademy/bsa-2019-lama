@@ -14,8 +14,8 @@ export class SharingService {
 
   constructor(private httpClient: HttpClient) { }
 
-  //TODO: change signature depending on which way we will get blob from storage
-  public getSharableLink(): Observable<Blob>{
-    return this.httpClient.get(`${this.blobStorageUrl}/${this.routePrefix}`,{responseType: 'blob'});
+  
+  public getSharableLink(): Observable<string> {
+    return this.httpClient.get<string>(`${this.blobStorageUrl}/${this.routePrefix}`);
   }
 }
