@@ -1,0 +1,11 @@
+<div class="modal" [class.is-active]="IsShow">
+    <div (click)="toggleModal($event)"></div>
+
+    <!--content-->
+    <div class="modal-content">
+        <div class="notification">
+            <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
+        </div>
+
+    </div>
+</div>

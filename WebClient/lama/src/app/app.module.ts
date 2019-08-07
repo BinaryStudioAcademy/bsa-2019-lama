@@ -27,6 +27,7 @@ import { PhotoModalComponent } from './components/photo-modal/photo-modal.compon
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
 import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
+import { ChooseStoragePhotosComponent } from './components/choose-storage-photos/choose-storage-photos.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { CreateAlbumModalComponent } from './components/create-album-modal/creat
     PhotoModalComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
-    CreateAlbumModalComponent
+    CreateAlbumModalComponent,
+    ChooseStoragePhotosComponent
   ],
   imports: [
     AppRoutingModule,
@@ -71,7 +73,8 @@ import { CreateAlbumModalComponent } from './components/create-album-modal/creat
   entryComponents:
   [
     PhotoModalComponent,
-    CreateAlbumModalComponent
+    CreateAlbumModalComponent,
+    ChooseStoragePhotosComponent 
   ]
 })
 export class AppModule { }

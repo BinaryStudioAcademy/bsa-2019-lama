@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -8,16 +9,18 @@ import { Component, OnInit, Input } from '@angular/core';
 export class CreateAlbumModalComponent implements OnInit {
 
   images = [];
+
+
   @Input()
   public isShown: boolean;
-  constructor() {
+
+  constructor(resolver: ComponentFactoryResolver) {
     this.isShown = true;
+    this.resolver = resolver;
    }
 
   ngOnInit() {
   }
-
-
 
   activeColor: string = '#00d1b2';
   baseColor: string = '#ccc';
@@ -72,9 +75,20 @@ export class CreateAlbumModalComponent implements OnInit {
       this.loaded = true;
   }
 
-
   toggleModal()
   {
     this.isShown = false;
   }
+
+  ChoosePhoto(e)
+  {
+    this.entry.clear();
+    const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
+    const componentRef = this.entry.createComponent(factory);
+  }
+  
+  @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef }) 
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+
 }

@@ -14,7 +14,7 @@
                 </div>
                 <div class="storage">
                     <h4 class="title is-4">Upload photo from storage</h4>
-                    <a class="button is-primary">upload</a>
+                    <a class="button is-primary" (click)="ChoosePhoto($event)">upload</a>
                 </div>
 
                 <div class="upload-file">
@@ -36,10 +36,11 @@
                 </label>
                 </div>
                 <div class="modal-card-foot foot">
-                    <a class="button is-primary">Save Changes</a>
+                    <a class="button is-primary" (click)="toggleModal()">Save Changes</a>
                     <a class="button" (click)="toggleModal()">Cancel</a>
                 </div>
             </div>
         </div>
     </div>
+    <template #ChoosePhotos></template>
 </div>
