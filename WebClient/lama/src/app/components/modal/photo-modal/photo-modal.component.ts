@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+import { ImageCroppedEvent } from 'ngx-image-cropper';
+
 import { Photo, ActionItem } from 'src/app/models';
 
 @Component({
@@ -7,13 +9,14 @@ import { Photo, ActionItem } from 'src/app/models';
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit 
+export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
   public photo: Photo;
   public isShown: boolean;
 
+  public clickedMenuItem: ActionItem;
   public shownMenuItems: ActionItem[];
 
   // fields
@@ -28,6 +31,7 @@ export class PhotoModalComponent implements OnInit
     this.initializeMenuItem();
 
     this.shownMenuItems = this.defaultMenuItem;
+    this.clickedMenuItem = null;
   }
 
   ngOnInit() 
@@ -35,8 +39,8 @@ export class PhotoModalComponent implements OnInit
   }
 
   private initializeMenuItem()
-  {    
-    this.defaultMenuItem = 
+  {
+    this.defaultMenuItem =
     [
       { title: "share",    icon: "share" },
       { title: "remove",   icon: "clear" },
@@ -53,7 +57,9 @@ export class PhotoModalComponent implements OnInit
   // methods
   public menuClickHandler(clickedMenuItem: ActionItem): void
   {
-    if (clickedMenuItem == this.defaultMenuItem[3])
+    this.clickedMenuItem = clickedMenuItem;
+
+    if (clickedMenuItem === this.defaultMenuItem[3])
     {
       this.shownMenuItems = this.editingMenuItem;
     }
@@ -63,6 +69,18 @@ export class PhotoModalComponent implements OnInit
     this.shownMenuItems = this.defaultMenuItem;
   }
 
+  public cropImageHandler(croppedImage: ImageCroppedEvent): void
+  {
+    // TODO: save in elastic
+    this.photo.imageUrl = croppedImage.base64;
+
+    this.goBackToImageView();
+  }
+
+  public goBackToImageView(): void
+  {
+    this.clickedMenuItem = null;
+  }
   protected closeModal(): void
   {
     this.isShown = false;
