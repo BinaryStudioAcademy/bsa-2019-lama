@@ -1,4 +1,4 @@
-﻿namespace QueueService.Implementation.RabbitMq
+﻿namespace Services.Implementation.RabbitMq
 {
     public class DefaultConnectionFactory : RabbitMQ.Client.ConnectionFactory
     {

@@ -1,4 +1,4 @@
-﻿namespace QueueService.Interfaces
+﻿namespace Services.Interfaces
 {
     public interface IBroker : System.IDisposable
     {

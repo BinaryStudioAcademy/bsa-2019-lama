@@ -1,11 +1,11 @@
-﻿using QueueService.Interfaces;
-using QueueService.Models;
+﻿using Services.Interfaces;
+using Services.Models;
 
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
 
-namespace QueueService.Implementation.RabbitMq
+namespace Services.Implementation.RabbitMq
 {
     public class Consumer : IConsumer
     {
@@ -32,7 +32,7 @@ namespace QueueService.Implementation.RabbitMq
             OnDataReceived(new ReceiveData
             {
                 DeliveryTag = e.DeliveryTag,
-                Message = System.Text.Encoding.UTF8.GetString(e.Body)
+                Body = e.Body
             });
         }
 
@@ -65,7 +65,7 @@ namespace QueueService.Implementation.RabbitMq
                 return new ReceiveData
                 {
                     DeliveryTag = basicDeliveryEventArgs.DeliveryTag,
-                    Message = System.Text.Encoding.UTF8.GetString(basicDeliveryEventArgs.Body)
+                    Body = basicDeliveryEventArgs.Body
                 };
             }
             else return null;
