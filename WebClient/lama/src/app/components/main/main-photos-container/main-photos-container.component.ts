@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 
 import { Photo } from 'src/app/models';
-import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
-import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { FileService } from 'src/app/services/file.service';
 

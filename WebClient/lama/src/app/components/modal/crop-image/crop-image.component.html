@@ -1,0 +1,24 @@
+<image-cropper #cropper
+    [imageBase64]="imageToCropBase64"
+    [cropperMinWidth]="cropperMinWidth"
+    [cropperMinHeight]="cropperMinHeight"
+></image-cropper>
+
+<!--menu-->
+<div class="menu">
+        
+    <!--menu items-->
+    <div class=" columns has-text-centered" >
+
+        <div class="column" (click)="saveClickHandler()">                                            
+            <i class="material-icons is-block">done</i>
+            <span> save </span>    
+        </div>
+
+        <div class="column" (click)="cancelClickHandler()">                                            
+            <i class="material-icons is-block">cancel</i>
+            <span> cancel </span>    
+        </div>
+
+    </div>
+</div>
