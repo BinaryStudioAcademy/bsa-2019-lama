@@ -22,13 +22,8 @@ export class ChoosePhotoComponent implements OnInit {
 
   public clickPerformed(event): void
   {
-    if(this.Choose == false)
-    this.Choose=true;
-    else
-    this.Choose=false;
-    
+    this.Choose = !this.Choose;
     this.onClick.emit(this.photo);
-
   }
   
 }

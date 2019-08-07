@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Albumn } from 'src/app/models/Album/album';
 import { CreateAlbumModalComponent } from '../../create-album-module/create-album-modal/create-album-modal.component';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -20,12 +21,12 @@ export class MainAlbumsContainerComponent implements OnInit {
     },
     {
       author:"Barack Obama",
-      name : "Cars",
+      name : "Refer",
       imageUrl: "https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg"
     },
     {
       author:"Barack Obama",
-      name : "Cars",
+      name : "Places",
       imageUrl: "https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg"
     },
     {
@@ -71,7 +72,7 @@ export class MainAlbumsContainerComponent implements OnInit {
   private resolver: ComponentFactoryResolver;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver) {
+  constructor(resolver: ComponentFactoryResolver,private router: Router) {
     this.resolver = resolver;
   }
 
@@ -83,9 +84,15 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
   // methods
   public albumClicked(eventArgs: Albumn) {
-    //const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
-    //const componentRef = this.entry.createComponent(factory);
-    //componentRef.instance.photo = eventArgs;  
+
+    this.router.navigate(
+      ['/album', eventArgs.name],
+      {
+          queryParams:{
+              'imageUrl': eventArgs.imageUrl
+          }
+      }
+  );
   }
 
 }
