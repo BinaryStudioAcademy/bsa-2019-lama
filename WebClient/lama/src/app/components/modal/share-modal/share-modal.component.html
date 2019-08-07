@@ -1,10 +1,14 @@
 <div class="modal is-active">
   <div class="modal-background" (click)="cancel()"></div>
   <div class="modal-card">
+      <div *ngIf="copyClicked" class="notification is-primary">
+          <button class="delete"></button>
+          Link is now in your clipboard
+        </div>
     <div class="modal-card-body">
       <div class="columns">
         <div class="column is-half">
-          <input id="share-link" class="input" type="text" [(value)]="imageUrl" readonly>
+          <input id="share-link" class="input" type="text" [(value)]="shareableLink" readonly>
         </div>
         <div class="column is-half">
           <a class="button is-primary" (click)="copyShareableLink()">
@@ -12,9 +16,7 @@
           </a>
         </div>
       </div>
-
     </div>
-
   </div>
-
 </div>
+

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SharingUserData } from 'src/app/models/User/SharingUserData';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'app-shared-photo',
@@ -9,7 +9,7 @@ import { SharingUserData } from 'src/app/models/User/SharingUserData';
 })
 export class SharedPhotoComponent implements OnInit {
 
-  userData: SharingUserData;
+  photoDocument:PhotoRaw = <PhotoRaw>{};
 
   constructor(private route: ActivatedRoute) { }
 
@@ -18,9 +18,9 @@ export class SharedPhotoComponent implements OnInit {
   }
 
   private decodeUserData(){
-    let encodedData = this.route.snapshot.params.userData;
-    let jsonData = atob(encodedData);
-    this.userData = JSON.parse(jsonData);
+    let encodedData = this.route.snapshot.params.userdata as string;
+    let jsonData = atob(encodedData.replace("___","/"));
+    this.photoDocument = JSON.parse(jsonData);
   }
 
 

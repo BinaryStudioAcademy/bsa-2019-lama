@@ -1,7 +1,7 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharingService } from 'src/app/services/sharing.service';
-import { SharingUserData } from 'src/app/models/User/SharingUserData';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'app-share-modal',
@@ -10,21 +10,20 @@ import { SharingUserData } from 'src/app/models/User/SharingUserData';
 })
 export class ShareModalComponent implements OnInit {
 
+  @Input() photoId: number = 1;
   @Output() onClose = new EventEmitter();
 
-  sharingUserData: SharingUserData = new SharingUserData();
+  photoDocument:PhotoRaw = <PhotoRaw>{};
   shareableLink: string = '';
   imageUrl: string;
+  copyClicked: boolean = false;
 
   constructor(private sharingService: SharingService) {
-    console.log("temporary measure at ShareModalComponent constructor");
-
-    this.sharingUserData.userId;
 
   }
 
   ngOnInit() {
-    this.createShareableLink();
+    this.getImageById(this.photoId);
   }
 
   public cancel(){
@@ -32,9 +31,8 @@ export class ShareModalComponent implements OnInit {
   }
 
   public createShareableLink(){
-    this.getImage();
-    this.encodeUserData();
-    this.shareableLink = `${environment.clientUrl}/shared`;
+    let userdata = this.encodeUserData();
+    this.shareableLink = `${environment.clientUrl}/shared/${userdata}`;
   }
 
   public copyShareableLink(){
@@ -50,17 +48,20 @@ export class ShareModalComponent implements OnInit {
       document.execCommand('copy');
       document.body.removeChild(selBox);
       console.log(`${this.shareableLink} was copied`);
+      this.copyClicked = !this.copyClicked;
     }
 
-    public getImage(){
-      this.sharingService.getSharableLink().subscribe(blob => {
-        this.sharingUserData.sharedImageUrl = URL.createObjectURL(blob);
+    public getImageById(photoId: number){
+      this.sharingService.getPhotoEntity(photoId).subscribe(photo => {
+        this.photoDocument =photo;
+        this.createShareableLink();
       })
     }
 
     public encodeUserData(): string{
-      console.log( btoa(JSON.stringify(this.sharingUserData)));
-      return btoa(JSON.stringify(this.sharingUserData));
+      let encoded = btoa(JSON.stringify(this.photoDocument)).replace("/","___");
+      console.log(encoded);
+      return encoded;
     }
 
   }

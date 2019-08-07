@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  clientUrl: "https://localhost:4200",
+  clientUrl: "http://localhost:4200",
   apiUrl:"https://localhost:5001",
   storageUrl:"https://localhost:5001", //elastic search link goes here
   firebase: {

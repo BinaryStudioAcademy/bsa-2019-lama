@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { PhotoRaw } from '../models/Photo/photoRaw';
 
 
 @Injectable({
@@ -15,7 +16,7 @@ export class SharingService {
   constructor(private httpClient: HttpClient) { }
 
 
-  public getSharableLink(): Observable<string> {
-    return this.httpClient.get<string>(`${this.blobStorageUrl}/${this.routePrefix}`);
+  public getPhotoEntity(photoId: number): Observable<PhotoRaw> {
+    return this.httpClient.get<PhotoRaw>(`${this.blobStorageUrl}/${this.routePrefix}/${photoId}`);
   }
 }

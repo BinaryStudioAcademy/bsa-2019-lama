@@ -1,4 +1,4 @@
-export class SharingUserData
+export class SharedPhotoEntity
 {
   userId: number;
   sharedImageUrl: string;
