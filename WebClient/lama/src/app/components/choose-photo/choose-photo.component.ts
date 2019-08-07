@@ -14,7 +14,7 @@ export class ChoosePhotoComponent implements OnInit {
   Choose:boolean;
 
   constructor() {
-    this.Choose=false;
+    this.Choose = false;
    }
 
   ngOnInit() {
