@@ -21,6 +21,10 @@
                     <h4 class="title is-4">Upload photo from device</h4>
                     <input type='file' class="input is-primary" placeholder="Upload from pc" (change)="onSelectFile($event)" multiple>
                 </div>
+                <div class="modal-card-foot foot">
+                    <a class="button is-primary">Save Changes</a>
+                    <a class="button" (click)="closeModal()">Cancel</a>
+                </div>
             </div>
         </div>
     </div>
