@@ -14,6 +14,6 @@ export class FileService {
   }
 
   sendPhoto(photos: string[]) {
-    this.client.post<string[]>(`${environment.lamaApiUrl}/api/photo`, photos, this.httpOptions).subscribe((e) => console.log(e));
+    this.client.post<string[]>(`${environment.lamaApiUrl}/api/photos`, photos, this.httpOptions).subscribe((e) => console.log(e));
   }
 }

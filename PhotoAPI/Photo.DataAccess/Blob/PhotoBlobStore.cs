@@ -40,17 +40,16 @@ namespace Photo.DataAccess.Blob
             string[] valid_base64 = new string[photos.Length];
             for (int i = 0; i < photos.Length; i++)
             {
-                valid_base64[i] = photos[i].Replace("data:image/jpeg;base64,", String.Empty).Replace("-", "+").Replace("_", "/");
+                valid_base64[i] = photos[i].Replace("data:image/jpeg;base64,", String.Empty).Replace("data:image/png;base64,", String.Empty).Replace("-", "+").Replace("_", "/");
             }
             byte[][] blobs = new byte[photos.Length][];
             for (int i=0; i<photos.Length; i++)
             {
                 blobs[i] = System.Convert.FromBase64String(valid_base64[i]);
                 CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
-                using (var stream = new MemoryStream(blobs[i], writable: false))
-                {
-                    await cloudBlockBlob.UploadFromStreamAsync(stream);
-                }
+                cloudBlockBlob.Properties.ContentType = "image/jpg";
+                await cloudBlockBlob.UploadFromByteArrayAsync(blobs[i], 0, blobs[i].Length);
+                var id = cloudBlockBlob.Uri;
             }
         }
     }
