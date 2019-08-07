@@ -18,8 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Lama.BusinessLogic\Lama.BusinessLogic.csproj" />
     <ProjectReference Include="..\Lama.DataAccess\Lama.DataAccess.csproj" />
-    <ProjectReference Include="..\Lama.Domain\Lama.Domain.csproj" />
-    <ProjectReference Include="..\QueueService\QueueService.csproj" />
+    <ProjectReference Include="..\..\Shared\Services\Services.csproj" />
+    <ProjectReference Include="..\Lama.DataAccess\Lama.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

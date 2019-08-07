@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Photo.BusinessLogic\Photo.BusinessLogic.csproj" />
     <ProjectReference Include="..\Photo.Domain\Photo.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\Services\Services.csproj" />
   </ItemGroup>
 
 </Project>

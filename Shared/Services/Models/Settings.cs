@@ -1,4 +1,4 @@
-﻿namespace QueueService.Models
+﻿namespace Services.Models
 {
     /// <summary>
     /// Settings that should specify both sides (producer and consumer)

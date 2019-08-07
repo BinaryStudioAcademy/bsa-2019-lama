@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace QueueService.Implementation.RabbitMq
+namespace Services.Implementation.RabbitMq
 {
     public class Broker : Interfaces.IBroker
     {
