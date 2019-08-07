@@ -9,5 +9,5 @@
 
     <!--modal-->
     <template #modalPhotoContainer></template>
-    <template #modalUploadPhoto></template>
+    <photo-upload-modal (onPhotosUploaded)="addToList($event)" #modalUploadPhoto></photo-upload-modal>
 </div>

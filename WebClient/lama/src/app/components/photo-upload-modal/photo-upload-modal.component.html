@@ -10,9 +10,9 @@
                 <img *ngIf="photos_base64.length === 0" src="https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png">
                 <div *ngFor="let photoUrl of photos_base64">
                     <img src="{{ photoUrl }}" id="uploaded-image">
+                    <textarea class="textarea" placeholder="Description"></textarea>
                 </div>
             </figure>
-            <textarea class="textarea" placeholder="Description"></textarea>
             <div class="file">
                 <label class="file-label">
                     <input (change)="onFileSelected($event)" class="file-input" type="file" accept="image/*">

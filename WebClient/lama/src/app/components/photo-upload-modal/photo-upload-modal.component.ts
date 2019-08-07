@@ -11,6 +11,7 @@ export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
   photos_base64: string[] = [];
+  @Output() onPhotosUploaded = new EventEmitter<string[]>();
 
   constructor(private fileService: FileService) { }
 
@@ -18,7 +19,8 @@ export class PhotoUploadModalComponent implements OnInit {
   }
   saveChanges() {
     this.fileService.sendPhoto(this.photos_base64);
-    
+    this.onPhotosUploaded.emit(this.photos_base64);
+    this.toggleModal();
   }
 
   async onFileSelected(event) {

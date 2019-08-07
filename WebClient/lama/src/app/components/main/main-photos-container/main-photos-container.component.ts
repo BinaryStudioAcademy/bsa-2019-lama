@@ -65,4 +65,10 @@ export class MainPhotosContainerComponent implements OnInit {
     componentRef.instance.photo = eventArgs;
     
   }
+
+  public addToList(photos) {
+    photos.forEach(element => {
+      this.photos.push({imageUrl: element, author: ""});
+    });
+  }
 }

@@ -17,9 +17,8 @@ namespace Lama.BusinessLogic.Services
             {
                 var url = "https://localhost:44367/";
                 client.BaseAddress = new Uri(url);
-                var new_url = url + "api/photos";
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                response = await client.PostAsJsonAsync($"{new_url}", photos);
+                response = await client.PostAsJsonAsync($"{url}api/photos", photos);
             }
             
             return response;
