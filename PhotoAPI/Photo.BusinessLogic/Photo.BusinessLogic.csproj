@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Photo.DataAccess\Photo.DataAccess.csproj" />
+    <ProjectReference Include="..\Photo.Domain\Photo.Domain.csproj" />
   </ItemGroup>
 
 </Project>

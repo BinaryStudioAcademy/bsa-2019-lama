@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
+import { MainPhotosContainerComponent } from '../main/main-photos-container/main-photos-container.component';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -10,32 +12,34 @@ import { FileService } from 'src/app/services/file.service';
 export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
-  photos_base64: string[] = [];
-  @Output() onPhotosUploaded = new EventEmitter<string[]>();
+  photos: Photo[] = [];
+  desc: string[] = [];
 
   constructor(private fileService: FileService) { }
 
   ngOnInit() {
   }
   saveChanges() {
-    this.fileService.sendPhoto(this.photos_base64);
-    this.onPhotosUploaded.emit(this.photos_base64);
+    for (let i=0; i<this.photos.length; i++) {
+      this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i]}
+    }
+    this.fileService.sendPhoto(this.photos);
     this.toggleModal();
   }
 
   async onFileSelected(event) {
     if (event.target.files.length > 0) {
-      let photos = event.target.files;
-      this.photos_base64 = []
-      for (let i=0; i<photos.length; i++) {
-         this.photos_base64.push(await this.toBase64(photos[i]))
+      let files = event.target.files;
+      this.photos = []
+      for (let i=0; i<files.length; i++) {
+         this.photos.push({imageUrl: await this.toBase64(files[i])})
       };
     }
   }
   async onFileDropped(files) {
-      this.photos_base64 = []
+      this.photos = []
       for (let i=0; i<files.length; i++) {
-        this.photos_base64.push(await this.toBase64(files[i]))
+        this.photos.push({imageUrl: await this.toBase64(files[i])})
      };
   }
 

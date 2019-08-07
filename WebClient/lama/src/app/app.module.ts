@@ -34,6 +34,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
 import { HttpClientModule} from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
 
 
 
@@ -69,7 +71,8 @@ import { HttpClientModule} from '@angular/common/http';
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   exports: [
     MatButtonModule,

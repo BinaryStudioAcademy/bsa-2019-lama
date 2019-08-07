@@ -7,10 +7,10 @@
         </header>
         <section class="modal-card-body">
             <figure id="modal-image-container"class="image" fileDrop (fileDropped)="onFileDropped($event)">
-                <img *ngIf="photos_base64.length === 0" src="https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png">
-                <div *ngFor="let photoUrl of photos_base64">
-                    <img src="{{ photoUrl }}" id="uploaded-image">
-                    <textarea class="textarea" placeholder="Description"></textarea>
+                <img *ngIf="photos.length === 0" src="https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png">
+                <div *ngFor="let photo of photos; let i = index">
+                    <img src="{{ photo.imageUrl }}" id="uploaded-image">
+                    <textarea class="textarea" placeholder="Description" id="{{ i }}" [(ngModel)]="desc[i]"></textarea>
                 </div>
             </figure>
             <div class="file">

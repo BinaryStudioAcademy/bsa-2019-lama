@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Photo.BusinessLogic.Services;
+using Photo.Domain.BlobModels;
 
 namespace Photo.Controllers
 {
@@ -19,21 +20,22 @@ namespace Photo.Controllers
         }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public IEnumerable<PhotoDocument> Get()
         {
-            return new string[] { "photo1", "photo2" };
+            return _service.LoadPhotos();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "photo";
-        }
+
+        //// GET api/values/5
+        //[HttpGet("{id}")]
+        //public ActionResult<string> Get(int id)
+        //{
+        //    return "photo";
+        //}
 
         // POST api/values
         [HttpPost]
-        public async Task Post([FromBody] string[] values)
+        public async Task Post([FromBody] PhotoReceived[] values)
         {
             await _service.SaveToBlobStorage(values);
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Lama.BusinessLogic.Services;
+using Lama.Domain.BlobModels;
 
 namespace Lama.Controllers
 {
@@ -21,9 +22,14 @@ namespace Lama.Controllers
 
         }
         [HttpPost]
-        public async Task ReceivePhoto([FromBody] string[] photos)
+        public async Task ReceivePhoto([FromBody] PhotoReceived[] photos)
         {
             var response = await _service.SendPhotoToApi(photos);
+        }
+        [HttpGet]
+        public IEnumerable<PhotoDocument> LoadPhotos()
+        {
+            return _service.LoadPhotosFromApi();
         }
     }
 }
