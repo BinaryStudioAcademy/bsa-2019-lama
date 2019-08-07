@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, OnChanges, DoCheck } from '@angular/core';
 
 import { Photo } from 'src/app/models';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
@@ -23,7 +23,7 @@ export class MainPhotosContainerComponent implements OnInit {
   private resolver: ComponentFactoryResolver;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver, private service: FileService ) 
+  constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef)
   {
     this.resolver = resolver;
   }
@@ -40,9 +40,15 @@ export class MainPhotosContainerComponent implements OnInit {
     this.entry_.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry_.createComponent(factory);
-    componentRef.instance.onFileDropped(event)
+    componentRef.instance.onFileDropped(event);
+    componentRef.instance.addToList.subscribe(data => {
+      data.forEach(element => {
+        this.photos.push({blobId: element.imageUrl});
+      }) 
+    });
     componentRef.instance.toggleModal();
   }
+
 
 
   // methods
@@ -54,9 +60,8 @@ export class MainPhotosContainerComponent implements OnInit {
     componentRef.instance.photo = eventArgs;
   }
 
-  public addToList(photos) {
     // photos.forEach(element => {
     //   this.photos.push({imageUrl: element, author: ""});
     // });
-  }
+  
 }

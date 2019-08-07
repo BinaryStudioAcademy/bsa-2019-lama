@@ -3,6 +3,7 @@ import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
 import { MainPhotosContainerComponent } from '../../main/main-photos-container/main-photos-container.component';
 import { Photo } from 'src/app/models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -13,19 +14,23 @@ export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
   photos: Photo[] = [];
-  desc: string[] = [];
+  desc: string[] = []; 
 
-  @Output() outputEvent : EventEmitter<Photo[]> = new EventEmitter<Photo[]>(); 
+  _ref: ComponentRef<any>;
+  _idx: number;
+  addToList: Subject<Photo[]> = new Subject();
+
 
   constructor(private fileService: FileService) { }
 
   ngOnInit() {
   }
+
   saveChanges() {
     for (let i=0; i<this.photos.length; i++) {
       this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i]}
     }
-    this.outputEvent.emit(this.photos);
+    this.addToList.next(this.photos);
     this.fileService.sendPhoto(this.photos);
     this.toggleModal();
   }
