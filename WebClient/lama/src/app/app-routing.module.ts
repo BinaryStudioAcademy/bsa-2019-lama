@@ -4,6 +4,7 @@ import { MainLandingPageComponent } from './components/landing/main-landing-page
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
+import { AuthGuard } from './guards/auth.guard';
 
 
 // определение дочерних маршрутов
@@ -14,8 +15,9 @@ const itemRoutes: Routes = [
 
 const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
-  {path: 'login', component: MainPageComponent, children: itemRoutes}
+  {path: 'login', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

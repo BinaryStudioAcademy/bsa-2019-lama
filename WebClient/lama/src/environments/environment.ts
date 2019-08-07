@@ -3,6 +3,26 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  apiUrl:"https://localhost:5001/",
+  firebase: {
+    apiKey: "AIzaSyBORG9q0PWmWU7IZdO8sp1uv-unJSFdps0",
+    authDomain: "lama-auth.firebaseapp.com",
+    databaseURL: "https://lama-auth.firebaseio.com",
+    projectId: "lama-auth",
+    storageBucket: "",
+    messagingSenderId: "363275556201",
+    appId: "1:363275556201:web:52ab2e1fd986b9ca"
+  },
+
+  photoEditing:
+  {
+    crop:
+    {
+      cropMinWidth: 256,
+      cropMinHeight: 256
+    }
+  },
+
   production: false
 };
 

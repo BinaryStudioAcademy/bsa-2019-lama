@@ -3,13 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
-import {
-  MatButtonModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatCardModule
-} from '@angular/material';
+
 import { LandingLoginComponent } from './components/landing/landing-login/landing-login.component';
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
@@ -29,6 +23,15 @@ import { MainAlbumComponent } from './components/main/main-album/main-album.comp
 import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
 import { ChooseStoragePhotosComponent } from './components/choose-storage-photos/choose-storage-photos.component';
 import { ChoosePhotoComponent } from './components/choose-photo/choose-photo.component';
+import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './services/token.interceptor';
+
+import { SharedModule, ModalModule } from 'src/app/components';
 
 
 @NgModule({
@@ -52,25 +55,24 @@ import { ChoosePhotoComponent } from './components/choose-photo/choose-photo.com
     MainAlbumComponent,
     CreateAlbumModalComponent,
     ChooseStoragePhotosComponent,
-    ChoosePhotoComponent
+    ChoosePhotoComponent,
+    AuthModalComponent,
   ],
   imports: [
+    SharedModule,
     AppRoutingModule,
     BrowserModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
+    AngularFireAuthModule,
+    ModalModule
   ],
-  exports: [
-    MatButtonModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule
-  ],
-  providers: [],
+
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+  useClass: TokenInterceptor,
+  multi: true
+  }],
   bootstrap: [AppComponent],
   entryComponents:
   [
