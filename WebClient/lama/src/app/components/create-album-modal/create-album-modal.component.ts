@@ -76,6 +76,10 @@ export class CreateAlbumModalComponent implements OnInit {
       this.loaded = true;
   }
 
+  CreateAlbum()
+  {
+    this.isShown = false;
+  }
   toggleModal()
   {
     this.isShown = false;
