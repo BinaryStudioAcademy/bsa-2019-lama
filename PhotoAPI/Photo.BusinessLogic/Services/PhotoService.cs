@@ -6,6 +6,7 @@ using Photo.DataAccess;
 using Photo.DataAccess.Blob;
 using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace Photo.BusinessLogic.Services
@@ -13,13 +14,14 @@ namespace Photo.BusinessLogic.Services
     public class PhotoService: IPhotoService
     {
         AppDbContext _db;
-        public PhotoService(AppDbContext context)
+        private PhotoBlobStore _store;
+        public PhotoService(AppDbContext context, IConfiguration configuration)
         {
             _db = context;
+            _store = new PhotoBlobStore(configuration.GetSection("Storage").Value);
         }
 
-        private PhotoBlobStore _store = new PhotoBlobStore();
-
+      
         public IEnumerable<PhotoDocument> LoadPhotos()
         {
             return _db.Photos;

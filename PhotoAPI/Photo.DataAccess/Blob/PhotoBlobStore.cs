@@ -13,15 +13,12 @@ namespace Photo.DataAccess.Blob
     public class PhotoBlobStore
     {
         string storageConnectionString;
-        public PhotoBlobStore(IConfiguration configuration)
-        {
-            storageConnectionString = configuration.GetSection("Storage").Value;
-        }
-        //AppConfiguration config = new AppConfiguration();
+      
         private CloudBlobContainer cloudBlobContainer;
 
-        public PhotoBlobStore()
+        public PhotoBlobStore(string configuration)
         {
+            storageConnectionString = configuration;
             CloudStorageAccount storageAccount;
             if (CloudStorageAccount.TryParse(storageConnectionString, out storageAccount))
             {

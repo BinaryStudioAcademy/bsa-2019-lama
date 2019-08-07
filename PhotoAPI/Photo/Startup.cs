@@ -33,11 +33,12 @@ namespace Photo
             var connection = Configuration.GetSection("SqlConnectionString").Value;
             services.AddDbContext<AppDbContext>
                 (options => options.UseSqlServer(connection));
+            services.AddSingleton(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<BusinessLogic.Services.PhotoService>();
             services.AddScoped<DataAccess.Blob.PhotoBlobStore>();
             services.AddQueueService();
-            services.AddSingleton(Configuration);
+   
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
