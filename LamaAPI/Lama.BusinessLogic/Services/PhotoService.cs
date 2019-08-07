@@ -36,7 +36,6 @@ namespace Lama.BusinessLogic.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 photos = JsonConvert.DeserializeObject <IEnumerable<PhotoDocument>>( client.GetAsync($"{url}api/photos").Result.Content.ReadAsStringAsync().Result);
             }
-
             return photos;
 
         }

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, ViewChild, ComponentRef } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
-import { MainPhotosContainerComponent } from '../main/main-photos-container/main-photos-container.component';
+import { MainPhotosContainerComponent } from '../../main/main-photos-container/main-photos-container.component';
 import { Photo } from 'src/app/models';
 
 @Component({
