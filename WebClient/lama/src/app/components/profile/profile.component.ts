@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class ProfileComponent implements OnInit {
 
   constructor() { }
-  photo_url: string;
+  photoUrl: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -17,4 +17,15 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
   }
 
+  readURL(event: Event): void {
+    const target = event.target as HTMLInputElement
+    if (target.files && target.files[0]) {
+        const file = target.files[0];
+
+        const reader = new FileReader();
+        reader.onload = e => this.photoUrl = reader.result as string;;
+
+        reader.readAsDataURL(file);
+    }
+  }
 }
