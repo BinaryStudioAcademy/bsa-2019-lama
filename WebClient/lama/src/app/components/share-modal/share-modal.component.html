@@ -1,0 +1,13 @@
+<div class="modal is-active">
+  <div class="modal-background" (click)="cancel()"></div>
+  <div class="modal-content">
+      <div class="control">
+          <input id="share-link" class="input" type="text" [(value)]="imageUrl" readonly>
+        </div>
+        <div class="control">
+          <a class="button is-primary" (click)="copyShareableLink()">
+            Copy
+          </a>
+        </div>
+  </div>
+</div>

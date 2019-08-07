@@ -31,8 +31,10 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
+import { ShareModalComponent } from './components/share-modal/share-modal.component';
 
 
 
@@ -55,7 +57,9 @@ import { TokenInterceptor } from './services/token.interceptor';
     PhotoModalComponent,
     PhotoUploadModalComponent,
     FileUploadDirective,
-    AuthModalComponent
+    AuthModalComponent,
+    SharedPhotoComponent,
+    ShareModalComponent
   ],
   imports: [
     AppRoutingModule,
@@ -67,7 +71,8 @@ import { TokenInterceptor } from './services/token.interceptor';
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    HttpClientModule
   ],
   exports: [
     MatButtonModule,

@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-
 import { Photo, ActionItem } from 'src/app/models';
 
 @Component({
@@ -7,12 +6,14 @@ import { Photo, ActionItem } from 'src/app/models';
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit 
+export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
   public photo: Photo;
   public isShown: boolean;
+  public hostName: string;
+  public showSharedModal: boolean = false;
 
   public shownMenuItems: ActionItem[];
 
@@ -21,7 +22,7 @@ export class PhotoModalComponent implements OnInit
   private editingMenuItem: ActionItem[];
 
   // constructors
-  constructor() 
+  constructor()
   {
     this.isShown = true;
 
@@ -30,13 +31,13 @@ export class PhotoModalComponent implements OnInit
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  ngOnInit() 
+  ngOnInit()
   {
   }
 
   private initializeMenuItem()
-  {    
-    this.defaultMenuItem = 
+  {
+    this.defaultMenuItem =
     [
       { title: "share",    icon: "share" },
       { title: "remove",   icon: "clear" },
@@ -57,7 +58,12 @@ export class PhotoModalComponent implements OnInit
     {
       this.shownMenuItems = this.editingMenuItem;
     }
+
+    if(clickedMenuItem == this.defaultMenuItem[0]){
+      this.openShareModal();
+    }
   }
+
   public mouseLeftOverlayHandler(): void
   {
     this.shownMenuItems = this.defaultMenuItem;
@@ -66,5 +72,9 @@ export class PhotoModalComponent implements OnInit
   protected closeModal(): void
   {
     this.isShown = false;
+  }
+
+  private openShareModal(){
+    this.showSharedModal = true;
   }
 }
