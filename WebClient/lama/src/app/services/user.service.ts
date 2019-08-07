@@ -15,7 +15,7 @@ export class UserService {
   ){  }
 
 
-  public getCurrentUser(){
+  public getCurrentUser(): Promise<any>{
     return new Promise<any>((resolve, reject) => {
       var user = firebase.auth().onAuthStateChanged(function(user){
         if (user) {
@@ -27,7 +27,7 @@ export class UserService {
     })
   }
 
-  public updateCurrentUser(value){
+  public updateCurrentUser(value): Promise<any>{
     return new Promise<any>((resolve, reject) => {
       var user = firebase.auth().currentUser;
       user.updateProfile({
