@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photo", "Photo\Photo.csproj", "{5DCF4D34-DBA7-4341-BF68-93CB8FD4E778}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photo", "Photo\Photo.csproj", "{5DCF4D34-DBA7-4341-BF68-93CB8FD4E778}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photo.BusinessLogic", "Photo.BusinessLogic\Photo.BusinessLogic.csproj", "{6062D9E0-2FC3-437D-8C28-555802509EE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photo.BusinessLogic", "Photo.BusinessLogic\Photo.BusinessLogic.csproj", "{6062D9E0-2FC3-437D-8C28-555802509EE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photo.Domain", "Photo.Domain\Photo.Domain.csproj", "{60DB57E8-F38E-4CA8-A21E-E384DC42FC93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photo.Domain", "Photo.Domain\Photo.Domain.csproj", "{60DB57E8-F38E-4CA8-A21E-E384DC42FC93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photo.DataAccess", "Photo.DataAccess\Photo.DataAccess.csproj", "{1C6BD330-16DE-42CE-AB77-A866EFAF0B1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Photo.DataAccess", "Photo.DataAccess\Photo.DataAccess.csproj", "{1C6BD330-16DE-42CE-AB77-A866EFAF0B1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "..\Shared\Services\Services.csproj", "{D8C40402-E222-45AD-8A6F-00FDEB06BEC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1C6BD330-16DE-42CE-AB77-A866EFAF0B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C6BD330-16DE-42CE-AB77-A866EFAF0B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C6BD330-16DE-42CE-AB77-A866EFAF0B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8C40402-E222-45AD-8A6F-00FDEB06BEC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C40402-E222-45AD-8A6F-00FDEB06BEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C40402-E222-45AD-8A6F-00FDEB06BEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C40402-E222-45AD-8A6F-00FDEB06BEC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

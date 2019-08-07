@@ -3,16 +3,16 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
-import {
-  MatButtonModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatCardModule
-} from '@angular/material';
+
 import { LandingLoginComponent } from './components/landing/landing-login/landing-login.component';
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
+
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule } from '@angular/material';
+
+import { SharedModule, ModalModule } from 'src/app/components';
 import { LandingBottomLoginComponent } from './components/landing/landing-bottom-login/landing-bottom-login.component';
 import { LandingFooterComponent } from './components/landing/landing-footer/landing-footer.component';
 import { MainPageComponent } from './components/main/main-page/main-page.component';
@@ -22,21 +22,13 @@ import { MainLeftActionItemComponent } from './components/main/main-left-action-
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
-import { RouterModule } from '@angular/router';
-import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
-import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
-import { FileUploadDirective } from './directives/file-upload.directive';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
-import { AngularFireModule } from '@angular/fire';
-import { environment } from 'src/environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+import { PhotoModalComponent } from './components/modal/photo-modal/photo-modal.component';
 import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
-import { ShareModalComponent } from './components/share-modal/share-modal.component';
-
-
 
 @NgModule({
   declarations: [
@@ -54,17 +46,13 @@ import { ShareModalComponent } from './components/share-modal/share-modal.compon
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    PhotoModalComponent,
-    PhotoUploadModalComponent,
-    FileUploadDirective,
     AuthModalComponent,
-    SharedPhotoComponent,
-    ShareModalComponent
+    SharedPhotoComponent
   ],
   imports: [
+    SharedModule,
     AppRoutingModule,
     BrowserModule,
-    MatButtonModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -79,18 +67,14 @@ import { ShareModalComponent } from './components/share-modal/share-modal.compon
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    ModalModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
-  useClass: TokenInterceptor,
-  multi: true
+    useClass: TokenInterceptor,
+    multi: true
   }],
-  bootstrap: [AppComponent],
-  entryComponents:
-  [
-    PhotoUploadModalComponent,
-    PhotoModalComponent
-  ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
