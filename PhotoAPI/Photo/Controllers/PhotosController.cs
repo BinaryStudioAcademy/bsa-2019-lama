@@ -20,9 +20,9 @@ namespace Photo.Controllers
         }
         // GET api/values
         [HttpGet]
-        public IEnumerable<PhotoDocument> Get()
+        public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return _service.LoadPhotos();
+            return await _service.GetAll();
         }
 
 
@@ -37,7 +37,7 @@ namespace Photo.Controllers
         [HttpPost]
         public async Task Post([FromBody] PhotoReceived[] values)
         {
-            await _service.SaveToBlobStorage(values);
+            await _service.CreateAll(values);
         }
 
         // PUT api/values/5

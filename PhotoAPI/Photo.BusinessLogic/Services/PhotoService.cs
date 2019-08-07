@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Photo.BusinessLogic.Services
 {
-    public class PhotoService: IPhotoService
+    public class PhotoService: IBaseService<PhotoDocument>
     {
         AppDbContext _db;
         private PhotoBlobStore _store;
@@ -22,12 +22,38 @@ namespace Photo.BusinessLogic.Services
         }
 
       
-        public IEnumerable<PhotoDocument> LoadPhotos()
+        public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
-            return _db.Photos;
+            return await _db.Photos.ToListAsync();
         }
 
-        public async Task SaveToBlobStorage(PhotoReceived[] photos)
+        public Task <PhotoDocument> Get(int blobId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<PhotoDocument>> FindAll()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task Update(PhotoDocument item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Create(PhotoDocument item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task CreateAll(PhotoReceived[] photos)
         {
             string[] base64 = new string[photos.Length];
             
@@ -41,8 +67,6 @@ namespace Photo.BusinessLogic.Services
                     Description = photos[i].Description
                 });
             }
-        
-           
         }
 
         public async Task SaveToElastic(PhotoReceived photo)
