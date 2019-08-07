@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Photo.DataAccess;
 using Photo.DataAccess.Blob;
 using Photo.Domain.BlobModels;
+using Photo.BusinessLogic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Photo.BusinessLogic.Services
 {
-    public class PhotoService
+    public class PhotoService: IPhotoService
     {
         AppDbContext _db;
         public PhotoService(AppDbContext context)
