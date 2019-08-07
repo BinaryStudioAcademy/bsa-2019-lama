@@ -35,8 +35,8 @@ export class CreateAlbumModalComponent implements OnInit {
     }
   }
 
-
-  protected closeModal(): void {
+  toggleModal()
+  {
     this.isShown = false;
   }
 }
