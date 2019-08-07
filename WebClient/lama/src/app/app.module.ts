@@ -17,7 +17,6 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
-import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
 import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
@@ -50,7 +49,6 @@ import { SharedModule, ModalModule } from 'src/app/components';
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    PhotoModalComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     CreateAlbumModalComponent,
@@ -76,9 +74,8 @@ import { SharedModule, ModalModule } from 'src/app/components';
   bootstrap: [AppComponent],
   entryComponents:
   [
-    PhotoModalComponent,
     CreateAlbumModalComponent,
-    ChooseStoragePhotosComponent 
+    ChooseStoragePhotosComponent
   ]
 })
 export class AppModule { }
