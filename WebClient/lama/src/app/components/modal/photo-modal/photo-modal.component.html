@@ -9,27 +9,48 @@
 
                     <!--photo-->
                     <div class="column is-9">
-                        <figure class="image main-photo">
-                            <!--image-->
-                            <img src="{{ photo.imageUrl }}" alt="Image">
-                            
-                            <!--overlay-->
-                            <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
+                            <div [ngSwitch]="clickedMenuItem?.title">
 
-                                <!--menu items-->
-                                <div class="columns has-text-centered" >
 
-                                    <div class="column" *ngFor="let item of shownMenuItems">
-                                        <div (click)="menuClickHandler(item)">                                            
-                                            <i class="material-icons is-block">{{ item.icon }}</i>
-                                            <span> {{ item.title }} </span>    
+                                <!--crop template-->
+                                <ng-template ngSwitchCase="crop">
+                                    <figure class="image main-photo">
+                                        <app-crop-image 
+                                            [imageToCrop]="photo.imageUrl"
+                                            (cancelClickedEvent)="goBackToImageView()"
+                                            (saveClickedEvent)="cropImageHandler($event)"
+                                        ></app-crop-image>   
+                                    </figure>                                 
+                                </ng-template>
+                                
+                                <!--default image template-->
+                                <ng-template ngSwitchDefault>
+                                    <figure class="image main-photo">
+                                        <!--image-->
+                                        <img src="{{ photo.imageUrl }}" alt="Image">
+                                        
+                                        <!--overlay-->
+                                        <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
+            
+                                            <!--menu items-->
+                                            <div class="columns has-text-centered" >
+            
+                                                <div class="column" *ngFor="let item of shownMenuItems">
+                                                    <div (click)="menuClickHandler(item)">                                            
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>    
+                                                    </div>
+                                                </div>
+            
+                                            </div>
                                         </div>
-                                    </div>
+            
+                                    </figure>
+                                </ng-template>
 
-                                </div>
                             </div>
 
-                        </figure>
+                        
                     </div>
 
                     <!--likes-->

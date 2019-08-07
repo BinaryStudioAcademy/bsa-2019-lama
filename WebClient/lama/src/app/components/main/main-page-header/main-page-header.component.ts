@@ -2,7 +2,7 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
-import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { element } from 'protractor';
 
 

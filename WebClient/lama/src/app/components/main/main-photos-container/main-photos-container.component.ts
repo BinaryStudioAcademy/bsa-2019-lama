@@ -1,8 +1,9 @@
 import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
 
 import { Photo } from 'src/app/models';
-import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
-import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
+
 
 @Component({
   selector: 'main-photos-container',
@@ -37,7 +38,7 @@ export class MainPhotosContainerComponent implements OnInit {
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://picsum.photos/id/42/600/700", author: "Donald Trump"},
     ]
     
   }
