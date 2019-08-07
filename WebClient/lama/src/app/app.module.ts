@@ -17,6 +17,11 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
+import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
+import { MainAlbumComponent } from './components/main/main-album/main-album.component';
+import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
+import { ChooseStoragePhotosComponent } from './components/choose-storage-photos/choose-storage-photos.component';
+import { ChoosePhotoComponent } from './components/choose-photo/choose-photo.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
@@ -44,6 +49,11 @@ import { SharedModule, ModalModule } from 'src/app/components';
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    MainAlbumsContainerComponent,
+    MainAlbumComponent,
+    CreateAlbumModalComponent,
+    ChooseStoragePhotosComponent,
+    ChoosePhotoComponent,
     AuthModalComponent,
   ],
   imports: [
@@ -55,11 +65,17 @@ import { SharedModule, ModalModule } from 'src/app/components';
     AngularFireAuthModule,
     ModalModule
   ],
+
   providers: [{
     provide: HTTP_INTERCEPTORS,
   useClass: TokenInterceptor,
   multi: true
   }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:
+  [
+    CreateAlbumModalComponent,
+    ChooseStoragePhotosComponent
+  ]
 })
 export class AppModule { }
