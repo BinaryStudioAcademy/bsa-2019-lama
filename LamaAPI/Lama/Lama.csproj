@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Services\Services.csproj" />
     <ProjectReference Include="..\Lama.DataAccess\Lama.DataAccess.csproj" />
-    <ProjectReference Include="..\QueueService\QueueService.csproj" />
   </ItemGroup>
 
 </Project>

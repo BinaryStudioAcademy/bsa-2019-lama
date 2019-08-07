@@ -1,0 +1,130 @@
+<div class="modal" [class.is-active]="isShown">
+    <div class="modal-background" (click)="closeModal()"></div>
+
+    <!--content-->
+    <div class="modal-content">
+        <div class="container">
+            <div class="notification">
+                <div class="columns">
+
+                    <!--photo-->
+                    <div class="column is-9">
+                            <div [ngSwitch]="clickedMenuItem?.title">
+
+
+                                <!--crop template-->
+                                <ng-template ngSwitchCase="crop">
+                                    <figure class="image main-photo">
+                                        <app-crop-image 
+                                            [imageToCrop]="photo.imageUrl"
+                                            (cancelClickedEvent)="goBackToImageView()"
+                                            (saveClickedEvent)="cropImageHandler($event)"
+                                        ></app-crop-image>   
+                                    </figure>                                 
+                                </ng-template>
+                                
+                                <!--default image template-->
+                                <ng-template ngSwitchDefault>
+                                    <figure class="image main-photo">
+                                        <!--image-->
+                                        <img src="{{ photo.imageUrl }}" alt="Image">
+                                        
+                                        <!--overlay-->
+                                        <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
+            
+                                            <!--menu items-->
+                                            <div class="columns has-text-centered" >
+            
+                                                <div class="column" *ngFor="let item of shownMenuItems">
+                                                    <div (click)="menuClickHandler(item)">                                            
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>    
+                                                    </div>
+                                                </div>
+            
+                                            </div>
+                                        </div>
+            
+                                    </figure>
+                                </ng-template>
+
+                            </div>
+
+                        
+                    </div>
+
+                    <!--likes-->
+                    <div class="column is-3">
+                        <p class="is-size-2">Reactions</p>
+
+                        <!--set like-->
+                        <span class="button is-success is-outlined is-fullwidth">Like</span>
+
+                        <!--reactions list-->
+                        <div class="reactions">
+
+                            <div *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]">
+                                <article class="media">
+                                    <figure class="media-left">
+                                        <p class="image is-32x32">
+                                            <img class="is-rounded" src="https://i.pravatar.cc/32?img=3" alt="User avarar">
+                                        </p>
+                                    </figure>
+                                    <div class="media-content">
+                                        <span class="field">Nickname</span>
+                                    </div>
+                                </article>
+                            </div>
+
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!--comments-->
+                <div class="comments">
+                    <p class="is-size-2">Comments</p>
+
+                    <!--add new comment-->
+                    <div class="add-comment">
+
+                        <textarea class="textarea " placeholder="e.g. Hello world" rows="3"></textarea>   
+                        <div class="buttons is-right">
+                            <button class="button is-primary">Send</button>
+                        </div>
+                    </div>
+
+                    <!--comment list-->
+                    <div *ngFor="let i of [0,1,2,3,4]">
+
+                        <article class="media">
+                            <figure class="media-left">
+                                <p class="image is-64x64">
+                                    <img src="https://i.pravatar.cc/128?img=5">
+                                </p>
+                            </figure>
+
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong>Jane Smith</strong>
+                                    <br>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="media-right">
+                                <button class="delete"></button>
+                            </div>
+                        </article>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
+</div>

@@ -5,14 +5,14 @@ using RabbitMQ.Client;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
 
-namespace Lama.Infrastructure
+namespace Photo.Infrastructure
 {
     public static class ServicesConfiguration
     {
         public static void AddQueueService(this IServiceCollection services)
-        {            
+        {
             services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>();
-            services.AddSingleton<IConnectionProvider, ConnectionProvider>();            
+            services.AddSingleton<IConnectionProvider, ConnectionProvider>();
         }
     }
 }

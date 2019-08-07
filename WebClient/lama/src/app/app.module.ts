@@ -3,13 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
-import {
-  MatButtonModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatCardModule
-} from '@angular/material';
+
 import { LandingLoginComponent } from './components/landing/landing-login/landing-login.component';
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
@@ -23,9 +17,6 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
-import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
-import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
-import { FileUploadDirective } from './directives/file-upload.directive';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
@@ -34,6 +25,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
 
+import { SharedModule, ModalModule } from 'src/app/components';
 
 
 @NgModule({
@@ -52,40 +44,22 @@ import { TokenInterceptor } from './services/token.interceptor';
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    PhotoModalComponent,
-    PhotoUploadModalComponent,
-    FileUploadDirective,
-    AuthModalComponent
+    AuthModalComponent,
   ],
   imports: [
+    SharedModule,
     AppRoutingModule,
     BrowserModule,
-    MatButtonModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule
-  ],
-  exports: [
-    MatButtonModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule
+    ModalModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
   useClass: TokenInterceptor,
   multi: true
   }],
-  bootstrap: [AppComponent],
-  entryComponents:
-  [
-    PhotoUploadModalComponent,
-    PhotoModalComponent
-  ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
