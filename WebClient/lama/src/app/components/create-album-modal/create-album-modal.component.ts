@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -85,6 +86,18 @@ export class CreateAlbumModalComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
     const componentRef = this.entry.createComponent(factory);
+    let instance = componentRef.instance as ChooseStoragePhotosComponent;
+    instance.onChange.subscribe((e)=>this.onChange(e));
+  }
+  public onChange(eventArgs: Photo)
+  {
+    if(this.images.filter(x => x === eventArgs.imageUrl)[0] === undefined)
+    {
+      this.images.push(eventArgs.imageUrl);
+    }
+    else{
+      this.images = this.images.filter(x => x !== eventArgs.imageUrl);
+    }
   }
   
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef }) 

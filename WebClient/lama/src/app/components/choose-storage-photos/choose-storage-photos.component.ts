@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo } from 'src/app/models';
 
 @Component({
@@ -16,6 +16,7 @@ export class ChooseStoragePhotosComponent implements OnInit {
    }
    
   @Input() photos: Photo[];
+  @Output() onChange = new EventEmitter<Photo>();
 
   ngOnInit() {
     this.photos = [{
@@ -27,11 +28,20 @@ export class ChooseStoragePhotosComponent implements OnInit {
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
       {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd_jKaKL5-m9re2poDCzjwCbqK-U62pW-5LDOGsv1Klgv_mh6nrA', author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"}
     ]
   }
 
   toggleModal(e)
   {
     this.IsShow = false;
+  }
+  public clickPerformed(eventArgs: Photo)
+  {
+    this.onChange.emit(eventArgs);
   }
 }

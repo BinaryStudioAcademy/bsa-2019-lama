@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'app-choose-photo',
@@ -7,9 +8,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ChoosePhotoComponent implements OnInit {
 
-  constructor() { }
+  @Input ('_photo') photo: Photo;
+  @Output() onClick = new EventEmitter<Photo>();
+
+  Choose:boolean;
+
+  constructor() {
+    this.Choose=false;
+   }
 
   ngOnInit() {
   }
 
+  public clickPerformed(event): void
+  {
+    if(this.Choose == false)
+    this.Choose=true;
+    else
+    this.Choose=false;
+    
+    this.onClick.emit(this.photo);
+
+  }
+  
 }
