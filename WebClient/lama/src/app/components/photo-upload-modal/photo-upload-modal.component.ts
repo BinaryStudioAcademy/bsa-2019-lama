@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, ViewChild, ComponentRef } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
 import { MainPhotosContainerComponent } from '../main/main-photos-container/main-photos-container.component';
@@ -15,6 +15,8 @@ export class PhotoUploadModalComponent implements OnInit {
   photos: Photo[] = [];
   desc: string[] = [];
 
+  @Output() outputEvent : EventEmitter<Photo[]> = new EventEmitter<Photo[]>(); 
+
   constructor(private fileService: FileService) { }
 
   ngOnInit() {
@@ -23,6 +25,7 @@ export class PhotoUploadModalComponent implements OnInit {
     for (let i=0; i<this.photos.length; i++) {
       this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i]}
     }
+    this.outputEvent.emit(this.photos);
     this.fileService.sendPhoto(this.photos);
     this.toggleModal();
   }

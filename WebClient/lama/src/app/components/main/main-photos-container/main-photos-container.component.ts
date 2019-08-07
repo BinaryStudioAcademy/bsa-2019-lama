@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 
 import { Photo } from 'src/app/models';
 import { PhotoModalComponent } from '../../photo-modal/photo-modal.component';
@@ -32,7 +32,6 @@ export class MainPhotosContainerComponent implements OnInit {
       this.photos = info as PhotoRaw[];
     });
   }
-  
 
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef }) 
   private entry_: ViewContainerRef;
@@ -53,7 +52,6 @@ export class MainPhotosContainerComponent implements OnInit {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
-    
   }
 
   public addToList(photos) {

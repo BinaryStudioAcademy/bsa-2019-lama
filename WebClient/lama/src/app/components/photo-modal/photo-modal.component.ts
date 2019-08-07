@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { ActionItem } from 'src/app/models/View/action-item';
 import {  Photo } from 'src/app/models/Photo/photo';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'app-photo-modal',
@@ -12,7 +13,7 @@ export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
-  public photo: Photo;
+  public photo: PhotoRaw;
   public isShown: boolean;
 
   public shownMenuItems: ActionItem[];
