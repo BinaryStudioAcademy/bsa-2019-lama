@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'app-choose-storage-photos',
@@ -13,8 +14,20 @@ export class ChooseStoragePhotosComponent implements OnInit {
   constructor() {
     this.IsShow = true;
    }
+   
+  @Input() photos: Photo[];
 
   ngOnInit() {
+    this.photos = [{
+      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe91xLeKqjSUdroQovkZHKyEwGZ3d8wmR6RR2GcmboXaDwxf1K",
+      author: "Barack Obama"},
+      {imageUrl:"https://kindlepreneur.com/wp-content/uploads/2017/01/Amazon-Super-URL.png", author: "Donald Trump"},
+      {imageUrl:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd_jKaKL5-m9re2poDCzjwCbqK-U62pW-5LDOGsv1Klgv_mh6nrA', author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
+    ]
   }
 
   toggleModal(e)
