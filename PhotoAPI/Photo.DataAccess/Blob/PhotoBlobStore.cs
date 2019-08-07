@@ -6,6 +6,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 
 namespace Photo.DataAccess.Blob
@@ -13,7 +16,7 @@ namespace Photo.DataAccess.Blob
     public class PhotoBlobStore
     {
         string storageConnectionString;
-      
+
         private CloudBlobContainer cloudBlobContainer;
 
         public PhotoBlobStore(string configuration)
@@ -34,16 +37,16 @@ namespace Photo.DataAccess.Blob
             }
         }
         // Check whether the connection string can be parsed.
-  
 
-        public async Task<string> LoadPhotoToBlob(string photo)
+
+        public async Task<string> LoadPhotoToBlob(byte[] blob)
         {
-            byte[] blob = System.Convert.FromBase64String(photo);
             CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
             cloudBlockBlob.Properties.ContentType = "image/jpg";
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return cloudBlockBlob.Uri.ToString();
         }
 
+        
     }
 }

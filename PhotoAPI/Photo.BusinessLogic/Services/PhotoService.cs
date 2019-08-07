@@ -60,33 +60,25 @@ namespace Photo.BusinessLogic.Services
             for (int i = 0; i < photos.Length; i++)
             {
                 base64[i] = photos[i].ImageUrl.Replace("data:image/jpeg;base64,", String.Empty).Replace("data:image/png;base64,", String.Empty).Replace("-", "+").Replace("_", "/");
-                var id = await _store.LoadPhotoToBlob(base64[i]);
-                await SaveToElastic(new PhotoReceived
+                byte[] blob = System.Convert.FromBase64String(base64[i]);
+                var id = await _store.LoadPhotoToBlob(blob);
+                var id_16 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 160));
+                var id_32 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 320));
+                await SaveToElastic(new PhotoDocument
                 {
-                    ImageUrl = id,
+                    BlobId = id,
+                    Blob16Id = id_16,
+                    Blob32Id = id_32,
+                    CategoryId = 0,
                     Description = photos[i].Description
                 });
             }
         }
 
-        public async Task SaveToElastic(PhotoReceived photo)
+        public async Task SaveToElastic(PhotoDocument photo)
         {
             // save to fake db now
-            var obj = new PhotoDocument
-            {
-                BlobId = photo.ImageUrl,
-                Blob16Id = "",
-                Blob32Id = "",
-                CategoryId = 0,
-                Description = photo.Description,
-                IsDeleted = false,
-                Location = "",
-                OriginalBlobId = "",
-                SharedLink = "",
-                UploadDate = DateTime.Now,
-                UserId = 0
-            };
-            await _db.Photos.AddAsync(obj);
+            await _db.Photos.AddAsync(photo);
             await _db.SaveChangesAsync();
         }
     }

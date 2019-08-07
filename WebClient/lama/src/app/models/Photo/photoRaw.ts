@@ -5,7 +5,7 @@ export interface PhotoRaw {
     blob32Id?: string,
     originalBlobId?: string,
     sharedLink?: string,
-    isDeleted?: string,
+    isDeleted?: boolean,
     uploadDate?: Date,
     description?: string,
     location?: string,
