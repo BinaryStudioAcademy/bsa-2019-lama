@@ -12,14 +12,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class PhotoService: IPhotoService
+    public class PhotoService: IBaseService<PhotoDocument>
     {
         private string url;
         public PhotoService(IConfiguration configuration)
         {
             url = configuration.GetSection("PhotoApiUrl").Value;
         }
-        public async Task<HttpResponseMessage> SendPhotoToApi(PhotoReceived[] photos)
+        public async Task<HttpResponseMessage> CreateAll(PhotoReceived[] photos)
         {
             HttpResponseMessage response;
             using (HttpClient client = new HttpClient())
@@ -32,19 +32,46 @@ namespace Lama.BusinessLogic.Services
             return response;
         }
 
-        public IEnumerable<PhotoDocument> LoadPhotosFromApi()
+        public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
             IEnumerable<PhotoDocument> photos;
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                photos = JsonConvert.DeserializeObject <IEnumerable<PhotoDocument>>( client.GetAsync($"{url}api/photos").Result.Content.ReadAsStringAsync().Result);
+                photos = JsonConvert.DeserializeObject <IEnumerable<PhotoDocument>>
+                    (await 
+                    (await client.GetAsync($"{url}api/photos"))
+                        .Content.ReadAsStringAsync());
             }
             return photos;
-
         }
 
-        
+        public Task Create(PhotoDocument item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<PhotoDocument>> FindAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PhotoDocument> Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(PhotoDocument item)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

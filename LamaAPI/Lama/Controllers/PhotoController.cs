@@ -24,12 +24,12 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task ReceivePhoto([FromBody] PhotoReceived[] photos)
         {
-            var response = await _service.SendPhotoToApi(photos);
+            var response = await _service.CreateAll(photos);
         }
         [HttpGet]
-        public IEnumerable<PhotoDocument> LoadPhotos()
+        public async Task<IEnumerable<PhotoDocument>> LoadPhotos()
         {
-            return _service.LoadPhotosFromApi();
+            return await _service.GetAll();
         }
     }
 }
