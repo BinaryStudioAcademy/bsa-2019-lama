@@ -1,31 +1,28 @@
 using Microsoft.AspNetCore.Builder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Lama.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Lama.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Lama
 {
     public class Startup
     {
+        private static string Connection;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Connection = Configuration.GetConnectionString("ConnectionLocal");
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
@@ -36,9 +33,12 @@ namespace Lama
             }));
             services.AddScoped<BusinessLogic.Services.PhotoService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            // RabbitMQ
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Connection));
+
+            services.AddScoped<DALInstanse>();
             services.AddQueueService();
-            
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,7 +51,7 @@ namespace Lama
                     options.SaveToken = true;
                     options.Authority = Configuration["FirebaseOptions:Authority"];
                     options.IncludeErrorDetails = true;
-                
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -61,7 +61,6 @@ namespace Lama
                         ValidateLifetime = true
                     };
                 });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +68,7 @@ namespace Lama
         {
             if (env.IsDevelopment())
             {
-                IdentityModelEventSource.ShowPII = true; 
+                IdentityModelEventSource.ShowPII = true;
                 app.UseDeveloperExceptionPage();
             }
             else

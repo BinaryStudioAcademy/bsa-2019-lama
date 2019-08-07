@@ -9,8 +9,9 @@ export class AuthService {
 
   token: string;
 
+
   constructor(public afAuth: AngularFireAuth) {
-    this.afAuth.idToken.subscribe(token => {this.token =  token})
+        this.afAuth.idToken.subscribe(token => {this.token =  token});
    }
 
    public loginWithFacebook(){
