@@ -1,9 +1,9 @@
-﻿using QueueService.Interfaces;
-using QueueService.Models;
+﻿using Services.Interfaces;
+using Services.Models;
 
 using RabbitMQ.Client;
 
-namespace QueueService.Implementation.RabbitMq
+namespace Services.Implementation.RabbitMq
 {
     public class Producer : IProducer
     {
@@ -32,6 +32,10 @@ namespace QueueService.Implementation.RabbitMq
         public IModel Channel => broker.Channel;
 
         // METHODS
+        public void Send(byte[] body)
+        {
+            Channel.BasicPublish(publicationAddress, null, body);
+        }
         public void Send(string message)
         {
             byte[] body = System.Text.Encoding.UTF8.GetBytes(message);
