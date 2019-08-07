@@ -10,11 +10,11 @@ import { Observable } from 'rxjs';
 export class SharingService {
 
   public blobStorageUrl: string = environment.storageUrl;
-  public routePrefix ='api/fakeblob';
+  public routePrefix ='api/photos';
 
   constructor(private httpClient: HttpClient) { }
 
-  
+
   public getSharableLink(): Observable<string> {
     return this.httpClient.get<string>(`${this.blobStorageUrl}/${this.routePrefix}`);
   }

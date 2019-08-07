@@ -15,6 +15,7 @@ export class ShareModalComponent implements OnInit {
   sharingUserData: SharingUserData = new SharingUserData();
   shareableLink: string = '';
   imageUrl: string;
+
   constructor(private sharingService: SharingService) {
     console.log("temporary measure at ShareModalComponent constructor");
 
@@ -24,8 +25,6 @@ export class ShareModalComponent implements OnInit {
 
   ngOnInit() {
     this.createShareableLink();
-
-
   }
 
   public cancel(){

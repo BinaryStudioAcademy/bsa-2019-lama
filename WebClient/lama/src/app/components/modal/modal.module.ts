@@ -3,11 +3,12 @@ import { NgModule } from '@angular/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
-import {ShareModalComponent} from './share-modal/share-modal.component';
+
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
 import { SharedModule } from '../shared.module';
 import { CropImageComponent } from './crop-image/crop-image.component';
-import {AuthModalComponent} from './auth-modal/auth-modal.component';
+import {ShareModalComponent} from './share-modal/share-modal.component';
+import { AuthModalComponent } from './auth-modal/auth-modal.component';
 
 
 @NgModule(
@@ -19,15 +20,15 @@ import {AuthModalComponent} from './auth-modal/auth-modal.component';
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, AuthModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent,  ShareModalComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, AuthModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent
   ],
   entryComponents:
   [
-    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, AuthModalComponent
-  ]
+    PhotoUploadModalComponent, PhotoModalComponent, AuthModalComponent, ShareModalComponent
+    ]
 })
 export class ModalModule { }

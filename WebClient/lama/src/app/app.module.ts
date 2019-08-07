@@ -27,6 +27,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
 import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
+import {AuthModalComponent} from './components/modal/auth-modal/auth-modal.component'
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { SharedPhotoComponent } from './components/shared-photo/shared-photo.com
     MainPhotosContainerComponent,
     MainPhotoComponent,
     SharedPhotoComponent,
+    AuthModalComponent
   ],
   imports: [
     SharedModule,

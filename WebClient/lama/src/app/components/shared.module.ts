@@ -2,22 +2,21 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
 import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule } from '@angular/material';
 
 import { FileUploadDirective } from '../directives';
-
 import { ImageService } from '../services';
+import { SharingService } from '../services/sharing.service';
 
 @NgModule(
 {
   declarations:
   [
-    FileUploadDirective,
+    FileUploadDirective
   ],
   providers:
   [
-    ImageService,
+    ImageService, SharingService
   ],
   imports:
   [
