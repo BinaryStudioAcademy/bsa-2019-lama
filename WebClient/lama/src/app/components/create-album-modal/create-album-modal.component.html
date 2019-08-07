@@ -1,5 +1,5 @@
 <div class="modal" [class.is-active]="isShown">
-    <div class="modal-background" (click)="closeModal()"></div>
+    <div class="modal-background" (click)="toggleModal()"></div>
 
     <!--content-->
     <div class="modal-content">
@@ -19,11 +19,25 @@
 
                 <div class="upload-file">
                     <h4 class="title is-4">Upload photo from device</h4>
-                    <input type='file' class="input is-primary" placeholder="Upload from pc" (change)="onSelectFile($event)" multiple>
+                    <label class="uploader" ondragover="return false;" [class.loaded]="loaded" [style.outlineColor]="dragging ? activeColor : baseColor" (dragenter)="handleDragEnter()" (dragleave)="handleDragLeave()" (drop)="handleDrop($event)">
+                    
+                    <i class="icon icon-upload glyphicon glyphicon-upload" 
+                        [style.color]="dragging 
+                            ? ((imageSrc.length > 0) ? overlayColor : activeColor)
+                            : ((imageSrc.length > 0) ? overlayColor : baseColor)"></i>
+                    
+                    <img 
+                        [src]="imageSrc" 
+                        (load)="handleImageLoad()" 
+                        [class.loaded]="imageLoaded"/>
+                    
+                    <input type="file" name="file" accept="image/*"
+                        (change)="handleInputChange($event)" multiple>
+                </label>
                 </div>
                 <div class="modal-card-foot foot">
                     <a class="button is-primary">Save Changes</a>
-                    <a class="button" (click)="closeModal()">Cancel</a>
+                    <a class="button" (click)="toggleModal()">Cancel</a>
                 </div>
             </div>
         </div>
