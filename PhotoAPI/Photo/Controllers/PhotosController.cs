@@ -1,55 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
-using Photo.BusinessLogic.Services;
+
+using Photo.BusinessLogic.Interfaces;
+
 using Photo.Domain.BlobModels;
 
 namespace Photo.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PhotosController : ControllerBase
     {
-        PhotoService _service;
-        public PhotosController(PhotoService service)
+        // FIELDS
+        IPhotoService photoService;
+
+        // CONSTRUCTORS
+        public PhotosController(IPhotoService photoService)
         {
-            _service = service;
+            this.photoService = photoService;
         }
-        // GET api/values
+
+        // ACTIONS
+        // GET api/photos
         [HttpGet]
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return await _service.GetAll();
+            return await photoService.Get();
         }
 
-
-        //// GET api/values/5
-        //[HttpGet("{id}")]
-        //public ActionResult<string> Get(int id)
-        //{
-        //    return "photo";
-        //}
+        // GET api/photos/5
+        [HttpGet("{id}")]
+        public Task<PhotoDocument> Get(int id)
+        {
+            return photoService.Get(id);
+        }
 
         // POST api/values
         [HttpPost]
         public async Task Post([FromBody] PhotoReceived[] values)
         {
-            await _service.CreateAll(values);
+            await this.photoService.Create(values);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT api/photos/5
+        [HttpPut]
+        public void Put([FromBody] PhotoDocument value)
         {
+            this.photoService.Update(value);
         }
 
-        // DELETE api/values/5
+        // DELETE api/photos/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            this.photoService.Delete(id);
         }
     }
 }

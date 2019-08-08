@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Photo.BusinessLogic.Services
 {
-    abstract class BaseService<T> : IBaseService<T> where T : class
+    public abstract class BaseService<T> : IBaseService<T> where T : class
     {
         public Task Create(T item)
         {
@@ -18,7 +18,7 @@ namespace Photo.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<T>> FindAll()
+        public Task<IEnumerable<T>> Get()
         {
             throw new NotImplementedException();
         }
