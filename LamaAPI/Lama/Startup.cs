@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Logging;
 using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Lama.BusinessLogic.Services;
+using Lama.Domain.DbModels;
 
 namespace Lama
 {
@@ -56,6 +58,8 @@ namespace Lama
                         ValidateLifetime = true
                     };
                 });
+
+            services.AddScoped<BaseService<User>, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

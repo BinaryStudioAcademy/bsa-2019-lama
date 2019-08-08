@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Lama.Domain.DbModels
@@ -20,7 +21,7 @@ namespace Lama.Domain.DbModels
             SharedPhotos = new HashSet<SharedPhoto>();
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lama.BusinessLogic.Services
 {
-    abstract class BaseService<T> : IBaseService<T> where T : class
+    public abstract class BaseService<T> : IBaseService<T> where T : class
     {
         public Task Create(T item)
         {
