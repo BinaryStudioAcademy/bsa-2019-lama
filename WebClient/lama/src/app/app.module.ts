@@ -19,9 +19,6 @@ import { MainPhotoComponent } from './components/main/main-photo/main-photo.comp
 import { RouterModule } from '@angular/router';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
-import { CreateAlbumModalComponent } from './components/create-album-modal/create-album-modal.component';
-import { ChooseStoragePhotosComponent } from './components/choose-storage-photos/choose-storage-photos.component';
-import { ChoosePhotoComponent } from './components/choose-photo/choose-photo.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
@@ -34,7 +31,7 @@ import { FormsModule } from '@angular/forms';
 
 
 import { SharedModule, ModalModule } from 'src/app/components';
-
+import { CreateAlbumModule} from './components/create-album-module/create-album.module'
 
 @NgModule({
   declarations: [
@@ -54,9 +51,6 @@ import { SharedModule, ModalModule } from 'src/app/components';
     MainPhotoComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
-    CreateAlbumModalComponent,
-    ChooseStoragePhotosComponent,
-    ChoosePhotoComponent,
     AuthModalComponent,
   ],
   imports: [
@@ -68,7 +62,8 @@ import { SharedModule, ModalModule } from 'src/app/components';
     AngularFireAuthModule,
     ModalModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    CreateAlbumModule
   ],
 
   providers: [{
@@ -79,8 +74,6 @@ import { SharedModule, ModalModule } from 'src/app/components';
   bootstrap: [AppComponent],
   entryComponents:
   [
-    CreateAlbumModalComponent,
-    ChooseStoragePhotosComponent
   ]
 })
 export class AppModule { }
