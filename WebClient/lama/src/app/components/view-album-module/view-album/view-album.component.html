@@ -9,7 +9,7 @@
     </div>
     <div class="photos">
         <div *ngFor="let item of album.photos">
-            <main-photo [_photo]="item" (onClick)="photoClicked($event)"></main-photo>
+            <app-view-album-photos [_photo]="item"></app-view-album-photos>
         </div>
     </div>
 </div>

@@ -26,13 +26,15 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
-import {ViewAlbumComponent} from './components/view-album/view-album.component';
 import { HttpClientModule} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 
 import { SharedModule, ModalModule } from 'src/app/components';
 import { CreateAlbumModule} from './components/create-album-module/create-album.module';
+
+import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
+import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,8 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     AuthModalComponent,
-    ViewAlbumComponent
+    ViewAlbumComponent,
+    ViewAlbumPhotosComponent
   ],
   imports: [
     SharedModule,
@@ -65,7 +68,7 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     ModalModule,
     HttpClientModule,
     FormsModule,
-    CreateAlbumModule
+    CreateAlbumModule,
   ],
 
   providers: [{
