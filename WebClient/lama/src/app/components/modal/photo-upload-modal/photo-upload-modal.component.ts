@@ -27,8 +27,9 @@ export class PhotoUploadModalComponent implements OnInit {
   }
 
   saveChanges() {
+    let id = localStorage.getItem('userId');
     for (let i=0; i<this.photos.length; i++) {
-      this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i]}
+      this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(id)}
     }
     this.addToList.next(this.photos);
     this.fileService.sendPhoto(this.photos);

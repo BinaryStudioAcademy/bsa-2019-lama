@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Logging;
 using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Lama.BusinessLogic.Services;
+using Lama.DataAccess.Repositories;
 
 namespace Lama
 {
@@ -35,8 +37,9 @@ namespace Lama
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Connection));
-
+            services.AddScoped<UserService>();
             services.AddScoped<DALInstanse>();
+            services.AddScoped<UserRepository>();
             services.AddQueueService();
 
             services.AddAuthentication(options =>

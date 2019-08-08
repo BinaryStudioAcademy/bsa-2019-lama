@@ -8,7 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lama.DataAccess.Repositories
 {
-    class UserRepository : IRepository<User>
+    //public class UserDTO
+    //{
+    //    public string Email {get;set;}
+    //    public string FirstName { get; set; }
+    //    public string LastName { get; set; }
+    //}
+    public class UserRepository : IRepository<User>
     {
         private readonly ApplicationDbContext _db;
 
@@ -21,6 +27,15 @@ namespace Lama.DataAccess.Repositories
         {
             await _db.Users.AddAsync(item);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<int> CreateWithFeedbackAsync(User item)
+        {
+            await _db.Users.AddAsync(item);
+            await _db.SaveChangesAsync();
+            var id = (await _db.Users.LastOrDefaultAsync()).Id;
+
+            return id;
         }
 
         public async Task<User> ReadAsync(int id)
@@ -45,6 +60,13 @@ namespace Lama.DataAccess.Repositories
         public async Task<List<User>> GetAllAsync()
         {
             return await _db.Users.ToListAsync();
+        }
+        // changed to syncronous method because throwing
+        //InvalidOperationException: The source IQueryable doesn't implement IAsyncEnumerable
+        // will be fixed in future
+        public List<User> Find(Func<User, bool> predicate)
+        {
+            return  _db.Users.Where(predicate).AsQueryable().ToList();
         }
 
         public async Task<List<User>> FindAsync(Func<User, bool> predicate)

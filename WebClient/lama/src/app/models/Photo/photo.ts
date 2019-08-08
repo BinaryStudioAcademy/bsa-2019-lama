@@ -1,6 +1,6 @@
 export interface Photo
 {
     imageUrl: string;
-    author?: string;
+    authorId?: number;
     description?: string;
 }
