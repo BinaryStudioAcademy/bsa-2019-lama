@@ -70,6 +70,7 @@ namespace Photo.BusinessLogic.Services
                     Blob64Id = id64,
                     Blob256Id = id256,
                     CategoryId = 0,
+                    UploadDate = DateTime.Now,
                     Description = photos[i].Description
                 });
             }
