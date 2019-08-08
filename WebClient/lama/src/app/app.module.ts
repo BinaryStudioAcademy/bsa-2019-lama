@@ -31,7 +31,6 @@ import { FormsModule } from '@angular/forms';
 
 import { SharedModule, ModalModule } from 'src/app/components';
 import { CreateAlbumModule} from './components/create-album-module/create-album.module'
-import { UiModule } from './components/ui/ui.module';
 
 @NgModule({
   declarations: [
@@ -60,7 +59,6 @@ import { UiModule } from './components/ui/ui.module';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    UiModule,
     ModalModule,
     HttpClientModule,
     FormsModule,
