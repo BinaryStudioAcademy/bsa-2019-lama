@@ -11,7 +11,7 @@ import { SharedPhoto } from '../models/Photo/sharedPhoto';
 })
 export class SharingService {
 
-  public blobStorageUrl: string = environment.storageUrl;
+  public blobStorageUrl: string = environment.lamaApiUrl;
   public routePrefix ='api/photos';
 
   constructor(private httpClient: HttpClient) { }
