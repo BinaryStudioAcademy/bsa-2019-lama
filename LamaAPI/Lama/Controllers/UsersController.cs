@@ -28,7 +28,7 @@ namespace Lama.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<User> Get(string id)
+        public async Task<User> Get(int id)
         {
             return await service.Get(id);
         }

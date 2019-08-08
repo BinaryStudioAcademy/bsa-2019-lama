@@ -18,7 +18,7 @@ namespace Lama.BusinessLogic.Services
             dataContext = dbContext;
         }
 
-        public async Task<User> Get(string id)
+        public async Task<User> Get(int id)
         {
             return await dataContext.Users.SingleAsync(user => user.Id == id);
         }
