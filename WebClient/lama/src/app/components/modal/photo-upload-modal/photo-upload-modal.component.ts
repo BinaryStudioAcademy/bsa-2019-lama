@@ -16,7 +16,7 @@ export class PhotoUploadModalComponent implements OnInit {
   isActive: boolean;
   photos: Photo[] = [];
   desc: string[] = []; 
-  showSpinner: boolean = true;
+  showSpinner: boolean = false;
 
   addToList: Subject<Photo[]> = new Subject();
 
@@ -46,11 +46,11 @@ export class PhotoUploadModalComponent implements OnInit {
     }
   }
   async onFileDropped(files) {
-      
+      this.showSpinner = true;
       this.photos = []
       for (let i=0; i<files.length; i++) {
-        let compressedFile: Promise<File> =  await imageCompression(files[i], this.compressionOptions);
-        compressedFile.then(() => this.showSpinner = false);
+        let compressedFile = await imageCompression(files[i], this.compressionOptions);
+        this.showSpinner = false;
         this.photos.push({imageUrl: await this.toBase64(compressedFile)})
      };
   }

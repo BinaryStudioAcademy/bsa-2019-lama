@@ -1,4 +1,4 @@
-<spinner *nfIf="showSpinner"></spinner>
+
 <div class="modal upload" id="upload-modal" [class.is-active]="isActive">
     <div class="modal-background" (click)="toggleModal()"></div>
     <div class="modal-card">
@@ -7,14 +7,15 @@
             <button (click)="toggleModal()" class="delete" aria-label="close"></button>
         </header>
         <section class="modal-card-body">
-            <figure id="modal-image-container"class="image" fileDrop (fileDropped)="onFileDropped($event)">
+            <spinner *ngIf="showSpinner"></spinner>
+            <figure *ngIf="!showSpinner" id="modal-image-container"class="image" fileDrop (fileDropped)="onFileDropped($event)">
                 <img *ngIf="photos.length === 0" src="https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png">
                 <div *ngFor="let photo of photos; let i = index">
                     <img src="{{ photo.imageUrl }}" id="uploaded-image">
                     <textarea class="textarea" placeholder="Description" id="{{ i }}" [(ngModel)]="desc[i]"></textarea>
                 </div>
             </figure>
-            <div class="file">
+            <div class="file" *ngIf="!showSpinner">
                 <label class="file-label">
                     <input (change)="onFileSelected($event)" class="file-input" type="file" accept="image/*">
                     <span class="file-cta">

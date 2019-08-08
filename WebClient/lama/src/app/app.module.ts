@@ -50,7 +50,7 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     MainPhotoComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
-    AuthModalComponent,
+    AuthModalComponent
   ],
   imports: [
     SharedModule,
@@ -62,7 +62,7 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     ModalModule,
     HttpClientModule,
     FormsModule,
-    CreateAlbumModule
+    CreateAlbumModule,
   ],
 
   providers: [{
