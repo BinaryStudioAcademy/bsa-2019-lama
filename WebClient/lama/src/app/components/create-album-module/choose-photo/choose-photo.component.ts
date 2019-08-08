@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo } from 'src/app/models';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'app-choose-photo',

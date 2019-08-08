@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Photo.Domain.BlobModels
+namespace Lama.Domain.BlobModels
 {
     public partial class PhotoDocument
     {
@@ -12,7 +12,7 @@ namespace Photo.Domain.BlobModels
         public string Blob256Id { get; set; }
         public string OriginalBlobId { get; set; }
         public string SharedLink { get; set; }
-        public bool IsDeleted { get; set; } 
+        public bool IsDeleted { get; set; }
         public DateTime UploadDate { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }

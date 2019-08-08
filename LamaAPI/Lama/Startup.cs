@@ -25,8 +25,13 @@ namespace Lama
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
-
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+            services.AddScoped<BusinessLogic.Services.PhotoService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Connection));
@@ -73,12 +78,7 @@ namespace Lama
             }
 
             app.UseHttpsRedirection();
-            app.UseCors(builder =>
-                builder.WithOrigins(Configuration["AllowedOrigin"])
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials());
-            app.UseAuthentication();
+            app.UseCors("MyPolicy");
 
             app.UseMvc();
         }

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 
 import { Photo, ActionItem } from 'src/app/models';
@@ -13,7 +15,7 @@ export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
-  public photo: Photo;
+  public photo: PhotoRaw;
   public isShown: boolean;
 
   public clickedMenuItem: ActionItem;
@@ -72,7 +74,7 @@ export class PhotoModalComponent implements OnInit
   public cropImageHandler(croppedImage: ImageCroppedEvent): void
   {
     // TODO: save in elastic
-    this.photo.imageUrl = croppedImage.base64;
+    this.photo.blobId = croppedImage.base64;
 
     this.goBackToImageView();
   }
