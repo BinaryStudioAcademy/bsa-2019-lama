@@ -8,16 +8,15 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
-using Microsoft.Extensions.Configuration;
 
 namespace Lama.BusinessLogic.Services
 {
     public class PhotoService: IBaseService<PhotoDocument>
     {
         private string url;
-        public PhotoService(IConfiguration configuration)
+        public PhotoService(string url)
         {
-            url = configuration.GetSection("PhotoApiUrl").Value;
+            this.url = url;
         }
         public async Task<HttpResponseMessage> CreateAll(PhotoReceived[] photos)
         {
