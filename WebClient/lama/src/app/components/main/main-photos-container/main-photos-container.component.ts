@@ -6,6 +6,7 @@ import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { FileService } from 'src/app/services/file.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { SpinnerComponent } from '../../ui/spinner/spinner.component';
 
 @Component({
   selector: 'main-photos-container',
@@ -17,6 +18,7 @@ export class MainPhotosContainerComponent implements OnInit {
   // properties
   // showUploadModal: boolean = false;
   @Input() photos: PhotoRaw[] = [];
+  showSpinner = true;
   
   // fields
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef }) 
@@ -31,6 +33,7 @@ export class MainPhotosContainerComponent implements OnInit {
   ngOnInit(){ 
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
+      this.showSpinner = false;
     });
   }
 

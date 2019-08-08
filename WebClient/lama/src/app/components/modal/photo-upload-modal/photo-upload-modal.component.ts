@@ -4,6 +4,8 @@ import { FileService } from 'src/app/services/file.service';
 import { MainPhotosContainerComponent } from '../../main/main-photos-container/main-photos-container.component';
 import { Photo } from 'src/app/models';
 import { Subject } from 'rxjs';
+import imageCompression from 'browser-image-compression';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -15,11 +17,9 @@ export class PhotoUploadModalComponent implements OnInit {
   isActive: boolean;
   photos: Photo[] = [];
   desc: string[] = []; 
+  showSpinner: boolean = false;
 
-  _ref: ComponentRef<any>;
-  _idx: number;
   addToList: Subject<Photo[]> = new Subject();
-
 
   constructor(private fileService: FileService) { }
 
@@ -38,16 +38,16 @@ export class PhotoUploadModalComponent implements OnInit {
   async onFileSelected(event) {
     if (event.target.files.length > 0) {
       let files = event.target.files;
-      this.photos = []
-      for (let i=0; i<files.length; i++) {
-         this.photos.push({imageUrl: await this.toBase64(files[i])})
-      };
+      await this.onFileDropped(files);
     }
   }
   async onFileDropped(files) {
+      this.showSpinner = true;
       this.photos = []
       for (let i=0; i<files.length; i++) {
-        this.photos.push({imageUrl: await this.toBase64(files[i])})
+        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        this.showSpinner = false;
+        this.photos.push({imageUrl: await this.toBase64(compressedFile)})
      };
   }
 

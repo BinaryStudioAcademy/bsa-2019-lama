@@ -29,10 +29,9 @@ import { TokenInterceptor } from './services/token.interceptor';
 import { HttpClientModule} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-
 import { SharedModule, ModalModule } from 'src/app/components';
-import { CreateAlbumModule} from './components/create-album-module/create-album.module';
-
+import { CreateAlbumModule} from './components/create-album-module/create-album.module'
+import { UiModule } from './components/ui/ui.module';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 
@@ -65,6 +64,7 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    UiModule,
     ModalModule,
     HttpClientModule,
     FormsModule,
