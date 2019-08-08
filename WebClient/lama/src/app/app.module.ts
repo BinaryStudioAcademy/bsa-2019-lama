@@ -32,8 +32,6 @@ import { HttpService } from './services/http.service';
 import { HttpClientModule} from '@angular/common/http';
 
 import { SharedModule, ModalModule } from 'src/app/components';
-import { CreateAlbumModule} from './components/create-album-module/create-album.module'
-import { UiModule } from './components/ui/ui.module';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 
@@ -53,10 +51,7 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
-    PhotoModalComponent,
-    PhotoUploadModalComponent,
-    FileUploadDirective,
-    ProfileComponent
+    ProfileComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     AuthModalComponent,
@@ -69,23 +64,11 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAuthModule,
+    AngularFireAuthModule
   ],
   providers: [
   HttpService,
   {
-    UiModule,
-    ModalModule,
-    HttpClientModule,
-    FormsModule,
-    CreateAlbumModule,
-  ],
-
-  providers: [{
-	HttpService,
-    HttpClientModule,
-    FormsModule,
-    CreateAlbumModule,
     provide: HTTP_INTERCEPTORS,
 	useClass: TokenInterceptor,
 	multi: true
