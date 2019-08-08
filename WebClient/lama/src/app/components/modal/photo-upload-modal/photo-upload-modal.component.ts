@@ -1,5 +1,9 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, ViewChild, ComponentRef } from '@angular/core';
 import { read } from 'fs';
+import { FileService } from 'src/app/services/file.service';
+import { MainPhotosContainerComponent } from '../../main/main-photos-container/main-photos-container.component';
+import { Photo } from 'src/app/models';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -9,36 +13,54 @@ import { read } from 'fs';
 export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
-  image: any;
-  photoUrl: string | ArrayBuffer;
-  // @Output()
-  // onClose = new EventEmitter();
+  photos: Photo[] = [];
+  desc: string[] = []; 
 
-  constructor() 
-    {
-      // this.isActive = true;
-    }
+  _ref: ComponentRef<any>;
+  _idx: number;
+  addToList: Subject<Photo[]> = new Subject();
+
+
+  constructor(private fileService: FileService) { }
 
   ngOnInit() {
-    this.photoUrl = "https://www.passiton.com/assets/your_photo_here-bd52bd115083f7b7844b90b3af7395c4.png";
   }
 
-  onFileSelected(event) {
+  saveChanges() {
+    for (let i=0; i<this.photos.length; i++) {
+      this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i]}
+    }
+    this.addToList.next(this.photos);
+    this.fileService.sendPhoto(this.photos);
+    this.toggleModal();
+  }
+
+  async onFileSelected(event) {
     if (event.target.files.length > 0) {
-      let photo = event.target.files[0];
-      this.image = photo;
-      const reader = new FileReader();
-      reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
-      reader.readAsDataURL(photo);
+      let files = event.target.files;
+      this.photos = []
+      for (let i=0; i<files.length; i++) {
+         this.photos.push({imageUrl: await this.toBase64(files[i])})
+      };
     }
   }
-  onFileDropped(event) {
-    let photo = event[0];
-    const reader = new FileReader();
-    this.image = photo;
-    reader.addEventListener('load', () => (this.photoUrl = reader.result as string));
-    reader.readAsDataURL(photo);
+  async onFileDropped(files) {
+      this.photos = []
+      for (let i=0; i<files.length; i++) {
+        this.photos.push({imageUrl: await this.toBase64(files[i])})
+     };
   }
+
+  public toBase64(file): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  }
+  
+    
 
   toggleModal() {
     this.isActive = !this.isActive; 

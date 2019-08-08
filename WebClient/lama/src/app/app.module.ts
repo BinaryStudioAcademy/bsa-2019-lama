@@ -8,8 +8,7 @@ import { LandingLoginComponent } from './components/landing/landing-login/landin
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
 
-import { AngularFireModule } from '@angular/fire';
-import { environment } from 'src/environments/environment';
+
 import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule } from '@angular/material';
 
 import { SharedModule, ModalModule } from 'src/app/components';
@@ -22,12 +21,27 @@ import { MainLeftActionItemComponent } from './components/main/main-left-action-
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
+import { RouterModule } from '@angular/router';
+
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
+
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+
 import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
 import {AuthModalComponent} from './components/modal/auth-modal/auth-modal.component'
+import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
+import { MainAlbumComponent } from './components/main/main-album/main-album.component';
+import { CreateAlbumModule } from './components/create-album-module/create-album.module';
+import { FormsModule } from '@angular/forms';
+
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -45,8 +59,12 @@ import {AuthModalComponent} from './components/modal/auth-modal/auth-modal.compo
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+
     SharedPhotoComponent,
-    AuthModalComponent
+    MainAlbumsContainerComponent,
+    MainAlbumComponent,
+    AuthModalComponent,
+
   ],
   imports: [
     SharedModule,
@@ -67,13 +85,20 @@ import {AuthModalComponent} from './components/modal/auth-modal/auth-modal.compo
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
-    ModalModule
+    ModalModule,
+    FormsModule,
+    CreateAlbumModule
+
   ],
+
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: TokenInterceptor,
     multi: true
   }],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:
+  [
+  ]
 })
 export class AppModule { }

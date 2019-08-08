@@ -1,6 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Photo, ActionItem } from 'src/app/models';
+
+
+
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { Photo, ActionItem } from 'src/app/models';
+
+
 
 @Component({
   selector: 'app-photo-modal',
@@ -11,7 +17,7 @@ export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
-  public photo: Photo;
+  public photo: PhotoRaw;
   public isShown: boolean;
   public hostName: string;
   public showSharedModal: boolean = false;
@@ -42,15 +48,15 @@ export class PhotoModalComponent implements OnInit
   {
     this.defaultMenuItem =
     [
-      { title: "share",    icon: "share" },
-      { title: "remove",   icon: "clear" },
-      { title: "download", icon: "cloud_download" },
-      { title: "edit",     icon: "edit" }
+      { title: "share",    icon: "share" , route: ''},
+      { title: "remove",   icon: "clear", route: ''},
+      { title: "download", icon: "cloud_download", route: '' },
+      { title: "edit",     icon: "edit", route: '' }
     ];
     this.editingMenuItem =
     [
-      { title: "crop",   icon: "crop" },
-      { title: "rotate", icon: "rotate_left" }
+      { title: "crop",   icon: "crop", route: '' },
+      { title: "rotate", icon: "rotate_left", route: '' }
     ];
   }
 
@@ -77,7 +83,7 @@ export class PhotoModalComponent implements OnInit
   public cropImageHandler(croppedImage: ImageCroppedEvent): void
   {
     // TODO: save in elastic
-    this.photo.imageUrl = croppedImage.base64;
+    this.photo.blobId = croppedImage.base64;
 
     this.goBackToImageView();
   }
