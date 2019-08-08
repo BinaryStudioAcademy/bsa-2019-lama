@@ -32,7 +32,7 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
-
+        this.saveCreadeatins(res.user);
         resolve(res);
       }, err => {
         console.log(err);
@@ -49,6 +49,7 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        this.saveCreadeatins(res.user);
         resolve(res);
       })
     });
@@ -60,6 +61,7 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        this.saveCreadeatins(res.user);
         resolve(res);
       }, err => {
         console.log(err);
