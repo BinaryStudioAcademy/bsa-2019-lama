@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'landing-login',
@@ -8,13 +10,17 @@ import { Component, OnInit } from '@angular/core';
 export class LandingLoginComponent implements OnInit {
 
   showAuthModal: boolean = false;
-  constructor() { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
   }
 
   public openAuthWindow(){
+    if (this.authService.isUserExisted) {
+      this.router.navigate(['/login']);
+    }
     this.showAuthModal = true;
+    
   }
 
 }

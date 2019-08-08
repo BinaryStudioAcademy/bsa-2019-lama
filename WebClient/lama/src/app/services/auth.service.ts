@@ -22,84 +22,52 @@ export class AuthService {
 
   constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService) {
         this.afAuth.idToken.subscribe(token => {this.token =  token});
+        this.userService.getCurrentUser().then(() => this.isUserExisted = true)
+        .catch(() => this.isUserExisted = false)
    }
 
    public loginWithFacebook(){
     return new Promise<any>((resolve, reject) => {
       let provider = new firebase.auth.FacebookAuthProvider();
-        if (this.isUserExisted) {
-          this.afAuth.auth
-          .signInWithPopup(provider)
-          .then(res => {
-            this.saveCreadeatins(res.user);
-            resolve(res);
-          }, err => {
-            console.log(err);
-            reject(err);
-          })
-        }
+      this.afAuth.auth
+      .signInWithPopup(provider)
+      .then(res => {
+
+        resolve(res);
+      }, err => {
+        console.log(err);
+        reject(err);
+      })
     });
    }
 
-   public loginWithGoogle() {
+   public loginWithGoogle(){
     return new Promise<any>((resolve, reject) => {
-      this.userService.getCurrentUser().then(() => this.isUserExisted = true)
-        .catch(() => this.isUserExisted = false).then(() => {
-          if (!this.isUserExisted) {
-            let provider = new firebase.auth.GoogleAuthProvider();
-            provider.addScope('profile');
-            provider.addScope('email');
-            this.afAuth.auth
-            .signInWithPopup(provider)
-            .then(res => {
-              this.saveCreadeatins(res.user);
-              resolve(res);
-            }, err => {
-              console.log(err);
-              reject(err);
-            })
-          }
-          resolve(true);
-        })
-        resolve(true)
+      let provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      this.afAuth.auth
+      .signInWithPopup(provider)
+      .then(res => {
+        resolve(res);
       })
-    }
-    
-  //     let provider = new firebase.auth.GoogleAuthProvider();
-  //     provider.addScope('profile');
-  //     provider.addScope('email');
-  //     if (!this.isUserExisted) {
-  //       this.afAuth.auth
-  //       .signInWithPopup(provider)
-  //       .then(res => {
-  //         this.saveCreadeatins(res.user);
-  //         resolve(res);
-  //       }, err => {
-  //         console.log(err);
-  //         reject(err);
-  //       })
-  //     }
-  //     resolve(true);
-  //   });
-  //  }
+    });
+   }
 
    public loginWithTwitter(){
     return new Promise<any>((resolve, reject) => {
       let provider = new firebase.auth.TwitterAuthProvider();
-      if (!this.isUserExisted) {
-        this.afAuth.auth
-        .signInWithPopup(provider)
-        .then(res => {
-          this.saveCreadeatins(res.user);
-          resolve(res);
-        }, err => {
-          console.log(err);
-          reject(err);
-        })
-      }
-      resolve(true);
+      this.afAuth.auth
+      .signInWithPopup(provider)
+      .then(res => {
+        resolve(res);
+      }, err => {
+        console.log(err);
+        reject(err);
+      })
     })
   }
+
 
   public doLogout(){
     return new Promise((resolve, reject) => {
