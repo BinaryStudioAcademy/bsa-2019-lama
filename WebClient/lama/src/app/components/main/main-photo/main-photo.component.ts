@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { Photo } from 'src/app/models';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'main-photo',
@@ -17,6 +18,7 @@ export class MainPhotoComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+
   }
 
   // methods

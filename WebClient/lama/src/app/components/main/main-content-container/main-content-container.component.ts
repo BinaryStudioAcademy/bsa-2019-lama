@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'main-content-container',

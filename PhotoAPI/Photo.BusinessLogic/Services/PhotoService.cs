@@ -62,8 +62,8 @@ namespace Photo.BusinessLogic.Services
                 base64[i] = photos[i].ImageUrl.Replace("data:image/jpeg;base64,", String.Empty).Replace("data:image/png;base64,", String.Empty).Replace("-", "+").Replace("_", "/");
                 byte[] blob = System.Convert.FromBase64String(base64[i]);
                 var id = await _store.LoadPhotoToBlob(blob);
-                var id_16 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 160));
-                var id_32 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 320));
+                var id_16 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 128));
+                var id_32 = await _store.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256));
                 await SaveToElastic(new PhotoDocument
                 {
                     BlobId = id,
