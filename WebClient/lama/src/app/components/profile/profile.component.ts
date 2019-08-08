@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/models/User/user';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { HttpService } from 'src/app/services/http.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-profile',
@@ -7,14 +12,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+  constructor(public authService: AuthService, 
+    private httpService: HttpService, 
+    private userService: UserService) {  }
+  
+  userForm: FormGroup;
+  user: User = new User();
   photoUrl: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  notifications: boolean;
+  testReceivedUser: User;
 
   ngOnInit() {
+    this.photoUrl = this.authService.afAuth.auth.currentUser.photoURL;
+	  this.user.id = this.authService.afAuth.auth.currentUser.uid;
+    this.httpService.getData(`users/${this.user.id}`).subscribe((data:User) => this.user = data);
+	
+	
+    this.userForm = new FormGroup({
+      'firstName': new FormControl(this.user.firstName),
+      'lastName': new FormControl(this.user.lastName),
+      'email': new FormControl(this.user.email)
+    });
   }
 
   readURL(event: Event): void {
@@ -23,9 +40,15 @@ export class ProfileComponent implements OnInit {
         const file = target.files[0];
 
         const reader = new FileReader();
-        reader.onload = e => this.photoUrl = reader.result as string;;
+        reader.onload = e => this.photoUrl = reader.result as string;
 
         reader.readAsDataURL(file);
+
+        this.userService.updateCurrentUser({photoURL: this.photoUrl})
     }
+  }
+
+  async saveUser() {
+	this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
   }
 }
