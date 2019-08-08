@@ -22,7 +22,10 @@ export const environment = {
       cropMinHeight: 256
     }
   },
-
+  compressionOptions: { 
+    maxSizeMB: 1,          
+    maxWidthOrHeight: 1920,
+  },
   production: false
 };
 

@@ -5,6 +5,7 @@ import { MainPhotosContainerComponent } from '../../main/main-photos-container/m
 import { Photo } from 'src/app/models';
 import { Subject } from 'rxjs';
 import imageCompression from 'browser-image-compression';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -19,11 +20,6 @@ export class PhotoUploadModalComponent implements OnInit {
   showSpinner: boolean = false;
 
   addToList: Subject<Photo[]> = new Subject();
-
-  compressionOptions = { 
-    maxSizeMB: 1,          
-    maxWidthOrHeight: 1920,
-  }
 
   constructor(private fileService: FileService) { }
 
@@ -49,7 +45,7 @@ export class PhotoUploadModalComponent implements OnInit {
       this.showSpinner = true;
       this.photos = []
       for (let i=0; i<files.length; i++) {
-        let compressedFile = await imageCompression(files[i], this.compressionOptions);
+        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
         this.showSpinner = false;
         this.photos.push({imageUrl: await this.toBase64(compressedFile)})
      };
