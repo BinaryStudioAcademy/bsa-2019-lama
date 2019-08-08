@@ -8,14 +8,12 @@ import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCar
 import { FileUploadDirective } from '../directives';
 
 import { ImageService } from '../services';
-import { ViewAlbumComponent } from './view-album/view-album.component';
 
 @NgModule(
 {
   declarations:
   [
     FileUploadDirective,
-    ViewAlbumComponent,
   ],
   providers:
   [

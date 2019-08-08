@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Album } from 'src/app/models/Album/album';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'app-view-album',
@@ -9,19 +11,19 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ViewAlbumComponent implements OnInit {
 
-  private name: number;
-  private imageUrl: string;
+
+  @Input() album: Album;
    
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
-  constructor(private route: ActivatedRoute) { 
 
-    this.routeSubscription = route.params.subscribe(params=>this.name=params['name']);
-    this.querySubscription = route.queryParams.subscribe(
-        (queryParam: any) => {
-            this.imageUrl = queryParam['imageUrl'];
-        }
-    );
+  constructor(private route: ActivatedRoute, private router: Router) 
+  { 
+    this.route.queryParams.subscribe(params => {
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.album = this.router.getCurrentNavigation().extras.state.album;
+      }
+    });
   }
 
   ngOnInit() {

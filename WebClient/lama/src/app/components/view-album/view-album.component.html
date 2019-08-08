@@ -1,3 +1,10 @@
-<p>view-album works!</p>
-<p>{{name}}</p>
-<img src={{imageUrl}} alt="">
+<div class="container">
+    <div class="title">
+        <h2 class="title is-2">{{album.name}}</h2>
+    </div>
+    <div class="photos">
+        <div *ngFor="let item of album.photos">
+            <main-photo [_photo]="item" (onClick)="photoClicked($event)"></main-photo>
+        </div>
+    </div>
+</div>

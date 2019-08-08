@@ -26,7 +26,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
-
+import {ViewAlbumComponent} from './components/view-album/view-album.component';
 import { SharedModule, ModalModule } from 'src/app/components';
 import { CreateAlbumModule} from './components/create-album-module/create-album.module'
 
@@ -49,6 +49,7 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     AuthModalComponent,
+    ViewAlbumComponent
   ],
   imports: [
     SharedModule,
