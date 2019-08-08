@@ -17,11 +17,11 @@ import { CropImageComponent } from './crop-image/crop-image.component';
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent,
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent,
+    PhotoModalComponent, PhotoUploadModalComponent
   ],
   entryComponents:
   [

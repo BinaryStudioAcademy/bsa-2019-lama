@@ -29,7 +29,6 @@ import { TokenInterceptor } from './services/token.interceptor';
 import { HttpClientModule} from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-
 import { SharedModule, ModalModule } from 'src/app/components';
 import { CreateAlbumModule} from './components/create-album-module/create-album.module'
 
