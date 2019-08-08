@@ -17,7 +17,7 @@ export class LandingLoginComponent implements OnInit {
 
   public openAuthWindow(){
     if (this.authService.isUserExisted) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/main']);
     }
     this.showAuthModal = true;
     
