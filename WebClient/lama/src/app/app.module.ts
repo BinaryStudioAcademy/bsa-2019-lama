@@ -34,6 +34,9 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpService } from './services/http.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -55,6 +58,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     PhotoUploadModalComponent,
     FileUploadDirective,
     AuthModalComponent,
+    ProfileComponent,
     ProfileComponent
   ],
   imports: [
@@ -67,7 +71,10 @@ import { ProfileComponent } from './components/profile/profile.component';
     MatMenuModule,
     MatToolbarModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    FormsModule,
+    ReactiveFormsModule,  
+    HttpClientModule
   ],
   exports: [
     MatButtonModule,
@@ -76,10 +83,12 @@ import { ProfileComponent } from './components/profile/profile.component';
     MatIconModule,
     MatCardModule
   ],
-  providers: [{
+  providers: [
+  HttpService,
+  {
     provide: HTTP_INTERCEPTORS,
-  useClass: TokenInterceptor,
-  multi: true
+	useClass: TokenInterceptor,
+	multi: true
   }],
   bootstrap: [AppComponent],
   entryComponents:
