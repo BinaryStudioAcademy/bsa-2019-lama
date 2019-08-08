@@ -7,6 +7,7 @@ import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-mod
 import { SharedModule } from '../shared.module';
 import { CropImageComponent } from './crop-image/crop-image.component';
 import { SpinnerComponent } from '../ui/spinner/spinner.component';
+import { UiModule } from '../ui/ui.module';
 
 
 @NgModule(
@@ -14,15 +15,16 @@ import { SpinnerComponent } from '../ui/spinner/spinner.component';
   imports:
   [
     SharedModule,
-    ImageCropperModule
+    ImageCropperModule,
+    UiModule
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, SpinnerComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, SpinnerComponent
+    PhotoModalComponent, PhotoUploadModalComponent
   ],
   entryComponents:
   [
