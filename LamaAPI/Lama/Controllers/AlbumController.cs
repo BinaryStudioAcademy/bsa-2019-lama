@@ -22,12 +22,12 @@ namespace Lama.Controllers
             _service = AlbumService;
         }
 
-        [HttpPost]
+        [HttpPost("CreateWithNewPhoto")]
         public async Task CreateAlbumWithNewPhotos([FromBody] NewAlbum album)
         {
             await _service.CreateAlbumWithNewPhotos(album);
         }
-        [HttpPost]
+        [HttpPost("CreateWithExistPhoto")]
         public async Task CreateAlbumWithExistPhotos([FromBody] NewAlbum album)
         {
             await _service.CreateAlbumWithNewPhotos(album);
