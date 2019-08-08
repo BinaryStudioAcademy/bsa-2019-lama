@@ -6,10 +6,11 @@ namespace Photo.Domain.BlobModels
 {
     public partial class PhotoDocument
     {
-        public long BlobId { get; set; }
-        public short Blob16Id { get; set; }
-        public int Blob32Id { get; set; }
-        public decimal OriginalBlobId { get; set; }
+        public int Id { get; set; }
+        public string BlobId { get; set; }
+        public string Blob64Id { get; set; }
+        public string Blob256Id { get; set; }
+        public string OriginalBlobId { get; set; }
         public string SharedLink { get; set; }
         public bool IsDeleted { get; set; } 
         public DateTime UploadDate { get; set; }

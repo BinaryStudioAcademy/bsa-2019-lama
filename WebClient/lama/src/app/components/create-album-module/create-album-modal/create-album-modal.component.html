@@ -1,0 +1,46 @@
+<div class="modal" [class.is-active]="isShown">
+    <div class="modal-background" (click)="toggleModal()"></div>
+
+    <!--content-->
+    <div class="modal-content size">
+        <div class="notification">
+            <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
+            <div class="flex-container">
+                <div class="head flex-item">
+                    <h4 class="title is-4">Enter Album name </h4>
+                </div>
+                <div class="field flex-item">
+                    <input class="input is-primary" type="text" placeholder="Album Name" required>
+                </div>
+                <div class="storage">
+                    <h4 class="title is-4">Upload photo from storage</h4>
+                    <a class="button is-primary" (click)="ChoosePhoto($event)">upload</a>
+                </div>
+
+                <div class="upload-file">
+                    <h4 class="title is-4">Upload photo from device</h4>
+                    <label class="uploader" ondragover="return false;" [class.loaded]="loaded" [style.outlineColor]="dragging ? activeColor : baseColor" (dragenter)="handleDragEnter()" (dragleave)="handleDragLeave()" (drop)="handleDrop($event)">
+                    
+                    <i class="icon icon-upload glyphicon glyphicon-upload" 
+                        [style.color]="dragging 
+                            ? ((imageSrc.length > 0) ? overlayColor : activeColor)
+                            : ((imageSrc.length > 0) ? overlayColor : baseColor)"></i>
+                    
+                    <img 
+                        [src]="imageSrc" 
+                        (load)="handleImageLoad()" 
+                        [class.loaded]="imageLoaded"/>
+                    
+                    <input type="file" name="file" accept="image/*"
+                        (change)="handleInputChange($event)" multiple>
+                </label>
+                </div>
+                <div class="modal-card-foot foot">
+                    <a class="button is-primary" (click)="CreateAlbum()">Save Changes</a>
+                    <a class="button" (click)="toggleModal()">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template #ChoosePhotos></template>
+</div>

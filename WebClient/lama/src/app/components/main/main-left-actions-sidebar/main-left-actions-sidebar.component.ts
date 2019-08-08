@@ -12,25 +12,30 @@ export class MainLeftActionsSidebarComponent implements OnInit {
   items: ActionItem[];
   ngOnInit() {
     this.items = [{
-      title: "Photos",
-      icon: "insert_photo"
+      title: 'Photos',
+      icon: 'insert_photo',
+      route: '/login',
     },
     {
-      title: "Albums",
-      icon: "photo_album"
+      title: 'Albums',
+      icon: 'photo_album',
+      route: '/login/albums'
     },
     {
-      title: "Sharing",
-      icon: "people"
+      title: 'Sharing',
+      icon: 'people',
+      route: ''
     },
     {
-      title: "Places",
-      icon: "place"
+      title: 'Places',
+      icon: 'place',
+      route: ''
     },
     {
-      title: "People links",
-      icon: "person"
-    }]
+      title: 'People links',
+      icon: 'person',
+      route: ''
+    }];
   }
 
 }

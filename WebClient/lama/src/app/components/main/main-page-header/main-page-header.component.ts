@@ -1,9 +1,12 @@
 
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
-import { PhotoUploadModalComponent } from '../../photo-upload-modal/photo-upload-modal.component';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver, ElementRef, Output, EventEmitter } from '@angular/core';
+import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { element } from 'protractor';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { SharedService } from 'src/app/services/shared.service';
+import { Photo } from 'src/app/models';
 
 
 @Component({
@@ -19,7 +22,7 @@ export class MainPageHeaderComponent implements OnInit {
   private resolver: ComponentFactoryResolver;
   
   // constructors
-  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver) 
+  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService) 
   {
     this.resolver = resolver;
   }
@@ -38,6 +41,14 @@ export class MainPageHeaderComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
+    componentRef.instance.addToList.subscribe(data => {
+      let photos = []
+      data.forEach(element => {
+        photos.push({blobId: element.imageUrl});
+      }) 
+      this.shared.photos = photos;
+
+    });
     componentRef.instance.toggleModal();    
   }
 }

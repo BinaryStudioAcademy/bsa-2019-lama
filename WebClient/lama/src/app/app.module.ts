@@ -3,13 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
-import {
-  MatButtonModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatCardModule
-} from '@angular/material';
+
 import { LandingLoginComponent } from './components/landing/landing-login/landing-login.component';
 import { LandingFeatureBlockComponent } from './components/landing/landing-feature-block/landing-feature-block.component';
 import { LandingFeaturesContainerComponent } from './components/landing/landing-features-container/landing-features-container.component';
@@ -23,9 +17,8 @@ import { MainContentContainerComponent } from './components/main/main-content-co
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { RouterModule } from '@angular/router';
-import { PhotoModalComponent } from './components/photo-modal/photo-modal.component';
-import { PhotoUploadModalComponent } from './components/photo-upload-modal/photo-upload-modal.component';
-import { FileUploadDirective } from './directives/file-upload.directive';
+import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
+import { MainAlbumComponent } from './components/main/main-album/main-album.component';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
@@ -36,7 +29,13 @@ import { TokenInterceptor } from './services/token.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule} from '@angular/common/http';
+
+import { SharedModule, ModalModule } from 'src/app/components';
+import { CreateAlbumModule} from './components/create-album-module/create-album.module'
+import { UiModule } from './components/ui/ui.module';
+import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
+import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 
 @NgModule({
   declarations: [
@@ -57,35 +56,36 @@ import { HttpClientModule } from '@angular/common/http';
     PhotoModalComponent,
     PhotoUploadModalComponent,
     FileUploadDirective,
-    AuthModalComponent,
-    ProfileComponent,
     ProfileComponent
+    MainAlbumsContainerComponent,
+    MainAlbumComponent,
+    AuthModalComponent,
+    ViewAlbumComponent,
+    ViewAlbumPhotosComponent
   ],
   imports: [
+    SharedModule,
     AppRoutingModule,
     BrowserModule,
-    MatButtonModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
-    FormsModule,
-    ReactiveFormsModule,  
-    HttpClientModule
-  ],
-  exports: [
-    MatButtonModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule
   ],
   providers: [
   HttpService,
   {
+    UiModule,
+    ModalModule,
+    HttpClientModule,
+    FormsModule,
+    CreateAlbumModule,
+  ],
+
+  providers: [{
+	HttpService,
+    HttpClientModule,
+    FormsModule,
+    CreateAlbumModule,
     provide: HTTP_INTERCEPTORS,
 	useClass: TokenInterceptor,
 	multi: true
@@ -93,8 +93,6 @@ import { HttpClientModule } from '@angular/common/http';
   bootstrap: [AppComponent],
   entryComponents:
   [
-    PhotoUploadModalComponent,
-    PhotoModalComponent
   ]
 })
 export class AppModule { }
