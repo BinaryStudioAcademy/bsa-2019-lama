@@ -9,6 +9,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
   import { from } from 'rxjs';
+import { LoggedInGuard } from './guards/logged-in.guard';
 
 
 // определение дочерних маршрутов
@@ -18,10 +19,10 @@ const itemRoutes: Routes = [
 ];
 
 const routes: Routes = [
-  {path: '', component: MainLandingPageComponent},
+  {path: '', component: MainLandingPageComponent, canActivate:[LoggedInGuard]},
   {path: 'main', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
-  {path: 'album', component: ViewAlbumComponent},
-  {path: 'profile', component: ProfileComponent},
+  {path: 'album', component: ViewAlbumComponent, canActivate: [AuthGuard]},
+  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   {path: 'shared/:userdata', component: SharedPageComponent}
 ];
 
