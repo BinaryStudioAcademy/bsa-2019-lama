@@ -26,14 +26,16 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+import { ProfileComponent } from './components/profile/profile.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpService } from './services/http.service';
 import { HttpClientModule} from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 
 import { SharedModule, ModalModule } from 'src/app/components';
-import { CreateAlbumModule} from './components/create-album-module/create-album.module'
-import { UiModule } from './components/ui/ui.module';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
+import { UiModule } from './components/ui/ui.module';
+import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,7 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    ProfileComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     AuthModalComponent,
@@ -64,17 +67,20 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireAuthModule,
     UiModule,
     ModalModule,
     HttpClientModule,
     FormsModule,
     CreateAlbumModule,
+	ReactiveFormsModule
   ],
-
-  providers: [{
+  providers: [
+  HttpService,
+  {
     provide: HTTP_INTERCEPTORS,
-  useClass: TokenInterceptor,
-  multi: true
+	useClass: TokenInterceptor,
+	multi: true
   }],
   bootstrap: [AppComponent],
   entryComponents:
