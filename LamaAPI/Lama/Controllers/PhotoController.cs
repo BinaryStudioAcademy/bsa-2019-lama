@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
+using Lama.Domain.DataTransferObjects.Photo;
 
 namespace Lama.Controllers
 {
@@ -25,6 +25,12 @@ namespace Lama.Controllers
         public async Task ReceivePhoto([FromBody] PhotoReceived[] photos)
         {
             var response = await _service.CreateAll(photos);
+        }
+
+        [HttpPut]
+        public Task<UpdatedPhotoResultDTO> UpdatePhoto([FromBody] UpdatePhotoDTO photoToUpdate)
+        {
+            return _service.UpdatePhoto(photoToUpdate);
         }
         [HttpGet]
         public async Task<IEnumerable<PhotoDocument>> LoadPhotos()
