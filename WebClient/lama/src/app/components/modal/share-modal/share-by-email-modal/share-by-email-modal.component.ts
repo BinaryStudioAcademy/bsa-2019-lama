@@ -16,49 +16,35 @@ export class ShareByEmailModalComponent implements OnInit {
   @Output() onClose = new EventEmitter();
 
 
-  sharedLink: string = '';
+  sharedEmail: string = '';
   imageUrl: string;
-  copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
+
+  incorrectEmailIconUrl: string = "http://img.clipartlook.com/red-cross-mark-clipart-red-x-mark-icon-256.png";
+  correctEmailIconUrl: string = "https://www.erwinchryslerdodgejeep.com/wp-content/plugins/pm-motors-plugin/modules/vehicle_save/images/check.png";
+  resultCheckCorrectUrl: string = this.incorrectEmailIconUrl;
 
   constructor() {
 
   }
 
   ngOnInit() {
-    this.createShareableLink();
   }
 
   public cancel(){
     this.onClose.emit(null);
   }
 
-  public createShareableLink(){
-    if(this.receivedPhoto.sharedLink !== null){
-      this.sharedLink = `${environment.clientApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
+  public AddEmail(){
+    if(this.sharedEmail)
+    {
+      this.resultCheckCorrectUrl = this.correctEmailIconUrl;
     }
-    else{
-      this.initImmutableFields();
-      let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
+    else
+    {
+      this.resultCheckCorrectUrl = this.incorrectEmailIconUrl;
     }
   }
-
-  public copyShareableLink(){
-    let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = this.sharedLink;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-      console.log(`${this.sharedLink} was copied`);
-      this.copyClicked = !this.copyClicked;
-    }
 
     public encodePhotoData(photo: SharedPhoto): string{
       let encoded = btoa(JSON.stringify(photo)).replace("/","___");

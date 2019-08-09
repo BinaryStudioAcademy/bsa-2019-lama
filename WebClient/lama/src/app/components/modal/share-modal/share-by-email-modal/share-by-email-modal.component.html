@@ -1,20 +1,35 @@
 <div class="modal is-active">
-    <div class="modal-background" (click)="cancel()"></div>
-        <div class="modal-card">
-            
-        <div class="modal-card-body">
-            <div class="columns">
-                <div class="column is-half">
-                <input id="share-link" class="input" type="text"  [(value)]="sharedLink" readonly>
-            </div>
-            <div class="column is-half">
-            <a class="button is-primary" (click)="copyShareableLink()">
-              Send
-            </a>
-          </div>
+  <div class="modal-background" (click)="cancel()"></div>
+  <div class="modal-card">    
+    <div class="modal-card-body">
+      <div class="columns is-vcentered">
+        <div class="column is-four-fifths">
+          <input id="share-link" class="input" type="text"  [(value)]="sharedEmail">
+        </div>
+		<div class="column">
+          <img [src]="resultCheckCorrectUrl" class="image is-24x24 is-vcentered">
+		</div>
+        <div class="column">
+          <a class="button is-primary" (click)="copyShareableLink()">
+            Add
+          </a>
+        </div>
+      </div>
+	  
+	  <div class="columns">
+		<div class="column is-half  has-text-centered">
+          <a class="button is-primary" (click)="copyShareableLink()">
+            Generate
+          </a>
+        </div>
+        <div class="column is-half has-text-centered">
+          <a class="button is-primary" (click)="copyShareableLink()">
+            Cancel
+          </a>
         </div>
       </div>
     </div>
+  </div>
 </div>
   
   
