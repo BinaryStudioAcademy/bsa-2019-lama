@@ -1,13 +1,9 @@
 ﻿using Nest;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Photo.Domain.BlobModels;
-
 using Photo.BusinessLogic.Interfaces;
-
 using Photo.DataAccess.Interfaces;
 
 namespace Photo.BusinessLogic.Services
@@ -80,7 +76,7 @@ namespace Photo.BusinessLogic.Services
                     BlobId = await storage.LoadPhotoToBlob(blob),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
-
+                    UserId = items[i].AuthorId,
                     Description = items[i].Description
                 });
             }

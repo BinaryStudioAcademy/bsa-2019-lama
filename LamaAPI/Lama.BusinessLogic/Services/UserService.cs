@@ -55,6 +55,7 @@ namespace Lama.BusinessLogic.Services
         public async Task Update(User user)
         {
             _context.Update<User>(user);
+            await _context.SaveAsync();
         }     
     }
 }

@@ -17,13 +17,18 @@ export class ProfileComponent implements OnInit {
     private userService: UserService) {  }
   
   userForm: FormGroup;
-  user: User = new User();
+  user: User = {
+    email: localStorage.getItem('email'),
+    firstName: localStorage.getItem('fistName'),
+    lastName: localStorage.getItem('lastName'),
+    avatarUrl: localStorage.getItem('photoUrl')
+  };
   photoUrl: string;
   testReceivedUser: User;
 
   ngOnInit() {
     this.photoUrl = this.authService.afAuth.auth.currentUser.photoURL;
-	  this.user.id = this.authService.afAuth.auth.currentUser.uid;
+    this.user.id = parseInt(localStorage.getItem('userId'));
     this.httpService.getData(`users/${this.user.id}`).subscribe((data:User) => this.user = data);
 	
 	

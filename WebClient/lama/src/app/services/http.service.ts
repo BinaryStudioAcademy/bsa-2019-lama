@@ -1,19 +1,18 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {environment } from '../../environments/environment';
   
 @Injectable()
 export class HttpService{
   	
     constructor(private http: HttpClient){ }
 	
-    url = 'https://localhost:5001/api';
-	
     getData(endPoint: string){
-        return this.http.get(`${this.url}/${endPoint}`);
+        return this.http.get(`${environment.lamaApiUrl}/api/${endPoint}`);
 		
     }
 
     putData(endPoint: string, data: any) {
-        return this.http.put(`${this.url}/${endPoint}`, data);
+        return this.http.put(`${environment.lamaApiUrl}/api/${endPoint}`, data);
     }
 }

@@ -91,7 +91,6 @@ export class AuthService {
   }
 
   public saveCreadeatins(user: firebase.User) {
-    localStorage.setItem('username', user.displayName);
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
     let names = user.displayName.split(' ');
@@ -105,6 +104,8 @@ export class AuthService {
       firstName = names[0];
       lastName = names[1];
     }
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
     this._user = {
       firstName: firstName,
       lastName: lastName,
@@ -121,4 +122,5 @@ export class AuthService {
       localStorage.setItem('userId', id.toString());
     })
   }
+  
 }

@@ -3,7 +3,6 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  apiUrl:"https://localhost:5001/",
   firebase: {
     apiKey: "AIzaSyBORG9q0PWmWU7IZdO8sp1uv-unJSFdps0",
     authDomain: "lama-auth.firebaseapp.com",
