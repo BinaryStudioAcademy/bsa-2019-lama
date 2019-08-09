@@ -22,9 +22,9 @@ namespace Lama.Controllers
         }
 
         [HttpGet]
-        public Task<string> Get()
+        public async Task Get()
         {
-            throw new NotImplementedException();
+           
         }
 
         [HttpGet("{id}")]
@@ -34,18 +34,18 @@ namespace Lama.Controllers
         }
 
         [HttpPost]
-        public void Post([FromBody] User value)
+        public async Task Post([FromBody] User value)
         {
         }
 
         [HttpPut]
-        public void Put([FromBody] User value)
+        public async Task Put([FromBody] User value)
         {
             service.Update(value);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
         }
     }
