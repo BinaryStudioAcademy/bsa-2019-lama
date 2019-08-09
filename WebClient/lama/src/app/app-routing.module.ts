@@ -5,6 +5,7 @@ import { MainPageComponent } from './components/main/main-page/main-page.compone
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ProfileComponent } from './components/profile/profile.component';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 
 
@@ -17,9 +18,9 @@ const itemRoutes: Routes = [
 const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
   {path: 'login', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
-  {path: 'album', component: ViewAlbumComponent}
+  {path: 'album', component: ViewAlbumComponent},
+  {path: 'profile', component: ProfileComponent}
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Lama.BusinessLogic.Interfaces
 {
-    interface IBaseService<T> where T : class
+    public interface IBaseService<T> where T : class
     {
         Task<IEnumerable<T>> FindAll();
         Task<T> Get(int id);

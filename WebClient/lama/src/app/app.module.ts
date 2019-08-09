@@ -67,13 +67,12 @@ import { CreateAlbumModule } from './components/create-album-module/create-album
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    AngularFireAuthModule,
     UiModule,
     ModalModule,
     HttpClientModule,
     FormsModule,
     CreateAlbumModule,
-	ReactiveFormsModule
+	  ReactiveFormsModule
   ],
   providers: [
   HttpService,
