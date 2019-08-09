@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-shared-page-header',
@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./shared-page-header.component.sass']
 })
 export class SharedPageHeaderComponent implements OnInit {
+
+  @Input() userName: string;
+  @Input() userPhoto: string;
 
   constructor() { }
 

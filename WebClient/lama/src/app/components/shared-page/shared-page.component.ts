@@ -25,6 +25,7 @@ export class SharedPageComponent implements OnInit {
 
    }
 
+
   ngOnInit() {
 
 
@@ -34,7 +35,6 @@ export class SharedPageComponent implements OnInit {
       this.userData = shareData;
     })
 
-    //Session is not saved properly yet, so method returns no user
     this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
 
     //No proper data in database yet, so we are not updating
