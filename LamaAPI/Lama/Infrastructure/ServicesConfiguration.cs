@@ -36,7 +36,9 @@ namespace Lama.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ReceiveService>();
             services.AddScoped<PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"]));
+            services.AddScoped<ReceiveService>();
             services.AddScoped<UserService>();
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)

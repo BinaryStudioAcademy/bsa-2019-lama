@@ -8,6 +8,7 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
+using Lama.DataAccess.Interfaces;
 
 namespace Lama.BusinessLogic.Services
 {
