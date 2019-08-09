@@ -17,7 +17,7 @@ const itemRoutes: Routes = [
 
 const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
-  {path: 'login', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
+  {path: 'main', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
   {path: 'album', component: ViewAlbumComponent},
   {path: 'profile', component: ProfileComponent}
 ];
