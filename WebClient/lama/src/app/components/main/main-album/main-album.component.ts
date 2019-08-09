@@ -12,6 +12,9 @@ export class MainAlbumComponent implements OnInit {
   @Input ('_album') album: Album;
   @Output() onClick = new EventEmitter<Album>();
 
+  isContent:boolean = false;
+  isMenu:boolean = true;
+
   constructor() { }
 
   ngOnInit() {
@@ -19,5 +22,15 @@ export class MainAlbumComponent implements OnInit {
 
   public clickPerformed(): void {
     this.onClick.emit(this.album);
+  }
+
+  public clickMenu() {
+     this.isContent = true;
+     this.isMenu = false;
+  }
+  public leave($event)
+  {
+    this.isContent = false;
+    this.isMenu = true;
   }
 }
