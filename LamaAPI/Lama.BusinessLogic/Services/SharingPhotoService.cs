@@ -14,26 +14,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class SharingPhotoService: IBaseService<Photo>
+    public class SharingPhotoService: BaseService<Photo>
     {
-        private ApplicationDbContext _context;
         private string _photoApiUrl;
 
         public SharingPhotoService(string photoApiUrl,ApplicationDbContext context)
+            :base(context)
         {
-            _context = context;
             _photoApiUrl = photoApiUrl;
-
         }
         
-        public Task<IEnumerable<Photo>> FindAll()
-        {
-            throw new System.NotImplementedException();
-        }
 
         public async Task<Photo> Get(int id)
         {
-            var sharedPhotoData = await _context.Photos
+            var sharedPhotoData = await Context.Photos
                 .Include(photo => photo.PhotoState)
                 .Include(photo => photo.Likes)
                 .ThenInclude(like => like.User)
@@ -63,19 +57,6 @@ namespace Lama.BusinessLogic.Services
             return response;
         }
 
-        public Task Create(Photo item)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public Task Update(Photo item)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task Delete(int id)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
