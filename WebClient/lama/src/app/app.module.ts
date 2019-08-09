@@ -34,6 +34,8 @@ import { HttpClientModule} from '@angular/common/http';
 import { SharedModule, ModalModule } from 'src/app/components';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
+import { UiModule } from './components/ui/ui.module';
+import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 
 @NgModule({
   declarations: [
@@ -64,7 +66,13 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    UiModule,
+    ModalModule,
+    HttpClientModule,
+    FormsModule,
+    CreateAlbumModule,
+	  ReactiveFormsModule
   ],
   providers: [
   HttpService,
