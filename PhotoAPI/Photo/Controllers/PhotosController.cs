@@ -38,9 +38,9 @@ namespace Photo.Controllers
 
         // GET api/photos/5
         [HttpGet("{id}")]
-        public async Task<PhotoDocument> Get(int id)
+        public Task<PhotoDocument> Get(int id)
         {
-            return await photoService.Get(id);
+            return photoService.Get(id);
         }
 
         // POST api/values
