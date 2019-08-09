@@ -1,9 +1,9 @@
 import { Photo } from '../Photo/photo';
 
-export interface User {
+export interface UserCreate {
     id?: number;
     firstName: string;
     lastName: string;
     email: string;
-    avatarUrl?: string;
+    avatar: Photo;
 }

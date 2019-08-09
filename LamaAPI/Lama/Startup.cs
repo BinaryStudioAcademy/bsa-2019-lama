@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Lama.BusinessLogic.Services;
 using Lama.DataAccess.Repositories;
-using Lama.Domain.DbModels;
+using Lama.Domain.DbModels; 
 using AutoMapper;
+using Lama.BusinessLogic.MappingProfiles;
 
 namespace Lama
 {
@@ -39,6 +40,10 @@ namespace Lama
             services.AddQueueService(Configuration);
             services.AddBusinessLogicServices(Configuration);
             services.AddSiteAuthentications(Configuration);
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<UserProfile>();
+            });
             
         }
 

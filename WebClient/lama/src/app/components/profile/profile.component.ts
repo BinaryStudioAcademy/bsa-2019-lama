@@ -4,6 +4,7 @@ import { User } from 'src/app/models/User/user';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,7 +15,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService, 
     private httpService: HttpService, 
-    private userService: UserService,) {  }
+    private userService: UserService) {  }
   
   userForm: FormGroup;
   user: any = {

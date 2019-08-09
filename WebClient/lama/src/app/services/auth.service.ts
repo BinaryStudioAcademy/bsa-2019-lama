@@ -6,6 +6,8 @@ import { User } from '../models/User/user';
 import {environment} from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { UserService } from './user.service';
+import { FileService } from './file.service';
+import { UserCreate } from '../models/User/userCreate';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,14 @@ import { UserService } from './user.service';
 export class AuthService {
 
   token: string;
-  _user: User;
+  _user: UserCreate;
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
   isUserExisted: boolean = true;
 
 
-  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService) {
+  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService,private fileService: FileService) {
         this.afAuth.idToken.subscribe(token => {this.token =  token});
         this.userService.getCurrentUser().then(() => this.isUserExisted = true)
         .catch(() => this.isUserExisted = false)
@@ -106,20 +108,22 @@ export class AuthService {
     }
     localStorage.setItem('firstName', firstName);
     localStorage.setItem('lastName', lastName);
-    this._user = {
-      firstName: firstName,
-      lastName: lastName,
-      email: user.email,
-      avatarUrl: user.photoURL
+      this._user = {
+        firstName: firstName,
+        lastName: lastName,
+        email: user.email,
+        avatar: { imageUrl: localStorage.getItem('photoUrl')}
+      }
+      this.registerUser(this._user);
     }
-    this.registerUser(this._user);
-  }
+  
 
 
-  public registerUser(user: User) {
+  public registerUser(user: UserCreate) {
     this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions).subscribe(id => {
       console.log(id);
       localStorage.setItem('userId', id.toString());
+      
     })
   }
   
