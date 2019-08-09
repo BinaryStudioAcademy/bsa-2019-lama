@@ -35,12 +35,12 @@ export class ShareModalComponent implements OnInit {
 
   public createShareableLink(){
     if(this.receivedPhoto.sharedLink !== null){
-      this.sharedLink = `${environment.lamaApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
+      this.sharedLink = `${environment.clientApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
     }
     else{
       this.initImmutableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.lamaApiUrl}/shared/${encodedPhotoData}`;
+      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
     }
   }
 
