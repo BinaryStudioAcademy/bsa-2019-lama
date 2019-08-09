@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Lama.BusinessLogic.Services;
-using Lama.Domain.DbModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Lama.Domain.DbModels;
+using Lama.BusinessLogic.Interfaces;
+using Lama.BusinessLogic.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Lama.Controllers
 {
@@ -21,7 +22,7 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task<int> RegisterUser([FromBody] User user)
         {
-            var isExists = _service.GetByEmail(user.Email);
+            var isExists = await _service.GetByEmail(user.Email);
 
             if (isExists != null)
             {
@@ -31,6 +32,30 @@ namespace Lama.Controllers
             {
                 return await _service.CreateWithFeedback(user);
             }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<User> Get(int id)
+        {
+            return await _service.Get(id);
+        }
+
+        [HttpPost("create")]
+        public void Post([FromBody] User value)
+        {
+            
+        }
+
+        [HttpPut]
+        public async Task Put([FromBody] User value)
+        {
+            await _service.Update(value);
+        }
+
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+
         }
     }
 }

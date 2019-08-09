@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Photo.Domain.BlobModels
+﻿namespace Photo.Domain.BlobModels
 {
-    public partial class PhotoDocument
+    public class PhotoDocument
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string BlobId { get; set; }
         public string Blob64Id { get; set; }
         public string Blob256Id { get; set; }
         public string OriginalBlobId { get; set; }
         public string SharedLink { get; set; }
-        public bool IsDeleted { get; set; } 
-        public DateTime UploadDate { get; set; }
+        public bool IsDeleted { get; set; }
+        public System.DateTime UploadDate { get; set; } = System.DateTime.Now;
         public string Description { get; set; }
         public string Location { get; set; }
         public int UserId { get; set; }

@@ -11,21 +11,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class UserService: IBaseService<User>
+    public class UserService : IBaseService<User>
     {
-        UserRepository _repo;
-        public UserService(UserRepository repo)
+        private readonly IUnitOfWork _context;
+        public UserService(IUnitOfWork context)
         {
-            _repo = repo;
+            _context = context;
         }
         public async Task Create(User item)
         {
-            await _repo.CreateAsync(item);
+            await _context.GetRepository<User>().InsertAsync(item);
+            await _context.SaveAsync();
         }
 
         public async Task<int> CreateWithFeedback(User item)
         {
-            return await _repo.CreateWithFeedbackAsync(item);
+            await _context.GetRepository<User>().InsertAsync(item);
+            await _context.SaveAsync();
+            return (await _context.GetRepository<User>().GetAsync(u => u.Email == item.Email)).FirstOrDefault().Id;
         }
 
 
@@ -41,17 +44,19 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<User> Get(int id)
         {
-            return await _repo.ReadAsync(id);
+            return (await _context.GetRepository<User>().GetAsync(u => u.Id == id)).FirstOrDefault();
         }
 
-        public User GetByEmail(string email)
+        public async Task<User> GetByEmail(string email)
         {
-            return _repo.Find(u => u.Email == email).FirstOrDefault();
+            return (await _context.GetRepository<User>().GetAsync(u => u.Email == email)).FirstOrDefault();
         }
 
-        public Task Update(User item)
+        public async Task Update(User user)
         {
-            throw new NotImplementedException();
-        }
+            _context.Update<User>(user);
+        }     
     }
 }
+
+
