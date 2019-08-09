@@ -15,21 +15,19 @@ namespace Photo.DataAccess.Blob
         // CONSTRUCTORS
         public PhotoBlobStore(string storageConnectionString)
         {
-            if (CloudStorageAccount.TryParse(storageConnectionString, out CloudStorageAccount storageAccount))
-            {
-                CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+            CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
                 
-                cloudBlobContainer = cloudBlobClient.GetContainerReference("images");
+            cloudBlobContainer = cloudBlobClient.GetContainerReference("images");
 
-                cloudBlobContainer.CreateIfNotExists();
+            cloudBlobContainer.CreateIfNotExists();
 
-                BlobContainerPermissions permissions = new BlobContainerPermissions
-                {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
-                };
+            BlobContainerPermissions permissions = new BlobContainerPermissions
+            {
+                PublicAccess = BlobContainerPublicAccessType.Blob
+            };
 
-                cloudBlobContainer.SetPermissionsAsync(permissions);
-            }
+            cloudBlobContainer.SetPermissionsAsync(permissions);            
         }
         
         // METHODS

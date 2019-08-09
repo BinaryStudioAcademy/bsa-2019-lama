@@ -12,6 +12,7 @@ using Services.Implementation.RabbitMq;
 using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.BusinessLogic.Services;
+using Lama.BusinessLogic.Interfaces;
 
 namespace Lama.Infrastructure
 {
@@ -34,6 +35,12 @@ namespace Lama.Infrastructure
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"]));
+            services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
+                                                    serviceProvider.GetService<ApplicationDbContext>()) );
+        }
+        public static void AddServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IAlbumService, AlbumService>();
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
         {

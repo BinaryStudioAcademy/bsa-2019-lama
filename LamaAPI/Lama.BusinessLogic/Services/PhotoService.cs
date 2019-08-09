@@ -47,7 +47,7 @@ namespace Lama.BusinessLogic.Services
             }
             return photos;
         }
-
+        
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
             using (HttpClient httpClient = new HttpClient())
@@ -63,13 +63,8 @@ namespace Lama.BusinessLogic.Services
                 return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
             }
         }
-
-        public Task Create(PhotoDocument item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Delete(int id)
+        
+        public Task<int> Create(PhotoDocument item)
         {
             throw new NotImplementedException();
         }
@@ -83,12 +78,14 @@ namespace Lama.BusinessLogic.Services
         {
             throw new NotImplementedException();
         }
-
-        public Task Update(PhotoDocument item)
+        public Task<PhotoDocument> Update(PhotoDocument item, object key)
         {
             throw new NotImplementedException();
         }
 
-
+        public Task<int> Delete(PhotoDocument id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

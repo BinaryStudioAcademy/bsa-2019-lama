@@ -1,0 +1,23 @@
+<nav class="navbar notification is-fixed-top">
+  <div class="navbar-start is-3">
+    <div class="image is-64x64">
+      <img src="../../../assets/alpaca-icon-19.jpg">
+    </div>
+  </div>
+  <div class="navbar-end">
+      <div class="image is-64x64">
+          <img [src]="userPhoto">
+        </div>
+
+      <div class="navbar-item">
+          <a class="text">
+            <strong>{{userName}}</strong>
+          </a>
+      </div>
+    <div class="navbar-item">
+        <a class="button is-primary">
+          <strong>Logout</strong>
+        </a>
+    </div>
+  </div>
+</nav>

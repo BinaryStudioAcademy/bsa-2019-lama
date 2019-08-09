@@ -40,7 +40,7 @@ export class AuthModalComponent implements OnInit {
   }
 
   private afterSignIn(){
-    this.router.navigate(['/login']);
+    this.router.navigate(['/main']);
   }
 
 }

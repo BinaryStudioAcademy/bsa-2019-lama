@@ -83,6 +83,18 @@ namespace Photo.BusinessLogic.Services
         {
             return elasticClient.CreateDocumentAsync(item);
         }
+        
+        public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
+        {
+            // TODO: rewrite using elastic
+            // TODO: check if this work
+            var updateLinkObject = new { SharedLink = sharedLink };
+
+            UpdateResponse<PhotoDocument> updateResponse 
+                = await elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(updateLinkObject));
+
+            return updateResponse.Get.Source;
+        }
 
         public async Task Create(PhotoReceived[] items)
         {

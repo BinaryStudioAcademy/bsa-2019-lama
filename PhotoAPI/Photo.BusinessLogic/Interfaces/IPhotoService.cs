@@ -9,5 +9,6 @@ namespace Photo.BusinessLogic.Interfaces
     {
         Task Create(PhotoReceived[] items);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
+        Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
     }
 }

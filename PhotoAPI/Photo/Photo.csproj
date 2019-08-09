@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Photo.BusinessLogic\Photo.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Photo.DataAccess\Photo.DataAccess.csproj" />
     <ProjectReference Include="..\Photo.Domain\Photo.Domain.csproj" />
     <ProjectReference Include="..\..\Shared\Services\Services.csproj" />
   </ItemGroup>

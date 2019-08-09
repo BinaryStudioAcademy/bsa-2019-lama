@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  apiUrl:"https://localhost:5001/",
+  apiUrl:"http://localhost:4200",
   firebase: {
     apiKey: "AIzaSyBORG9q0PWmWU7IZdO8sp1uv-unJSFdps0",
     authDomain: "lama-auth.firebaseapp.com",
@@ -13,7 +13,8 @@ export const environment = {
     messagingSenderId: "363275556201",
     appId: "1:363275556201:web:52ab2e1fd986b9ca"
   },
-  lamaApiUrl: "http://localhost:51286",
+  clientApiUrl:"http://localhost:4200",
+  lamaApiUrl: "http://localhost:5000",
   photoEditing:
   {
     crop:
@@ -22,8 +23,8 @@ export const environment = {
       cropMinHeight: 128
     }
   },
-  compressionOptions: { 
-    maxSizeMB: 1,          
+  compressionOptions: {
+    maxSizeMB: 1,
     maxWidthOrHeight: 1920,
   },
   production: false

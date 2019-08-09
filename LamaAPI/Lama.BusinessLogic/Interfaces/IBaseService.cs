@@ -8,9 +8,8 @@ namespace Lama.BusinessLogic.Interfaces
     public interface IBaseService<T> where T : class
     {
         Task<IEnumerable<T>> FindAll();
-        Task<T> Get(int id);
-        Task Create(T item);
-        Task Update(T item);
-        Task Delete(int id);
+        Task<int> Create(T item);
+        Task<T> Update(T item, object key);
+        Task<int> Delete(T id);
     }
 }
