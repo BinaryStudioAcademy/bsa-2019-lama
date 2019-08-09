@@ -24,9 +24,6 @@ namespace Lama.BusinessLogic.Services
 
         public async Task Update(User user)
         {
-
-
-
             var updateUser = Context.Users.Where(u => u.Id == user.Id).FirstOrDefault();
             updateUser.FirstName = user.FirstName;
             updateUser.LastName = user.LastName;
