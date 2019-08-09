@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.MappingProfiles
 {
-    public class UserProfile : Profile
+    class UserProfile : Profile
     {
         private HttpClient client = new HttpClient();
         public UserProfile()
@@ -18,18 +18,14 @@ namespace Lama.BusinessLogic.MappingProfiles
             CreateMap<User, UserDTO>()
                .ForMember(
                 dest => dest.Avatar,
-                opt => opt.MapFrom(src => GetPhoto(src.AvatarId))
+                opt => opt.MapFrom(src => GetPhoto(src.Photo.Id))
                 );
         }
 
-        public PhotoDocument GetPhoto(int? id)
+        public PhotoDocument GetPhoto(int id)
         {
-            if (id != null)
-            {
-                string str = $"http://localhost:51439/api/photos/";
-                return JsonConvert.DeserializeObject<PhotoDocument>(client.GetAsync($"{str}{id}").Result.Content.ReadAsStringAsync().Result);
-            }
-            return null;
+            string str = $"http://localhost:51439/api/photos/";
+            return JsonConvert.DeserializeObject<PhotoDocument>(client.GetAsync($"{str}{id}").Result.Content.ReadAsStringAsync().Result);
         }
     }
 }

@@ -8,8 +8,6 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
 using Lama.Domain.DTO;
-using AutoMapper;
-using Lama.Domain.BlobModels;
 
 namespace Lama.Controllers
 {
@@ -18,16 +16,12 @@ namespace Lama.Controllers
     public class UsersController : ControllerBase
     {
         UserService _service;
-        PhotoService _photoService;
-        IMapper _mapper;
-        public UsersController(UserService service, IMapper mapper, PhotoService photoService)
+        public UsersController(UserService service)
         {
             _service = service;
-            _mapper = mapper;
-            _photoService = photoService;
         }
         [HttpPost]
-        public async Task<int> RegisterUser([FromBody] UserCreate user)
+        public async Task<int> RegisterUser([FromBody] User user)
         {
             var isExists = await _service.GetByEmail(user.Email);
 
@@ -37,23 +31,14 @@ namespace Lama.Controllers
             }
             else
             {
-                var photo = new PhotoReceived[] { user.Avatar };
-                await _photoService.CreateAll(photo);
-                var photoId = (await _photoService.GetAll()).LastOrDefault().Id;
-                return await _service.CreateWithFeedback(new User {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    AvatarId = photoId
-                });
+                return await _service.CreateWithFeedback(user);
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<UserDTO> Get(int id)
+        public async Task<User> Get(int id)
         {
-            User user = await _service.Get(id);
-            return _mapper.Map<UserDTO>(user);
+            return await _service.Get(id);     
         }
 
         [HttpPost("create")]
