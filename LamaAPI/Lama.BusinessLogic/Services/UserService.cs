@@ -12,32 +12,32 @@ namespace Lama.BusinessLogic.Services
 {
     public class UserService: BaseService<User>
     {
-        private readonly ApplicationDbContext dataContext;
-
         public UserService(ApplicationDbContext dbContext)
+            :base(dbContext)
         {
-            dataContext = dbContext;
+
         }
 
         public async Task<User> Get(int id)
         {
-            return await dataContext.Users.SingleAsync(user => user.Id == id);
+            return await Context.Users.SingleAsync(user => user.Id == id);
         }
 
         public async Task Update(User user)
         {
-            var updateUser = dataContext.Users.FirstOrDefault(u => u.Id == user.Id);
+            var updateUser = Context.Users.FirstOrDefault(u => u.Id == user.Id);
 
             if (updateUser == null)
             {
                 throw new NotFoundException(nameof(User), user.Id);
             }
             
+
             updateUser.FirstName = user.FirstName;
             updateUser.LastName = user.LastName;
             updateUser.Email = user.Email;
 
-            await dataContext.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
     }
 }
