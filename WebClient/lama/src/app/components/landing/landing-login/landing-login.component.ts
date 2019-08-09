@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/services';
+import { AuthService, UserService } from 'src/app/services';
 import { Router } from '@angular/router';
+import {AngularFireAuth} from '@angular/fire/auth';
 
 @Component({
   selector: 'landing-login',
@@ -10,13 +11,17 @@ import { Router } from '@angular/router';
 export class LandingLoginComponent implements OnInit {
 
   showAuthModal: boolean = false;
-  constructor(private authService: AuthService, private router: Router) { }
+  private _user:any;
+
+  constructor(private authService: AuthService, private router: Router, public afAuth: AngularFireAuth) { }
 
   ngOnInit() {
+    this.afAuth.user.subscribe(user => this._user = user);
   }
 
   public openAuthWindow(){
-    if (this.authService.isUserExisted) {
+    if (this._user) {
+      this.authService.saveCreadeatins(this._user);
       this.router.navigate(['/main']);
     }
     this.showAuthModal = true;

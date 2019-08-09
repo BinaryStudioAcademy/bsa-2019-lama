@@ -1,6 +1,7 @@
-<spinner *ngIf="showSpinner"></spinner>
+
 <div class="content">
     <h2>Recent images: </h2>
+    <spinner *ngIf="showSpinner"></spinner>
     <div class="photos-container" fileDrop (fileDropped)="uploadFile($event)">
         <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
         <!--photo list-->

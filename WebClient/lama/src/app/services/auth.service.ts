@@ -116,11 +116,9 @@ export class AuthService {
 
 
   public registerUser(user: User) {
-    let userId;
     this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions).subscribe(id => {
       console.log(id);
-      userId = id;
+      localStorage.setItem('userId', id.toString());
     })
-    localStorage.setItem('userId', userId);
   }
 }
