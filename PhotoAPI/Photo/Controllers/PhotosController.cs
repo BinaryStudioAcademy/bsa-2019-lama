@@ -30,12 +30,6 @@ namespace Photo.Controllers
             return await photoService.Get();
         }
 
-        [HttpGet("count")]
-        public async Task<long> GetCount()
-        {
-            return await photoService.GetCount();
-        }
-
         // GET api/photos/5
         [HttpGet("{id}")]
         public Task<PhotoDocument> Get(int id)

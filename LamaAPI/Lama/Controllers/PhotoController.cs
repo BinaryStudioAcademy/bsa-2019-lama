@@ -15,12 +15,10 @@ namespace Lama.Controllers
     public class PhotoController : ControllerBase
     {
         private readonly PhotoService _service;
-        private readonly ReceiveService _receiver;
 
-        public PhotoController(PhotoService photoService, ReceiveService receiver)
+        public PhotoController(PhotoService photoService)
         {
             _service = photoService;
-            _receiver = receiver;
 
         }
         [HttpPost]
@@ -32,12 +30,6 @@ namespace Lama.Controllers
         public async Task<IEnumerable<PhotoDocument>> LoadPhotos()
         {
             return await _service.GetAll();
-        }
-
-        [HttpPost("saveElasticId")]
-        public async Task ReceiveElasticId([FromBody] int id)
-        {
-            await _receiver.Post(id);
         }
     }
 }

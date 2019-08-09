@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Interfaces;
-using System.Net.Http;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -22,11 +21,6 @@ namespace Photo.BusinessLogic.Services
             this.indexName = indexName;
             this.elasticClient = elasticClient;
             this.storage = storage;
-        }
-
-        public async Task<long> GetCount()
-        {
-            return (await elasticClient.CountAsync<PhotoDocument>()).Count;
         }
 
         // METHODS
@@ -85,10 +79,6 @@ namespace Photo.BusinessLogic.Services
                     UserId = items[i].AuthorId,
                     Description = items[i].Description
                 });
-                using (HttpClient client = new HttpClient())
-                {
-                    await client.PostAsJsonAsync("http://localhost:51286/api/photo/saveElasticId", --lastId);
-                }
             }
         }
     }
