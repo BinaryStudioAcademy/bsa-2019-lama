@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Logging;
-
 using Lama.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Lama.BusinessLogic.Services;
+using Lama.Domain.DbModels;
 
 namespace Lama
 {
@@ -29,6 +32,7 @@ namespace Lama
                        .AllowAnyHeader();
             }));
 
+            services.AddScoped<BaseService<User>, UserService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDataAccessLayer(Configuration);
             services.AddQueueService(Configuration);
