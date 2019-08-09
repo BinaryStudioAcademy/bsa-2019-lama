@@ -2,9 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-import { ImageCroppedEvent } from 'ngx-image-cropper';
 
-import { Photo, ActionItem } from 'src/app/models';
+import { ActionItem, UpdatePhotoDTO, ImageCroppedArgs } from 'src/app/models';
+
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-photo-modal',
@@ -22,13 +23,17 @@ export class PhotoModalComponent implements OnInit
   public shownMenuItems: ActionItem[];
 
   // fields
+  private fileService: FileService;
+
   private defaultMenuItem: ActionItem[];
   private editingMenuItem: ActionItem[];
 
   // constructors
-  constructor() 
+  constructor(fileService: FileService)
   {
     this.isShown = true;
+
+    this.fileService = fileService;
 
     this.initializeMenuItem();
 
@@ -71,12 +76,21 @@ export class PhotoModalComponent implements OnInit
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public cropImageHandler(croppedImage: ImageCroppedEvent): void
+  public cropImageHandler(croppedImage: ImageCroppedArgs): void
   {
-    // TODO: save in elastic
-    this.photo.blobId = croppedImage.base64;
+    const updatePhotoDTO: UpdatePhotoDTO = {
+      id: this.photo.id,
+      blobId: croppedImage.originalImageUrl,
+      imageBase64: croppedImage.croppedImageBase64
+    };
 
-    this.goBackToImageView();
+    this.fileService.update(updatePhotoDTO)
+      .subscribe(updatedPhotoDTO =>
+        {
+          Object.assign(this.photo, updatedPhotoDTO);
+
+          this.goBackToImageView();
+        });
   }
 
   public goBackToImageView(): void

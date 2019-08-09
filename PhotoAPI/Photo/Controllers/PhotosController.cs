@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Photo.BusinessLogic.Interfaces;
 
 using Photo.Domain.BlobModels;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.Controllers
 {
@@ -44,11 +45,11 @@ namespace Photo.Controllers
             await this.photoService.Create(values);
         }
 
-        // PUT api/photos/5
+        // PUT api/photos/
         [HttpPut]
-        public void Put([FromBody] PhotoDocument value)
+        public Task<UpdatedPhotoResultDTO> Put([FromBody] UpdatePhotoDTO value)
         {
-            this.photoService.Update(value);
+            return this.photoService.UpdateImage(value);
         }
 
         // DELETE api/photos/5

@@ -7,7 +7,7 @@ import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCar
 
 import { FileUploadDirective } from '../directives';
 
-import { ImageService } from '../services';
+import { FileService } from '../services';
 
 @NgModule(
 {
@@ -17,7 +17,7 @@ import { ImageService } from '../services';
   ],
   providers:
   [
-    ImageService,
+    FileService,
   ],
   imports:
   [

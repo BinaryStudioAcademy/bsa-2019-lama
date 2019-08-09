@@ -9,6 +9,7 @@ using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
 
 using Photo.DataAccess.Interfaces;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -49,6 +50,34 @@ namespace Photo.BusinessLogic.Services
                 new DocumentPath<PhotoDocument>(item), 
                 u => u.Index(indexName).Doc(item));
         }
+        public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
+        {
+            string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
+
+            byte[] newImageBlob = Convert.FromBase64String(base64);
+
+
+            await DeleteAllBlobsAsync(elasticId: updatePhotoDTO.Id);
+            
+            UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
+            {
+                BlobId = await storage.LoadPhotoToBlob(newImageBlob),
+                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64)),
+                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256)),
+            };
+
+            await elasticClient.UpdateAsync<PhotoDocument, UpdatedPhotoResultDTO>(updatePhotoDTO.Id, p => p.Doc(updatedPhoto));
+
+            return updatedPhoto;
+        }
+        private async Task DeleteAllBlobsAsync(int elasticId)
+        {
+            PhotoDocument photoDocument = await this.Get(elasticId);
+
+            await storage.DeleteFileAsync(photoDocument.BlobId);
+            await storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await storage.DeleteFileAsync(photoDocument.Blob256Id);
+        }
 
         public Task Create(PhotoDocument item)
         {
@@ -58,20 +87,13 @@ namespace Photo.BusinessLogic.Services
         public async Task Create(PhotoReceived[] items)
         {
             // TODO: rewrite this
-            long lastId = elasticClient.Count<PhotoDocument>().Count;
-
-            // TODO: get this with linq
-            string[] base64 = new string[items.Length];            
+            long lastId = elasticClient.Count<PhotoDocument>().Count;      
             
             for (int i = 0; i < items.Length; i++)
             {
-                // TODO: change this to regex
-                base64[i] = items[i].ImageUrl
-                    .Replace("data:image/jpeg;base64,", String.Empty)
-                    .Replace("data:image/png;base64,", String.Empty)
-                    .Replace("-", "+").Replace("_", "/");
+                string base64 = ConvertToBase64(items[i].ImageUrl);
 
-                byte[] blob = Convert.FromBase64String(base64[i]);
+                byte[] blob = Convert.FromBase64String(base64);
 
                 await Create(new PhotoDocument
                 {
@@ -84,6 +106,14 @@ namespace Photo.BusinessLogic.Services
                     Description = items[i].Description
                 });
             }
+        }
+        private string ConvertToBase64(string imageUrl)
+        {
+            // TODO: change this to regex
+            return imageUrl
+                    .Replace("data:image/jpeg;base64,", String.Empty)
+                    .Replace("data:image/png;base64,", String.Empty)
+                    .Replace("-", "+").Replace("_", "/");
         }
     }
 }

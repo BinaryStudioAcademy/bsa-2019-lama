@@ -4,7 +4,9 @@ import { environment } from 'src/environments/environment';
 
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 
-import { ImageService } from 'src/app/services';
+import { FileService } from 'src/app/services';
+
+import { ImageCroppedArgs } from 'src/app/models';
 
 @Component({
   selector: 'app-crop-image',
@@ -14,13 +16,16 @@ import { ImageService } from 'src/app/services';
 export class CropImageComponent implements OnInit
 {
   // fields
+  private imageUrl: string;
   private imageToCropBase64: string;
-  private imageService: ImageService;
+  private imageService: FileService;
 
   // properties
   @Input()
   public set imageToCrop(imageToCropUrl: string)
   {
+    this.imageUrl = imageToCropUrl;
+
     this.imageService.getImageBase64(imageToCropUrl)
       .then((res) => this.imageToCropBase64 = res);
   }
@@ -33,12 +38,12 @@ export class CropImageComponent implements OnInit
 
   // events
   @Output()
-  public saveClickedEvent = new EventEmitter<ImageCroppedEvent>();
+  public saveClickedEvent = new EventEmitter<ImageCroppedArgs>();
   @Output()
   public cancelClickedEvent = new EventEmitter();
 
   // constructors
-  constructor(imageService: ImageService)
+  constructor(imageService: FileService)
   {
     this.imageService = imageService;
 
@@ -52,7 +57,10 @@ export class CropImageComponent implements OnInit
   {
     const event: ImageCroppedEvent = await this.imageCropper.crop();
 
-    this.saveClickedEvent.emit(event);
+    this.saveClickedEvent.emit({
+      originalImageUrl: this.imageUrl,
+      croppedImageBase64: event.base64
+    });
   }
   public cancelClickHandler(): void
   {

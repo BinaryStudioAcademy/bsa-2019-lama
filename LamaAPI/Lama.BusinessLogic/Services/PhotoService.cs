@@ -8,6 +8,8 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
+using Lama.Domain.DataTransferObjects.Photo;
+
 
 namespace Lama.BusinessLogic.Services
 {
@@ -44,6 +46,22 @@ namespace Lama.BusinessLogic.Services
                         .Content.ReadAsStringAsync());
             }
             return photos;
+        }
+
+        public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                string uri = $"{url}api/photos";
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+
+                string bodyJson = await response.Content.ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
+            }
         }
 
         public Task Create(PhotoDocument item)
