@@ -32,5 +32,25 @@ namespace Lama.Controllers
         {
             await _service.CreateAlbumWithNewPhotos(album);
         }
+        [HttpPut]
+        public async Task UpdateAlbum([FromBody] Album album)
+        {
+
+        }
+        [HttpDelete]
+        public async Task DeleteAlbum([FromBody] int id)
+        {
+
+        }
+        [HttpGet("{id}")]
+        public async Task GetAlbum(int id)
+        {
+
+        }
+        [HttpGet]
+        public async Task GetAlbums()
+        {
+
+        }
     }
 }

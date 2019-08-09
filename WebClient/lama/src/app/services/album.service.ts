@@ -17,8 +17,9 @@ export class AlbumService {
   constructor(private http: HttpClient) {
   }
 
+
   public getAlbums(httpParams?: any) {
-     // return this.http.get<...>(this.baseUrl+ this.routeAlbum,{ observe: 'response',headers: this.headers, params: httpParams });
+      return this.http.get<Album[]>(this.baseUrl + this.routeAlbum, { observe: 'response', headers: this.headers, params: httpParams });
   }
 
   public createAlbumWithNewPhotos(album: Album) {

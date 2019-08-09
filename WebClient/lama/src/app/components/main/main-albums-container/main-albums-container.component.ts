@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactory
 import { Album } from 'src/app/models/Album/album';
 import { CreateAlbumModalComponent } from '../../create-album-module/create-album-modal/create-album-modal.component';
 import { Router, NavigationExtras } from '@angular/router';
+import { AlbumService } from 'src/app/services/album.service';
 
 
 @Component({
@@ -99,6 +100,7 @@ export class MainAlbumsContainerComponent implements OnInit {
       imageUrl: "https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg",
       photos: tempphotos
     }]
+    this.GetAlbums();
   }
 
 
@@ -107,8 +109,12 @@ export class MainAlbumsContainerComponent implements OnInit {
   private resolver: ComponentFactoryResolver;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver,private router: Router) {
+  constructor(resolver: ComponentFactoryResolver, private router: Router, private albumService: AlbumService ) {
     this.resolver = resolver;
+  }
+
+  GetAlbums() {
+   // this.albumService.getAlbums().subscribe(albums => this.albums = albums.body);
   }
 
   public CreateAlbum(event) {
