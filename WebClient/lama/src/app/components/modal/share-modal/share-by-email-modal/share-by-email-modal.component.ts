@@ -4,11 +4,11 @@ import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
-  selector: 'app-share-modal',
-  templateUrl: './share-modal.component.html',
-  styleUrls: ['./share-modal.component.sass']
+  selector: 'app-share-by-email-modal',
+  templateUrl: './share-by-email-modal.component.html',
+  styleUrls: ['./share-by-email-modal.component.sass']
 })
-export class ShareModalComponent implements OnInit {
+export class ShareByEmailModalComponent implements OnInit {
 
 
   @Input() receivedPhoto: PhotoRaw;
@@ -73,7 +73,3 @@ export class ShareModalComponent implements OnInit {
     }
 
   }
-
-
-
-
