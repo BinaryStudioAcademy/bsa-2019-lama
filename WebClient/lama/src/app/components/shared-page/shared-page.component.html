@@ -1,0 +1,31 @@
+<header>
+  <app-shared-page-header></app-shared-page-header>
+</header>
+<body>
+    <section class="hero">
+        <div class="hero-body">
+          <div class="columns is-multiline">
+            <div class="column is-narrow">
+                <div class="image is-64x64">
+                    <img src="{{authenticatedUser?.photoURL}}">
+                  </div>
+            </div>
+            <div class="column  is-narrow">
+                <p>{{userData?.user.firstName || "No name received"}}  </p><p> {{userData?.user.lastName || "No last name received" }} </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="box" >
+        <div class="media">
+            <figure class="image">
+                <img src="{{ sharedPhoto.sharedImageUrl }}" alt="Image">
+            </figure>
+        </div>
+      </div>
+  </body>
+
+
+
+
+
