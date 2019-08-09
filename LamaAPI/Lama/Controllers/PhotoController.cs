@@ -31,5 +31,8 @@ namespace Lama.Controllers
         {
             return await _service.GetAll();
         }
+        
+        
+        
     }
 }

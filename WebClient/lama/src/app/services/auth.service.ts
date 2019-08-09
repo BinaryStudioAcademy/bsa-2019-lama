@@ -20,6 +20,9 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        res.user.getIdToken().then(token => {
+          localStorage.setItem("idKey",token);
+        })
 
         resolve(res);
       }, err => {
@@ -37,6 +40,10 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        res.user.getIdToken().then(token => {
+          localStorage.setItem("idKey",token);
+        })
+
         resolve(res);
       })
     });
@@ -48,6 +55,9 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        res.user.getIdToken().then(token => {
+          localStorage.setItem("idKey",token);
+        })
         resolve(res);
       }, err => {
         console.log(err);

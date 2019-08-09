@@ -8,6 +8,7 @@ using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Photo.BusinessLogic.Exceptions;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -81,6 +82,22 @@ namespace Photo.BusinessLogic.Services
             // save to fake db now
             await _db.Photos.AddAsync(photo);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
+        {
+            var photoDocument = _db.Photos.Find(id);
+            if (photoDocument == null)
+            {
+                throw new NotFoundException(nameof(photoDocument), id);
+            }
+
+            photoDocument.SharedLink = sharedLink;
+
+            await _db.SaveChangesAsync();
+
+            return photoDocument;
+
         }
     }
 }

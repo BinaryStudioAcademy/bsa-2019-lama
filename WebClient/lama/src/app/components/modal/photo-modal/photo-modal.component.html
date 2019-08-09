@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-    <app-share-modal *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-modal>
+    <app-share-modal  [receivedPhoto]='photo' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-modal>
 
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>

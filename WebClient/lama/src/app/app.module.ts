@@ -31,12 +31,13 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
 
-import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
+import { SharedPhotoComponent } from './components/shared/shared-photo/shared-photo.component';
 import {AuthModalComponent} from './components/modal/auth-modal/auth-modal.component'
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
 import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 import { FormsModule } from '@angular/forms';
+import { SharedPageHeaderComponent } from './components/shared/shared-page-header/shared-page-header.component';
 
 
 
@@ -64,6 +65,7 @@ import { FormsModule } from '@angular/forms';
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     AuthModalComponent,
+    SharedPageHeaderComponent,
 
   ],
   imports: [
@@ -77,7 +79,7 @@ import { FormsModule } from '@angular/forms';
     MatToolbarModule,
     MatIconModule,
     MatCardModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   exports: [
     MatButtonModule,
@@ -88,7 +90,6 @@ import { FormsModule } from '@angular/forms';
     ModalModule,
     FormsModule,
     CreateAlbumModule
-
   ],
 
   providers: [{

@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharingService } from 'src/app/services/sharing.service';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
   selector: 'app-share-modal',
@@ -10,20 +11,22 @@ import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 })
 export class ShareModalComponent implements OnInit {
 
-  //temporary mocked data, when database will be set up, we will get this data on page loading and pass it from photo page component
-  @Input() sharedPhoto: SharedPhoto = <SharedPhoto>{photoId:1, sharedImageUrl:"https://icon-library.net/images/alpaca-icon/alpaca-icon-19.jpg", userId:1};
+
+  @Input() receivedPhoto: PhotoRaw;
+
   @Output() onClose = new EventEmitter();
+
 
   sharedLink: string = '';
   imageUrl: string;
   copyClicked: boolean = false;
+  sharedPhoto: SharedPhoto = <SharedPhoto>{};
 
   constructor() {
 
   }
 
   ngOnInit() {
-    //this.getImageById(this.sharedPhoto.photoId);
     this.createShareableLink();
   }
 
@@ -32,8 +35,14 @@ export class ShareModalComponent implements OnInit {
   }
 
   public createShareableLink(){
-    let userdata = this.encodeUserData();
-    this.sharedLink = `${environment.clientUrl}/shared/${userdata}`;
+    if(this.receivedPhoto.sharedLink !== null){
+      this.sharedLink = `${environment.clientUrl}/shared/${this.receivedPhoto.sharedLink}`;
+    }
+    else{
+      this.initImmutableFields();
+      let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
+      this.sharedLink = `${environment.clientUrl}/shared/${encodedPhotoData}`;
+    }
   }
 
   public copyShareableLink(){
@@ -52,21 +61,16 @@ export class ShareModalComponent implements OnInit {
       this.copyClicked = !this.copyClicked;
     }
 
-    // public getImageById(photoId: number){
-    //   this.sharingService.getPhotoEntity(photoId).subscribe(photo => {
-    //     if(photo.sharedImageUrl){
-    //       this.sharedLink = photo.sharedImageUrl;
-    //       return;
-    //     }
-    //     this.sharedPhoto = photo;
-    //     this.createShareableLink();
-    //   })
-    // }
-
-    public encodeUserData(): string{
-      let encoded = btoa(JSON.stringify(this.sharedPhoto)).replace("/","___");
+    public encodePhotoData(photo: SharedPhoto): string{
+      let encoded = btoa(JSON.stringify(photo)).replace("/","___");
       console.log(encoded);
       return encoded;
+    }
+
+    private initImmutableFields(){
+      this.sharedPhoto.photoId = this.receivedPhoto.id;
+      this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
+      this.sharedPhoto.userId = this.receivedPhoto.userId;
     }
 
   }

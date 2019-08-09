@@ -8,7 +8,7 @@
     <div class="modal-card-body">
       <div class="columns">
         <div class="column is-half">
-          <input id="share-link" class="input" type="text" [(value)]="sharedLink" readonly>
+          <input id="share-link" class="input" type="href" [(value)]="sharedLink" readonly>
         </div>
         <div class="column is-half">
           <a class="button is-primary" (click)="copyShareableLink()">

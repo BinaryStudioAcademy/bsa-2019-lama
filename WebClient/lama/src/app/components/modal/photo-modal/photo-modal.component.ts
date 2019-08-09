@@ -1,17 +1,19 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { Photo, ActionItem } from 'src/app/models';
+import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
+
 
 
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
-  styleUrls: ['./photo-modal.component.sass']
+  styleUrls: ['./photo-modal.component.sass'],
 })
 export class PhotoModalComponent implements OnInit
 {
@@ -24,7 +26,6 @@ export class PhotoModalComponent implements OnInit
 
   public clickedMenuItem: ActionItem;
   public shownMenuItems: ActionItem[];
-
   // fields
   private defaultMenuItem: ActionItem[];
   private editingMenuItem: ActionItem[];
@@ -42,6 +43,7 @@ export class PhotoModalComponent implements OnInit
 
   ngOnInit()
   {
+
   }
 
   private initializeMenuItem()
@@ -100,4 +102,5 @@ export class PhotoModalComponent implements OnInit
   private openShareModal(){
     this.showSharedModal = true;
   }
+
 }

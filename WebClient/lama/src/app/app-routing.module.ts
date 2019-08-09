@@ -5,7 +5,7 @@ import { MainPageComponent } from './components/main/main-page/main-page.compone
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { AuthGuard } from './guards/auth.guard';
-import { SharedPhotoComponent } from './components/shared-photo/shared-photo.component';
+import { SharedPhotoComponent } from './components/shared/shared-photo/shared-photo.component';
 
 
 // определение дочерних маршрутов

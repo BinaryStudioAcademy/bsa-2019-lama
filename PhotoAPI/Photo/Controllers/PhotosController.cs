@@ -31,6 +31,12 @@ namespace Photo.Controllers
             return new string[] { "photo1", "photo2" };
         }
 
+        [HttpPut("/shared/{id}")]
+        public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)
+        {
+            return Ok(await _service.UpdateWithSharedLink(id, sharedLink));
+        }
+
 
         //// GET api/values/5
         //[HttpGet("{id}")]
@@ -45,6 +51,8 @@ namespace Photo.Controllers
         {
             await _service.CreateAll(values);
         }
+        
+        
 
         // PUT api/values/5
         [HttpPut("{id}")]

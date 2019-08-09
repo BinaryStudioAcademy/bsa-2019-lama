@@ -1,3 +1,4 @@
+using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Builder;
 using Lama.DataAccess;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,7 @@ namespace Lama
                        .AllowAnyHeader();
             }));
             services.AddScoped<BusinessLogic.Services.PhotoService>();
+            services.AddScoped<SharingPhotoService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Connection));
