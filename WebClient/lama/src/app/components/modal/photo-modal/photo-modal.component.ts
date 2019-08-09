@@ -17,6 +17,7 @@ export class PhotoModalComponent implements OnInit
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
+  public showSharedModal: boolean = false;
 
   public clickedMenuItem: ActionItem;
   public shownMenuItems: ActionItem[];
@@ -26,7 +27,7 @@ export class PhotoModalComponent implements OnInit
   private editingMenuItem: ActionItem[];
 
   // constructors
-  constructor() 
+  constructor()
   {
     this.isShown = true;
 
@@ -36,7 +37,7 @@ export class PhotoModalComponent implements OnInit
     this.clickedMenuItem = null;
   }
 
-  ngOnInit() 
+  ngOnInit()
   {
   }
 
@@ -65,6 +66,11 @@ export class PhotoModalComponent implements OnInit
     {
       this.shownMenuItems = this.editingMenuItem;
     }
+
+    if(clickedMenuItem == this.defaultMenuItem[0]){
+      this.openShareModal();
+    }
+
   }
   public mouseLeftOverlayHandler(): void
   {
@@ -86,5 +92,9 @@ export class PhotoModalComponent implements OnInit
   protected closeModal(): void
   {
     this.isShown = false;
+  }
+
+  private openShareModal(){
+    this.showSharedModal = true;
   }
 }

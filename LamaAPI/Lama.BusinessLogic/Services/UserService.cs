@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lama.BusinessLogic.Exceptions;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -24,7 +25,14 @@ namespace Lama.BusinessLogic.Services
 
         public async Task Update(User user)
         {
-            var updateUser = Context.Users.Where(u => u.Id == user.Id).FirstOrDefault();
+            var updateUser = Context.Users.FirstOrDefault(u => u.Id == user.Id);
+
+            if (updateUser == null)
+            {
+                throw new NotFoundException(nameof(User), user.Id);
+            }
+            
+
             updateUser.FirstName = user.FirstName;
             updateUser.LastName = user.LastName;
             updateUser.Email = user.Email;
