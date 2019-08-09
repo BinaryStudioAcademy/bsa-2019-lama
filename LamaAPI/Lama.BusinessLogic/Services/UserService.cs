@@ -8,55 +8,52 @@ using System.Text;
 using System.Threading.Tasks;
 using Lama.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Lama.DataAccess;
+using Lama.BusinessLogic.Exceptions;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class UserService : IBaseService<User>
+    public class UserService : BaseService<User>
     {
-        private readonly IUnitOfWork _context;
-        public UserService(IUnitOfWork context)
+        public UserService(ApplicationDbContext dbContext)
+            :base(dbContext)
         {
-            _context = context;
-        }
-        public async Task Create(User item)
-        {
-            await _context.GetRepository<User>().InsertAsync(item);
-            await _context.SaveAsync();
+
         }
 
-        public async Task<int> CreateWithFeedback(User item)
+        public override async Task<int> Create(User item)
         {
-            await _context.GetRepository<User>().InsertAsync(item);
-            await _context.SaveAsync();
-            return (await _context.GetRepository<User>().GetAsync(u => u.Email == item.Email)).FirstOrDefault().Id;
-        }
-
-
-        public Task Delete(int id)
-        {
-            return await Context.Users.SingleAsync(user => user.Id == id);
-        }
-
-        public Task<IEnumerable<User>> FindAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<User> Get(int id)
-        {
-            return (await _context.GetRepository<User>().GetAsync(u => u.Id == id)).FirstOrDefault();
+            await Context.Users.AddAsync(item);
+            await Context.SaveChangesAsync();
+            return (await Context.Users.FirstOrDefaultAsync(u => u.Id == item.Id)).Id;
         }
 
         public async Task<User> GetByEmail(string email)
         {
-            return (await _context.GetRepository<User>().GetAsync(u => u.Email == email)).FirstOrDefault();
+            return (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
+        }
+
+        public async Task<User> Get(int id)
+        {
+            return await Context.Users.SingleAsync(user => user.Id == id);
         }
 
         public async Task Update(User user)
         {
-            _context.Update<User>(user);
-            await _context.SaveAsync();
-        }     
+            var updateUser = Context.Users.FirstOrDefault(u => u.Id == user.Id);
+
+            if (updateUser == null)
+            {
+                throw new NotFoundException(nameof(User), user.Id);
+            }
+
+
+            updateUser.FirstName = user.FirstName;
+            updateUser.LastName = user.LastName;
+            updateUser.Email = user.Email;
+
+            await Context.SaveChangesAsync();
+        }
     }
 }
 
