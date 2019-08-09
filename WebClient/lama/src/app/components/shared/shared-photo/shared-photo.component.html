@@ -11,7 +11,7 @@
                   </div>
             </div>
             <div class="column  is-narrow">
-                <p>{{userData?.user.firstName}} {{userData?.user.lastName}}</p>
+                <p>{{userData?.user.firstName || "No name received"}}  </p><p> {{userData?.user.lastName || "No last name received" }} </p>
             </div>
           </div>
         </div>

@@ -27,13 +27,17 @@ export class SharedPhotoComponent implements OnInit {
 
   ngOnInit() {
 
+
+
     this.decodeUserData();
     this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(shareData => {
       this.userData = shareData;
     })
-    //this.userData.user.firstName
-    this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
 
+    //Session is not saved properly yet, so method returns no user
+    //this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
+
+    //No proper data in database yet, so we are not updating
     //this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId,this.sharedLinkData);
   }
 
