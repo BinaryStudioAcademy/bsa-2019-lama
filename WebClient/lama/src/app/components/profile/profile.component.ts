@@ -14,23 +14,24 @@ export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService, 
     private httpService: HttpService, 
-    private userService: UserService) {  }
+    private userService: UserService,) {  }
   
   userForm: FormGroup;
-  user: User = {
-    email: localStorage.getItem('email'),
-    firstName: localStorage.getItem('fistName'),
-    lastName: localStorage.getItem('lastName'),
-    avatarUrl: localStorage.getItem('photoUrl')
-  };
+  user: any = {
+    firstName: 'First name',
+    lastName: 'Last name',
+    email: 'Email'
+  };;
   photoUrl: string;
   testReceivedUser: User;
+  showSpinner: boolean = true;
 
   ngOnInit() {
-    this.photoUrl = this.authService.afAuth.auth.currentUser.photoURL;
-    this.user.id = parseInt(localStorage.getItem('userId'));
-    this.httpService.getData(`users/${this.user.id}`).subscribe((data:User) => this.user = data);
-	
+    this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
+    
+      this.user = u;
+      this.showSpinner = false;
+    });
 	
     this.userForm = new FormGroup({
       'firstName': new FormControl(this.user.firstName),
@@ -43,17 +44,18 @@ export class ProfileComponent implements OnInit {
     const target = event.target as HTMLInputElement
     if (target.files && target.files[0]) {
         const file = target.files[0];
-
         const reader = new FileReader();
         reader.onload = e => this.photoUrl = reader.result as string;
-
         reader.readAsDataURL(file);
-
         this.userService.updateCurrentUser({photoURL: this.photoUrl})
     }
   }
 
   async saveUser() {
-	this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+  this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+    localStorage.setItem('firstName', `${this.user.firstName}`);
+    localStorage.setItem('lastName', `${this.user.lastName}`);
+    localStorage.setItem('photoUrl', `${this.user.avatarUrl}`);
+    localStorage.setItem('email', this.user.email)
   }
 }
