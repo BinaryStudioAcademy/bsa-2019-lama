@@ -7,7 +7,6 @@ using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
-using Lama.Domain.DTO;
 
 namespace Lama.Controllers
 {
@@ -38,7 +37,7 @@ namespace Lama.Controllers
         [HttpGet("{id}")]
         public async Task<User> Get(int id)
         {
-            return await _service.Get(id);     
+            return await _service.Get(id);
         }
 
         [HttpPost("create")]
