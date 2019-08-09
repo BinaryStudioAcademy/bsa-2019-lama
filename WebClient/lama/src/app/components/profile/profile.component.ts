@@ -14,7 +14,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService, 
     private httpService: HttpService, 
-    private userService: UserService,) {  }
+    private userService: UserService) {  }
   
   userForm: FormGroup;
   user: any = {
