@@ -35,7 +35,7 @@ export class SharedPageComponent implements OnInit {
     })
 
     //Session is not saved properly yet, so method returns no user
-    //this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
+    this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
 
     //No proper data in database yet, so we are not updating
     //this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId,this.sharedLinkData);
