@@ -30,9 +30,8 @@ namespace Lama.Controllers
             }
             else
             {
-                return await _service.Create(user);
+                return await _service.CreateWithFeedback(user);
             }
-        }
 
         [HttpGet]
         public async Task Get()
@@ -46,11 +45,11 @@ namespace Lama.Controllers
             return await _service.Get(id);
         }
 
-        //[HttpPost]
-        //public async Task Post([FromBody] User value)
-        //{
+        [HttpPost]
+        public async Task Post([FromBody] User value)
+        {
             
-        //}
+        }
 
         [HttpPut]
         public async Task Put([FromBody] User value)

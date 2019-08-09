@@ -109,7 +109,8 @@ export class AuthService {
     this._user = {
       firstName: firstName,
       lastName: lastName,
-      email: user.email
+      email: user.email,
+      avatarUrl: user.photoURL
     }
     this.registerUser(this._user);
   }
