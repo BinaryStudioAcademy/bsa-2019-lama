@@ -7,6 +7,8 @@ import { MainPhotosContainerComponent } from './components/main/main-photos-cont
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
+import { SharedPageComponent } from './components/shared-page/shared-page.component';
+  import { from } from 'rxjs';
 
 
 // определение дочерних маршрутов
@@ -19,7 +21,8 @@ const routes: Routes = [
   {path: '', component: MainLandingPageComponent},
   {path: 'main', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
   {path: 'album', component: ViewAlbumComponent},
-  {path: 'profile', component: ProfileComponent}
+  {path: 'profile', component: ProfileComponent},
+  {path: 'shared/:userdata', component: SharedPageComponent}
 ];
 
 @NgModule({

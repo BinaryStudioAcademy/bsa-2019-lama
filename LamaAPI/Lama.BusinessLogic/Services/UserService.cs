@@ -34,7 +34,7 @@ namespace Lama.BusinessLogic.Services
 
         public Task Delete(int id)
         {
-            throw new NotImplementedException();
+            return await Context.Users.SingleAsync(user => user.Id == id);
         }
 
         public Task<IEnumerable<User>> FindAll()

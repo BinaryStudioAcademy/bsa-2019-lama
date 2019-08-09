@@ -8,6 +8,7 @@ import { SharedModule } from '../shared.module';
 import { CropImageComponent } from './crop-image/crop-image.component';
 import { SpinnerComponent } from '../ui/spinner/spinner.component';
 import { UiModule } from '../ui/ui.module';
+import {ShareModalComponent} from '../modal/share-modal/share-modal.component'
 
 
 @NgModule(
@@ -20,15 +21,15 @@ import { UiModule } from '../ui/ui.module';
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent
   ],
   entryComponents:
   [
-    PhotoUploadModalComponent, PhotoModalComponent,
+    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent
   ]
 })
 export class ModalModule { }

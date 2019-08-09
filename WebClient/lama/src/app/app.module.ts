@@ -35,7 +35,9 @@ import { SharedModule, ModalModule } from 'src/app/components';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 import { UiModule } from './components/ui/ui.module';
-import { CreateAlbumModule} from './components/create-album-module/create-album.module';
+import { CreateAlbumModule } from './components/create-album-module/create-album.module';
+import { SharedPageComponent } from './components/shared-page/shared-page.component';
+import {SharedPageHeaderComponent} from './components/shared-page/shared-page-header/shared-page-header.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +60,9 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     MainAlbumComponent,
     AuthModalComponent,
     ViewAlbumComponent,
-    ViewAlbumPhotosComponent
+    ViewAlbumPhotosComponent,
+    SharedPageComponent,
+    SharedPageHeaderComponent
   ],
   imports: [
     SharedModule,
@@ -73,7 +77,6 @@ import { CreateAlbumModule} from './components/create-album-module/create-album.
     FormsModule,
     CreateAlbumModule,
 	  ReactiveFormsModule
-
   ],
   providers: [
   HttpService,

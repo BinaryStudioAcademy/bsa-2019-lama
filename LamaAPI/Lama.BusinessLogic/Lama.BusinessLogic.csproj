@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lama.DataAccess\Lama.DataAccess.csproj" />
     <ProjectReference Include="..\Lama.Domain\Lama.Domain.csproj" />
   </ItemGroup>
 

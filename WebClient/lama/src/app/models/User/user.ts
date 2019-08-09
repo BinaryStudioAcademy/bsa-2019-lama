@@ -1,8 +1,8 @@
-export interface User {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatarUrl?: string;
-    avatarId?: number;
+export class User
+{
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+	avatarId?: number;
 }

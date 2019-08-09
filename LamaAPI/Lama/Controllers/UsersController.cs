@@ -32,6 +32,11 @@ namespace Lama.Controllers
             {
                 return await _service.CreateWithFeedback(user);
             }
+
+        [HttpGet]
+        public async Task Get()
+        {
+           
         }
 
         [HttpGet("{id}")]
@@ -40,8 +45,8 @@ namespace Lama.Controllers
             return await _service.Get(id);
         }
 
-        [HttpPost("create")]
-        public void Post([FromBody] User value)
+        [HttpPost]
+        public async Task Post([FromBody] User value)
         {
             
         }
@@ -53,7 +58,7 @@ namespace Lama.Controllers
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
 
         }
