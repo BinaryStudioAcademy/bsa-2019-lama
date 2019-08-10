@@ -44,9 +44,12 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<int> UpdateUser(UserDTO user)
         {
-            var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-            var newAvatar = await _photoService.CreateAvatar(user.Photo);
-            newUser.AvatarId = newAvatar.Id;
+            var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Id== user.Id);
+            if (user.Photo != null)
+            {
+                var newAvatar = await _photoService.CreateAvatar(user.Photo);
+                newUser.AvatarId = newAvatar.Id;
+            }
             newUser.FirstName = user.FirstName;
             newUser.LastName = user.LastName;
             newUser.Email = user.Email;

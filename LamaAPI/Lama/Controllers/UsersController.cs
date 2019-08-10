@@ -25,30 +25,17 @@ namespace Lama.Controllers
         public async Task<int> RegisterUser([FromBody] UserDTO user)
         {
             var isExists = await _service.GetByEmail(user.Email);
-
             if (isExists != null)
             {
                 return isExists.Id;
             }
-            else
-            {
-                return await _service.Create(user);
-            }
+            return await _service.Create(user);
         }
 
         [HttpPut]
         public async Task<int> UpdateUser([FromBody] UserDTO user)
         {
-            var isExists = await _service.GetByEmail(user.Email);
-
-            if (isExists == null)
-            {
-                return 0;
-            }
-            else
-            {
-                return await _service.UpdateUser(user);
-            }
+             return await _service.UpdateUser(user);
         }
 
 
