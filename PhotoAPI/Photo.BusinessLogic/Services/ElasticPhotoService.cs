@@ -11,6 +11,8 @@ using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.DataTransferObjects;
 
+using AutoMapper;
+
 namespace Photo.BusinessLogic.Services
 {
     public class ElasticPhotoService: IPhotoService
@@ -19,21 +21,31 @@ namespace Photo.BusinessLogic.Services
         private string indexName;
         private IPhotoBlobStorage storage;
         private IElasticClient elasticClient;
+        private IMapper mapper;
 
         // CONSTRUCTORS
-        public ElasticPhotoService(string indexName, IElasticClient elasticClient, IPhotoBlobStorage storage)
+        public ElasticPhotoService(string indexName, IElasticClient elasticClient, IPhotoBlobStorage storage, IMapper mapper)
         {
             this.indexName = indexName;
             this.elasticClient = elasticClient;
             this.storage = storage;
+            this.mapper = mapper;
         }
 
         // METHODS
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return (await elasticClient.SearchAsync<PhotoDocument>()).Documents;            
-        }
+            SearchRequest<PhotoDocument> searchRequest = new SearchRequest<PhotoDocument>
+            {
+                Query = new TermQuery
+                {
+                    Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                    Value = false
+                }
+            };
 
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;            
+        }
         public async Task<PhotoDocument> Get(int blobId)
         {
             return (await elasticClient.GetAsync<PhotoDocument>(blobId)).Source;
@@ -42,6 +54,7 @@ namespace Photo.BusinessLogic.Services
         public async Task Delete(int id)
         {
             await elasticClient.DeleteAsync<PhotoDocument>(id);
+            await DeleteAllBlobsAsync(id);
         }
         
         public async Task Update(PhotoDocument item)
@@ -127,5 +140,58 @@ namespace Photo.BusinessLogic.Services
                     .Replace("data:image/png;base64,", String.Empty)
                     .Replace("-", "+").Replace("_", "/");
         }
+
+        #region DELETE
+        public Task MarkPhotoAsDeleted(int photoId)
+        {
+            var updateDeleteField = new { IsDeleted = true };
+
+            return elasticClient.UpdateAsync<PhotoDocument, object>(photoId, p => p.Doc(updateDeleteField));
+        }
+
+        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        {
+            SearchRequest<PhotoDocument> searchRequest = new SearchRequest<PhotoDocument>
+            {
+                Query = new TermQuery
+                {
+                    Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                    Value = true
+                },
+                // TODO: select only needed fields
+                /*
+                StoredFields = Infer.Fields<PhotoDocument>()
+                    .And<PhotoDocument>(p => p.Id)
+                    .And<PhotoDocument>(p => p.Blob256Id)
+                    */
+            };
+
+            IEnumerable<PhotoDocument> searchResult = (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;            
+            
+            return mapper.Map<DeletedPhotoDTO[]>(searchResult);
+        }
+
+        public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
+        {
+            foreach (PhotoToDeleteRestoreDTO deletePhoto in photosToDelete)
+            {
+                // TODO: make this in single request
+                await elasticClient.DeleteAsync<PhotoDocument>(deletePhoto.Id);
+
+                await DeleteAllBlobsAsync(deletePhoto.Id);
+            }
+        }
+
+        public async Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        {
+            // TODO: make this in single request
+            foreach (PhotoToDeleteRestoreDTO restorePhoto in photosToRestore)
+            {
+                var updateDeleteField = new { IsDeleted = false };
+
+                await elasticClient.UpdateAsync<PhotoDocument, object>(restorePhoto.Id, p => p.Doc(updateDeleteField));
+            }
+        }
+        #endregion
     }
 }

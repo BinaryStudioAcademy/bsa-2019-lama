@@ -4,26 +4,33 @@ import { MainLandingPageComponent } from './components/landing/main-landing-page
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
-import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
-  import { from } from 'rxjs';
-import { LoggedInGuard } from './guards/logged-in.guard';
+import { DeletedPhotosComponent } from './components/removed-photos/deleted-photos/deleted-photos.component';
 
+import { LoggedInGuard, AuthGuard } from './guards';
 
-// определение дочерних маршрутов
-const itemRoutes: Routes = [
-  { path: '', component:  MainPhotosContainerComponent},
-  { path: 'albums', component: MainAlbumsContainerComponent}
-];
+const routes: Routes =
+[
+  { path: '', redirectTo: 'landing', pathMatch: 'full' },
+  { path: 'main', redirectTo: 'main/photos', pathMatch: 'full' },
 
-const routes: Routes = [
-  {path: '', component: MainLandingPageComponent, canActivate:[LoggedInGuard]},
-  {path: 'main', component: MainPageComponent, children: itemRoutes, canActivate: [AuthGuard] },
-  {path: 'album', component: ViewAlbumComponent, canActivate: [AuthGuard]},
-  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
-  {path: 'shared/:userdata', component: SharedPageComponent}
+  { path: 'landing', component: MainLandingPageComponent, canActivate: [LoggedInGuard] },
+
+  {
+    path: 'main', component: MainPageComponent, canActivate: [AuthGuard],
+    children:
+    [
+      { path: 'photos', component:  MainPhotosContainerComponent},
+      { path: 'albums', component: MainAlbumsContainerComponent},
+      { path: 'album', component: ViewAlbumComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'shared/:userdata', component: SharedPageComponent },
+      { path: 'bin', component: DeletedPhotosComponent },
+    ]
+  },
+
 ];
 
 @NgModule({

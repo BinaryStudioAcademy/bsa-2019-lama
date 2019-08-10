@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Photo.DataAccess;
-using Microsoft.EntityFrameworkCore;
 
 using Photo.Infrastructure;
 
@@ -31,6 +27,7 @@ namespace Photo
                        .AllowAnyHeader();
             }));
 
+            services.AddMapper(Configuration);
             services.AddElasticSearch(Configuration);
             services.AddQueueService();
             services.AddBusinessLogicServices(Configuration);
