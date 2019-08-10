@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
@@ -16,8 +15,9 @@ using Lama.Domain.DataTransferObjects.Photo;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class PhotoService: IBaseService<PhotoDocument>
+    public class PhotoService: IPhotoService, IDisposable
     {
+        // FIELDS
         private string url;
         private IUnitOfWork _context;
         public PhotoService(string url, IUnitOfWork context)
@@ -43,30 +43,23 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
-            IEnumerable<PhotoDocument> photos;
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                photos = JsonConvert.DeserializeObject <IEnumerable<PhotoDocument>>
-                    (await 
-                    (await client.GetAsync($"{url}api/photos"))
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>
+                    (await
+                    (await httpClient.GetAsync($"{url}api/photos"))
                         .Content.ReadAsStringAsync());
-            }
-            return photos;
         }
-        
+
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                string uri = $"{url}api/photos";
+            string uri = $"{url}api/photos";
 
-                StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
+            StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+            HttpResponseMessage response = await httpClient.PutAsync(uri, content);
 
-                string bodyJson = await response.Content.ReadAsStringAsync();
+            string bodyJson = await response.Content.ReadAsStringAsync();
 
                 return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
             }
@@ -113,9 +106,13 @@ namespace Lama.BusinessLogic.Services
         }
 
         public Task<IEnumerable<PhotoDocument>> FindAll()
-        {
-            throw new NotImplementedException();
+            return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
         }
+
+        #region DELETE
+        public Task MarkPhotoAsDeleted(int photoToDeleteId)
+        {
+            string uri = $"{url}api/photos/{photoToDeleteId}";            
 
         public async Task<PhotoDocument> Get(int id)
         {
@@ -131,15 +128,37 @@ namespace Lama.BusinessLogic.Services
                         .Content.ReadAsStringAsync());
             }
             return photo;
+            return httpClient.DeleteAsync(uri);
         }
-        public Task<PhotoDocument> Update(PhotoDocument item, object key)
+        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos()
         {
-            throw new NotImplementedException();
+            string uri = $"{url}api/photos/deleted";
+
+            HttpResponseMessage response = await httpClient.GetAsync(uri);
+
+            string bodyJson = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<DeletedPhotoDTO[]>(bodyJson);
         }
 
-        public Task<int> Delete(PhotoDocument id)
+        public Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
         {
-            throw new NotImplementedException();
+            string uri = $"{url}api/photos/delete_permanently";
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(photosToDelete), Encoding.UTF8, "application/json");
+
+            return httpClient.PostAsync(uri, content);
         }
+
+        public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        {
+            string uri = $"{url}api/photos/restore";
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
+
+            return httpClient.PostAsync(uri, content);
+        }
+        #endregion
+
     }
 }

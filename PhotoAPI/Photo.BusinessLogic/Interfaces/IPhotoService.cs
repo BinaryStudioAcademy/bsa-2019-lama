@@ -13,5 +13,9 @@ namespace Photo.BusinessLogic.Interfaces
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
 
+        Task MarkPhotoAsDeleted(int photoId);
+        Task<DeletedPhotoDTO[]> GetDeletedPhotos();
+        Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
+        Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
     }
 }

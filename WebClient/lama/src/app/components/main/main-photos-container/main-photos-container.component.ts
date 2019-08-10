@@ -70,6 +70,11 @@ export class MainPhotosContainerComponent implements OnInit {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
+    componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+  }
+  public deletePhotoHandler(photoToDeleteId: number): void
+  {
+    this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
   
 }
