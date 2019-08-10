@@ -7,6 +7,7 @@ using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
+using Lama.Domain.DTO.User;
 
 namespace Lama.Controllers
 {
@@ -20,7 +21,7 @@ namespace Lama.Controllers
             _service = service;
         }
         [HttpPost]
-        public async Task<int> RegisterUser([FromBody] User user)
+        public async Task<int> RegisterUser([FromBody] UserDTO user)
         {
             var isExists = await _service.GetByEmail(user.Email);
 

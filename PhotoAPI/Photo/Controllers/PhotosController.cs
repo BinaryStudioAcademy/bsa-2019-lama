@@ -50,6 +50,12 @@ namespace Photo.Controllers
             return await this.photoService.Create(value);
         }
 
+        [HttpPost("avatar")]
+        public async Task<int> PostAvatar([FromBody] PhotoReceived value)
+        {
+            return await this.photoService.CreateAvatar(value);
+        }
+
         //TODO: set up for working with elastic
         /*        [HttpPut("/shared/{id}")]
                 public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)

@@ -10,22 +10,35 @@ using Lama.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Lama.DataAccess;
 using Lama.BusinessLogic.Exceptions;
+using Lama.Domain.DTO.User;
 
 namespace Lama.BusinessLogic.Services
 {
     public class UserService : BaseService<User>
     {
-        public UserService(ApplicationDbContext dbContext)
+        private readonly PhotoService _photoService;
+        public UserService(ApplicationDbContext dbContext, PhotoService photoService)
             :base(dbContext)
         {
-
+            _photoService = photoService;
         }
 
-        public override async Task<int> Create(User item)
+        public async Task<int> Create(UserDTO item)
         {
-            await Context.Users.AddAsync(item);
+            await Context.Users.AddAsync(new User
+            {
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                Email = item.Email,
+            });
             await Context.SaveChangesAsync();
-            return (await Context.Users.FirstOrDefaultAsync(u => u.Id == item.Id)).Id;
+            var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
+            item.Photo.AuthorId = user.Id;
+            var avatar = await _photoService.CreateAvatar(item.Photo);
+            user.AvatarId = avatar.Id;
+            Context.Users.Update(user);
+            await Context.SaveChangesAsync();
+            return (await Context.Users.FirstOrDefaultAsync(u => u.Id == user.Id)).Id;
         }
 
         public async Task<User> GetByEmail(string email)
