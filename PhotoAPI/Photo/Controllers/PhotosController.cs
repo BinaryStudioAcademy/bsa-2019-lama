@@ -39,17 +39,17 @@ namespace Photo.Controllers
         }
 
         // POST api/values
-        //[HttpPost]
-        //public async Task Post([FromBody] PhotoReceived[] values)
-        //{
-        //    await this.photoService.Create(values);
-        //}
-
         [HttpPost]
-        public async Task<int> Post([FromBody] PhotoReceived value)
+        public async Task<IEnumerable<int>> Post([FromBody] PhotoReceived[] values)
         {
-            return await this.photoService.Create(value);
+            return await this.photoService.Create(values);
         }
+
+        //[HttpPost]
+        //public async Task<int> Post([FromBody] PhotoReceived value)
+        //{
+        //    return await this.photoService.Create(value);
+        //}
 
         [HttpPost("avatar")]
         public async Task<int> PostAvatar([FromBody] PhotoReceived value)

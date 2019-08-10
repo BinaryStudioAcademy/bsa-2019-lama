@@ -27,27 +27,18 @@ namespace Lama.BusinessLogic.Services
         }
         public async Task CreateAll(PhotoReceived[] photos)
         {
-                foreach (var item in photos)
-                {
-                    await Create(item);
-                }
-            
-            
-            //using (HttpClient client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(url);
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    foreach (var item in photos)
-            //    {
-            //        var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
-            //        var photo = Convert.ToInt32(elasticId);
-            //        await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
-                    
-            //    }
-            //    await _context.SaveAsync();
 
-            //}
-            //return new HttpResponseMessage();
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(await (await client.PostAsJsonAsync($"{url}api/photos", photos)).Content.ReadAsStringAsync());
+                for (int i =0; i<photos.Length; i++)
+                {
+                    await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = elasticIds.ElementAt(i) });
+                }
+                await _context.SaveAsync();
+            }
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
@@ -97,9 +88,9 @@ namespace Lama.BusinessLogic.Services
                     await 
                     (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
                 var photo = Convert.ToInt32(elasticId);
-                await _context.SaveAsync();
                 await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
-                return (await _context.GetRepository<Photo>().GetAsync(p => p.ElasticId != photo)).LastOrDefault();
+                await _context.SaveAsync();
+                return (await _context.GetRepository<Photo>().GetAsync(i => i.ElasticId == photo)).LastOrDefault();
             }
         
         }
@@ -113,9 +104,8 @@ namespace Lama.BusinessLogic.Services
                 //var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
                 var elasticId =
                     await
-                    (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
+                    (await client.PostAsJsonAsync($"{url}api/photos/avatar", item)).Content.ReadAsStringAsync();
                 var photo = Convert.ToInt32(elasticId);
-
                 await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
                 await _context.SaveAsync();
                 return (await _context.GetRepository<Photo>().GetAsync()).LastOrDefault();

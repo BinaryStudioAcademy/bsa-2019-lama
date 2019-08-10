@@ -99,25 +99,28 @@ namespace Photo.BusinessLogic.Services
             return updateResponse.Get.Source;
         }
 
-        public async Task<int> Create(PhotoReceived item)
+        public async Task<IEnumerable<int>> Create(PhotoReceived[] items)
         {
             // TODO: rewrite this
-            long lastId = elasticClient.Count<PhotoDocument>().Count;      
-            
-            string base64 = ConvertToBase64(item.ImageUrl);
-
-            byte[] blob = Convert.FromBase64String(base64);
-
-            await Create(new PhotoDocument
+            long lastId = elasticClient.Count<PhotoDocument>().Count;
+            List<int> ids = new List<int>();
+            foreach (var item in items)
             {
-                Id = lastId++,
-                BlobId = await storage.LoadPhotoToBlob(blob),
-                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
-                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
-                UserId = item.AuthorId,
-                Description = item.Description
-            });
-            return (int)lastId;
+                string base64 = ConvertToBase64(item.ImageUrl);
+                byte[] blob = Convert.FromBase64String(base64);
+
+                await Create(new PhotoDocument
+                {
+                    Id = lastId++,
+                    BlobId = await storage.LoadPhotoToBlob(blob),
+                    Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
+                    Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
+                    UserId = item.AuthorId,
+                    Description = item.Description
+                });
+                ids.Add((int)lastId);
+            }
+            return ids;
         }
 
         public async Task<int> CreateAvatar(PhotoReceived item)
