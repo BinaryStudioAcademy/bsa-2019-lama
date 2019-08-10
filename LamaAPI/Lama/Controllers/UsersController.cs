@@ -8,6 +8,7 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
 using Lama.Domain.DTO.User;
+using Lama.Domain.BlobModels;
 
 namespace Lama.Controllers
 {
@@ -35,6 +36,22 @@ namespace Lama.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<int> UpdateUser([FromBody] UserDTO user)
+        {
+            var isExists = await _service.GetByEmail(user.Email);
+
+            if (isExists == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return await _service.UpdateUser(user);
+            }
+        }
+
+
         [HttpGet]
         public async Task Get()
         {
@@ -42,7 +59,7 @@ namespace Lama.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<User> Get(int id)
+        public async Task<UserDTO> Get(int id)
         {
             return await _service.Get(id);
         }
@@ -53,11 +70,11 @@ namespace Lama.Controllers
             
         //}
 
-        [HttpPut]
-        public async Task Put([FromBody] User value)
-        {
-            await _service.Update(value);
-        }
+        //[HttpPut]
+        //public async Task Put([FromBody] User value)
+        //{
+        //    await _service.Update(value);
+        //}
 
         [HttpDelete("{id}")]
         public async Task Delete(int id)

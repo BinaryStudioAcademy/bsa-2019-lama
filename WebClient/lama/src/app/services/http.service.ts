@@ -9,7 +9,6 @@ export class HttpService{
 	
     getData(endPoint: string){
         return this.http.get(`${environment.lamaApiUrl}/api/${endPoint}`);
-		
     }
 
     putData(endPoint: string, data: any) {

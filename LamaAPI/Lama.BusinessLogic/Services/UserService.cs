@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Lama.DataAccess;
 using Lama.BusinessLogic.Exceptions;
 using Lama.Domain.DTO.User;
+using Lama.Domain.BlobModels;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -34,6 +35,7 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
             var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
             item.Photo.AuthorId = user.Id;
+            item.Photo.Description = "avatar";
             var avatar = await _photoService.CreateAvatar(item.Photo);
             user.AvatarId = avatar.Id;
             Context.Users.Update(user);
@@ -41,14 +43,37 @@ namespace Lama.BusinessLogic.Services
             return (await Context.Users.FirstOrDefaultAsync(u => u.Id == user.Id)).Id;
         }
 
+        public async Task<int> UpdateUser(UserDTO user)
+        {
+            var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            var newAvatar = await _photoService.CreateAvatar(user.Photo);
+            newUser.AvatarId = newAvatar.Id;
+            newUser.FirstName = user.FirstName;
+            newUser.LastName = user.LastName;
+            newUser.Email = user.Email;
+            Context.Users.Update(newUser);
+            await Context.SaveChangesAsync();
+            return newUser.Id;
+        }
+
         public async Task<User> GetByEmail(string email)
         {
             return (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
         }
 
-        public async Task<User> Get(int id)
+        public async Task<UserDTO> Get(int id)
         {
-            return await Context.Users.SingleAsync(user => user.Id == id);
+            var u = await Context.Users.SingleAsync(user => user.Id == id);
+            var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == u.AvatarId);
+            var url = (await _photoService.Get(avatar.ElasticId)).Blob256Id;
+            return new UserDTO
+            {
+                PhotoUrl = url,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Id = u.Id
+            };
         }
 
         public async Task Update(User user)

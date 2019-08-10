@@ -20,7 +20,9 @@ export class ProfileComponent implements OnInit {
   user: any = {
     firstName: 'First name',
     lastName: 'Last name',
-    email: 'Email'
+    email: 'Email',
+    photo: {imageUrl: '',
+    description: ''}
   };;
   photoUrl: string;
   testReceivedUser: User;
@@ -28,9 +30,9 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
-    
       this.user = u;
       this.showSpinner = false;
+      this.photoUrl = u.photoUrl;
     });
 	
     this.userForm = new FormGroup({
@@ -45,17 +47,21 @@ export class ProfileComponent implements OnInit {
     if (target.files && target.files[0]) {
         const file = target.files[0];
         const reader = new FileReader();
-        reader.onload = e => this.photoUrl = reader.result as string;
+        reader.onload = e => {
+          this.photoUrl = reader.result as string;
+          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: localStorage.getItem('userId')}
+        }
         reader.readAsDataURL(file);
-        this.userService.updateCurrentUser({photoURL: this.photoUrl})
     }
   }
 
   async saveUser() {
-  this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+    console.log(this.photoUrl);
+    this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
     localStorage.setItem('photoUrl', `${this.user.avatarUrl}`);
     localStorage.setItem('email', this.user.email)
+    this.userService.updateCurrentUser({photoURL: this.photoUrl})
   }
 }

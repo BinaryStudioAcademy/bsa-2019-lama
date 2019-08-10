@@ -34,9 +34,10 @@ namespace Lama.BusinessLogic.Services
                     var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
                     var photo = Convert.ToInt32(elasticId);
                     await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
-                    await _context.SaveAsync();
+                    
                 }
-               
+                await _context.SaveAsync();
+
             }
             return new HttpResponseMessage();
         }
@@ -98,9 +99,20 @@ namespace Lama.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        public Task<PhotoDocument> Get(int id)
+        public async Task<PhotoDocument> Get(int id)
         {
-            throw new NotImplementedException();
+            id--;
+            PhotoDocument photo;
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                photo = JsonConvert.DeserializeObject<PhotoDocument>
+                    (await
+                    (await client.GetAsync($"{url}api/photos/{id}"))
+                        .Content.ReadAsStringAsync());
+            }
+            return photo;
         }
         public Task<PhotoDocument> Update(PhotoDocument item, object key)
         {
