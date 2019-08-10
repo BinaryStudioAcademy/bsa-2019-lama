@@ -17,8 +17,8 @@ namespace Lama.BusinessLogic.Services
 {
     public class UserService : BaseService<User>
     {
-        private readonly PhotoService _photoService;
-        public UserService(ApplicationDbContext dbContext, PhotoService photoService)
+        private readonly IPhotoService _photoService;
+        public UserService(ApplicationDbContext dbContext, IPhotoService photoService)
             :base(dbContext)
         {
             _photoService = photoService;

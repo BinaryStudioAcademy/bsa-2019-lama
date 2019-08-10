@@ -15,31 +15,37 @@ using Lama.Domain.DataTransferObjects.Photo;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class PhotoService: IPhotoService, IDisposable
+    public class PhotoService : IPhotoService, IDisposable
     {
         // FIELDS
         private string url;
         private IUnitOfWork _context;
+        private HttpClient httpClient;
         public PhotoService(string url, IUnitOfWork context)
         {
             this.url = url;
             _context = context;
+            httpClient = new HttpClient();
         }
         public async Task CreateAll(PhotoReceived[] photos)
         {
+            var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(
+                await
+               (await httpClient.PostAsJsonAsync($"{url}api/photos", photos)).Content.ReadAsStringAsync());
 
-            using (HttpClient client = new HttpClient())
+            for (int i = 0; i < photos.Length; i++)
             {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(await (await client.PostAsJsonAsync($"{url}api/photos", photos)).Content.ReadAsStringAsync());
-                for (int i =0; i<photos.Length; i++)
-                {
-                    await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = elasticIds.ElementAt(i) });
-                }
-                await _context.SaveAsync();
+                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = elasticIds.ElementAt(i) });
             }
+            await _context.SaveAsync();
+
         }
+
+        public void Dispose()
+        {
+            this.httpClient.Dispose();
+        }
+
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
@@ -53,6 +59,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
+
             string uri = $"{url}api/photos";
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
@@ -61,8 +68,8 @@ namespace Lama.BusinessLogic.Services
 
             string bodyJson = await response.Content.ReadAsStringAsync();
 
-                return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
-            }
+            return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
+
         }
 
         public Task<int> Create(PhotoDocument item)
@@ -76,16 +83,15 @@ namespace Lama.BusinessLogic.Services
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
-                var elasticId = 
-                    await 
+                var elasticId =
+                    await
                     (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
                 var photo = Convert.ToInt32(elasticId);
                 await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
                 await _context.SaveAsync();
                 return (await _context.GetRepository<Photo>().GetAsync(i => i.ElasticId == photo)).LastOrDefault();
             }
-        
+
         }
 
         public async Task<Photo> CreateAvatar(PhotoReceived item)
@@ -105,15 +111,6 @@ namespace Lama.BusinessLogic.Services
             }
         }
 
-        public Task<IEnumerable<PhotoDocument>> FindAll()
-            return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
-        }
-
-        #region DELETE
-        public Task MarkPhotoAsDeleted(int photoToDeleteId)
-        {
-            string uri = $"{url}api/photos/{photoToDeleteId}";            
-
         public async Task<PhotoDocument> Get(int id)
         {
             id--;
@@ -128,6 +125,13 @@ namespace Lama.BusinessLogic.Services
                         .Content.ReadAsStringAsync());
             }
             return photo;
+        }
+
+        #region DELETE
+        public Task MarkPhotoAsDeleted(int photoToDeleteId)
+        {
+            string uri = $"{url}api/photos/{photoToDeleteId}";
+
             return httpClient.DeleteAsync(uri);
         }
         public async Task<DeletedPhotoDTO[]> GetDeletedPhotos()

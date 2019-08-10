@@ -31,22 +31,19 @@ namespace Photo.BusinessLogic.Services
         // METHODS
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            SearchRequest<PhotoDocument> searchRequest = new SearchRequest<PhotoDocument>
-            {
-                Query = new TermQuery
-                {
-                    Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
-                    Value = false
-                }
-            };
-
-            return (await elasticClient.SearchAsync<PhotoDocument>(p => p
+            var docs = (await elasticClient.SearchAsync<PhotoDocument>(p => p
+            .From(0)
+            .Size(2000)
             .Query(s => s
             .Match(i => i
             .Field(f => f.BlobId)
-                .Query(".*images.*"))))).Documents;         
+                .Query(".*images.*")
+                .Field(f => f.IsDeleted)
+                .Query("false"))))).Documents;
+
+            return docs;
         }
-        public async Task<PhotoDocument> Get(int blobId)
+        public async Task<PhotoDocument> Get(int elasticId)
         {
             return (await elasticClient.GetAsync<PhotoDocument>(elasticId)).Source;
         }
