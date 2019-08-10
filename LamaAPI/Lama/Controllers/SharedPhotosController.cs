@@ -23,5 +23,11 @@ namespace Lama.Controllers
         {
             return await _sharingPhotoService.Get(id);
         }
+
+        [HttpPost]
+        public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
+        {
+            await _sharingPhotoService.SharingPhoto(sharedPhoto);
+        }
     }
 }

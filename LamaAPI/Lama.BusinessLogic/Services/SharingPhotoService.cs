@@ -77,5 +77,11 @@ namespace Lama.BusinessLogic.Services
         {
             throw new System.NotImplementedException();
         }
+
+        public async Task SharingPhoto(SharedPhoto sharedPhoto)
+        {
+            await _context.SharedPhotos.AddAsync(sharedPhoto);
+            await _context.SaveChangesAsync();
+        }
     }
 }
