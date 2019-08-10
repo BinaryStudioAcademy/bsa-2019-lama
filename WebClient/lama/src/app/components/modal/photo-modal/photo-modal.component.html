@@ -11,21 +11,18 @@
                     <div class="column is-9">
                             <div [ngSwitch]="clickedMenuItem?.title">
 
-
                                 <!--crop template-->
                                 <ng-template ngSwitchCase="crop">
-                                    <figure class="image main-photo">
-                                        <app-crop-image
-                                            [imageToCrop]="photo.blobId"
-                                            (cancelClickedEvent)="goBackToImageView()"
-                                            (saveClickedEvent)="cropImageHandler($event)"
-                                        ></app-crop-image>
-                                    </figure>
+                                    <app-crop-image
+                                        [imageToCrop]="photo.blobId"
+                                        (cancelClickedEvent)="goBackToImageView()"
+                                        (saveClickedEvent)="cropImageHandler($event)">
+                                    </app-crop-image>
                                 </ng-template>
 
                                 <!--default image template-->
                                 <ng-template ngSwitchDefault>
-                                    <figure class="image main-photo">
+                                    <div class="is-relative main-photo">
                                         <!--image-->
                                         <img src="{{ photo.blobId }}" alt="Image">
 
@@ -45,7 +42,7 @@
                                             </div>
                                         </div>
 
-                                    </figure>
+                                    </div>
                                 </ng-template>
 
                             </div>

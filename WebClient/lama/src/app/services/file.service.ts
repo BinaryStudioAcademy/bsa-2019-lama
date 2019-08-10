@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO } from '../models';
+import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO } from '../models';
+
+import { Subscription, Subscriber } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,8 @@ export class FileService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
 
-  sendPhoto(photos: Photo[]) {
+  public sendPhoto(photos: Photo[]): void
+  {
     this.client.post<Photo[]>(`${environment.lamaApiUrl}/api/photo`, photos, this.httpOptions).subscribe((e) => console.log(e));
   }
   
@@ -44,7 +47,9 @@ export class FileService {
   {
     return str.match('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}')[0];
   }
-  receivePhoto() {
-    return this.client.get(`${environment.lamaApiUrl}/api/photo`);
+  public receivePhoto(): Observable<PhotoRaw[]>
+  { 
+    return this.client.get(`${environment.lamaApiUrl}/api/photo`)
+      .pipe(map(res => res as PhotoRaw[]));
   }
 }
