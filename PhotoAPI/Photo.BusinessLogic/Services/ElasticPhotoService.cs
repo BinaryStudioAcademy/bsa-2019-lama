@@ -26,20 +26,18 @@ namespace Photo.BusinessLogic.Services
         // METHODS
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return (await elasticClient.SearchAsync<PhotoDocument>()).Documents;
-            //return (await elasticClient.SearchAsync<PhotoDocument>(p => p
-            //.Query(s => s
-            //.Match(i => i
-            //.Field(f => f.Description)
-            //    .Query("avatar"))))).Documents/*.Documents*/;
+            //return (await elasticClient.SearchAsync<PhotoDocument>()).Documents;
+            return (await elasticClient.SearchAsync<PhotoDocument>(p => p
+            .Query(s => s
+            .Match(i => i
+            .Field(f => f.BlobId)
+                .Query(".*images.*"))))).Documents/*.Documents*/;
 
 
         }
 
         public async Task<PhotoDocument> Get(int elasticId)
         {
-            var doc = await elasticClient.GetAsync<PhotoDocument>(elasticId);
-
             return (await elasticClient.GetAsync<PhotoDocument>(elasticId)).Source;
         }
 
