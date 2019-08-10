@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Interfaces;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -52,6 +53,34 @@ namespace Photo.BusinessLogic.Services
                 new DocumentPath<PhotoDocument>(item),
                 u => u.Index(indexName).Doc(item));
         }
+        public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
+        {
+            string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
+
+            byte[] newImageBlob = Convert.FromBase64String(base64);
+
+
+            await DeleteAllBlobsAsync(elasticId: updatePhotoDTO.Id);
+            
+            UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
+            {
+                BlobId = await storage.LoadPhotoToBlob(newImageBlob),
+                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64)),
+                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256)),
+            };
+
+            await elasticClient.UpdateAsync<PhotoDocument, UpdatedPhotoResultDTO>(updatePhotoDTO.Id, p => p.Doc(updatedPhoto));
+
+            return updatedPhoto;
+        }
+        private async Task DeleteAllBlobsAsync(int elasticId)
+        {
+            PhotoDocument photoDocument = await this.Get(elasticId);
+
+            await storage.DeleteFileAsync(photoDocument.BlobId);
+            await storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await storage.DeleteFileAsync(photoDocument.Blob256Id);
+        }
 
         public Task Create(PhotoDocument item)
         {
@@ -60,34 +89,26 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
         {
-            //TODO: rewrite using elastic
-            /*            var photoDocument = storage.Photos.Find(id);
-                        if (photoDocument == null)
-                        {
-                            throw new NotFoundException(nameof(photoDocument), id);
-                        }
+            // TODO: rewrite using elastic
+            // TODO: check if this work
+            var updateLinkObject = new { SharedLink = sharedLink };
 
-                        photoDocument.SharedLink = sharedLink;
+            UpdateResponse<PhotoDocument> updateResponse 
+                = await elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(updateLinkObject));
 
-                        await _db.SaveChangesAsync();
-
-                        return photoDocument;*/
-            throw new NotImplementedException();
+            return updateResponse.Get.Source;
         }
 
         public async Task<int> Create(PhotoReceived item)
         {
-            long lastId = elasticClient.Count<PhotoDocument>().Count;
+            // TODO: rewrite this
+            long lastId = elasticClient.Count<PhotoDocument>().Count;      
+            
+            for (int i = 0; i < items.Length; i++)
+            {
+                string base64 = ConvertToBase64(items[i].ImageUrl);
 
-            // TODO: get this with linq
-            string base64;
-                // TODO: change this to regex
-            base64 = item.ImageUrl
-                .Replace("data:image/jpeg;base64,", String.Empty)
-                .Replace("data:image/png;base64,", String.Empty)
-                .Replace("-", "+").Replace("_", "/");
-
-            byte[] blob = Convert.FromBase64String(base64);
+                byte[] blob = Convert.FromBase64String(base64);
 
             await Create(new PhotoDocument
             {
@@ -108,10 +129,7 @@ namespace Photo.BusinessLogic.Services
             // TODO: get this with linq
             string base64;
             // TODO: change this to regex
-            base64 = item.ImageUrl
-                .Replace("data:image/jpeg;base64,", String.Empty)
-                .Replace("data:image/png;base64,", String.Empty)
-                .Replace("-", "+").Replace("_", "/");
+            base64 = ConvertToBase64(item.ImageUrl)
 
             byte[] blob = Convert.FromBase64String(base64);
 
@@ -125,6 +143,14 @@ namespace Photo.BusinessLogic.Services
                 Description = item.Description
             });
             return (int)lastId;
+        }
+        private string ConvertToBase64(string imageUrl)
+        {
+            // TODO: change this to regex
+            return imageUrl
+                    .Replace("data:image/jpeg;base64,", String.Empty)
+                    .Replace("data:image/png;base64,", String.Empty)
+                    .Replace("-", "+").Replace("_", "/");
         }
     }
 }

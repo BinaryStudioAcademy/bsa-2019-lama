@@ -11,6 +11,8 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.DataAccess.Interfaces;
 using Lama.Domain.DbModels;
 using System.Linq;
+using Lama.Domain.DataTransferObjects.Photo;
+
 
 namespace Lama.BusinessLogic.Services
 {
@@ -56,8 +58,24 @@ namespace Lama.BusinessLogic.Services
             }
             return photos;
         }
+        
+        public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                string uri = $"{url}api/photos";
 
-        public async Task<int> Create(PhotoDocument item)
+                StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+
+                string bodyJson = await response.Content.ReadAsStringAsync();
+
+                return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
+            }
+        }
+        
+        public Task<int> Create(PhotoDocument item)
         {
             return 1;
         }

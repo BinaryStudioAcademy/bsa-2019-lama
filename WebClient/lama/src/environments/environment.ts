@@ -18,8 +18,8 @@ export const environment = {
   {
     crop:
     {
-      cropMinWidth: 256,
-      cropMinHeight: 256
+      cropMinWidth: 128,
+      cropMinHeight: 128
     }
   },
   compressionOptions: {

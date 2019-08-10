@@ -26,22 +26,25 @@ namespace Photo.DataAccess.Blob
                 cloudBlobContainerPhotos.CreateIfNotExists();
                 cloudBlobContainerAvatars.CreateIfNotExists();
 
-                BlobContainerPermissions permissions = new BlobContainerPermissions
-                {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
-                };
+            BlobContainerPermissions permissions = new BlobContainerPermissions
+            {
+                PublicAccess = BlobContainerPublicAccessType.Blob
+            };
 
                 cloudBlobContainerPhotos.SetPermissionsAsync(permissions);
                 cloudBlobContainerAvatars.SetPermissionsAsync(permissions);
             }
         }
-
+        
         // METHODS
         public async Task<string> LoadPhotoToBlob(byte[] blob)
         {
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
+            string blobName = Guid.NewGuid().ToString() + ".jpg";
+
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
             cloudBlockBlob.Properties.ContentType = "image/jpg";
-            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
+            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
+
             return cloudBlockBlob.Uri.ToString();
         }
 
@@ -51,6 +54,10 @@ namespace Photo.DataAccess.Blob
             cloudBlockBlob.Properties.ContentType = "image/jpg";
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return cloudBlockBlob.Uri.ToString();
+        public async Task DeleteFileAsync(string blobName)
+        {
+            CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
+            await blob.DeleteIfExistsAsync();
         }
     }
 }

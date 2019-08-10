@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Photo.BusinessLogic.Interfaces;
 
 using Photo.Domain.BlobModels;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.Controllers
 {
@@ -62,12 +63,21 @@ namespace Photo.Controllers
                 {
                     return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
                 }*/
-
-        // PUT api/photos/5
-        [HttpPut]
-        public void Put([FromBody] PhotoDocument value)
+        
+        // PUT api/photos/
+        // TODO: set up for working with elastic
+        // TODO: check if this work
+        [HttpPut("/shared/{id}")]
+        public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)
         {
-            this.photoService.Update(value);
+            return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
+        }
+
+        // PUT api/photos/
+        [HttpPut]
+        public Task<UpdatedPhotoResultDTO> Put([FromBody] UpdatePhotoDTO value)
+        {
+            return this.photoService.UpdateImage(value);
         }
 
         // DELETE api/photos/5

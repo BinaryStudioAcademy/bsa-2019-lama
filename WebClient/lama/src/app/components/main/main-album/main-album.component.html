@@ -1,9 +1,17 @@
 <a class="link_album">
-    <div class="album" (click)="clickPerformed()">
-        <img src="{{ album.imageUrl }}">
+    <div class="album">
 
+        <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu($event)">
+            <img src="assets//icons//three-dots-menu.svg" alt="">
+        </div>
+        <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
+            <a href="#" class="dropdown-item">Remove Album</a>
+            <a href="#" class="dropdown-item">Share Album</a>
+            <a href="#" class="dropdown-item">Download Album</a>
+        </div>
+        <img src="{{ album.imageUrl }}" (click)="clickPerformed()">
     </div>
-    <div class="description">
+    <div class="description has-text-centered">
         <p>{{album.name}}</p>
     </div>
 </a>

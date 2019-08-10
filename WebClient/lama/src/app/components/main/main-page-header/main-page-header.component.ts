@@ -18,7 +18,7 @@ import { HttpService } from 'src/app/services/http.service';
 export class MainPageHeaderComponent implements OnInit {
 
 
-  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef }) 
+  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   private avatarUrl;
@@ -30,14 +30,15 @@ export class MainPageHeaderComponent implements OnInit {
       this.avatarUrl = u.photoUrl;
     });
   }
-  
+
   ngOnInit() {
   }
 
   public logOut() {
     this.auth.doLogout()
-             .then(() => this.router.navigate(['/']))
-             .catch(e => {console.log("user is not signed in")});
+            .then(this.auth.token = null)
+            .then(() => this.router.navigate(['/']))
+            .catch(e => {console.log("user is not signed in")});
   }
 
   public openModalClicked(event): void
@@ -49,10 +50,10 @@ export class MainPageHeaderComponent implements OnInit {
       let photos = []
       data.forEach(element => {
         photos.push({blobId: element.imageUrl});
-      }) 
+      })
       this.shared.photos = photos;
 
     });
-    componentRef.instance.toggleModal();    
+    componentRef.instance.toggleModal();
   }
 }
