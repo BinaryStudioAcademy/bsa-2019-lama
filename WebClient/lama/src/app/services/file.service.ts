@@ -2,17 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO } from '../models';
-
-import { Subscription, Subscriber } from 'rxjs';
+import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO, DeletedPhotoDTO, PhotoToDeleteRestoreDTO } from '../models';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FileService {
+export class FileService 
+{
 
   constructor(private client: HttpClient) { }
 
@@ -49,7 +48,26 @@ export class FileService {
   }
   public receivePhoto(): Observable<PhotoRaw[]>
   { 
-    return this.client.get(`${environment.lamaApiUrl}/api/photo`)
+    return this.client.get(`${environment.lamaApiUrl}/api/photo`, this.httpOptions)
       .pipe(map(res => res as PhotoRaw[]));
+  }
+  
+  public markPhotoAsDeleted(photosToDeleteId: number): Observable<object>
+  { 
+    return this.client.delete(`${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`);
+  }
+  public getDeletedPhotos(): Observable<DeletedPhotoDTO[]>
+  {
+    return this.client.get(`${environment.lamaApiUrl}/api/photo/deleted`)
+      .pipe(map(res => res as DeletedPhotoDTO[]));
+  }
+  public deletePhotosPermanently(photosToDelete: PhotoToDeleteRestoreDTO[]): Observable<object>
+  {    
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/delete_permanently`, photosToDelete);
+  }
+  
+  public restoresDeletedPhotos(photosToRestore: PhotoToDeleteRestoreDTO[]): Observable<object>
+  {    
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/restore`, photosToRestore)
   }
 }

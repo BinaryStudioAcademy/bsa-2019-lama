@@ -1,9 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
-import { ActionItem, UpdatePhotoDTO, ImageCroppedArgs } from 'src/app/models';
+import { UpdatePhotoDTO, ImageCroppedArgs, MenuItem } from 'src/app/models';
 
 import { FileService } from 'src/app/services';
 
@@ -20,14 +20,19 @@ export class PhotoModalComponent implements OnInit
   public isShown: boolean;
   public showSharedModal: boolean = false;
 
-  public clickedMenuItem: ActionItem;
-  public shownMenuItems: ActionItem[];
+  public clickedMenuItem: MenuItem;
+  public shownMenuItems: MenuItem[];
+
+  // events
+  @Output() 
+  public deletePhotoEvenet = new EventEmitter<number>();
 
   // fields
   private fileService: FileService;
 
-  private defaultMenuItem: ActionItem[];
-  private editingMenuItem: ActionItem[];
+  private defaultMenuItem: MenuItem[];
+  private editingMenuItem: MenuItem[];
+  private deletingMenuItem: MenuItem[];
 
   // constructors
   constructor(fileService: FileService)
@@ -50,31 +55,59 @@ export class PhotoModalComponent implements OnInit
   {
     this.defaultMenuItem =
     [
-      { title: "share",    icon: "share" , route: ''},
-      { title: "remove",   icon: "clear", route: ''},
-      { title: "download", icon: "cloud_download", route: '' },
-      { title: "edit",     icon: "edit", route: '' }
+      { title: "share",    icon: "share" },
+      { title: "remove",   icon: "clear"},
+      { title: "download", icon: "cloud_download" },
+      { title: "edit",     icon: "edit" }
     ];
     this.editingMenuItem =
     [
-      { title: "crop",   icon: "crop", route: '' },
-      { title: "rotate", icon: "rotate_left", route: '' }
+      { title: "crop",   icon: "crop" },
+      { title: "rotate", icon: "rotate_left" }
+    ];
+    this.deletingMenuItem = 
+    [
+      { title: "yes", icon: "done" },
+      { title: "no", icon: "remove" }
     ];
   }
 
   // methods
-  public menuClickHandler(clickedMenuItem: ActionItem): void
+  public menuClickHandler(clickedMenuItem: MenuItem): void
   {
     this.clickedMenuItem = clickedMenuItem;
 
+
+    // share
+    if (clickedMenuItem === this.defaultMenuItem[0])
+    {
+      this.openShareModal();
+    }
+    
+    // remove
+    if (clickedMenuItem === this.defaultMenuItem[1])
+    {
+      this.shownMenuItems = this.deletingMenuItem;
+    }
+    
+    if (clickedMenuItem === this.deletingMenuItem[0])// yes
+    {
+      this.deleteImage();
+    }
+    
+    if (clickedMenuItem === this.deletingMenuItem[1])// no
+    {
+      this.shownMenuItems = this.defaultMenuItem;
+    }
+
+    // download
+
+    // edit
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
       this.shownMenuItems = this.editingMenuItem;
     }
 
-    if(clickedMenuItem == this.defaultMenuItem[0]){
-      this.openShareModal();
-    }
 
   }
   public mouseLeftOverlayHandler(): void
@@ -108,7 +141,18 @@ export class PhotoModalComponent implements OnInit
     this.isShown = false;
   }
 
-  private openShareModal(){
+  private openShareModal(): void
+  {
     this.showSharedModal = true;
+  }
+  private deleteImage(): void
+  {
+    this.fileService.markPhotoAsDeleted(this.photo.id)
+    .subscribe(res =>
+      {
+        this.closeModal();
+
+        this.deletePhotoEvenet.emit(this.photo.id);
+      });
   }
 }

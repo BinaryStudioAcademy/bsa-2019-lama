@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import {AppRoutingModule} from './app-routing.module';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  template: `<router-outlet></router-outlet>`,
 })
-export class AppComponent {
+export class AppComponent
+{
   title = 'lama';
 }

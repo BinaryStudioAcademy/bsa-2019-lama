@@ -61,11 +61,39 @@ namespace Photo.Controllers
             return this.photoService.UpdateImage(value);
         }
 
-        // DELETE api/photos/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+
+        #region DELETE
+        // DELETE: api/photos/5
+        [HttpDelete("{photoToDeleteId}")]
+        public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
-            this.photoService.Delete(id);
+            return this.photoService.MarkPhotoAsDeleted(photoToDeleteId);
         }
+
+        // GET: api/photos/deleted
+        [HttpGet]
+        [Route("deleted")]
+        public Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        {
+
+            return this.photoService.GetDeletedPhotos();
+        }
+
+        // POST: api/photos/delete_permanently
+        [HttpPost]
+        [Route("delete_permanently")]
+        public Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
+        {
+            return this.photoService.DeletePhotosPermanently(photosToDelete);
+        }
+
+        // POST: api/photos/restore
+        [HttpPost]
+        [Route("restore")]
+        public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        {
+            return this.photoService.RestoresDeletedPhotos(photosToRestore);
+        }
+        #endregion
     }
 }

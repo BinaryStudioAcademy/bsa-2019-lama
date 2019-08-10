@@ -38,7 +38,6 @@ namespace Lama
             services.AddQueueService(Configuration);
             services.AddBusinessLogicServices(Configuration);
             services.AddSiteAuthentications(Configuration);
-            services.AddServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
