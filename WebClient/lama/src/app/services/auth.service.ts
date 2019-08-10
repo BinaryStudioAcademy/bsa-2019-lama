@@ -116,17 +116,7 @@ export class AuthService {
         }
       this.registerUser(this._user);
     })
-  }
-    // localStorage.setItem('firstName', firstName);
-    // localStorage.setItem('lastName', lastName);
-    // this._user = {
-    //   firstName: firstName,
-    //   lastName: lastName,
-    //   email: user.email,
-    //   photo: { imageUrl: base64_avatar}
-    // }
-    // this.registerUser(this._user);
-  
+  }  
 
   public toDataUrl(url, callback) {
     var xhr = new XMLHttpRequest();

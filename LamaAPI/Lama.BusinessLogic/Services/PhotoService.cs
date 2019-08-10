@@ -79,51 +79,41 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<Photo> Create(PhotoReceived item)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var elasticId =
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var elasticId =
                     await
-                    (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
-                var photo = Convert.ToInt32(elasticId);
-                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
-                await _context.SaveAsync();
-                return (await _context.GetRepository<Photo>().GetAsync(i => i.ElasticId == photo)).LastOrDefault();
-            }
-
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
+            var photo = Convert.ToInt32(elasticId);
+            await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
+            await _context.SaveAsync();
+            return (await _context.GetRepository<Photo>().GetAsync(i => i.ElasticId == photo)).LastOrDefault();
         }
 
         public async Task<Photo> CreateAvatar(PhotoReceived item)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
-                var elasticId =
-                    await
-                    (await client.PostAsJsonAsync($"{url}api/photos/avatar", item)).Content.ReadAsStringAsync();
-                var photo = Convert.ToInt32(elasticId);
-                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
-                await _context.SaveAsync();
-                return (await _context.GetRepository<Photo>().GetAsync()).LastOrDefault();
-            }
+
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var elasticId =
+                await
+                (await httpClient.PostAsJsonAsync($"{url}api/photos/avatar", item)).Content.ReadAsStringAsync();
+            var photo = Convert.ToInt32(elasticId);
+            await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
+            await _context.SaveAsync();
+            return (await _context.GetRepository<Photo>().GetAsync()).LastOrDefault();
+
         }
 
         public async Task<PhotoDocument> Get(int id)
         {
             id--;
             PhotoDocument photo;
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                photo = JsonConvert.DeserializeObject<PhotoDocument>
-                    (await
-                    (await client.GetAsync($"{url}api/photos/{id}"))
-                        .Content.ReadAsStringAsync());
-            }
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            photo = JsonConvert.DeserializeObject<PhotoDocument>
+                (await
+                (await httpClient.GetAsync($"{url}api/photos/{id}"))
+                    .Content.ReadAsStringAsync());
+
             return photo;
         }
 
