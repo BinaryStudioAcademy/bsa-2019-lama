@@ -2,7 +2,7 @@
 
 <spinner *ngIf="showSpinner"></spinner>
 
-<div class="photos-container" fileDrop (fileDropped)="uploadFile($event)">
+<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)">
     <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
     <!--photo list-->
     <div *ngFor="let item of photos">
