@@ -42,7 +42,7 @@ namespace Photo.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(f => new PhotoBlobStore(configuration["StorageConnectionString"]));
+            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(f => new PhotoBlobStore(configuration["Storage"]));
 
             services.AddScoped<IPhotoService, ElasticPhotoService>(factory => 
                 new ElasticPhotoService(
