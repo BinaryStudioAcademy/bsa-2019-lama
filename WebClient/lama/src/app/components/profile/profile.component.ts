@@ -17,7 +17,7 @@ export class ProfileComponent implements OnInit {
     private userService: UserService) {  }
   
   userForm: FormGroup;
-  user: any = {
+  user: User = {
     firstName: 'First name',
     lastName: 'Last name',
     email: 'Email',
@@ -49,7 +49,7 @@ export class ProfileComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = e => {
           this.photoUrl = reader.result as string;
-          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: localStorage.getItem('userId')}
+          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: parseInt(localStorage.getItem('userId'))}
         }
         reader.readAsDataURL(file);
     }
@@ -60,7 +60,7 @@ export class ProfileComponent implements OnInit {
     this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
-    localStorage.setItem('photoUrl', `${this.user.avatarUrl}`);
+    localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
     localStorage.setItem('email', this.user.email)
     this.userService.updateCurrentUser({photoURL: this.photoUrl})
   }

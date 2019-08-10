@@ -104,11 +104,9 @@ namespace Photo.BusinessLogic.Services
             // TODO: rewrite this
             long lastId = elasticClient.Count<PhotoDocument>().Count;      
             
-            for (int i = 0; i < items.Length; i++)
-            {
-                string base64 = ConvertToBase64(items[i].ImageUrl);
+            string base64 = ConvertToBase64(item.ImageUrl);
 
-                byte[] blob = Convert.FromBase64String(base64);
+            byte[] blob = Convert.FromBase64String(base64);
 
             await Create(new PhotoDocument
             {
@@ -129,7 +127,7 @@ namespace Photo.BusinessLogic.Services
             // TODO: get this with linq
             string base64;
             // TODO: change this to regex
-            base64 = ConvertToBase64(item.ImageUrl)
+            base64 = ConvertToBase64(item.ImageUrl);
 
             byte[] blob = Convert.FromBase64String(base64);
 

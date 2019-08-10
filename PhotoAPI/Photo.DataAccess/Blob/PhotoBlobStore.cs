@@ -1,13 +1,13 @@
 ﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
-
+using Photo.DataAccess.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 
 namespace Photo.DataAccess.Blob
 {
-    public class PhotoBlobStore : Interfaces.IPhotoBlobStorage
+    public class PhotoBlobStore : IPhotoBlobStorage
     {
         // FIELDS
         private CloudBlobContainer cloudBlobContainerPhotos;
@@ -41,7 +41,7 @@ namespace Photo.DataAccess.Blob
         {
             string blobName = Guid.NewGuid().ToString() + ".jpg";
 
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
             cloudBlockBlob.Properties.ContentType = "image/jpg";
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
 
@@ -54,9 +54,11 @@ namespace Photo.DataAccess.Blob
             cloudBlockBlob.Properties.ContentType = "image/jpg";
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return cloudBlockBlob.Uri.ToString();
+        }
+
         public async Task DeleteFileAsync(string blobName)
         {
-            CloudBlockBlob blob = this.cloudBlobContainer.GetBlockBlobReference(blobName);
+            CloudBlockBlob blob = this.cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
             await blob.DeleteIfExistsAsync();
         }
     }

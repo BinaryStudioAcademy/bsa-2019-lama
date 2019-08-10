@@ -35,7 +35,6 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
             var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
             item.Photo.AuthorId = user.Id;
-            item.Photo.Description = "avatar";
             var avatar = await _photoService.CreateAvatar(item.Photo);
             user.AvatarId = avatar.Id;
             Context.Users.Update(user);

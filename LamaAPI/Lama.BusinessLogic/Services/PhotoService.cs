@@ -77,7 +77,7 @@ namespace Lama.BusinessLogic.Services
         
         public Task<int> Create(PhotoDocument item)
         {
-            return 1;
+            throw new NotImplementedException();
         }
 
         public async Task<Photo> Create(PhotoReceived item)
