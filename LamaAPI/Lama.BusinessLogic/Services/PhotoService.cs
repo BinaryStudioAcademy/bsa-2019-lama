@@ -8,27 +8,36 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
+using Lama.DataAccess.Interfaces;
+using Lama.Domain.DbModels;
 
 namespace Lama.BusinessLogic.Services
 {
     public class PhotoService: IBaseService<PhotoDocument>
     {
         private string url;
-        public PhotoService(string url)
+        private IUnitOfWork _context;
+        public PhotoService(string url, IUnitOfWork context)
         {
             this.url = url;
+            _context = context;
         }
         public async Task<HttpResponseMessage> CreateAll(PhotoReceived[] photos)
         {
-            HttpResponseMessage response;
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                response = await client.PostAsJsonAsync($"{url}api/photos", photos);
+                foreach (var item in photos)
+                {
+                    var elasticId = await (await client.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
+                    var photo = Convert.ToInt32(elasticId);
+                    await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
+                    await _context.SaveAsync();
+                }
+               
             }
-            
-            return response;
+            return new HttpResponseMessage();
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()

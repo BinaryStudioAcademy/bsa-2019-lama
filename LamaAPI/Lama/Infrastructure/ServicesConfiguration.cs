@@ -36,7 +36,7 @@ namespace Lama.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"]));
+            services.AddScoped<PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>()));
             services.AddScoped<UserService>();
             services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
                                                     serviceProvider.GetService<ApplicationDbContext>()) );
