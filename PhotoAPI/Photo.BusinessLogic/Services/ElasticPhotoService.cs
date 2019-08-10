@@ -1,13 +1,9 @@
 ﻿using Nest;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Photo.Domain.BlobModels;
-
 using Photo.BusinessLogic.Interfaces;
-
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.DataTransferObjects;
 
@@ -15,7 +11,7 @@ using AutoMapper;
 
 namespace Photo.BusinessLogic.Services
 {
-    public class ElasticPhotoService: IPhotoService
+    public class ElasticPhotoService : IPhotoService
     {
         // FIELDS
         private string indexName;
@@ -35,20 +31,31 @@ namespace Photo.BusinessLogic.Services
         // METHODS
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            SearchRequest<PhotoDocument> searchRequest = new SearchRequest<PhotoDocument>
-            {
-                Query = new TermQuery
-                {
-                    Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
-                    Value = false
-                }
-            };
+            var mustClauses = new List<QueryContainer>();
 
-            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;            
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                Value = false
+            });
+
+            mustClauses.Add(new MatchQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
+                Query = ".*images.*"
+            });
+
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = 100,
+                From = 0,
+                Query = new BoolQuery { Must = mustClauses }
+            };
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
-        public async Task<PhotoDocument> Get(int blobId)
+        public async Task<PhotoDocument> Get(int elasticId)
         {
-            return (await elasticClient.GetAsync<PhotoDocument>(blobId)).Source;
+            return (await elasticClient.GetAsync<PhotoDocument>(elasticId)).Source;
         }
 
         public async Task Delete(int id)
@@ -56,11 +63,11 @@ namespace Photo.BusinessLogic.Services
             await elasticClient.DeleteAsync<PhotoDocument>(id);
             await DeleteAllBlobsAsync(id);
         }
-        
+
         public async Task Update(PhotoDocument item)
         {
             await elasticClient.UpdateAsync(
-                new DocumentPath<PhotoDocument>(item), 
+                new DocumentPath<PhotoDocument>(item),
                 u => u.Index(indexName).Doc(item));
         }
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
@@ -96,7 +103,7 @@ namespace Photo.BusinessLogic.Services
         {
             return elasticClient.CreateDocumentAsync(item);
         }
-        
+
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
         {
             // TODO: rewrite using elastic
@@ -109,28 +116,51 @@ namespace Photo.BusinessLogic.Services
             return updateResponse.Get.Source;
         }
 
-        public async Task Create(PhotoReceived[] items)
+        public async Task<IEnumerable<int>> Create(PhotoReceived[] items)
         {
             // TODO: rewrite this
-            long lastId = elasticClient.Count<PhotoDocument>().Count;      
-            
-            for (int i = 0; i < items.Length; i++)
+            long lastId = elasticClient.Count<PhotoDocument>().Count;
+            List<int> ids = new List<int>();
+            foreach (var item in items)
             {
-                string base64 = ConvertToBase64(items[i].ImageUrl);
-
+                string base64 = ConvertToBase64(item.ImageUrl);
                 byte[] blob = Convert.FromBase64String(base64);
 
                 await Create(new PhotoDocument
                 {
                     Id = lastId++,
-
                     BlobId = await storage.LoadPhotoToBlob(blob),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
-
-                    Description = items[i].Description
+                    UserId = item.AuthorId,
+                    Description = item.Description
                 });
+                ids.Add((int)lastId);
             }
+            return ids;
+        }
+
+        public async Task<int> CreateAvatar(PhotoReceived item)
+        {
+            long lastId = elasticClient.Count<PhotoDocument>().Count;
+
+            // TODO: get this with linq
+            string base64;
+            // TODO: change this to regex
+            base64 = ConvertToBase64(item.ImageUrl);
+
+            byte[] blob = Convert.FromBase64String(base64);
+
+            await Create(new PhotoDocument
+            {
+                Id = lastId++,
+                BlobId = await storage.LoadAvatarToBlob(blob),
+                Blob64Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
+                Blob256Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
+                UserId = item.AuthorId,
+                Description = item.Description
+            });
+            return (int)lastId;
         }
         private string ConvertToBase64(string imageUrl)
         {
