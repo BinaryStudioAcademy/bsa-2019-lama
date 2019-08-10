@@ -24,7 +24,7 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task ReceivePhoto([FromBody] PhotoReceived[] photos)
         {
-            var response = await _service.CreateAll(photos);
+            await _service.CreateAll(photos);
         }
 
         [HttpPut]
