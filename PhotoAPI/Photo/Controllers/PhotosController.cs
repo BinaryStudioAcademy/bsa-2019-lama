@@ -40,10 +40,29 @@ namespace Photo.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task Post([FromBody] PhotoReceived[] values)
+        public async Task<IEnumerable<int>> Post([FromBody] PhotoReceived[] values)
         {
-            await this.photoService.Create(values);
+            return await this.photoService.Create(values);
         }
+
+        //[HttpPost]
+        //public async Task<int> Post([FromBody] PhotoReceived value)
+        //{
+        //    return await this.photoService.Create(value);
+        //}
+
+        [HttpPost("avatar")]
+        public async Task<int> PostAvatar([FromBody] PhotoReceived value)
+        {
+            return await this.photoService.CreateAvatar(value);
+        }
+
+        //TODO: set up for working with elastic
+        /*        [HttpPut("/shared/{id}")]
+                public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)
+                {
+                    return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
+                }*/
         
         // PUT api/photos/
         // TODO: set up for working with elastic

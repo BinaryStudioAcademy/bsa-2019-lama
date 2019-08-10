@@ -28,6 +28,8 @@ namespace Lama.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Album>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();

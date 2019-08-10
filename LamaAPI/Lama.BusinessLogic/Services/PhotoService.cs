@@ -7,22 +7,38 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;
+using Lama.DataAccess.Interfaces;
+using Lama.Domain.DbModels;
+using System.Linq;
 using Lama.Domain.DataTransferObjects.Photo;
 
 
 namespace Lama.BusinessLogic.Services
 {
-    public class PhotoService: IPhotoService, IDisposable
+    public class PhotoService : IPhotoService, IDisposable
     {
         // FIELDS
         private string url;
+        private IUnitOfWork _context;
         private HttpClient httpClient;
-
-        // CONSTRUCTORS
-        public PhotoService(string url)
+        public PhotoService(string url, IUnitOfWork context)
         {
             this.url = url;
-            this.httpClient = new HttpClient();
+            _context = context;
+            httpClient = new HttpClient();
+        }
+        public async Task CreateAll(PhotoReceived[] photos)
+        {
+            var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(
+                await
+               (await httpClient.PostAsJsonAsync($"{url}api/photos", photos)).Content.ReadAsStringAsync());
+
+            for (int i = 0; i < photos.Length; i++)
+            {
+                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = elasticIds.ElementAt(i) });
+            }
+            await _context.SaveAsync();
+
         }
 
         public void Dispose()
@@ -30,13 +46,6 @@ namespace Lama.BusinessLogic.Services
             this.httpClient.Dispose();
         }
 
-        // METHODS
-        public Task<HttpResponseMessage> CreateAll(PhotoReceived[] photos)
-        {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            return httpClient.PostAsJsonAsync($"{url}api/photos", photos);
-        }
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
@@ -50,6 +59,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
+
             string uri = $"{url}api/photos";
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
@@ -59,12 +69,58 @@ namespace Lama.BusinessLogic.Services
             string bodyJson = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
+
+        }
+
+        public Task<int> Create(PhotoDocument item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Photo> Create(PhotoReceived item)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var elasticId =
+                    await
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", item)).Content.ReadAsStringAsync();
+            var photo = Convert.ToInt32(elasticId);
+            await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
+            await _context.SaveAsync();
+            return (await _context.GetRepository<Photo>().GetAsync(i => i.ElasticId == photo)).LastOrDefault();
+        }
+
+        public async Task<Photo> CreateAvatar(PhotoReceived item)
+        {
+
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var elasticId =
+                await
+                (await httpClient.PostAsJsonAsync($"{url}api/photos/avatar", item)).Content.ReadAsStringAsync();
+            var photo = Convert.ToInt32(elasticId);
+            await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = photo });
+            await _context.SaveAsync();
+            return (await _context.GetRepository<Photo>().GetAsync()).LastOrDefault();
+
+        }
+
+        public async Task<PhotoDocument> Get(int id)
+        {
+            id--;
+            PhotoDocument photo;
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            photo = JsonConvert.DeserializeObject<PhotoDocument>
+                (await
+                (await httpClient.GetAsync($"{url}api/photos/{id}"))
+                    .Content.ReadAsStringAsync());
+
+            return photo;
         }
 
         #region DELETE
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
-            string uri = $"{url}api/photos/{photoToDeleteId}";            
+            string uri = $"{url}api/photos/{photoToDeleteId}";
 
             return httpClient.DeleteAsync(uri);
         }

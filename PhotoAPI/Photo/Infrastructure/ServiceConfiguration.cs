@@ -36,10 +36,11 @@ namespace Photo.Infrastructure
             string url = configuration["elasticsearch:url"];
             string defaultIndex = configuration["elasticsearch:index"];
             Uri uri = new Uri(url);
-            
+
             ConnectionSettings settings = new ConnectionSettings(uri)
                 .DefaultIndex(defaultIndex)
                 .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));
+                
             
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
         }
