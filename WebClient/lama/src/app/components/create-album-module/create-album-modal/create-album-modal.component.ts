@@ -1,7 +1,9 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
+import imageCompression from 'browser-image-compression';
 import { Photo } from 'src/app/models';
-
+import { environment } from '../../../../environments/environment';
+import { Album } from 'src/app/models/Album/album';
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
@@ -9,8 +11,14 @@ import { Photo } from 'src/app/models';
 })
 export class CreateAlbumModalComponent implements OnInit {
 
-  images = [];
-
+  photos: Photo[] = [];
+  album: Album;
+  albumName: string;
+  activeColor: string = '#00d1b2';
+  overlayColor: string = 'rgba(255,255,255,0.5)';
+  dragging: boolean = false;
+  loaded: boolean = true;
+  imageSrc: string = '';
 
   @Input()
   public isShown: boolean;
@@ -21,59 +29,57 @@ export class CreateAlbumModalComponent implements OnInit {
    }
 
   ngOnInit() {
+
   }
 
-  activeColor: string = '#00d1b2';
-  baseColor: string = '#ccc';
-  overlayColor: string = 'rgba(255,255,255,0.5)';
 
-  dragging: boolean = false;
-  loaded: boolean = false;
-  imageLoaded: boolean = false;
-  imageSrc: string = '';
 
   handleDragEnter() {
       this.dragging = true;
   }
 
   handleDragLeave() {
+    alert(2);
       this.dragging = false;
   }
 
   handleDrop(e) {
+      const files = e.dataTransfer.files;
       e.preventDefault();
       this.dragging = false;
-      this.handleInputChange(e);
+      this.LoadFile(files);
   }
 
-  handleImageLoad() {
-      this.imageLoaded = true;
-  }
 
   handleInputChange(e) {
+    let files = e.target.files;
+    this.LoadFile(files);
+  }
 
-    if (e.target.files && e.target.files[0]) {
-
-      let filesAmount = e.target.files.length;
+  async LoadFile(files)
+  {
+    if (files && files[0]) {
+      let filesAmount = files.length;
       for (let i = 0; i < filesAmount; i++) {
+              this.loaded = false;
               let reader = new FileReader();
               var pattern = /image-*/;
 
-              if (e.target.files[i].type.match(pattern)) {
-                this.loaded = false;
+              if (files[i].type.match(pattern)) {
+                const compressFile = await imageCompression(files[i], environment.compressionOptions);
                 reader.onload = this._handleReaderLoaded.bind(this);
-                reader.readAsDataURL(e.target.files[i]);
+                reader.readAsDataURL(compressFile);
             }
-
       }
   }
+  this.loaded = true;
   }
+
 
   _handleReaderLoaded(e) {
       var reader = e.target;
       this.imageSrc = reader.result;
-      this.images.push(this.imageSrc);
-      this.loaded = true;
+      this.photos.push({imageUrl: this.imageSrc});
   }
 
   CreateAlbum()
@@ -95,12 +101,12 @@ export class CreateAlbumModalComponent implements OnInit {
   }
   public onChange(eventArgs: Photo)
   {
-    if(this.images.filter(x => x === eventArgs.imageUrl)[0] === undefined)
+    if(this.photos.filter(x => x.imageUrl === eventArgs.imageUrl)[0] === undefined)
     {
-      this.images.push(eventArgs.imageUrl);
+      this.photos.push({imageUrl:eventArgs.imageUrl});
     }
     else{
-      this.images = this.images.filter(x => x !== eventArgs.imageUrl);
+      this.photos = this.photos.filter(x => x.imageUrl !== eventArgs.imageUrl);
     }
   }
   
