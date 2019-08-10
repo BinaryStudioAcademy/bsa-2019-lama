@@ -93,7 +93,9 @@ namespace Photo.BusinessLogic.Services
             UpdateResponse<PhotoDocument> updateResponse 
                 = await elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(updateLinkObject));
 
-            return updateResponse.Get.Source;
+            var resp = updateResponse.Get.Source;
+
+            return resp;
         }
 
         public async Task Create(PhotoReceived[] items)

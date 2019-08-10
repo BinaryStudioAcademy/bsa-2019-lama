@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Lama.Domain.BlobModels;
 using Lama.BusinessLogic.Interfaces;

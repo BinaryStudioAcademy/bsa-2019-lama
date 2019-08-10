@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Exceptions;
 using Lama.BusinessLogic.Interfaces;
@@ -11,6 +12,7 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -44,17 +46,23 @@ namespace Lama.BusinessLogic.Services
             return sharedPhotoData;
         }
 
-        public async Task<HttpResponseMessage> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)
+        public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)
         {
-            HttpResponseMessage response;
+            PhotoDocument photoDocumentWithSharedLink;
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(_photoApiUrl);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                response = await client.PostAsJsonAsync($"{_photoApiUrl}/api/photos/shared/{id}", sharedLink);
+                
+                StringContent content = new StringContent(sharedLink);
+                
+                var httpResponse = await (client.PutAsync($"{_photoApiUrl}api/photos/shared/{id}", content));
+                
+                var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+                
+                photoDocumentWithSharedLink = JsonConvert.DeserializeObject<PhotoDocument>(jsonResponse);
             }
 
-            return response;
+            return photoDocumentWithSharedLink;
         }
 
 

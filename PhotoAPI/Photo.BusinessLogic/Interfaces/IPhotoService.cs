@@ -1,7 +1,7 @@
 ﻿using Photo.Domain.BlobModels;
-using Photo.Domain.DataTransferObjects;
 
 using System.Threading.Tasks;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Interfaces
 {

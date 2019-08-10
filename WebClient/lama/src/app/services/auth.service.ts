@@ -11,7 +11,10 @@ export class AuthService {
 
 
   constructor(public afAuth: AngularFireAuth) {
-        this.afAuth.idToken.subscribe(token => {this.token =  token});
+        this.afAuth.idToken.subscribe(token => {
+          this.token =  token
+          localStorage.setItem('idKey',this.token)});
+
    }
 
    public loginWithFacebook(){
@@ -69,9 +72,6 @@ export class AuthService {
   }
 
   public getToken() {
-    if(!this.token){
-      this.afAuth.idToken.subscribe(token => {this.token =  token});
-    }
-    return this.token;
+    return localStorage.getItem("idKey");
   }
 }

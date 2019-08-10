@@ -34,14 +34,9 @@ export class ShareModalComponent implements OnInit {
   }
 
   public createShareableLink(){
-    if(this.receivedPhoto.sharedLink !== null){
-      this.sharedLink = `${environment.clientApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
-    }
-    else{
-      this.initImmutableFields();
+      this.initInvariableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
       this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
-    }
   }
 
   public copyShareableLink(){
@@ -66,7 +61,7 @@ export class ShareModalComponent implements OnInit {
       return encoded;
     }
 
-    private initImmutableFields(){
+    private initInvariableFields(){
       this.sharedPhoto.photoId = this.receivedPhoto.id;
       this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
       this.sharedPhoto.userId = this.receivedPhoto.userId;
