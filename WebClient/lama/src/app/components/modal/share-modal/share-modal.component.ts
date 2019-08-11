@@ -15,7 +15,7 @@ export class ShareModalComponent implements OnInit {
 
   @Output() onClose = new EventEmitter();
 
-  DISAPPEARING_TIMEOUT: number = 1000;
+  DISAPPEARING_TIMEOUT: number = 1000; //1 second
   sharedLink: string = '';
   imageUrl: string;
   copyClicked: boolean = false;
