@@ -130,7 +130,16 @@ namespace Photo.BusinessLogic.Services
         public async Task<IEnumerable<int>> Create(PhotoReceived[] items)
         {
             // TODO: rewrite this
-            long lastId = elasticClient.Count<PhotoDocument>().Count;
+            var result = elasticClient.Search<PhotoDocument>(s => s
+               .Aggregations(a => a
+                   .Max("id", m => m
+                       .Field(p => p.Id)
+                   )
+               )
+           );
+            var agg = result.Aggregations.Max("id").Value;
+            long lastId = ((long)agg.Value) + 1;
+
             List<int> ids = new List<int>();
             foreach (var item in items)
             {
@@ -143,6 +152,7 @@ namespace Photo.BusinessLogic.Services
                     BlobId = await storage.LoadPhotoToBlob(blob),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
+                    OriginalBlobId = await storage.LoadPhotoToBlob(blob),
                     UserId = item.AuthorId,
                     Description = item.Description
                 });
@@ -153,7 +163,15 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<int> CreateAvatar(PhotoReceived item)
         {
-            long lastId = elasticClient.Count<PhotoDocument>().Count;
+            var result = elasticClient.Search<PhotoDocument>(s => s
+               .Aggregations(a => a
+                   .Max("id", m => m
+                       .Field(p => p.Id)
+                   )
+               )
+           );
+            var agg = result.Aggregations.Max("id").Value;
+            long lastId = ((long)agg.Value) + 1;
 
             // TODO: get this with linq
             string base64;
@@ -168,6 +186,7 @@ namespace Photo.BusinessLogic.Services
                 BlobId = await storage.LoadAvatarToBlob(blob),
                 Blob64Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                 Blob256Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
+                OriginalBlobId = await storage.LoadAvatarToBlob(blob),
                 UserId = item.AuthorId,
                 Description = item.Description
             });

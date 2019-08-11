@@ -106,12 +106,11 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<PhotoDocument> Get(int id)
         {
-            id--;
             PhotoDocument photo;
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             photo = JsonConvert.DeserializeObject<PhotoDocument>
                 (await
-                (await httpClient.GetAsync($"{url}api/photos/{id}"))
+                (await httpClient.GetAsync($"{url}api/photos/{--id}"))
                     .Content.ReadAsStringAsync());
 
             return photo;
