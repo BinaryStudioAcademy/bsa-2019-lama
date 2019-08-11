@@ -50,7 +50,6 @@ namespace Lama.BusinessLogic.Services
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
             return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>
                     (await
                     (await httpClient.GetAsync($"{url}api/photos"))

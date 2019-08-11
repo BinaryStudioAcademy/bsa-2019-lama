@@ -7,7 +7,8 @@ import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-mod
 import { SharedModule } from '../shared.module';
 import { CropImageComponent } from './crop-image/crop-image.component';
 import { UiModule } from '../ui/ui.module';
-import { ShareModalComponent } from '../modal/share-modal/share-modal.component'
+import { ShareModalComponent } from '../modal/share-modal/share-modal.component';
+import { RotateImageComponent } from './rotate-image/rotate-image.component'
 
 
 @NgModule(
@@ -20,7 +21,7 @@ import { ShareModalComponent } from '../modal/share-modal/share-modal.component'
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, RotateImageComponent
   ],
   exports:
   [

@@ -20,6 +20,17 @@
                                     </app-crop-image>
                                 </ng-template>
 
+                                <div [ngSwitch]="clickedMenuItem?.title">
+
+                                        <!--crop template-->
+                                        <ng-template ngSwitchCase="rotate">
+                                            <app-rotate-image
+                                                [imageToRotate]="photo.blobId"
+                                                (cancelClickedEvent)="goBackToImageView()"
+                                                (saveClickedEvent)="rotateImageHandler($event)">
+                                            </app-rotate-image>
+                                        </ng-template>
+
                                 <!--default image template-->
                                 <ng-template ngSwitchDefault>
                                     <div class="is-relative main-photo">
@@ -33,9 +44,17 @@
                                             <div class="columns has-text-centered" >
 
                                                 <div class="column" *ngFor="let item of shownMenuItems">
-                                                    <div (click)="menuClickHandler(item)">
+                                                    <div (click)="menuClickHandler(item)"> 
+                                                    <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
+                                                        <a href= "#" data-href = "{{ photo.blobId }}" download onclick="forceDownload(this)">
+                                                            <i class="material-icons is-block">{{ item.icon }}</i>
+                                                            {{ item.title }}
+                                                        </a>
+                                                    </ng-template>       
+                                                    <ng-template #other>
                                                         <i class="material-icons is-block">{{ item.icon }}</i>
                                                         <span> {{ item.title }} </span>
+                                                    </ng-template>
                                                     </div>
                                                 </div>
 
