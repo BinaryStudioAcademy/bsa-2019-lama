@@ -109,7 +109,7 @@ namespace Lama.BusinessLogic.Services
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/{id}");
+            var response = await httpClient.GetAsync($"{url}api/photos/{--id}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
