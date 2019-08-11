@@ -138,7 +138,15 @@ namespace Photo.BusinessLogic.Services
                )
            );
             var agg = result.Aggregations.Max("id").Value;
-            long lastId = ((long)agg.Value) + 1;
+            long lastId;
+            if (agg == null)
+            {
+                lastId = 0;
+            }
+            else
+            {
+                lastId = ((long)agg.Value) + 1;
+            }
 
             List<int> ids = new List<int>();
             foreach (var item in items)

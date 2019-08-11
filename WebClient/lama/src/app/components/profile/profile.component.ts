@@ -35,6 +35,7 @@ export class ProfileComponent implements OnInit {
       this.user = u;
       this.showSpinner = false;
       this.photoUrl = u.photoUrl;
+      this.sharedService.avatar = {imageUrl: u.photoUrl};
     });
 	
     this.userForm = new FormGroup({

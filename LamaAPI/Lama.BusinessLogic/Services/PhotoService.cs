@@ -95,7 +95,7 @@ namespace Lama.BusinessLogic.Services
 
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.PostAsJsonAsync($"{url}api/photos", item);
+            var response = await httpClient.PostAsJsonAsync($"{url}api/photos/avatar", item);
             var responseContent = await response.Content.ReadAsStringAsync();
             var elasticId = Convert.ToInt32(responseContent);
 
