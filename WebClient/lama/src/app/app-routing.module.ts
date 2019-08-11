@@ -14,20 +14,27 @@ import { LoggedInGuard, AuthGuard } from './guards';
 const routes: Routes =
 [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
-  { path: 'main', redirectTo: 'main/photos', pathMatch: 'full' },
+  { path: 'main', redirectTo: 'main/photos', pathMatch: 'full'},
 
   { path: 'landing', component: MainLandingPageComponent, canActivate: [LoggedInGuard] },
 
   {
-    path: 'main', component: MainPageComponent, canActivate: [AuthGuard],
+    path: 'main', component: MainPageComponent, canActivate:[AuthGuard],
     children:
     [
-      { path: 'photos', component:  MainPhotosContainerComponent},
-      { path: 'albums', component: MainAlbumsContainerComponent},
-      { path: 'album', component: ViewAlbumComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'shared/:userdata', component: SharedPageComponent },
-      { path: 'bin', component: DeletedPhotosComponent },
+      {
+        path:'',
+        canActivateChild: [AuthGuard],
+        children:[
+
+          { path: 'photos', component:  MainPhotosContainerComponent },
+          { path: 'albums', component: MainAlbumsContainerComponent },
+          { path: 'album', component: ViewAlbumComponent },
+          { path: 'profile', component: ProfileComponent },
+          { path: 'shared/:userdata', component: SharedPageComponent },
+          { path: 'bin', component: DeletedPhotosComponent },
+        ]
+      }
     ]
   },
 
