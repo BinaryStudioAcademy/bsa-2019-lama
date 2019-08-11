@@ -30,7 +30,7 @@ export class SharingService {
     return this.httpClient.get<SharedPageDataset>(`${this.lamaApiUrl}/${this.routePrefix}/${photoId}`);
   }
 
-  public updatePhotoEntityWithSharedLink(photoId:number, payload: string): Observable<HttpResponse<any>>{
-    return this.httpClient.put<any>(`${this.lamaApiUrl}/${this.routePrefix}/${photoId}`, payload, this.httpOptions);
+  public updatePhotoEntityWithSharedLink(photoId:number, payload: string): Observable<PhotoRaw>{
+    return this.httpClient.put<PhotoRaw>(`${this.lamaApiUrl}/${this.routePrefix}/${photoId}`, payload, this.httpOptions);
   }
 }

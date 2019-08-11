@@ -7,6 +7,7 @@ import { SharingService } from 'src/app/services/sharing.service';
 import { SharedPageDataset } from 'src/app/models/sharedPageDataset';
 import {User} from 'firebase';
 import { UserService } from 'src/app/services/user.service';
+import { Photo } from 'src/app/models';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class SharedPageComponent implements OnInit {
   userData: SharedPageDataset;
   authenticatedUser: User;
   sharedLinkData: string;
+  updatedPhoto: PhotoRaw =<PhotoRaw>{};
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private sharingService: SharingService) {
 
@@ -28,6 +30,7 @@ export class SharedPageComponent implements OnInit {
 
   ngOnInit() {
     this.decodeUserData();
+
     // this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(shareData => {
     //   this.userData = shareData;
     // })
@@ -35,7 +38,10 @@ export class SharedPageComponent implements OnInit {
     //this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
 
     //No proper data in database yet, so we are not updating
-    this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId, this.sharedLinkData).subscribe(x => x);
+    this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId, this.sharedLinkData).subscribe(updated => {
+      this.updatedPhoto = updated
+      console.log(this.updatedPhoto.sharedLink);
+    });
   }
 
   private decodeUserData(){

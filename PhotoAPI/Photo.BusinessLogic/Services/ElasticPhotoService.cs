@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-
+using Elasticsearch.Net;
+using Newtonsoft.Json;
 using Photo.Domain.BlobModels;
 
 using Photo.BusinessLogic.Interfaces;
@@ -88,14 +90,19 @@ namespace Photo.BusinessLogic.Services
         {
             // TODO: rewrite using elastic
             // TODO: check if this work
+            // updateResponse.Get.Source returns NRE 
+            //TODO: figure out getting updated document without second request to elastic
+            
+            
             var updateLinkObject = new { SharedLink = sharedLink };
 
             UpdateResponse<PhotoDocument> updateResponse 
                 = await elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(updateLinkObject));
 
-            var resp = updateResponse.Get.Source;
+            var getUpdatedDocument = await elasticClient.GetAsync<PhotoDocument>(id);
+            var updatedDocument = getUpdatedDocument.Source;
 
-            return resp;
+            return updatedDocument;
         }
 
         public async Task Create(PhotoReceived[] items)
@@ -130,4 +137,6 @@ namespace Photo.BusinessLogic.Services
                     .Replace("-", "+").Replace("_", "/");
         }
     }
+
+
 }
