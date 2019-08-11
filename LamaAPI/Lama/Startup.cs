@@ -33,7 +33,6 @@ namespace Lama
                        .AllowAnyHeader();
             }));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDataAccessLayer(Configuration);
             services.AddMapper(Configuration);
             services.AddQueueService(Configuration);
