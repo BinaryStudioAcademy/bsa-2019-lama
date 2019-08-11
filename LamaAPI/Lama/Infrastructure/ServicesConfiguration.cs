@@ -3,18 +3,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
 using RabbitMQ.Client;
-
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
-
 using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.BusinessLogic.Services;
 using Lama.DataAccess.Repositories;
 using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
+using AutoMapper;
+using Lama.BusinessLogic.MappingProfiles;
 
 namespace Lama.Infrastructure
 {
@@ -24,6 +23,10 @@ namespace Lama.Infrastructure
         {            
             services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>();
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
+        }
+        public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAutoMapper(typeof(UserProfile).Assembly);
         }
         public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {

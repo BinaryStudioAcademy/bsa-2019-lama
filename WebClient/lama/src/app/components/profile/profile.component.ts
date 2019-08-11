@@ -4,6 +4,7 @@ import { User } from 'src/app/models/User/user';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,7 +15,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService, 
     private httpService: HttpService, 
-    private userService: UserService) {  }
+    private userService: UserService,
+    private sharedService: SharedService) {  }
   
   userForm: FormGroup;
   user: User = {
@@ -33,6 +35,7 @@ export class ProfileComponent implements OnInit {
       this.user = u;
       this.showSpinner = false;
       this.photoUrl = u.photoUrl;
+      this.sharedService.avatar = {imageUrl: u.photoUrl};
     });
 	
     this.userForm = new FormGroup({
@@ -58,6 +61,7 @@ export class ProfileComponent implements OnInit {
   async saveUser() {
     console.log(this.photoUrl);
     this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+    this.sharedService.avatar = this.user.photo;
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);

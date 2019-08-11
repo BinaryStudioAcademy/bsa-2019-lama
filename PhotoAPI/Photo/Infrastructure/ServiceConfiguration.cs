@@ -1,23 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-
 using RabbitMQ.Client;
-
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
-
 using System;
-
 using Nest;
-
 using Photo.Domain.BlobModels;
-
 using Photo.BusinessLogic.Services;
 using Photo.BusinessLogic.Interfaces;
-
 using Photo.DataAccess.Blob;
 using Photo.DataAccess.Interfaces;
-
 using AutoMapper;
 using Photo.BusinessLogic.MappingProfiles;
 

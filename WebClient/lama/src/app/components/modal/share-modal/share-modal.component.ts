@@ -15,7 +15,7 @@ export class ShareModalComponent implements OnInit {
 
   @Output() onClose = new EventEmitter();
 
-
+  DISAPPEARING_TIMEOUT: number = 1000; //1 second
   sharedLink: string = '';
   imageUrl: string;
   copyClicked: boolean = false;
@@ -34,14 +34,9 @@ export class ShareModalComponent implements OnInit {
   }
 
   public createShareableLink(){
-    if(this.receivedPhoto.sharedLink !== null){
-      this.sharedLink = `${environment.clientApiUrl}/main/shared/${this.receivedPhoto.sharedLink}`;
-    }
-    else{
-      this.initImmutableFields();
+      this.initInvariableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/main/shared/${encodedPhotoData}`;
-    }
+      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
   }
 
   public copyShareableLink(){
@@ -58,6 +53,8 @@ export class ShareModalComponent implements OnInit {
       document.body.removeChild(selBox);
       console.log(`${this.sharedLink} was copied`);
       this.copyClicked = !this.copyClicked;
+
+      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
     }
 
     public encodePhotoData(photo: SharedPhoto): string{
@@ -66,7 +63,7 @@ export class ShareModalComponent implements OnInit {
       return encoded;
     }
 
-    private initImmutableFields(){
+    private initInvariableFields(){
       this.sharedPhoto.photoId = this.receivedPhoto.id;
       this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
       this.sharedPhoto.userId = this.receivedPhoto.userId;

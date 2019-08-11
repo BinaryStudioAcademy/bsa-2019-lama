@@ -6,7 +6,7 @@
   </div>
   <div class="navbar-end">
       <div class="image is-64x64">
-          <img [src]="userPhoto">
+          <img *ngIf="userPhoto" [src]="userPhoto">
         </div>
 
       <div class="navbar-item">

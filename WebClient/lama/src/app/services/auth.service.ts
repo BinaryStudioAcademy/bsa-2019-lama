@@ -7,6 +7,7 @@ import {environment} from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
+import { SharedService } from './shared.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +21,10 @@ export class AuthService {
   }
   isUserExisted: boolean = true;
 
-
-  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService) {
-        this.afAuth.idToken.subscribe(token => {this.token =  token});
+  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
+        this.afAuth.idToken.subscribe(token => {
+          this.token =  token
+          localStorage.setItem('idKey',this.token)});
         this.userService.getCurrentUser().then(() => this.isUserExisted = true)
         .catch(() => this.isUserExisted = false)
    }
@@ -85,10 +87,7 @@ export class AuthService {
   }
 
   public getToken() {
-    if(!this.token){
-      this.afAuth.idToken.subscribe(token => {this.token =  token});
-    }
-    return this.token;
+    return localStorage.getItem("idKey");
   }
 
   public saveCreadeatins(user: firebase.User) {

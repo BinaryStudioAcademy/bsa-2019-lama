@@ -27,7 +27,7 @@ namespace Lama.Controllers
             var isExists = await _service.GetByEmail(user.Email);
             if (isExists != null)
             {
-                return isExists.Id;
+                return (int)isExists.Id;
             }
             return await _service.Create(user);
         }

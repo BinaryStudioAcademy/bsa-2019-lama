@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +31,13 @@ namespace Photo.Controllers
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
             return await photoService.Get();
+        }
+
+        // GET api/photos/5
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        {
+            return await photoService.GetUserPhotos(id);
         }
 
         // GET api/photos/5
@@ -64,13 +73,18 @@ namespace Photo.Controllers
                     return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
                 }*/
         
-        // PUT api/photos/
+        // PUT api/photos/shared/1
         // TODO: set up for working with elastic
         // TODO: check if this work
-        [HttpPut("/shared/{id}")]
-        public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)
+        [HttpPut("shared/{id}")]
+        public async Task<PhotoDocument> UpdateWithSharedLink(int id)
         {
-            return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                var sharedLink = await reader.ReadToEndAsync();
+                
+                return await photoService.UpdateWithSharedLink(id, sharedLink);
+            }
         }
 
         // PUT api/photos/
