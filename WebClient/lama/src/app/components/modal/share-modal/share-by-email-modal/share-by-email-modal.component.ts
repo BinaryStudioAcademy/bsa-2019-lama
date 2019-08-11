@@ -2,6 +2,8 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { User } from 'src/app/models/User/user';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -15,16 +17,14 @@ export class ShareByEmailModalComponent implements OnInit {
 
   @Output() onClose = new EventEmitter();
 
-
+  sharedLink: string = '';
   sharedEmail: string = '';
   imageUrl: string;
+  copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
+  user: User;
 
-  incorrectEmailIconUrl: string = "http://img.clipartlook.com/red-cross-mark-clipart-red-x-mark-icon-256.png";
-  correctEmailIconUrl: string = "https://www.erwinchryslerdodgejeep.com/wp-content/plugins/pm-motors-plugin/modules/vehicle_save/images/check.png";
-  resultCheckCorrectUrl: string = this.incorrectEmailIconUrl;
-
-  constructor() {
+  constructor(private httpService: HttpService) {
 
   }
 
@@ -36,15 +36,64 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public AddEmail(){
-    if(this.sharedEmail)
+	this.httpService.getData(`users/${this.user.email}`).subscribe((data:User) => this.user = data);
+    if(this.user.email)
     {
-      this.resultCheckCorrectUrl = this.correctEmailIconUrl;
+		this.DisplaySuccesIcon();
     }
     else
     {
-      this.resultCheckCorrectUrl = this.incorrectEmailIconUrl;
+		this.DisplayFailureIcon();
     }
   }
+  
+  DisplaySuccesIcon() {
+	let succesIconColor = document.getElementById('success-icon-color');
+	succesIconColor.classList.remove('has-text-danger');
+	succesIconColor.classList.add('has-text-success');
+		
+	let succesIcon = document.getElementById('success-icon');
+	succesIcon.classList.remove('fa-times');
+	succesIcon.classList.add('fa-check');
+  }
+  
+  DisplayFailureIcon() {
+	let succesIconColor = document.getElementById('success-icon-color');
+	succesIconColor.classList.remove('has-text-success');
+	succesIconColor.classList.add('has-text-danger');
+		
+	let succesIcon = document.getElementById('success-icon');
+	succesIcon.classList.remove('fa-check');
+	succesIcon.classList.add('fa-times');
+  }
+  
+  public createShareableLink(){
+    if(this.receivedPhoto.sharedLink !== null){
+      this.sharedLink = `${environment.clientApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
+    }
+    else{
+      this.initImmutableFields();
+      let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
+      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
+    }
+  }
+
+  
+  public copyShareableLink(){
+    let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = this.sharedLink;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+      console.log(`${this.sharedLink} was copied`);
+      this.copyClicked = !this.copyClicked;
+    }
 
     public encodePhotoData(photo: SharedPhoto): string{
       let encoded = btoa(JSON.stringify(photo)).replace("/","___");
@@ -57,5 +106,9 @@ export class ShareByEmailModalComponent implements OnInit {
       this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
       this.sharedPhoto.userId = this.receivedPhoto.userId;
     }
+	
+	public GenerateClick() {
+		this.createShareableLink();
+	}
 
   }
