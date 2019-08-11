@@ -33,6 +33,12 @@ namespace Lama.Controllers
             return await service.Get(id);
         }
 
+        [HttpGet("{email}")]
+        public async Task<User> GetByEmail(string email)
+        {
+            return await service.GetByEmail(email);
+        }
+
         [HttpPost]
         public void Post([FromBody] User value)
         {
