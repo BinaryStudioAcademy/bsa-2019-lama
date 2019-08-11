@@ -7,6 +7,7 @@ import {environment} from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
+import { SharedService } from './shared.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class AuthService {
   }
   isUserExisted: boolean = true;
 
-  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService) {
+  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
         this.afAuth.idToken.subscribe(token => {
           this.token =  token
           localStorage.setItem('idKey',this.token)});
