@@ -57,6 +57,34 @@ namespace Photo.BusinessLogic.Services
             };
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
+        {
+            var mustClauses = new List<QueryContainer>();
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                Value = false
+            });
+
+            mustClauses.Add(new MatchQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
+                Query = ".*images.*"
+            });
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(t=>t.UserId),
+                Value = userId
+            });
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = 100,
+                From = 0,
+                Query = new BoolQuery { Must = mustClauses }
+            };
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+        }
         public async Task<PhotoDocument> Get(int elasticId)
         {
             return (await elasticClient.GetAsync<PhotoDocument>(elasticId)).Source;

@@ -30,7 +30,7 @@ namespace Lama.Controllers
         [HttpPost("CreateWithExistPhoto")]
         public async Task CreateAlbumWithExistPhotos([FromBody] NewAlbum album)
         {
-            await _service.CreateAlbumWithNewPhotos(album);
+            await _service.CreateAlbumWithExistPhotos(album);
         }
         [HttpPut]
         public async Task UpdateAlbum([FromBody] Album album)

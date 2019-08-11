@@ -34,6 +34,13 @@ namespace Photo.Controllers
         }
 
         // GET api/photos/5
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        {
+            return await photoService.GetUserPhotos(id);
+        }
+
+        // GET api/photos/5
         [HttpGet("{id}")]
         public Task<PhotoDocument> Get(int id)
         {
