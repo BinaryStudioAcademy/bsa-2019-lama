@@ -24,7 +24,7 @@ export class CreateAlbumModalComponent implements OnInit {
   dragging: boolean = false;
   loaded: boolean = true;
   imageSrc: string = '';
-
+  LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
 
   @Output()
@@ -64,8 +64,11 @@ export class CreateAlbumModalComponent implements OnInit {
     this.LoadFile(files);
   }
 
-  async LoadFile(files)
-  {
+  async LoadFile(files) {
+    if (this.LoadNewImage === false) {
+      this.photos = [];
+    }
+    this.LoadNewImage = true;
     if (files && files[0]) {
       let filesAmount = files.length;
       for (let i = 0; i < filesAmount; i++) {
@@ -93,7 +96,12 @@ export class CreateAlbumModalComponent implements OnInit {
   CreateAlbum()
   {
     this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
-    this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e)=>this.toggleModal());
+    if (this.LoadNewImage === true) {
+     this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
+    } else {
+      this.albumService.createAlbumWithExistPhotos(this.album).subscribe((e) => this.toggleModal());
+    }
+
   }
   toggleModal()
   {
@@ -110,11 +118,14 @@ export class CreateAlbumModalComponent implements OnInit {
   }
   public onChange(eventArgs: Photo)
   {
-    if(this.photos.filter(x => x.imageUrl === eventArgs.imageUrl)[0] === undefined)
+    if(this.LoadNewImage === true)
     {
-      this.photos.push({imageUrl:eventArgs.imageUrl});
+      this.photos = [];
     }
-    else{
+    this.LoadNewImage = false;
+    if (this.photos.filter(x => x.imageUrl === eventArgs.imageUrl)[0] === undefined) {
+      this.photos.push({imageUrl: eventArgs.imageUrl});
+    } else {
       this.photos = this.photos.filter(x => x.imageUrl !== eventArgs.imageUrl);
     }
   }

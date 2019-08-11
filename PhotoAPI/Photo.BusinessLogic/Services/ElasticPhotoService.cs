@@ -123,19 +123,26 @@ namespace Photo.BusinessLogic.Services
             List<int> ids = new List<int>();
             foreach (var item in items)
             {
-                string base64 = ConvertToBase64(item.ImageUrl);
-                byte[] blob = Convert.FromBase64String(base64);
-
-                await Create(new PhotoDocument
+                try
                 {
-                    Id = lastId++,
-                    BlobId = await storage.LoadPhotoToBlob(blob),
-                    Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
-                    Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
-                    UserId = item.AuthorId,
-                    Description = item.Description
-                });
-                ids.Add((int)lastId);
+                    string base64 = ConvertToBase64(item.ImageUrl);
+                    byte[] blob = Convert.FromBase64String(base64);
+
+                    await Create(new PhotoDocument
+                    {
+                        Id = lastId++,
+                        BlobId = await storage.LoadPhotoToBlob(blob),
+                        Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
+                        Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
+                        UserId = item.AuthorId,
+                        Description = item.Description
+                    });
+                    ids.Add((int)lastId);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
             return ids;
         }
