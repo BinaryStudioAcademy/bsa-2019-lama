@@ -11,5 +11,7 @@ namespace Lama.BusinessLogic.Interfaces
     {
         Task CreateAlbumWithExistPhotos(NewAlbum album);
         Task CreateAlbumWithNewPhotos(NewAlbum album);
+        Task<List<ReturnAlbum>> FindAll(int UserId);
+        Task<ReturnAlbum> FindAlbum(int Id);
     }
 }

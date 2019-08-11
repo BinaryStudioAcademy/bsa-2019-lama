@@ -1,9 +1,14 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
 import { Photo } from 'src/app/models';
 import { environment } from '../../../../environments/environment';
 import { Album } from 'src/app/models/Album/album';
+import { User } from 'src/app/models/User/user';
+import { HttpService } from 'src/app/services/http.service';
+import { NewAlbum } from 'src/app/models/Album/NewAlbum';
+import { isUndefined } from 'util';
+import { AlbumService } from 'src/app/services/album.service';
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
@@ -12,7 +17,7 @@ import { Album } from 'src/app/models/Album/album';
 export class CreateAlbumModalComponent implements OnInit {
 
   photos: Photo[] = [];
-  album: Album;
+  album: NewAlbum;
   albumName: string;
   activeColor: string = '#00d1b2';
   overlayColor: string = 'rgba(255,255,255,0.5)';
@@ -20,16 +25,20 @@ export class CreateAlbumModalComponent implements OnInit {
   loaded: boolean = true;
   imageSrc: string = '';
 
+  CreateWithNewPhoto: boolean;
+
+  @Output()
+  currentUser: User;
+
   @Input()
   public isShown: boolean;
 
-  constructor(resolver: ComponentFactoryResolver) {
+  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService) {
     this.isShown = true;
     this.resolver = resolver;
    }
 
   ngOnInit() {
-
   }
 
 
@@ -39,7 +48,6 @@ export class CreateAlbumModalComponent implements OnInit {
   }
 
   handleDragLeave() {
-    alert(2);
       this.dragging = false;
   }
 
@@ -84,7 +92,8 @@ export class CreateAlbumModalComponent implements OnInit {
 
   CreateAlbum()
   {
-    this.isShown = false;
+    this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
+    this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e)=>this.toggleModal());
   }
   toggleModal()
   {
@@ -111,7 +120,8 @@ export class CreateAlbumModalComponent implements OnInit {
   }
   
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef }) 
-  private entry: ViewContainerRef;
+  private entry: ViewContainerRef; 
+
   private resolver: ComponentFactoryResolver;
 
 }

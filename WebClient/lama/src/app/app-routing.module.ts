@@ -24,7 +24,7 @@ const routes: Routes =
     [
       { path: 'photos', component:  MainPhotosContainerComponent},
       { path: 'albums', component: MainAlbumsContainerComponent},
-      { path: 'album', component: ViewAlbumComponent },
+      { path: 'album/:id', component: ViewAlbumComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'shared/:userdata', component: SharedPageComponent },
       { path: 'bin', component: DeletedPhotosComponent },

@@ -1,10 +1,10 @@
 import { Photo } from '../Photo/photo';
 import { User } from '../User/user';
 
-export interface Album {
-    id: number;
+
+export interface NewAlbum {
     title: string;
-    imageUrl: string;
-    author: User;
+    photo: Photo;
+    authorId: number;
     photos: Photo[];
 }
