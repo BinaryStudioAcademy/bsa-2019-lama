@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment';
 
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 
-import { FileService } from 'src/app/services';
+import { FileService } from 'src/app/services/file.service';
 
 import { ImageCroppedArgs } from 'src/app/models';
 

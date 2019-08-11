@@ -18,6 +18,9 @@ using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Blob;
 using Photo.DataAccess.Interfaces;
 
+using AutoMapper;
+using Photo.BusinessLogic.MappingProfiles;
+
 namespace Photo.Infrastructure
 {
     public static class ServicesConfiguration
@@ -33,12 +36,17 @@ namespace Photo.Infrastructure
             string url = configuration["elasticsearch:url"];
             string defaultIndex = configuration["elasticsearch:index"];
             Uri uri = new Uri(url);
-            
+
             ConnectionSettings settings = new ConnectionSettings(uri)
                 .DefaultIndex(defaultIndex)
                 .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));
+                
             
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
+        }
+        public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAutoMapper(typeof(PhotoProfile).Assembly);
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -48,7 +56,8 @@ namespace Photo.Infrastructure
                 new ElasticPhotoService(
                     indexName: configuration["elasticsearch:index"],
                     elasticClient: factory.GetService<IElasticClient>(),
-                    storage: factory.GetService<IPhotoBlobStorage>()));
+                    storage: factory.GetService<IPhotoBlobStorage>(),
+                    mapper: factory.GetService<IMapper>()));
         }
     }
 }

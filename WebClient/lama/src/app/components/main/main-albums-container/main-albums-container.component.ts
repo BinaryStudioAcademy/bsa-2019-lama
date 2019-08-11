@@ -131,7 +131,7 @@ export class MainAlbumsContainerComponent implements OnInit {
         album: eventArgs
       }
     };
-    this.router.navigate(['/album'], navigationExtras);
+    this.router.navigate(['/main/album'], navigationExtras);
   }
 
 }

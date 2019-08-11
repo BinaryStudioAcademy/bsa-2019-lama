@@ -17,15 +17,23 @@ export class ProfileComponent implements OnInit {
     private userService: UserService) {  }
   
   userForm: FormGroup;
-  user: User = new User();
+  user: User = {
+    firstName: 'First name',
+    lastName: 'Last name',
+    email: 'Email',
+    photo: {imageUrl: '',
+    description: ''}
+  };;
   photoUrl: string;
   testReceivedUser: User;
+  showSpinner: boolean = true;
 
   ngOnInit() {
-    this.photoUrl = this.authService.afAuth.auth.currentUser.photoURL;
-	  this.user.id = this.authService.afAuth.auth.currentUser.uid;
-    this.httpService.getData(`users/${this.user.id}`).subscribe((data:User) => this.user = data);
-	
+    this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
+      this.user = u;
+      this.showSpinner = false;
+      this.photoUrl = u.photoUrl;
+    });
 	
     this.userForm = new FormGroup({
       'firstName': new FormControl(this.user.firstName),
@@ -38,17 +46,22 @@ export class ProfileComponent implements OnInit {
     const target = event.target as HTMLInputElement
     if (target.files && target.files[0]) {
         const file = target.files[0];
-
         const reader = new FileReader();
-        reader.onload = e => this.photoUrl = reader.result as string;
-
+        reader.onload = e => {
+          this.photoUrl = reader.result as string;
+          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: parseInt(localStorage.getItem('userId'))}
+        }
         reader.readAsDataURL(file);
-
-        this.userService.updateCurrentUser({photoURL: this.photoUrl})
     }
   }
 
   async saveUser() {
-	this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+    console.log(this.photoUrl);
+    this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
+    localStorage.setItem('firstName', `${this.user.firstName}`);
+    localStorage.setItem('lastName', `${this.user.lastName}`);
+    localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
+    localStorage.setItem('email', this.user.email)
+    this.userService.updateCurrentUser({photoURL: this.photoUrl})
   }
 }

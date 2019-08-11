@@ -25,7 +25,7 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CoverId");
+                    b.Property<int?>("CoverId");
 
                     b.Property<string>("SharedLink");
 
@@ -37,7 +37,8 @@ namespace Lama.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CoverId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[CoverId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -266,7 +267,7 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AvatarId");
+                    b.Property<int?>("AvatarId");
 
                     b.Property<string>("Email")
                         .IsRequired();
@@ -280,7 +281,8 @@ namespace Lama.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AvatarId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[AvatarId] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -319,8 +321,7 @@ namespace Lama.DataAccess.Migrations
                 {
                     b.HasOne("Lama.Domain.DbModels.Photo", "Photo")
                         .WithOne("Album")
-                        .HasForeignKey("Lama.Domain.DbModels.Album", "CoverId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("Lama.Domain.DbModels.Album", "CoverId");
 
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Albums")
@@ -440,8 +441,7 @@ namespace Lama.DataAccess.Migrations
                 {
                     b.HasOne("Lama.Domain.DbModels.Photo", "Photo")
                         .WithOne("User")
-                        .HasForeignKey("Lama.Domain.DbModels.User", "AvatarId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("Lama.Domain.DbModels.User", "AvatarId");
                 });
 
             modelBuilder.Entity("Lama.Domain.DbModels.Video", b =>
