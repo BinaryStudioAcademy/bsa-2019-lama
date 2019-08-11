@@ -148,7 +148,7 @@ namespace Photo.BusinessLogic.Services
 
                 await Create(new PhotoDocument
                 {
-                    Id = lastId++,
+                    Id = lastId,
                     BlobId = await storage.LoadPhotoToBlob(blob),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
@@ -157,6 +157,7 @@ namespace Photo.BusinessLogic.Services
                     Description = item.Description
                 });
                 ids.Add((int)lastId);
+                lastId++;
             }
             return ids;
         }
