@@ -31,11 +31,10 @@ export class SharedPageComponent implements OnInit {
   ngOnInit() {
     this.decodeUserData();
 
+    //TODO receive user data for shared page (e.g photo author, photo's likes, comments)
     // this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(shareData => {
     //   this.userData = shareData;
     // })
-
-    //this.userService.getCurrentUser().then(user  => this.authenticatedUser = user);
 
     //No proper data in database yet, so we are not updating
     this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId, this.sharedLinkData).subscribe(updated => {
