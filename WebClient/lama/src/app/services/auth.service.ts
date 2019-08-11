@@ -20,9 +20,10 @@ export class AuthService {
   }
   isUserExisted: boolean = true;
 
-
   constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService) {
-        this.afAuth.idToken.subscribe(token => {this.token =  token});
+        this.afAuth.idToken.subscribe(token => {
+          this.token =  token
+          localStorage.setItem('idKey',this.token)});
         this.userService.getCurrentUser().then(() => this.isUserExisted = true)
         .catch(() => this.isUserExisted = false)
    }
@@ -85,10 +86,7 @@ export class AuthService {
   }
 
   public getToken() {
-    if(!this.token){
-      this.afAuth.idToken.subscribe(token => {this.token =  token});
-    }
-    return this.token;
+    return localStorage.getItem("idKey");
   }
 
   public saveCreadeatins(user: firebase.User) {

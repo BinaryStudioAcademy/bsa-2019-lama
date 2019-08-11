@@ -2,6 +2,7 @@
 using Photo.Domain.DataTransferObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Interfaces
 {
