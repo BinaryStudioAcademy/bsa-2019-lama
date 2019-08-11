@@ -26,12 +26,15 @@ export class MainPageHeaderComponent implements OnInit {
   constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService) 
   {
     this.resolver = resolver;
-    http.getData(`users/${localStorage.getItem('userId')}`).subscribe(u => {
-      this.avatarUrl = u.photoUrl;
-    });
   }
+  
 
   ngOnInit() {
+  }
+
+  ngDoCheck() {
+    if (this.shared.avatar != null)
+      this.avatarUrl = this.shared.avatar.imageUrl;
   }
 
   public logOut() {

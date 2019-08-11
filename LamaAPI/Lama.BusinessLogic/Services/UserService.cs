@@ -11,27 +11,25 @@ using Microsoft.EntityFrameworkCore;
 using Lama.DataAccess;
 using Lama.BusinessLogic.Exceptions;
 using Lama.Domain.DTO.User;
+using AutoMapper;
 using Lama.Domain.BlobModels;
 
 namespace Lama.BusinessLogic.Services
 {
     public class UserService : BaseService<User>
     {
+        private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        public UserService(ApplicationDbContext dbContext, IPhotoService photoService)
+        public UserService(ApplicationDbContext dbContext, IPhotoService photoService, IMapper mapper)
             :base(dbContext)
         {
             _photoService = photoService;
+            _mapper = mapper;
         }
 
         public async Task<int> Create(UserDTO item)
         {
-            await Context.Users.AddAsync(new User
-            {
-                FirstName = item.FirstName,
-                LastName = item.LastName,
-                Email = item.Email,
-            });
+            await Context.Users.AddAsync(_mapper.Map<User>(item));
             await Context.SaveChangesAsync();
             var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
             item.Photo.AuthorId = user.Id;
@@ -58,9 +56,10 @@ namespace Lama.BusinessLogic.Services
             return newUser.Id;
         }
 
-        public async Task<User> GetByEmail(string email)
+        public async Task<UserDTO> GetByEmail(string email)
         {
-            return (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
+            var user = (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
+            return _mapper.Map<UserDTO>(user);
         }
 
         public async Task<UserDTO> Get(int id)
@@ -68,14 +67,9 @@ namespace Lama.BusinessLogic.Services
             var u = await Context.Users.SingleAsync(user => user.Id == id);
             var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == u.AvatarId);
             var url = (await _photoService.Get(avatar.ElasticId)).Blob256Id;
-            return new UserDTO
-            {
-                PhotoUrl = url,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                Id = u.Id
-            };
+            var dto = _mapper.Map<UserDTO>(u);
+            dto.PhotoUrl = url;
+            return dto;
         }
 
         public async Task Update(User user)
@@ -86,8 +80,6 @@ namespace Lama.BusinessLogic.Services
             {
                 throw new NotFoundException(nameof(User), user.Id);
             }
-
-
             updateUser.FirstName = user.FirstName;
             updateUser.LastName = user.LastName;
             updateUser.Email = user.Email;
