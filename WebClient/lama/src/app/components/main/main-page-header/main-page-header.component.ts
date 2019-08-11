@@ -34,6 +34,11 @@ export class MainPageHeaderComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngDoCheck() {
+    if (this.shared.avatar != null)
+      this.avatarUrl = this.shared.avatar.imageUrl;
+  }
+
   public logOut() {
     this.auth.doLogout()
             .then(this.auth.token = null)
