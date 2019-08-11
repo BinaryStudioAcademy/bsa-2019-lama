@@ -51,7 +51,11 @@ export class FileService
     return this.client.get(`${environment.lamaApiUrl}/api/photo`, this.httpOptions)
       .pipe(map(res => res as PhotoRaw[]));
   }
-  
+  public receiveUsersPhotos(userId:number): Observable<PhotoRaw[]>
+  { 
+    return this.client.get(`${environment.lamaApiUrl}/api/photo/user/${userId}`, this.httpOptions)
+      .pipe(map(res => res as PhotoRaw[]));
+  }
   public markPhotoAsDeleted(photosToDeleteId: number): Observable<object>
   { 
     return this.client.delete(`${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`);

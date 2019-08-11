@@ -9,8 +9,8 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 })
 export class ChoosePhotoComponent implements OnInit {
 
-  @Input ('_photo') photo: Photo;
-  @Output() onClick = new EventEmitter<Photo>();
+  @Input ('_photo') photo: PhotoRaw;
+  @Output() onClick = new EventEmitter<PhotoRaw>();
 
   Choose:boolean;
 

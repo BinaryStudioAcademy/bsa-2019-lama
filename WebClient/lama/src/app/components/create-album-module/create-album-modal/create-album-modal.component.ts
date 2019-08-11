@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
-import { Photo } from 'src/app/models';
+import { Photo, PhotoRaw } from 'src/app/models';
 import { environment } from '../../../../environments/environment';
 import { Album } from 'src/app/models/Album/album';
 import { User } from 'src/app/models/User/user';
@@ -9,6 +9,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { NewAlbum } from 'src/app/models/Album/NewAlbum';
 import { isUndefined } from 'util';
 import { AlbumService } from 'src/app/services/album.service';
+import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
@@ -18,6 +19,10 @@ export class CreateAlbumModalComponent implements OnInit {
 
   photos: Photo[] = [];
   album: NewAlbum;
+
+  albumWithExistPhotos: NewAlbumWithExistPhotos;
+  ExistPhotosId: number[] = [];
+
   albumName: string;
   activeColor: string = '#00d1b2';
   overlayColor: string = 'rgba(255,255,255,0.5)';
@@ -26,6 +31,8 @@ export class CreateAlbumModalComponent implements OnInit {
   imageSrc: string = '';
   LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
+
+  ExistPhotos: PhotoRaw[] = [];
 
   @Output()
   currentUser: User;
@@ -95,11 +102,12 @@ export class CreateAlbumModalComponent implements OnInit {
 
   CreateAlbum()
   {
-    this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
     if (this.LoadNewImage === true) {
+     this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
      this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
     } else {
-      this.albumService.createAlbumWithExistPhotos(this.album).subscribe((e) => this.toggleModal());
+      this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId , authorId: parseInt(this.currentUser.id) };
+      this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos).subscribe((e) => this.toggleModal());
     }
 
   }
@@ -114,19 +122,24 @@ export class CreateAlbumModalComponent implements OnInit {
     const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
     const componentRef = this.entry.createComponent(factory);
     let instance = componentRef.instance as ChooseStoragePhotosComponent;
+    instance.currentUser = this.currentUser;
     instance.onChange.subscribe((e)=>this.onChange(e));
   }
-  public onChange(eventArgs: Photo)
+  public onChange(photo: PhotoRaw)
   {
     if(this.LoadNewImage === true)
     {
       this.photos = [];
     }
     this.LoadNewImage = false;
-    if (this.photos.filter(x => x.imageUrl === eventArgs.imageUrl)[0] === undefined) {
-      this.photos.push({imageUrl: eventArgs.imageUrl});
+    if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
+      this.ExistPhotosId.push(photo.id);
+      this.photos.push({imageUrl: photo.blob256Id || photo.blobId});
+      this.ExistPhotos.push(photo);
     } else {
-      this.photos = this.photos.filter(x => x.imageUrl !== eventArgs.imageUrl);
+      this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
+      this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
+      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id || photo.blobId);
     }
   }
   

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Photo } from 'src/app/models';
+import { Photo, PhotoRaw } from 'src/app/models';
+import { FileService } from 'src/app/services';
+import { User } from 'src/app/models/User/user';
 
 @Component({
   selector: 'app-choose-storage-photos',
@@ -11,21 +13,26 @@ export class ChooseStoragePhotosComponent implements OnInit {
   @Input()
   public IsShow: boolean;
   
-  constructor() {
+  @Output()
+  currentUser: User;
+  
+  constructor(private photoService: FileService) {
     this.IsShow = true;
    }
    
-  @Input() photos: Photo[];
-  @Output() onChange = new EventEmitter<Photo>();
+  @Input() photos: PhotoRaw[] = [];
+  @Output() onChange = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
+    let id = parseInt(this.currentUser.id);
+    this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
   }
 
   toggleModal(e)
   {
     this.IsShow = false;
   }
-  public clickPerformed(eventArgs: Photo)
+  public clickPerformed(eventArgs: PhotoRaw)
   {
     this.onChange.emit(eventArgs);
   }

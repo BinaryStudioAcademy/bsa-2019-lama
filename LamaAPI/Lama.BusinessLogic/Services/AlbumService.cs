@@ -68,8 +68,36 @@ namespace Lama.BusinessLogic.Services
                 await Context.SaveChangesAsync();
             }
         }
-        public async Task CreateAlbumWithExistPhotos(NewAlbum album)
+        public async Task CreateAlbumWithExistPhotos(AlbumWithExistPhotos album)
         {
+            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
+            Album TempAlbum = new Album()
+            {
+                Title = album.Title,
+                User = user
+            };
+
+            List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
+            List<Photo> photos = new List<Photo>();
+
+            for (int i = 0; i < album.PhotosId.Length; i++)
+            {
+                var TempPhoto = await Context.Photos.FirstOrDefaultAsync(x => x.ElasticId == album.PhotosId[i]);
+                if (TempPhoto != null)
+                {
+                    photos.Add(TempPhoto);
+                    photoAlbums.Add(new PhotoAlbum() { Photo = TempPhoto, Album = TempAlbum });
+                }
+            }
+
+            if (photos.Count != 0)
+            {
+                TempAlbum.Photo = photos[0];
+                TempAlbum.PhotoAlbums = photoAlbums;
+            }
+
+            await Context.Albums.AddAsync(TempAlbum);
+            await Context.SaveChangesAsync();
 
         }
         public async Task<List<ReturnAlbum>> FindAll(int UserId)

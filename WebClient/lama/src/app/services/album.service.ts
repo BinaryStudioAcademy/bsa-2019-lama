@@ -4,6 +4,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Album } from '../models/Album/album';
 import { ViewAlbum } from '../models/Album/ViewAlbum';
 import { NewAlbum } from '../models/Album/NewAlbum';
+import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class AlbumService {
       return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto', album , { headers });
   }
 
-  public createAlbumWithExistPhotos(album: NewAlbum) {
+  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
 }

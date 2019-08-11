@@ -28,7 +28,7 @@ namespace Lama.Controllers
             await _service.CreateAlbumWithNewPhotos(album);
         }
         [HttpPost("CreateWithExistPhoto")]
-        public async Task CreateAlbumWithExistPhotos([FromBody] NewAlbum album)
+        public async Task CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotos album)
         {
             await _service.CreateAlbumWithExistPhotos(album);
         }

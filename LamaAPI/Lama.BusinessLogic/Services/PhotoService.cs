@@ -58,6 +58,16 @@ namespace Lama.BusinessLogic.Services
             return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
         }
 
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/user/{id}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+        }
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
 
