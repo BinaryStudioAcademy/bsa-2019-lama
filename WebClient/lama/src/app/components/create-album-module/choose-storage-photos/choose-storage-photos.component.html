@@ -1,17 +1,17 @@
 <div class="modal" [class.is-active]="IsShow">
     <div (click)="toggleModal($event)"></div>
 
-<div class="head notification size">
-    
+    <div class="head notification size">
+
         <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
         <h4 class="title is-4">Choose photo</h4>
-</div>
-    
+    </div>
+
     <!--content-->
     <div class="modal-content size">
         <div class="notification color">
             <!--photos-->
-            <div class="items-container-centered">
+            <div class="items-container-centered height">
                 <div *ngFor="let item of photos">
                     <app-choose-photo [_photo]="item" (onClick)="clickPerformed($event)"></app-choose-photo>
                 </div>
@@ -21,8 +21,8 @@
 
     </div>
 
-        
+
     <div class="modal-card-foot foot size buttons is-right">
-            <a class="button is-primary" (click)="toggleModal()">Save Changes</a>
-        </div>
+        <a class="button is-primary" (click)="toggleModal()">Save Changes</a>
+    </div>
 </div>

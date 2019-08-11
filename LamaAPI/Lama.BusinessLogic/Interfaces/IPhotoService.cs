@@ -18,5 +18,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
+        Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id);
     }
 }

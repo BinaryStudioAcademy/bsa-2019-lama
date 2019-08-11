@@ -41,7 +41,11 @@ namespace Lama.Controllers
         {
             return await _service.GetAll();
         }
-
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        {
+            return await _service.GetUserPhotos(id);
+        }
         #region DELETE
         // DELETE: api/photo/5
         [HttpDelete("{photoToDeleteId}")]
