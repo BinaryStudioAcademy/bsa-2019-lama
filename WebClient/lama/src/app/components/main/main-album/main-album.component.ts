@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Album } from 'src/app/models/Album/album';
+import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 
 
 @Component({
@@ -9,8 +10,8 @@ import { Album } from 'src/app/models/Album/album';
 })
 export class MainAlbumComponent implements OnInit {
 
-  @Input ('_album') album: Album;
-  @Output() onClick = new EventEmitter<Album>();
+  @Input ('_album') album: ViewAlbum;
+  @Output() onClick = new EventEmitter<ViewAlbum>();
 
   isContent:boolean = false;
   isMenu:boolean = true;

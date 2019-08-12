@@ -7,8 +7,8 @@
     <div class="title">
         <h2 class="title is-2">{{album.name}}</h2>
     </div>
-    <div class="items-container-centered">
-        <div *ngFor="let item of album.photos">
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums">
             <app-view-album-photos [_photo]="item"></app-view-album-photos>
         </div>
     </div>

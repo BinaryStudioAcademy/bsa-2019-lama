@@ -6,6 +6,7 @@ import { Photo } from 'src/app/models';
 import { Subject } from 'rxjs';
 import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
+import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -19,7 +20,8 @@ export class PhotoUploadModalComponent implements OnInit {
   desc: string[] = []; 
   showSpinner: boolean = false;
 
-  addToList: Subject<Photo[]> = new Subject();
+  @Output()
+  addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<UploadPhotoResultDTO[]>();
 
   constructor(private fileService: FileService) { }
 
@@ -27,13 +29,17 @@ export class PhotoUploadModalComponent implements OnInit {
   }
 
   saveChanges() {
-    let id = localStorage.getItem('userId');
-    for (let i=0; i<this.photos.length; i++) {
-      this.photos[i] = {imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(id)}
+    let userId = localStorage.getItem('userId');
+    for (let i = 0; i < this.photos.length; i++) 
+    {
+      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId) }
     }
-    this.addToList.next(this.photos);
-    this.fileService.sendPhoto(this.photos);
-    this.toggleModal();
+    this.fileService.sendPhoto(this.photos)
+    .subscribe(uploadedPhotos => 
+      {
+        this.addToListEvent.emit(uploadedPhotos);
+        this.toggleModal();
+      });
   }
 
   async onFileSelected(event) {
@@ -45,7 +51,8 @@ export class PhotoUploadModalComponent implements OnInit {
   async onFileDropped(files) {
       this.showSpinner = true;
       this.photos = []
-      for (let i=0; i<files.length; i++) {
+      for (let i=0; i<files.length; i++) 
+      {
         let compressedFile = await imageCompression(files[i], environment.compressionOptions);
         this.showSpinner = false;
         this.photos.push({imageUrl: await this.toBase64(compressedFile)})

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO, DeletedPhotoDTO, PhotoToDeleteRestoreDTO } from '../models';
+import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +20,9 @@ export class FileService
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   }
 
-  public sendPhoto(photos: Photo[]): void
+  public sendPhoto(photos: Photo[]): Observable<UploadPhotoResultDTO[]>
   {
-    this.client.post<Photo[]>(`${environment.lamaApiUrl}/api/photo`, photos, this.httpOptions).subscribe((e) => console.log(e));
+    return this.client.post<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo`, photos, this.httpOptions);
   }
   
   public async getImageBase64(url: string): Promise<string>
@@ -48,10 +49,13 @@ export class FileService
   }
   public receivePhoto(): Observable<PhotoRaw[]>
   { 
-    return this.client.get(`${environment.lamaApiUrl}/api/photo`, this.httpOptions)
+    return this.client.get<PhotoRaw[]>(`${environment.lamaApiUrl}/api/photo`, this.httpOptions);
+  }
+  public receiveUsersPhotos(userId:number): Observable<PhotoRaw[]>
+  { 
+    return this.client.get(`${environment.lamaApiUrl}/api/photo/user/${userId}`, this.httpOptions)
       .pipe(map(res => res as PhotoRaw[]));
   }
-  
   public markPhotoAsDeleted(photosToDeleteId: number): Observable<object>
   { 
     return this.client.delete(`${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`);

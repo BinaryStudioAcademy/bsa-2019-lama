@@ -38,7 +38,6 @@ namespace Lama.Controllers
              return await _service.UpdateUser(user);
         }
 
-
         [HttpGet]
         public async Task Get()
         {
@@ -49,6 +48,12 @@ namespace Lama.Controllers
         public async Task<UserDTO> Get(int id)
         {
             return await _service.Get(id);
+        }
+		
+        [HttpGet("email/{email}")]
+        public async Task<UserDTO> GetByEmail(string email)
+        {
+            return await _service.GetByEmail(email);
         }
 
         //[HttpPost]

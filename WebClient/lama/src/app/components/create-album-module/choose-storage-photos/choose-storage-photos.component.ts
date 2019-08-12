@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Photo } from 'src/app/models';
+import { Photo, PhotoRaw } from 'src/app/models';
+import { FileService } from 'src/app/services';
+import { User } from 'src/app/models/User/user';
 
 @Component({
   selector: 'app-choose-storage-photos',
@@ -11,36 +13,26 @@ export class ChooseStoragePhotosComponent implements OnInit {
   @Input()
   public IsShow: boolean;
   
-  constructor() {
+  @Output()
+  currentUser: User;
+  
+  constructor(private photoService: FileService) {
     this.IsShow = true;
    }
    
-  @Input() photos: Photo[];
-  @Output() onChange = new EventEmitter<Photo>();
+  @Input() photos: PhotoRaw[] = [];
+  @Output() onChange = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
-    this.photos = [{
-      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe91xLeKqjSUdroQovkZHKyEwGZ3d8wmR6RR2GcmboXaDwxf1K",
-      author: "Barack Obama"},
-      {imageUrl:"https://kindlepreneur.com/wp-content/uploads/2017/01/Amazon-Super-URL.png", author: "Donald Trump"},
-      {imageUrl:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd_jKaKL5-m9re2poDCzjwCbqK-U62pW-5LDOGsv1Klgv_mh6nrA', author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd_jKaKL5-m9re2poDCzjwCbqK-U62pW-5LDOGsv1Klgv_mh6nrA', author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"},
-      {imageUrl:"https://drop.ndtv.com/albums/AUTO/pininfarina-battista/640_640x480.jpg", author: "Donald Trump"}
-    ]
+    let id = parseInt(this.currentUser.id);
+    this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
   }
 
   toggleModal(e)
   {
     this.IsShow = false;
   }
-  public clickPerformed(eventArgs: Photo)
+  public clickPerformed(eventArgs: PhotoRaw)
   {
     this.onChange.emit(eventArgs);
   }

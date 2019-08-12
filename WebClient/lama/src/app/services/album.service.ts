@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Album } from '../models/Album/album';
+import { ViewAlbum } from '../models/Album/ViewAlbum';
+import { NewAlbum } from '../models/Album/NewAlbum';
+import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
 
 @Injectable({
   providedIn: 'root'
@@ -18,16 +21,19 @@ export class AlbumService {
   }
 
 
-  public getAlbums(httpParams?: any) {
-      return this.http.get<Album[]>(this.baseUrl + this.routeAlbum, { observe: 'response', headers: this.headers, params: httpParams });
+  public getAlbums(userId:string , httpParams?: any) {
+      return this.http.get<ViewAlbum[]>(this.baseUrl + this.routeAlbum + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
 
-  public createAlbumWithNewPhotos(album: Album) {
+  public getAlbum(userId: number , httpParams?: any) {
+    return this.http.get<ViewAlbum>(this.baseUrl + this.routeAlbum + '/album'+ `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
+  }
+  public createAlbumWithNewPhotos(album: NewAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');
       return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto', album , { headers });
   }
 
-  public createAlbumWithExistPhotos(album: Album) {
+  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
 }

@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { User } from '../models/User/user';
+import { PhotoRaw } from '../models';
   
 @Injectable()
 export class HttpService{
@@ -15,5 +16,9 @@ export class HttpService{
 
     putData(endPoint: string, data: any) {
         return this.http.put(`${environment.lamaApiUrl}/api/${endPoint}`, data);
+    }
+
+    findPhotos(criteria: string): Observable<PhotoRaw[]> {
+        return this.http.get(`${environment.lamaApiUrl}/api/photo/search/${criteria}`) as Observable<PhotoRaw[]>;
     }
 }

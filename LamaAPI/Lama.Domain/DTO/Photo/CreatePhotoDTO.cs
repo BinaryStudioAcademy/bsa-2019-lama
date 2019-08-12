@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lama.Domain.BlobModels
+﻿namespace Lama.Domain.DTO.Photo
 {
-    public class PhotoReceived
+    public class CreatePhotoDTO
     {
+        public int Id { get; set; }
         public string ImageUrl { get; set; }
         public string Description { get; set; }
         public int? AuthorId { get; set; }

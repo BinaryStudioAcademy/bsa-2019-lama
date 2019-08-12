@@ -28,9 +28,9 @@ namespace Lama.Controllers
             await _service.CreateAlbumWithNewPhotos(album);
         }
         [HttpPost("CreateWithExistPhoto")]
-        public async Task CreateAlbumWithExistPhotos([FromBody] NewAlbum album)
+        public async Task CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotos album)
         {
-            await _service.CreateAlbumWithNewPhotos(album);
+            await _service.CreateAlbumWithExistPhotos(album);
         }
         [HttpPut]
         public async Task UpdateAlbum([FromBody] Album album)
@@ -43,14 +43,21 @@ namespace Lama.Controllers
 
         }
         [HttpGet("{id}")]
-        public async Task GetAlbum(int id)
+        public async Task<List<ReturnAlbum>> GetUserAlbums(int id)
         {
-
+            return await _service.FindAll(id);
         }
-        [HttpGet]
-        public async Task GetAlbums()
-        {
 
+        [HttpGet("album/{id}")]
+        public async Task<ReturnAlbum> GetAlbum(int id)
+        {
+            return await _service.FindAlbum(id);
+        }
+
+        [HttpGet]
+        public async Task<string> GetAlbums()
+        {
+            return null;
         }
     }
 }

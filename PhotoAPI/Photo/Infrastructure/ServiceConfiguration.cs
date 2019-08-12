@@ -8,10 +8,10 @@ using Nest;
 using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Services;
 using Photo.BusinessLogic.Interfaces;
-using Photo.DataAccess.Blob;
+using Photo.DataAccess.Implementation;
 using Photo.DataAccess.Interfaces;
 using AutoMapper;
-using Photo.BusinessLogic.MappingProfiles;
+using Photo.Domain.MappingProfiles;
 
 namespace Photo.Infrastructure
 {
@@ -35,6 +35,7 @@ namespace Photo.Infrastructure
                 
             
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
+            services.AddSingleton<IElasticStorage>(f => new ElasticStorage(defaultIndex, f.GetService<IElasticClient>()));
         }
         public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
         {
@@ -42,14 +43,12 @@ namespace Photo.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(f => new PhotoBlobStore(configuration["StorageConnectionString"]));
+            CreateBlobStorageSettings createBlobStorageSettings = new CreateBlobStorageSettings();
+            configuration.Bind("BlobStorageSettings", createBlobStorageSettings);
 
-            services.AddScoped<IPhotoService, ElasticPhotoService>(factory => 
-                new ElasticPhotoService(
-                    indexName: configuration["elasticsearch:index"],
-                    elasticClient: factory.GetService<IElasticClient>(),
-                    storage: factory.GetService<IPhotoBlobStorage>(),
-                    mapper: factory.GetService<IMapper>()));
+            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(f => new PhotoBlobStore(createBlobStorageSettings));
+
+            services.AddScoped<IPhotoService, PhotoService>();
         }
     }
 }

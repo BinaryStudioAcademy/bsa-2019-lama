@@ -1,4 +1,4 @@
-﻿namespace Lama.Domain.DataTransferObjects.Photo
+﻿namespace Lama.Domain.DTO.Photo
 {
     public class UpdatedPhotoResultDTO
     {
