@@ -25,6 +25,7 @@ export class ShareByEmailModalComponent implements OnInit {
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
   userEmails: Array<string>;
   sharingRoute: String = "main/shared";
+  showSuccessIcon: boolean = false;
 
   constructor(private httpService: HttpService) {
 
@@ -43,32 +44,12 @@ export class ShareByEmailModalComponent implements OnInit {
     if(user.email)
     {
 		this.userEmails.push(user.email);
-		this.DisplaySuccesIcon();
+		this.showSuccessIcon = true;
     }
     else
     {
-		this.DisplayFailureIcon();
+		this.showSuccessIcon = false;
     }
-  }
-  
-  DisplaySuccesIcon() {
-	let succesIconColor = document.getElementById('success-icon-color');
-	succesIconColor.classList.remove('has-text-danger');
-	succesIconColor.classList.add('has-text-success');
-		
-	let succesIcon = document.getElementById('success-icon');
-	succesIcon.classList.remove('fa-times');
-	succesIcon.classList.add('fa-check');
-  }
-  
-  DisplayFailureIcon() {
-	let succesIconColor = document.getElementById('success-icon-color');
-	succesIconColor.classList.remove('has-text-success');
-	succesIconColor.classList.add('has-text-danger');
-		
-	let succesIcon = document.getElementById('success-icon');
-	succesIcon.classList.remove('fa-check');
-	succesIcon.classList.add('fa-times');
   }
   
 	public createShareableLink(){

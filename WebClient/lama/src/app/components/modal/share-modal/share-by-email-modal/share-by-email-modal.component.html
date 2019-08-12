@@ -9,8 +9,11 @@
 			<span class="icon is-small is-left">
 				<i class="fa fa-envelope"></i>
 			</span>
-			<span class="icon is-small is-right fas has-text-danger" id="success-icon-color">
+			<span class="icon is-small is-right fas has-text-danger" *ngIf="!showSuccessIcon">
 				<i class="fa fa-times" id="success-icon"></i>
+			</span>
+			<span class="icon is-small is-right fas has-text-success" *ngIf="showSuccessIcon">
+				<i class="fa fa-check" id="success-icon"></i>
 			</span>
 		  </p>
         </div>
