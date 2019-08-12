@@ -9,11 +9,9 @@ using Services.Implementation.RabbitMq;
 using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.BusinessLogic.Services;
-using Lama.DataAccess.Repositories;
-using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
 using AutoMapper;
-using Lama.BusinessLogic.MappingProfiles;
+using Lama.Domain.MappingProfiles;
 
 namespace Lama.Infrastructure
 {
