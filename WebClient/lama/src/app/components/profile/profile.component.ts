@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit {
   photoUrl: string;
   testReceivedUser: User;
   showSpinner: boolean = true;
+  isPhotoLoaded: boolean = false;
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
@@ -46,6 +47,7 @@ export class ProfileComponent implements OnInit {
   }
 
   readURL(event: Event): void {
+    this.isPhotoLoaded = true;
     const target = event.target as HTMLInputElement
     if (target.files && target.files[0]) {
         const file = target.files[0];
@@ -61,7 +63,8 @@ export class ProfileComponent implements OnInit {
   async saveUser() {
     console.log(this.photoUrl);
     this.httpService.putData(`users`, this.user).subscribe((data:User) => this.testReceivedUser = data);
-    this.sharedService.avatar = this.user.photo;
+    if (this.isPhotoLoaded)
+      this.sharedService.avatar = this.user.photo;
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);

@@ -43,7 +43,7 @@ namespace Lama.BusinessLogic.Services
         public async Task<int> UpdateUser(UserDTO user)
         {
             var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Id== user.Id);
-            if (user.Photo != null)
+            if (user.Photo.ImageUrl != null)
             {
                 var newAvatar = await _photoService.CreateAvatar(user.Photo);
                 newUser.AvatarId = newAvatar.Id;
