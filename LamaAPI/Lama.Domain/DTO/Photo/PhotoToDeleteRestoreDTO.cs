@@ -1,4 +1,4 @@
-﻿namespace Lama.Domain.DataTransferObjects.Photo
+﻿namespace Lama.Domain.DTO.Photo
 {
     // use this to send to server
     // which photo should be delted or restored

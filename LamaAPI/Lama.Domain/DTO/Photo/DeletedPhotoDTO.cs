@@ -1,4 +1,4 @@
-﻿namespace Lama.Domain.DataTransferObjects.Photo
+﻿namespace Lama.Domain.DTO.Photo
 {
     // use this to get deleted photos from server
     public class DeletedPhotoDTO

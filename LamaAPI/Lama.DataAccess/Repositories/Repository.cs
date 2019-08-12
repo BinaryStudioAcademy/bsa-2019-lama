@@ -64,9 +64,9 @@ namespace Lama.DataAccess.Repositories
             return entities.FindAsync(id);
         }
 
-        public virtual async Task InsertAsync(TEntity entity)
+        public virtual async Task<TEntity> InsertAsync(TEntity entity)
         {
-            await entities.AddAsync(entity);
+            return (await entities.AddAsync(entity)).Entity;
         }
 
         public virtual async Task DeleteAsync(object id)
