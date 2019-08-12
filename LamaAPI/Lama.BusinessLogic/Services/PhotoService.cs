@@ -46,6 +46,17 @@ namespace Lama.BusinessLogic.Services
             this.httpClient.Dispose();
         }
 
+        public async Task<IEnumerable<PhotoDocument>> FindPhoto(string criteria)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/search/{criteria}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+        }
+
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {

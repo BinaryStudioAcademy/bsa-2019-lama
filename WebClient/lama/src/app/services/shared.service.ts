@@ -8,6 +8,7 @@ import { User } from '../models/User/user';
 })
 export class SharedService {
   photos: PhotoRaw[] = [];
+  foundedPhotos: PhotoRaw[] = [];
   avatar: Photo;
   constructor() { }
 }

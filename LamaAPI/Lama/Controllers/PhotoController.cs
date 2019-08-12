@@ -31,6 +31,12 @@ namespace Lama.Controllers
             await _service.CreateAll(photos);
         }
 
+        [HttpGet("search/{criteria}")]
+        public async Task<IEnumerable<PhotoDocument>> FindPhotos(string criteria)
+        {
+            return await _service.FindPhoto(criteria);
+        }
+
         [HttpPut]
         public Task<UpdatedPhotoResultDTO> UpdatePhoto([FromBody] UpdatePhotoDTO photoToUpdate)
         {

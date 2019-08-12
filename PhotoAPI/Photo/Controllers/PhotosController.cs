@@ -47,6 +47,12 @@ namespace Photo.Controllers
             return photoService.Get(id);
         }
 
+        [HttpGet("search/{criteria}")]
+        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        {
+            return photoService.Find(criteria);
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<IEnumerable<int>> Post([FromBody] PhotoReceived[] values)

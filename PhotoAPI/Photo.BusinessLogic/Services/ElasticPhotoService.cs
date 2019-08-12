@@ -57,6 +57,57 @@ namespace Photo.BusinessLogic.Services
             };
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
+
+        public async Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        {
+            var mustClauses = new List<QueryContainer>();
+            var shouldClauses = new List<QueryContainer>();
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                Value = false
+            });
+
+            mustClauses.Add(new MatchQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
+                Query = ".*images.*"
+            });
+
+            mustClauses.Add(new WildcardQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.Description),
+                Value = $"*{criteria}*"
+            });
+
+            //shouldClauses.Add(new WildcardQuery
+            //{
+            //    Field = Infer.Field<PhotoDocument>(p => p.Location),
+            //    Value = $"*{criteria}"
+            //});
+
+            //shouldClauses.Add(new MatchQuery
+            //{
+            //    Field = Infer.Field<PhotoDocument>(p => p.Description),
+            //    Query = $".*{criteria}.*"
+            //});
+
+            //shouldClauses.Add(new MatchQuery
+            //{
+            //    Field = Infer.Field<PhotoDocument>(p => p.Description),
+            //    Query = $".*{criteria}.*"
+            //});
+
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = 100,
+                From = 0,
+                Query = new BoolQuery { Must = mustClauses/*, Should = shouldClauses*/ }
+            };
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+
+        }
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
         {
             var mustClauses = new List<QueryContainer>();

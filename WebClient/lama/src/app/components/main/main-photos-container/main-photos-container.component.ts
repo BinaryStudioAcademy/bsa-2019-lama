@@ -43,6 +43,10 @@ export class MainPhotosContainerComponent implements OnInit {
         this.photos.push(element);
       });
     }
+    if (this.shared.foundedPhotos.length != 0) {
+      this.photos = this.shared.foundedPhotos;
+    }
+    this.shared.foundedPhotos = []
     this.shared.photos = []
   }
 

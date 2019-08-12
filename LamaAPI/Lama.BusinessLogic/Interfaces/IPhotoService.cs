@@ -10,6 +10,7 @@ namespace Lama.BusinessLogic.Interfaces
     public interface IPhotoService 
     {
         Task CreateAll(PhotoReceived[] photos);
+        Task<IEnumerable<PhotoDocument>> FindPhoto(string criteria);
         Task<Photo> CreateAvatar(PhotoReceived item);
         Task<IEnumerable<PhotoDocument>> GetAll();
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
