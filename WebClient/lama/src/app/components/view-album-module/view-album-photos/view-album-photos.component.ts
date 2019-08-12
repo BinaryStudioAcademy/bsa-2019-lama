@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo } from 'src/app/models/Photo/photo';
+import { PhotoRaw } from 'src/app/models';
 
 @Component({
   selector: 'app-view-album-photos',
@@ -8,8 +9,8 @@ import { Photo } from 'src/app/models/Photo/photo';
 })
 export class ViewAlbumPhotosComponent implements OnInit {
 
-  @Input ('_photo') photo: Photo;
-  @Output() onClick = new EventEmitter<Photo>();
+  @Input ('_photo') photo: PhotoRaw;
+  @Output() onClick = new EventEmitter<PhotoRaw>();
 
   constructor() { }
 

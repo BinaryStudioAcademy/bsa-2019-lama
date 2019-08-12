@@ -1,4 +1,7 @@
 ﻿using Lama.BusinessLogic.Interfaces;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,29 +11,40 @@ namespace Lama.BusinessLogic.Services
 {
     public abstract class BaseService<T> : IBaseService<T> where T : class
     {
-        public Task Create(T item)
+        protected ApplicationDbContext Context;
+
+        public BaseService(ApplicationDbContext Context)
         {
-            throw new NotImplementedException();
+            this.Context = Context;
+        }
+        public virtual async Task<int> Create(T item)
+        {
+            await Context.Set<T>().AddAsync(item);
+            return await Context.SaveChangesAsync();
         }
 
-        public Task Delete(int id)
+        public virtual async Task<int> Delete(T entity)
         {
-            throw new NotImplementedException();
+            Context.Set<T>().Remove(entity);
+            return await Context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<T>> FindAll()
+        public virtual async Task<IEnumerable<T>> FindAll()
         {
-            throw new NotImplementedException();
+            return await Context.Set<T>().AsNoTracking().ToListAsync();
         }
 
-        public Task<T> Get(int id)
+        public async virtual Task<T> Update(T t, object key)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task Update(T item)
-        {
-            throw new NotImplementedException();
+            if (t == null)
+                return null;
+            T exist = await Context.Set<T>().FindAsync(key);
+            if (exist != null)
+            {
+                Context.Entry(exist).CurrentValues.SetValues(t);
+                await Context.SaveChangesAsync();
+            }
+            return exist;
         }
     }
 }

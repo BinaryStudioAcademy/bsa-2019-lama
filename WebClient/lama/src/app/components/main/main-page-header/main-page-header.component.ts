@@ -7,6 +7,7 @@ import { element } from 'protractor';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharedService } from 'src/app/services/shared.service';
 import { Photo } from 'src/app/models';
+import { HttpService } from 'src/app/services/http.service';
 
 
 @Component({
@@ -17,23 +18,30 @@ import { Photo } from 'src/app/models';
 export class MainPageHeaderComponent implements OnInit {
 
 
-  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef }) 
+  @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  
+  private avatarUrl;
   // constructors
-  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService) 
+  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService) 
   {
     this.resolver = resolver;
   }
   
+
   ngOnInit() {
+  }
+
+  ngDoCheck() {
+    if (this.shared.avatar != null)
+      this.avatarUrl = this.shared.avatar.imageUrl;
   }
 
   public logOut() {
     this.auth.doLogout()
-             .then(() => this.router.navigate(['/']))
-             .catch(e => {console.log("user is not signed in")});
+            .then(this.auth.token = null)
+            .then(() => this.router.navigate(['/']))
+            .catch(e => {console.log("user is not signed in")});
   }
 
   public openModalClicked(event): void
@@ -45,10 +53,10 @@ export class MainPageHeaderComponent implements OnInit {
       let photos = []
       data.forEach(element => {
         photos.push({blobId: element.imageUrl});
-      }) 
+      })
       this.shared.photos = photos;
 
     });
-    componentRef.instance.toggleModal();    
+    componentRef.instance.toggleModal();
   }
 }

@@ -1,46 +1,63 @@
 <div class="modal" [class.is-active]="isShown">
+    <!--background-->
     <div class="modal-background" (click)="toggleModal()"></div>
 
-    <!--content-->
-    <div class="modal-content size">
-        <div class="notification">
-            <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
-            <div class="flex-container">
-                <div class="head flex-item">
-                    <h4 class="title is-4">Enter Album name </h4>
-                </div>
-                <div class="field flex-item">
-                    <input class="input is-primary" type="text" placeholder="Album Name" required>
-                </div>
-                <div class="storage">
-                    <h4 class="title is-4">Upload photo from storage</h4>
-                    <a class="button is-primary" (click)="ChoosePhoto($event)">upload</a>
-                </div>
+    <!--modal card-->
+    <div class="modal-card size-card">
 
-                <div class="upload-file">
-                    <h4 class="title is-4">Upload photo from device</h4>
-                    <label class="uploader" ondragover="return false;" [class.loaded]="loaded" [style.outlineColor]="dragging ? activeColor : baseColor" (dragenter)="handleDragEnter()" (dragleave)="handleDragLeave()" (drop)="handleDrop($event)">
-                    
-                    <i class="icon icon-upload glyphicon glyphicon-upload" 
-                        [style.color]="dragging 
-                            ? ((imageSrc.length > 0) ? overlayColor : activeColor)
-                            : ((imageSrc.length > 0) ? overlayColor : baseColor)"></i>
-                    
-                    <img 
-                        [src]="imageSrc" 
-                        (load)="handleImageLoad()" 
-                        [class.loaded]="imageLoaded"/>
-                    
-                    <input type="file" name="file" accept="image/*"
-                        (change)="handleInputChange($event)" multiple>
-                </label>
+        <!--header-->
+        <header class="modal-card-head">
+            <p class="modal-card-title">Create album</p>
+            <button class="delete" aria-label="close" (click)="toggleModal()"></button>
+        </header>
+
+        <!--content-->
+        <section class="modal-card-body">
+            <div class="columns-flex">
+                <div class="flex-container">
+                    <div class="head flex-item">
+                        <h4 class="title is-4">Enter Album name </h4>
+                    </div>
+
+                    <div class="field flex-item w100">
+                        <input [(ngModel)]="albumName" name='name' #name="ngModel" class="input is-primary" type="text" placeholder="Album Name" required>
+                        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+                            <div *ngIf="name.errors.required">
+                                Enter Album name
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="storage">
+                        <h4 class="title is-4">Upload photo from storage</h4>
+                        <a class="button is-primary is-fullwidth" (click)="ChoosePhoto($event)">upload</a>
+                    </div>
+
+                    <div class="upload-file">
+                        <h4 class="title is-4">Upload photo from device</h4>
+                        <label class="uploader" ondragover="return false;" [class.loaded]="loaded" fileDrop [style.outlineColor]="dragging ? activeColor : baseColor" (dragenter)="handleDragEnter()" (dragleave)="handleDragLeave()" (drop)="handleDrop($event)">
+                        <input type="file" name="file" accept="image/*" (change)="handleInputChange($event)" multiple>
+                    </label>
+                    </div>
                 </div>
-                <div class="modal-card-foot foot">
-                    <a class="button is-primary" (click)="CreateAlbum()">Save Changes</a>
-                    <a class="button" (click)="toggleModal()">Cancel</a>
+                <div class="photos" [style.display]="this.photos.length==0 ? 'none' : 'block'">
+                    <div class="photo" *ngFor="let photo of photos; let i = index">
+                        <img src="{{ photo.imageUrl }}" id="uploaded-image">
+                        <div class="desc">
+                            <textarea class="textarea has-fixed-size" placeholder="Description" id="{{ i }}" [(ngModel)]="photo.description" rows="2"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!--footer-->
+        <footer class="modal-card-foot buttons is-left">
+            <a [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="CreateAlbum()">Save Changes</a>
+            <a class="button" (click)="toggleModal()">Cancel</a>
+        </footer>
     </div>
+
+
     <template #ChoosePhotos></template>
 </div>

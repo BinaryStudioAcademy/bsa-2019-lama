@@ -1,14 +1,14 @@
 <div class="close">
     <div class="image">
-        <a routerLink="/main/albums"><img src="../../../assets/icons//back.svg" alt=""></a>
+        <a routerLink="/main/albums"><img src="assets/icons/back.svg" alt=""></a>
     </div>
 </div>
 <div class="container">
     <div class="title">
         <h2 class="title is-2">{{album.name}}</h2>
     </div>
-    <div class="photos">
-        <div *ngFor="let item of album.photos">
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums">
             <app-view-album-photos [_photo]="item"></app-view-album-photos>
         </div>
     </div>

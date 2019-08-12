@@ -1,3 +1,3 @@
-export * from './image.service';
+export * from './file.service';
 export * from './auth.service';
 export * from './user.service';

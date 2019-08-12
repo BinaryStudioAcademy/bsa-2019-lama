@@ -14,12 +14,12 @@ export class MainLeftActionsSidebarComponent implements OnInit {
     this.items = [{
       title: 'Photos',
       icon: 'insert_photo',
-      route: '/main',
+      route: 'photos',
     },
     {
       title: 'Albums',
       icon: 'photo_album',
-      route: '/main/albums'
+      route: 'albums'
     },
     {
       title: 'Sharing',
@@ -35,6 +35,11 @@ export class MainLeftActionsSidebarComponent implements OnInit {
       title: 'People links',
       icon: 'person',
       route: ''
+    },
+    {
+      title: 'Removed photos',
+      icon: 'delete',
+      route: 'bin'
     }];
   }
 

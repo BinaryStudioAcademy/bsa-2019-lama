@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
-import { Photo } from 'src/app/models';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 @Component({
@@ -11,8 +10,8 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 export class MainPhotoComponent implements OnInit {
 
   // properties
-  @Input ('_photo') photo: Photo;
-  @Output() onClick = new EventEmitter<Photo>();
+  @Input ('_photo') photo: PhotoRaw;
+  @Output() onClick = new EventEmitter<PhotoRaw>();
 
   // constructors
   constructor() { }

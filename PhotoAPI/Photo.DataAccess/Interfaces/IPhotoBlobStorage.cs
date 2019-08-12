@@ -1,7 +1,11 @@
-﻿namespace Photo.DataAccess.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Photo.DataAccess.Interfaces
 {
     public interface IPhotoBlobStorage
     {
-        System.Threading.Tasks.Task<string> LoadPhotoToBlob(byte[] blob);
+        Task<string> LoadPhotoToBlob(byte[] blob);
+        Task<string> LoadAvatarToBlob(byte[] blob);
+        Task DeleteFileAsync(string blobName);
     }
 }

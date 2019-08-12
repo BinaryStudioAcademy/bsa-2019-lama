@@ -1,3 +1,15 @@
+@import '~compass-mixins/lib/compass/css3'
+
+@mixin transition($transition...) 
+    -moz-transition:    $transition
+    -o-transition:      $transition
+    -webkit-transition: $transition
+    transition:         $transition
+
+
+
+
+
 .album
     position: relative
     height: 15rem
@@ -7,13 +19,16 @@
     overflow: hidden
     margin: .5rem
     border-radius: .3rem
+
 .album img
+    opacity: .95
     min-height: 100%
     min-width: 100%
     object-fit: cover
 
 .album:hover img 
-    opacity: .9
+    opacity: 1
+
 
 
 .description p
@@ -24,3 +39,41 @@
 
 .link_album:hover p
     color: black
+    
+
+
+.link_album:hover .menu
+    visibility: visible
+    -webkit-transform: rotateZ(90deg)
+    -ms-transform: rotateZ(90deg)
+    transform: rotateZ(90deg)
+    @include transition(all 0.25s linear)
+
+.menu
+   visibility: hidden
+   position: absolute
+   top:0
+   right:0
+   margin-top: 10px
+   width:30px
+   height: 30px
+   z-index: 1
+
+
+.dropdown-content 
+  visibility: hidden
+  position: absolute
+  top:0
+  right:0
+  min-width: 160px
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2)
+  margin-top: 10px
+  margin-right: 5px
+  z-index: 1
+
+.dropdown-item
+    font-size: 16px !important
+    font-weight: bolder
+
+
+   

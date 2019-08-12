@@ -1,25 +1,31 @@
-<image-cropper #cropper
-    [imageBase64]="imageToCropBase64"
-    [cropperMinWidth]="cropperMinWidth"
-    [cropperMinHeight]="cropperMinHeight"
-    [maintainAspectRatio]="false"
-></image-cropper>
+<div>
 
-<!--menu-->
-<div class="menu">
-        
-    <!--menu items-->
-    <div class=" columns has-text-centered" >
+    <!--cropped image-->
+    <div class="cropper-container">
+        <image-cropper #cropper
+            [imageBase64]="imageToCropBase64"
+            [cropperMinWidth]="cropperMinWidth"
+            [cropperMinHeight]="cropperMinHeight"
+            [maintainAspectRatio]="false">
+        </image-cropper>
+    </div>
 
-        <div class="column" (click)="saveClickHandler()">                                            
-            <i class="material-icons is-block">done</i>
-            <span> save </span>    
+    <!--menu-->
+    <div class="menu">
+            
+        <!--menu items-->
+        <div class=" columns has-text-centered" >
+
+            <div class="column" (click)="saveClickHandler()">                                            
+                <i class="material-icons is-block">done</i>
+                <span> save </span>    
+            </div>
+
+            <div class="column" (click)="cancelClickHandler()">                                            
+                <i class="material-icons is-block">cancel</i>
+                <span> cancel </span>    
+            </div>
+
         </div>
-
-        <div class="column" (click)="cancelClickHandler()">                                            
-            <i class="material-icons is-block">cancel</i>
-            <span> cancel </span>    
-        </div>
-
     </div>
 </div>

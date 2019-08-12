@@ -1,16 +1,17 @@
 ﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
-
+using Photo.DataAccess.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 
 namespace Photo.DataAccess.Blob
 {
-    public class PhotoBlobStore : Interfaces.IPhotoBlobStorage
+    public class PhotoBlobStore : IPhotoBlobStorage
     {
         // FIELDS
-        private CloudBlobContainer cloudBlobContainer;
+        private CloudBlobContainer cloudBlobContainerPhotos;
+        private CloudBlobContainer cloudBlobContainerAvatars;
 
         // CONSTRUCTORS
         public PhotoBlobStore(string storageConnectionString)
@@ -19,26 +20,46 @@ namespace Photo.DataAccess.Blob
             {
                 CloudBlobClient cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-                cloudBlobContainer = cloudBlobClient.GetContainerReference("images");
+                cloudBlobContainerPhotos = cloudBlobClient.GetContainerReference("images");
+                cloudBlobContainerAvatars = cloudBlobClient.GetContainerReference("avatars");
 
-                cloudBlobContainer.CreateIfNotExists();
+                cloudBlobContainerPhotos.CreateIfNotExists();
+                cloudBlobContainerAvatars.CreateIfNotExists();
 
-                BlobContainerPermissions permissions = new BlobContainerPermissions
-                {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
-                };
+            BlobContainerPermissions permissions = new BlobContainerPermissions
+            {
+                PublicAccess = BlobContainerPublicAccessType.Blob
+            };
 
-                cloudBlobContainer.SetPermissionsAsync(permissions);
+                cloudBlobContainerPhotos.SetPermissionsAsync(permissions);
+                cloudBlobContainerAvatars.SetPermissionsAsync(permissions);
             }
         }
-
+        
         // METHODS
         public async Task<string> LoadPhotoToBlob(byte[] blob)
         {
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
+            string blobName = Guid.NewGuid().ToString() + ".jpg";
+
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
+            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
+
+            return cloudBlockBlob.Uri.ToString();
+        }
+
+        public async Task<string> LoadAvatarToBlob(byte[] blob)
+        {
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
             cloudBlockBlob.Properties.ContentType = "image/jpg";
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return cloudBlockBlob.Uri.ToString();
-        }        
+        }
+
+        public async Task DeleteFileAsync(string blobName)
+        {
+            CloudBlockBlob blob = this.cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
+            await blob.DeleteIfExistsAsync();
+        }
     }
 }
