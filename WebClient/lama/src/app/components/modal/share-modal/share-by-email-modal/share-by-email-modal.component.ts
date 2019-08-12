@@ -22,7 +22,7 @@ export class ShareByEmailModalComponent implements OnInit {
   imageUrl: string;
   copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
-  user: User;
+  userEmails: Array<string>;
 
   constructor(private httpService: HttpService) {
 
@@ -36,9 +36,11 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public AddEmail(){
-	this.httpService.getData(`users/${this.user.email}`).subscribe((data:User) => this.user = data);
-    if(this.user.email)
+	let user: User;
+	this.httpService.getData(`users/${this.sharedEmail}`).subscribe((data:User) => user = data);
+    if(user.email)
     {
+		this.userEmails.push(user.email);
 		this.DisplaySuccesIcon();
     }
     else
@@ -67,15 +69,10 @@ export class ShareByEmailModalComponent implements OnInit {
 	succesIcon.classList.add('fa-times');
   }
   
-  public createShareableLink(){
-    if(this.receivedPhoto.sharedLink !== null){
-      this.sharedLink = `${environment.clientApiUrl}/shared/${this.receivedPhoto.sharedLink}`;
-    }
-    else{
-      this.initImmutableFields();
+	public createShareableLink(){
+      this.initInvariableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
       this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
-    }
   }
 
   
@@ -97,11 +94,12 @@ export class ShareByEmailModalComponent implements OnInit {
 
     public encodePhotoData(photo: SharedPhoto): string{
       let encoded = btoa(JSON.stringify(photo)).replace("/","___");
+      encoded += btoa(JSON.stringify(this.userEmails)).replace("/","___");
       console.log(encoded);
       return encoded;
     }
 
-    private initImmutableFields(){
+    private initInvariableFields(){
       this.sharedPhoto.photoId = this.receivedPhoto.id;
       this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
       this.sharedPhoto.userId = this.receivedPhoto.userId;
