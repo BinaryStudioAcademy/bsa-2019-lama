@@ -51,13 +51,16 @@ export class MainPhotosContainerComponent implements OnInit {
       this.photos = [];
       this.isNothingFounded = true;
     }
-    this.isSearchTriggered = this.shared.isSearchTriggered;
+    this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
     this.shared.isSearchTriggered = false;
     this.shared.foundedPhotos = []
     this.shared.photos = []
   }
 
   public restore() {
+    this.shared.isSearchTriggeredAtLeastOnce = false
+    this.showSpinner = true
+    this.photos = []
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;

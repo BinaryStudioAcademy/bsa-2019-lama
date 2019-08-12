@@ -11,6 +11,7 @@ export class SharedService {
   foundedPhotos: PhotoRaw[] = [];
   avatar: Photo;
   isSearchTriggered: boolean;
+  isSearchTriggeredAtLeastOnce: boolean;
   restorePhotos: boolean;
   constructor() { }
 }

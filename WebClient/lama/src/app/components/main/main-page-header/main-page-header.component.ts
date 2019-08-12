@@ -59,6 +59,7 @@ export class MainPageHeaderComponent implements OnInit {
 
   public find() {
     this.http.findPhotos(this.searchCriteria).subscribe(p => {
+      this.shared.isSearchTriggeredAtLeastOnce = true;
       this.shared.isSearchTriggered = true;
       this.shared.foundedPhotos = p; 
     })
