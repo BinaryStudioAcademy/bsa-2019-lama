@@ -52,6 +52,7 @@ export class MainPhotosContainerComponent implements OnInit {
   }
 
   GetPhotos(UserId: number) {
+    this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false
       this.showSpinner = true
       this.photos = []
