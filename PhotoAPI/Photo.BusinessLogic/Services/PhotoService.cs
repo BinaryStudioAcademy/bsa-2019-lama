@@ -26,6 +26,12 @@ namespace Photo.BusinessLogic.Services
             this.mapper = mapper;
         }
 
+        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        {
+            return elasticStorage.Find(criteria);
+        }
+
+
         // METHODS
         public Task<IEnumerable<PhotoDocument>> Get()
         {

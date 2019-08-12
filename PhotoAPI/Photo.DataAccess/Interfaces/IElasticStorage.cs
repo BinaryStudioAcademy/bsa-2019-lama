@@ -17,6 +17,7 @@ namespace Photo.DataAccess.Interfaces
             where TPartialObject : class;
 
         Task<PhotoDocument> Get(int elasticId);
+        Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task<IEnumerable<PhotoDocument>> Get();
         Task<IEnumerable<PhotoDocument>> GetDeletedPhoto();
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
