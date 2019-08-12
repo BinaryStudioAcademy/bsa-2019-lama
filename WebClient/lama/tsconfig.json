@@ -5,6 +5,11 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "paths": {
+      "jszip": [
+        "node_modules/jszip/dist/jszip.min.js"
+      ]
+    },
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "esnext",

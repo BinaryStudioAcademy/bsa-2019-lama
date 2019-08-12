@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, Renderer } from '@angular/core';
 import { FileService } from 'src/app/services';
-import { ImageEditedArgs } from 'src/app/models/Photo/ImageCroppedArgs';
+import { ImageEditedArgs } from 'src/app/models/Photo/ImageEditedArgs';
 
 
 @Component({
