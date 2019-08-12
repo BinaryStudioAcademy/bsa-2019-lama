@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="field flex-item w100">
-                        <input [(ngModel)]="albumName" name='name' #name="ngModel" class="input is-primary" type="text" placeholder="Album Name" required>
+                        <input [className]="checkForm ? 'input is-primary' : 'input is-danger'" [(ngModel)]="albumName" name='name' #name="ngModel" type="text" placeholder="Album Name" required>
                         <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
                             <div *ngIf="name.errors.required">
                                 Enter Album name

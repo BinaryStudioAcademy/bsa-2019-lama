@@ -23,7 +23,9 @@ export class CreateAlbumModalComponent implements OnInit {
   albumWithExistPhotos: NewAlbumWithExistPhotos;
   ExistPhotosId: number[] = [];
 
-  albumName: string;
+  albumName: string='';
+  checkForm: boolean = true;
+
   activeColor: string = '#00d1b2';
   overlayColor: string = 'rgba(255,255,255,0.5)';
   dragging: boolean = false;
@@ -92,8 +94,6 @@ export class CreateAlbumModalComponent implements OnInit {
   }
   this.loaded = true;
   }
-
-
   _handleReaderLoaded(e) {
       var reader = e.target;
       this.imageSrc = reader.result;
@@ -102,6 +102,12 @@ export class CreateAlbumModalComponent implements OnInit {
 
   CreateAlbum()
   {
+    if(this.albumName == '')
+    {
+      console.log(this.albumName)
+      this.checkForm = false;
+    }
+    else{
     if (this.LoadNewImage === true) {
      this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
      this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
@@ -109,7 +115,7 @@ export class CreateAlbumModalComponent implements OnInit {
       this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId , authorId: parseInt(this.currentUser.id) };
       this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos).subscribe((e) => this.toggleModal());
     }
-
+  }
   }
   toggleModal()
   {
