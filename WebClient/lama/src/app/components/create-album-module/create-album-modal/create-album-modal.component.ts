@@ -118,6 +118,10 @@ export class CreateAlbumModalComponent implements OnInit {
 
   ChoosePhoto(e)
   {
+    this.ExistPhotosId = [];
+    this.photos = [];
+    this.ExistPhotos = [];
+
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
     const componentRef = this.entry.createComponent(factory);
@@ -139,7 +143,7 @@ export class CreateAlbumModalComponent implements OnInit {
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
-      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id || photo.blobId);
+      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id);
     }
   }
   
