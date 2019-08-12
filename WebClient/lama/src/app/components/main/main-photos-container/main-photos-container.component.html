@@ -1,7 +1,7 @@
 
 <div class="content-header">
     <h2 id="photos-container-title">Recent images: </h2>
-    <a (click)="restore()" class="button is-primary" *ngIf="isSearchTriggered">
+    <a (click)="GetPhotos(this.currentUser.id)" class="button is-primary" *ngIf="isSearchTriggered">
         Show all photos?
     </a>
 </div>
