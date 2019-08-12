@@ -14,11 +14,6 @@ export class AppComponent
 
 
   ngOnInit() {
-    this.afAuth.user.subscribe((user) => {
-      if (user){
-        this.authService.saveCreadeatins(user);
-      }
-    })
   }
 }
 

@@ -8,6 +8,8 @@ import { FileService } from 'src/app/services/file.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { SpinnerComponent } from '../../ui/spinner/spinner.component';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { HttpService } from 'src/app/services/http.service';
+import { User } from 'src/app/models/User/user';
 
 @Component({
   selector: 'main-photos-container',
@@ -21,6 +23,8 @@ export class MainPhotosContainerComponent implements OnInit {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
 
+  currentUser : User;
+
   // fields
   private resolver: ComponentFactoryResolver;
 
@@ -31,18 +35,28 @@ export class MainPhotosContainerComponent implements OnInit {
   private modalUploadPhotoEntry: ViewContainerRef;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService)
+  constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService,
+    private httpService: HttpService)
   {
     this.resolver = resolver;
   }
-  ngOnInit()
+  ngOnInit(){ 
+
+    this.httpService.getData(`users/${localStorage.getItem('userId')}`)
+    .subscribe((user) => 
+    {
+      this.currentUser = user;
+      this.GetPhotos(parseInt(this.currentUser.id));
+    });
+  }
+
+  GetPhotos(UserId: number)
   {
-    this.service.receivePhoto().subscribe(info => {
+    this.service.receiveUsersPhotos(UserId).subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
   }
-
   ngDoCheck() 
   {
     if (this.shared.photos) {
