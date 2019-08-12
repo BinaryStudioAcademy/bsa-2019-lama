@@ -119,15 +119,17 @@ namespace Lama.BusinessLogic.Services
                              join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
-                albums.Add(
-                new ReturnAlbum()
+                var album = new ReturnAlbum()
                 {
                     Id = item.Id,
-                    Title = item.Title,
-                    Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id),
-                    PhotoAlbums = Photos.ToList()
+                    Title = item.Title
+                };
+                if(item.Photo != null)
+                {
+                    album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
+                    album.PhotoAlbums = Photos.ToList();
                 }
-                );
+                albums.Add(album);
             }
             return albums;
         }
@@ -160,11 +162,12 @@ namespace Lama.BusinessLogic.Services
             {
                 Id = result.Id,
                 Title = result.Title,
-                Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id),
-                PhotoAlbums = Photos.ToList()
             };
-
-
+            if(result.Photo != null)
+            {
+                album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
+                album.PhotoAlbums = Photos.ToList();
+            }
             return album;
         }
     }
