@@ -72,11 +72,6 @@ namespace Lama.BusinessLogic.Services
             return dto;
         }
 
-        public async Task<User> GetByEmail(string email)
-        {
-            return await dataContext.Users.SingleAsync(user => user.Email == email);
-        }
-
         public async Task Update(User user)
         {
             var updateUser = Context.Users.FirstOrDefault(u => u.Id == user.Id);

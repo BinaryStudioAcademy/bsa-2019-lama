@@ -53,7 +53,7 @@ namespace Lama.Controllers
         [HttpGet("{email}")]
         public async Task<UserDTO> GetByEmail(string email)
         {
-            return await service.GetByEmail(email);
+            return await _service.GetByEmail(email);
         }
 
         //[HttpPost]

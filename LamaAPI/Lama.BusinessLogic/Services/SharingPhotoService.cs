@@ -72,8 +72,8 @@ namespace Lama.BusinessLogic.Services
 
         public async Task SharingPhoto(SharedPhoto sharedPhoto)
         {
-            await _context.SharedPhotos.AddAsync(sharedPhoto);
-            await _context.SaveChangesAsync();
+            await Context.SharedPhotos.AddAsync(sharedPhoto);
+            await Context.SaveChangesAsync();
         }
     }
 }
