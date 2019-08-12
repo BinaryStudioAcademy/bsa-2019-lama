@@ -10,7 +10,7 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.DataAccess.Interfaces;
 using Lama.Domain.DbModels;
 using System.Linq;
-using Lama.Domain.DataTransferObjects.Photo;
+using Lama.Domain.DTO.Photo;
 
 
 namespace Lama.BusinessLogic.Services
@@ -21,24 +21,12 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
+
         public PhotoService(string url, IUnitOfWork context)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
-        }
-        public async Task CreateAll(PhotoReceived[] photos)
-        {
-            var response = await httpClient.PostAsJsonAsync($"{url}api/photos", photos);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(responseContent);
-
-            for (int i = 0; i < photos.Length; i++)
-            {
-                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = elasticIds.ElementAt(i) });
-            }
-            await _context.SaveAsync();
-
         }
 
         public void Dispose()
@@ -46,6 +34,22 @@ namespace Lama.BusinessLogic.Services
             this.httpClient.Dispose();
         }
 
+        // METHODS
+        public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(PhotoReceived[] photos)
+        {
+            var response = await httpClient.PostAsJsonAsync($"{url}api/photos", photos);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var uploadPhotos = JsonConvert.DeserializeObject<UploadPhotoResultDTO[]>(responseContent);
+
+            for (int i = 0; i < photos.Length; i++)
+            {
+                await _context.GetRepository<Photo>().InsertAsync(new Photo { ElasticId = (int)uploadPhotos[i].Id });
+            }
+            await _context.SaveAsync();
+
+            return uploadPhotos;
+
+        }
 
         public async Task<IEnumerable<PhotoDocument>> GetAll()
         {

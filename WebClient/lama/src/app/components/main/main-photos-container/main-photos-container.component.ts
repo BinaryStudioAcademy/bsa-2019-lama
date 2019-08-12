@@ -19,25 +19,31 @@ export class MainPhotosContainerComponent implements OnInit {
   // showUploadModal: boolean = false;
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
-  
+
   // fields
-  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef }) 
-  private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
+
+  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
+  private modalPhotoEntry: ViewContainerRef;
+
+  @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef })
+  private modalUploadPhotoEntry: ViewContainerRef;
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService)
   {
     this.resolver = resolver;
   }
-  ngOnInit(){ 
+  ngOnInit()
+  {
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
   }
 
-  ngDoCheck() {
+  ngDoCheck() 
+  {
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
         this.photos.push(element);
@@ -46,35 +52,35 @@ export class MainPhotosContainerComponent implements OnInit {
     this.shared.photos = []
   }
 
-  @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef }) 
-  private entry_: ViewContainerRef;
 
-  public uploadFile(event) {
-    this.entry_.clear();
+  // methods
+  public uploadFile(event)
+  {
+    this.modalUploadPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
-    const componentRef = this.entry_.createComponent(factory);
+    const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
+
     componentRef.instance.onFileDropped(event);
-    componentRef.instance.addToList.subscribe(data => {
-      data.forEach(element => {
-        this.photos.push({blobId: element.imageUrl});
-      }) 
+    componentRef.instance.addToListEvent.subscribe(uploadedPhotos => 
+    {
+      this.photos.push(...uploadedPhotos);
+      console.log(this.photos);
     });
     componentRef.instance.toggleModal();
   }
 
-
-  // methods
   public photoClicked(eventArgs: PhotoRaw)
   {
-    this.entry.clear();
+    this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
-    const componentRef = this.entry.createComponent(factory);
+    const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
   }
+  
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
-  
+
 }

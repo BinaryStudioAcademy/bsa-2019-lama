@@ -49,7 +49,7 @@ namespace Photo.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<IEnumerable<int>> Post([FromBody] PhotoReceived[] values)
+        public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] PhotoReceived[] values)
         {
             return await this.photoService.Create(values);
         }

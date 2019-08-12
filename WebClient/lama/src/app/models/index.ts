@@ -12,4 +12,4 @@ export * from './Photo/ImageCroppedArgs';
 export * from './Photo/deletedPhotoList';
 export * from './Photo/deletedPhotoDTO';
 export * from './Photo/photoToDeleteRestoreDTO';
-
+export * from './Photo/updatedPhotoResultDTO';

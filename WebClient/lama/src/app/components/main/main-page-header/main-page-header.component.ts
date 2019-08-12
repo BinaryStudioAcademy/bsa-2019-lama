@@ -22,6 +22,7 @@ export class MainPageHeaderComponent implements OnInit {
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   private avatarUrl;
+  
   // constructors
   constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService) 
   {
@@ -49,10 +50,10 @@ export class MainPageHeaderComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToList.subscribe(data => {
+    componentRef.instance.addToListEvent.subscribe(data => {
       let photos = []
       data.forEach(element => {
-        photos.push({blobId: element.imageUrl});
+        photos.push({blobId: element.blobId});
       })
       this.shared.photos = photos;
 

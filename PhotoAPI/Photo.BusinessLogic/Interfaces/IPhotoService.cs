@@ -8,7 +8,7 @@ namespace Photo.BusinessLogic.Interfaces
     public interface IPhotoService : IBaseService<PhotoDocument>
     {
 
-        Task<IEnumerable<int>> Create(PhotoReceived[] item);
+        Task<IEnumerable<CreatePhotoResultDTO>> Create(PhotoReceived[] item);
         Task<int> CreateAvatar(PhotoReceived item);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
