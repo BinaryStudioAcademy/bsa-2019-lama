@@ -10,5 +10,7 @@ export class SharedService {
   photos: PhotoRaw[] = [];
   foundedPhotos: PhotoRaw[] = [];
   avatar: Photo;
+  isSearchTriggered: boolean;
+  restorePhotos: boolean;
   constructor() { }
 }

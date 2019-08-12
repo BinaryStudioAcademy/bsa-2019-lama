@@ -19,6 +19,8 @@ export class MainPhotosContainerComponent implements OnInit {
   // showUploadModal: boolean = false;
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
+  isNothingFounded: boolean;
+  isSearchTriggered: boolean;
   
   // fields
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef }) 
@@ -31,11 +33,9 @@ export class MainPhotosContainerComponent implements OnInit {
     this.resolver = resolver;
   }
   ngOnInit(){ 
-    this.service.receivePhoto().subscribe(info => {
-      this.photos = info as PhotoRaw[];
-      this.showSpinner = false;
-    });
+    this.restore();
   }
+
 
   ngDoCheck() {
     if (this.shared.photos) {
@@ -43,11 +43,25 @@ export class MainPhotosContainerComponent implements OnInit {
         this.photos.push(element);
       });
     }
-    if (this.shared.foundedPhotos.length != 0) {
+    if (this.shared.foundedPhotos.length != 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundedPhotos;
+      this.isNothingFounded = false;
     }
+    if (this.shared.foundedPhotos.length == 0 && this.shared.isSearchTriggered) {
+      this.photos = [];
+      this.isNothingFounded = true;
+    }
+    this.isSearchTriggered = this.shared.isSearchTriggered;
+    this.shared.isSearchTriggered = false;
     this.shared.foundedPhotos = []
     this.shared.photos = []
+  }
+
+  public restore() {
+    this.service.receivePhoto().subscribe(info => {
+      this.photos = info as PhotoRaw[];
+      this.showSpinner = false;
+    });
   }
 
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef }) 

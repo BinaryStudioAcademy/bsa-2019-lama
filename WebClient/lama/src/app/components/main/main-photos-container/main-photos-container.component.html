@@ -1,8 +1,15 @@
-<h2>Recent images: </h2>
+
+<div class="content-header">
+    <h2 id="photos-container-title">Recent images: </h2>
+    <a (click)="restore()" class="button is-primary" *ngIf="isSearchTriggered">
+        Show all photos?
+    </a>
+</div>
 
 <spinner *ngIf="showSpinner"></spinner>
 
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)">
+    <h2 *ngIf="isNothingFounded">Nothing founded!</h2>
     <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
     <!--photo list-->
     <div *ngFor="let item of photos">

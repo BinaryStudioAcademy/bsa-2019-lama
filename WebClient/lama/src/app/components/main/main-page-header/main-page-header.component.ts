@@ -47,11 +47,7 @@ export class MainPageHeaderComponent implements OnInit {
   ngDoCheck() {
     if (this.shared.avatar != null)
       this.avatarUrl = this.shared.avatar.imageUrl;
-
     (this.searchCriteria.length < 3) ? this.isActive = false : this.isActive = true; 
-
-    if (!this.isActive)
-      this.restore();
   }
 
   public logOut() {
@@ -63,6 +59,7 @@ export class MainPageHeaderComponent implements OnInit {
 
   public find() {
     this.http.findPhotos(this.searchCriteria).subscribe(p => {
+      this.shared.isSearchTriggered = true;
       this.shared.foundedPhotos = p; 
     })
   }
