@@ -24,6 +24,7 @@ export class ShareByEmailModalComponent implements OnInit {
   copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
   userEmails: Array<string>;
+  sharingRoute: String = "main/shared";
 
   constructor(private httpService: HttpService) {
 
@@ -73,7 +74,7 @@ export class ShareByEmailModalComponent implements OnInit {
 	public createShareableLink(){
       this.initInvariableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
+      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
   }
 
   
