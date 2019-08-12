@@ -1,13 +1,14 @@
 
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
-import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver, ElementRef, Output, EventEmitter, OnChanges } from '@angular/core';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { element } from 'protractor';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharedService } from 'src/app/services/shared.service';
 import { Photo } from 'src/app/models';
 import { HttpService } from 'src/app/services/http.service';
+import { FileService } from 'src/app/services';
 
 
 @Component({
@@ -22,9 +23,13 @@ export class MainPageHeaderComponent implements OnInit {
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   private avatarUrl;
-  
+  private searchCriteria: string = "";
+  private isActive: boolean  = false;
+
   // constructors
-  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService) 
+  constructor(public auth: AuthService, private router: Router,
+     resolver: ComponentFactoryResolver, private shared: SharedService,
+      private http: HttpService, private file: FileService) 
   {
     this.resolver = resolver;
   }
@@ -42,6 +47,7 @@ export class MainPageHeaderComponent implements OnInit {
   ngDoCheck() {
     if (this.shared.avatar != null)
       this.avatarUrl = this.shared.avatar.imageUrl;
+    (this.searchCriteria.length < 3) ? this.isActive = false : this.isActive = true; 
   }
 
   public logOut() {
@@ -49,6 +55,20 @@ export class MainPageHeaderComponent implements OnInit {
             .then(this.auth.token = null)
             .then(() => this.router.navigate(['/']))
             .catch(e => {console.log("user is not signed in")});
+  }
+
+  public find() {
+    this.http.findPhotos(this.searchCriteria).subscribe(p => {
+      this.shared.isSearchTriggeredAtLeastOnce = true;
+      this.shared.isSearchTriggered = true;
+      this.shared.foundedPhotos = p; 
+    })
+  }
+
+  public restore() {
+    this.file.receivePhoto().subscribe(p => {
+      this.shared.foundedPhotos = p;
+    })
   }
 
   public openModalClicked(event): void

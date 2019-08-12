@@ -22,7 +22,8 @@ export class MainPhotosContainerComponent implements OnInit {
   // showUploadModal: boolean = false;
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
-
+  isNothingFounded: boolean;
+  isSearchTriggered: boolean;
   currentUser : User;
 
   // fields
@@ -50,20 +51,34 @@ export class MainPhotosContainerComponent implements OnInit {
     });
   }
 
-  GetPhotos(UserId: number)
-  {
+  GetPhotos(UserId: number) {
+    this.isNothingFounded = false;
+    this.shared.isSearchTriggeredAtLeastOnce = false
+      this.showSpinner = true
+      this.photos = []
     this.service.receiveUsersPhotos(UserId).subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
   }
-  ngDoCheck() 
-  {
+
+  ngDoCheck() {
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
         this.photos.push(element);
       });
     }
+    if (this.shared.foundedPhotos.length != 0 && this.shared.isSearchTriggered) {
+      this.photos = this.shared.foundedPhotos;
+      this.isNothingFounded = false;
+    }
+    if (this.shared.foundedPhotos.length == 0 && this.shared.isSearchTriggered) {
+      this.photos = [];
+      this.isNothingFounded = true;
+    }
+    this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
+    this.shared.isSearchTriggered = false;
+    this.shared.foundedPhotos = []
     this.shared.photos = []
   }
 

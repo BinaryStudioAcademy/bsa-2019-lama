@@ -12,7 +12,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<int> CreateAvatar(CreatePhotoDTO item);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
-
+        Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task MarkPhotoAsDeleted(int photoId);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
