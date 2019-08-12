@@ -32,7 +32,7 @@ export class PhotoUploadModalComponent implements OnInit {
     let userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) 
     {
-      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId) }
+      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId), filename: this.photos[i].filename }
     }
     this.fileService.sendPhoto(this.photos)
     .subscribe(uploadedPhotos => 
@@ -48,14 +48,22 @@ export class PhotoUploadModalComponent implements OnInit {
       await this.onFileDropped(files);
     }
   }
-  async onFileDropped(files) {
+  async onFileDropped(files: File[]) {
       this.showSpinner = true;
       this.photos = []
       for (let i=0; i<files.length; i++) 
       {
-        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        // let compressedFile;
+        // this._ngxPicaService.compressImage(files[i], environment.compressionOptions.maxSizeMB).subscribe(img => {
+        //   compressedFile = img;
+        //   this.showSpinner = false;
+        //   this.toBase64(compressedFile).then(f => {
+        //     this.photos.push({imageUrl: f})
+        //   })
+        // });
+        // let compressedFile = await imageCompression(files[i], environment.compressionOptions);
         this.showSpinner = false;
-        this.photos.push({imageUrl: await this.toBase64(compressedFile)})
+        this.photos.push({imageUrl: await this.toBase64(files[i]), filename: files[i].name})
      };
   }
 
