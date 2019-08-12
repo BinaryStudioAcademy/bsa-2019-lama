@@ -10,7 +10,7 @@
         </div>
     </a>
     <div *ngFor="let item of albums">
-        <main-album [_album]="item" (onClick)="albumClicked($event)"></main-album>
+        <main-album [_album]="item" (onClick)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></main-album>
     </div>
 
 

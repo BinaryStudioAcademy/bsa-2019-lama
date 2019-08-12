@@ -1,5 +1,6 @@
 ﻿using Photo.Domain.BlobModels;
 using Photo.Domain.DataTransferObjects;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
+        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
     }
 }

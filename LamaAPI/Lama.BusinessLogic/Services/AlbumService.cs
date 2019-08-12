@@ -143,7 +143,16 @@ namespace Lama.BusinessLogic.Services
             }
             return albums;
         }
-
+        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments)
+        {
+            string url = configuration["PhotoApiUrl"];
+            using (HttpClient httpClient = new HttpClient())
+            {
+                return JsonConvert.DeserializeObject<List<Byte[]>>(
+                    await
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos/ArchivePhotos", photoDocuments)).Content.ReadAsStringAsync());
+            }
+            }
         public async Task<ReturnAlbum> FindAlbum(int Id)
         {
             var result = await Context.Albums

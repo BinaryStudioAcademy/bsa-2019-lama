@@ -33,6 +33,11 @@ namespace Photo.BusinessLogic.Services
         }
 
         // METHODS
+        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
+        {
+            return await storage.GetPhotos(values);
+        }
+
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
             var mustClauses = new List<QueryContainer>();
@@ -156,7 +161,6 @@ namespace Photo.BusinessLogic.Services
 
             return updatedDocument;
         }
-
         public async Task<IEnumerable<int>> Create(PhotoReceived[] items)
         {
             // TODO: rewrite this
