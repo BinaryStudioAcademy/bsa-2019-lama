@@ -17,6 +17,7 @@ export class ShareByEmailModalComponent implements OnInit {
 
   @Output() onClose = new EventEmitter();
 
+  DISAPPEARING_TIMEOUT: number = 1000;
   sharedLink: string = '';
   sharedEmail: string = '';
   imageUrl: string;
@@ -90,6 +91,8 @@ export class ShareByEmailModalComponent implements OnInit {
       document.body.removeChild(selBox);
       console.log(`${this.sharedLink} was copied`);
       this.copyClicked = !this.copyClicked;
+	  
+      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
     }
 
     public encodePhotoData(photo: SharedPhoto): string{
