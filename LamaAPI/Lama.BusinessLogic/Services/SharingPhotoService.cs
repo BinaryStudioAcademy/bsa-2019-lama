@@ -64,7 +64,16 @@ namespace Lama.BusinessLogic.Services
 
             return photoDocumentWithSharedLink;
         }
+		
+        public Task Delete(int id)
+        {
+            throw new System.NotImplementedException();
+        }
 
-
+        public async Task SharingPhoto(SharedPhoto sharedPhoto)
+        {
+            await Context.SharedPhotos.AddAsync(sharedPhoto);
+            await Context.SaveChangesAsync();
+        }
     }
 }
