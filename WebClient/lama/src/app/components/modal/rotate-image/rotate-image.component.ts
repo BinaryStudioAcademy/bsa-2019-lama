@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, Renderer } from '@angular/core';
 import { FileService } from 'src/app/services';
+import { ImageEditedArgs } from 'src/app/models/Photo/ImageCroppedArgs';
 
 
 @Component({
@@ -12,122 +13,67 @@ export class RotateImageComponent implements OnInit {
   constructor(private _imageService: FileService, private el: ElementRef, private renderer: Renderer) {
    }
 
-  private elem: HTMLElement;
   private imageToRotateBase64: string;
-  private degree: number = 0;
-  private cx: CanvasRenderingContext2D;
-  private image = new Image();
-  private width: number;
-  private height: number;
-  private flag: boolean = true;
-
-  @ViewChild("canvas", {static: false}) canvas;
+  private imageUrl: string;
 
   @Input()
   public set imageToRotate(imageToRotateUrl: string)
   {
-    this._imageService.getImageBase64("assets/ppp.jpg")
+    this.imageUrl = imageToRotateUrl;
+    this._imageService.getImageBase64(imageToRotateUrl)
       .then((res) => this.imageToRotateBase64 = res);
   }
 
   @Output()
-  public saveClickedEvent = new EventEmitter();
+  public saveClickedEvent = new EventEmitter<ImageEditedArgs>();
   @Output()
   public cancelClickedEvent = new EventEmitter();
   
 
   ngOnInit() {
-    this.image.src="assets/ppp.jpg";
-    this.image.onload = ()=> {
-      this.elem = this.el.nativeElement.firstChild
-    }
   }
 
+  rotateBase64Image90deg(base64Image, isClockwise) {
+    var offScreenCanvas = document.createElement('canvas');
+    var offScreenCanvasCtx = offScreenCanvas.getContext('2d');
+
+    var img = new Image();
+    img.src = base64Image;
+
+    offScreenCanvas.height = img.width;
+    offScreenCanvas.width = img.height;
+
+    if (isClockwise) { 
+        offScreenCanvasCtx.rotate(90 * Math.PI / 180);
+        offScreenCanvasCtx.translate(0, -offScreenCanvas.width);
+    } else {
+        offScreenCanvasCtx.rotate(-90 * Math.PI / 180);
+        offScreenCanvasCtx.translate(-offScreenCanvas.height, 0);
+    }
+    offScreenCanvasCtx.drawImage(img, 0, 0);
+
+    return offScreenCanvas.toDataURL("image/jpeg", 100);
+}
+
 CounterClockwiseHandler(){
-  this.setBiggerAndSmaller();
-  this.degree-=90;
-  if(this.degree%180==0){
-    this.setParams(this.renderer, this.width, this.height);
-  }
-  else
-    this.setParams(this.renderer, this.height, this.width);
-  //this.renderer.setElementStyle(this.elem, '-max-width', this.elem.offsetHeight+'px');
-  
+  this.imageToRotateBase64 = this.rotateBase64Image90deg(this.imageToRotateBase64, false);
 }
 
 ClockwiseHandler(){
-  this.setBiggerAndSmaller();
-  this.degree+=90;
-  if(this.degree%180==0){
-    this.setParams(this.renderer, this.width, this.height);
-  }
-  else
-    this.setParams(this.renderer, this.height, this.width);
-}
-
-setParams(renderer:Renderer, width: number, height: number){
-  this.renderer.setElementStyle(this.elem, 'max-height', height+'px');
-  this.renderer.setElementStyle(this.elem, 'max-width', width+'px');
-  this.renderer.setElementStyle(this.elem.firstChild, 'max-height', height+'px');
-  this.renderer.setElementStyle(this.elem.firstChild, 'max-width', width+'px');
-}
-
-setBiggerAndSmaller(){
-  if(!this.flag)
-  return;
-  else {
-    this.width = this.elem.offsetWidth;
-    this.height = this.elem.offsetHeight;
-    this.flag = false;
-  }
+  this.imageToRotateBase64 = this.rotateBase64Image90deg(this.imageToRotateBase64, true);
 }
 
   public async saveClickHandler(): Promise<void>
   {
-    //const event: ImageCroppedEvent = await this.imageCropper.crop();
-
-    this.saveClickedEvent.emit();
+    this.saveClickedEvent.emit({
+      originalImageUrl: this.imageUrl,
+      croppedImageBase64: this.imageToRotateBase64
+    });
   }
 
   public cancelClickHandler(): void
   {
     this.cancelClickedEvent.emit();
   }
-
-  resetOrientation(srcBase64, srcOrientation, callback) {
-    var img = new Image();    
-  
-    img.onload = function() {
-      var width = img.width,
-          height = img.height,
-          canvas = document.createElement('canvas'),
-          ctx = canvas.getContext("2d");
-  
-      if (4 < srcOrientation && srcOrientation < 9) {
-        canvas.width = height;
-        canvas.height = width;
-      } else {
-        canvas.width = width;
-        canvas.height = height;
-      }
-  
-      switch (srcOrientation) {
-        case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
-        case 3: ctx.transform(-1, 0, 0, -1, width, height); break;
-        case 4: ctx.transform(1, 0, 0, -1, 0, height); break;
-        case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
-        case 6: ctx.transform(0, 1, -1, 0, height, 0); break;
-        case 7: ctx.transform(0, -1, -1, 0, height, width); break;
-        case 8: ctx.transform(0, -1, 1, 0, 0, width); break;
-        default: break;
-      }
-  
-      ctx.drawImage(img, 0, 0);
-  
-      callback(canvas.toDataURL());
-    };
-  
-    img.src = srcBase64;
-  };
 
 }

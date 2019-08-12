@@ -16,7 +16,7 @@
                                     <app-crop-image
                                         [imageToCrop]="photo.blobId"
                                         (cancelClickedEvent)="goBackToImageView()"
-                                        (saveClickedEvent)="cropImageHandler($event)">
+                                        (saveClickedEvent)="imageHandler($event)">
                                     </app-crop-image>
                                 </ng-template>
 
@@ -27,7 +27,7 @@
                                             <app-rotate-image
                                                 [imageToRotate]="photo.blobId"
                                                 (cancelClickedEvent)="goBackToImageView()"
-                                                (saveClickedEvent)="rotateImageHandler($event)">
+                                                (saveClickedEvent)="imageHandler($event)">
                                             </app-rotate-image>
                                         </ng-template>
 
@@ -46,7 +46,7 @@
                                                 <div class="column" *ngFor="let item of shownMenuItems">
                                                     <div (click)="menuClickHandler(item)"> 
                                                     <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
-                                                        <a href= "#" data-href = "{{ photo.blobId }}" download onclick="forceDownload(this)">
+                                                        <a download attr.data-href = "{{ photo.blobId }}" (click)="forceDownload($event)">
                                                             <i class="material-icons is-block">{{ item.icon }}</i>
                                                             {{ item.title }}
                                                         </a>
