@@ -7,6 +7,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { FileService } from 'src/app/services/file.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { SpinnerComponent } from '../../ui/spinner/spinner.component';
+import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 
 @Component({
   selector: 'main-photos-container',
@@ -61,12 +62,12 @@ export class MainPhotosContainerComponent implements OnInit {
     const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
 
     componentRef.instance.onFileDropped(event);
-    componentRef.instance.addToListEvent.subscribe(uploadedPhotos => 
-    {
-      this.photos.push(...uploadedPhotos);
-      console.log(this.photos);
-    });
+    componentRef.instance.addToListEvent.subscribe(this.uploadPhotoHandler.bind(this));
     componentRef.instance.toggleModal();
+  }
+  public uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void
+  {
+      this.photos.push(...uploadedPhotos);
   }
 
   public photoClicked(eventArgs: PhotoRaw)

@@ -66,7 +66,7 @@ namespace Lama.BusinessLogic.Services
         {
             var u = await Context.Users.SingleAsync(user => user.Id == id);
             var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == u.AvatarId);
-            var url = (await _photoService.Get(avatar.ElasticId)).Blob256Id;
+            var url = (await _photoService.Get(avatar.Id)).Blob256Id;
             var dto = _mapper.Map<UserDTO>(u);
             dto.PhotoUrl = url;
             return dto;

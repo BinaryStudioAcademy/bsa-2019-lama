@@ -57,7 +57,7 @@ namespace Photo.BusinessLogic.Services
             byte[] newImageBlob = Convert.FromBase64String(base64);
 
 
-            await DeleteAllBlobsAsync(elasticId: updatePhotoDTO.Id);
+            await DeleteOldBlobsAsync(elasticId: updatePhotoDTO.Id);
             
             UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
             {
@@ -70,7 +70,7 @@ namespace Photo.BusinessLogic.Services
 
             return updatedPhoto;
         }
-        private async Task DeleteAllBlobsAsync(int elasticId)
+        private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);
 
@@ -78,6 +78,7 @@ namespace Photo.BusinessLogic.Services
             await storage.DeleteFileAsync(photoDocument.Blob64Id);
             await storage.DeleteFileAsync(photoDocument.Blob256Id);
         }
+
 
         public Task Create(PhotoDocument item)
         {
@@ -95,12 +96,10 @@ namespace Photo.BusinessLogic.Services
             return await elasticStorage.Get(id);
         }
 
-        public async Task<IEnumerable<CreatePhotoResultDTO>> Create(PhotoReceived[] items)
-        {
-            // TODO: rewrite this
-            long lastId = elasticStorage.GenerateId();
-            
+        public async Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] items)
+        {    
             CreatePhotoResultDTO[] createdPhotos = new CreatePhotoResultDTO[items.Length];
+
             for (int i = 0; i < items.Length; ++i)
             {
                 string base64 = ConvertToBase64(items[i].ImageUrl);
@@ -108,7 +107,7 @@ namespace Photo.BusinessLogic.Services
 
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
-                    Id = ++lastId,
+                    Id = items[i].Id,
                     BlobId = await storage.LoadPhotoToBlob(blob),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
@@ -124,20 +123,15 @@ namespace Photo.BusinessLogic.Services
             return createdPhotos;
         }
 
-        public async Task<int> CreateAvatar(PhotoReceived item)
+        public async Task<int> CreateAvatar(CreatePhotoDTO item)
         {
-            long lastId = elasticStorage.GenerateId();
-
-            // TODO: get this with linq
-            string base64;
-            // TODO: change this to regex
-            base64 = ConvertToBase64(item.ImageUrl);
+            string base64 = ConvertToBase64(item.ImageUrl);
 
             byte[] blob = Convert.FromBase64String(base64);
 
             await Create(new PhotoDocument
             {
-                Id = lastId++,
+                Id = item.Id,
                 BlobId = await storage.LoadAvatarToBlob(blob),
                 Blob64Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                 Blob256Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
@@ -145,7 +139,7 @@ namespace Photo.BusinessLogic.Services
                 UserId = item.AuthorId,
                 Description = item.Description
             });
-            return (int)lastId;
+            return item.Id;
         }
         private string ConvertToBase64(string imageUrl)
         {
@@ -173,14 +167,25 @@ namespace Photo.BusinessLogic.Services
 
         public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
         {
+            // TODO: make this in single request
             foreach (PhotoToDeleteRestoreDTO deletePhoto in photosToDelete)
-            {
-                // TODO: make this in single request
-                await elasticStorage.DeleteAsync(deletePhoto.Id);
-
+            {       
                 await DeleteAllBlobsAsync(deletePhoto.Id);
+
+                await elasticStorage.DeleteAsync(deletePhoto.Id);
             }
         }
+
+        private async Task DeleteAllBlobsAsync(int elasticId)
+        {
+            PhotoDocument photoDocument = await this.Get(elasticId);
+
+            await storage.DeleteFileAsync(photoDocument.BlobId);
+            await storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await storage.DeleteFileAsync(photoDocument.Blob256Id);
+            await storage.DeleteFileAsync(photoDocument.OriginalBlobId);
+        }
+
 
         public async Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {

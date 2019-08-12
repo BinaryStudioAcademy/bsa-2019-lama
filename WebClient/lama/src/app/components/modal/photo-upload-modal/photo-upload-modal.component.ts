@@ -20,7 +20,8 @@ export class PhotoUploadModalComponent implements OnInit {
   desc: string[] = []; 
   showSpinner: boolean = false;
 
-  addToListEvent: Subject<UploadPhotoResultDTO[]> = new Subject();
+  @Output()
+  addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<UploadPhotoResultDTO[]>();
 
   constructor(private fileService: FileService) { }
 
@@ -34,9 +35,11 @@ export class PhotoUploadModalComponent implements OnInit {
       this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId) }
     }
     this.fileService.sendPhoto(this.photos)
-    .subscribe(uploadedPhotos => this.addToListEvent.next(uploadedPhotos));
-
-    this.toggleModal();
+    .subscribe(uploadedPhotos => 
+      {
+        this.addToListEvent.emit(uploadedPhotos);
+        this.toggleModal();
+      });
   }
 
   async onFileSelected(event) {

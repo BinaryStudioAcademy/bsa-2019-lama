@@ -22,24 +22,6 @@ namespace Photo.DataAccess.Implementation
         }
 
         // METHODS
-        [System.Obsolete("Is not thread safe. Try not to use it")]
-        public long GenerateId()
-        {
-            if (elasticClient.Count<PhotoDocument>().Count == 0) return 0;
-
-            ISearchResponse<PhotoDocument> result = elasticClient.Search<PhotoDocument>(s => s
-                .Aggregations(a => a
-                    .Max("id", m => m
-                        .Field(p => p.Id)
-                    )
-                )
-            );
-
-            double? agg = result.Aggregations.Max("id").Value;
-
-            return (long?)agg ?? 0;
-        }
-
         public Task CreateAsync(PhotoDocument item)
         {
             return elasticClient.CreateDocumentAsync(item);

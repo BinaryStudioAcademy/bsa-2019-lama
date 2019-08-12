@@ -6,9 +6,6 @@ namespace Photo.DataAccess.Interfaces
 {
     public interface IElasticStorage
     {
-        [System.Obsolete("Is not thread safe. Try not to use it")]
-        long GenerateId();
-
         Task CreateAsync(PhotoDocument item);
         Task CreateAsync(int id, PhotoDocument item);
 

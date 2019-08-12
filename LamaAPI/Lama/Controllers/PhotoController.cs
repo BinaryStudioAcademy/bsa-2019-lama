@@ -25,11 +25,13 @@ namespace Lama.Controllers
         }
 
         // METHODS
+        #region CREATE
         [HttpPost]
-        public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] PhotoReceived[] photos)
+        public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
         {
             return _service.CreateAll(photos);
         }
+        #endregion
 
         [HttpPut]
         public Task<UpdatedPhotoResultDTO> UpdatePhoto([FromBody] UpdatePhotoDTO photoToUpdate)

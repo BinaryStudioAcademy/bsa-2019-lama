@@ -33,9 +33,10 @@ namespace Lama.BusinessLogic.Services
 
             using (HttpClient httpClient = new HttpClient())
             {
-                var elasticIds = JsonConvert.DeserializeObject<IEnumerable<int>>(
+                var elasticIds = (JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(
                     await
-                    (await httpClient.PostAsJsonAsync($"{url}api/photos", album.Photos)).Content.ReadAsStringAsync());
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", album.Photos)).Content.ReadAsStringAsync()))
+                    .Select(x => x.Id);
 
 
 
@@ -52,7 +53,7 @@ namespace Lama.BusinessLogic.Services
 
                 for (int i = 0; i < album.Photos.Length; i++)
                 {
-                    var TempPhoto = new Photo() { ElasticId = elasticIds.ElementAt(i) };
+                    var TempPhoto = new Photo();
                     photos.Add(TempPhoto);
                     photoAlbums.Add(new PhotoAlbum() { Photo = TempPhoto, Album = TempAlbum });
                 }
@@ -82,7 +83,7 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < album.PhotosId.Length; i++)
             {
-                var TempPhoto = await Context.Photos.FirstOrDefaultAsync(x => x.ElasticId == album.PhotosId[i]);
+                var TempPhoto = await Context.Photos.FirstOrDefaultAsync(x => x.Id == album.PhotosId[i]);
                 if (TempPhoto != null)
                 {
                     photos.Add(TempPhoto);
@@ -115,7 +116,7 @@ namespace Lama.BusinessLogic.Services
             {
 
                 var Photos = from pa in item.PhotoAlbums
-                             join el in ListOfPhotos on pa.Photo.ElasticId equals el.Id
+                             join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
                 albums.Add(
@@ -123,7 +124,7 @@ namespace Lama.BusinessLogic.Services
                 {
                     Id = item.Id,
                     Title = item.Title,
-                    Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.ElasticId),
+                    Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id),
                     PhotoAlbums = Photos.ToList()
                 }
                 );
@@ -142,7 +143,7 @@ namespace Lama.BusinessLogic.Services
             var ListOfPhotos = await _photoService.GetAll();
 
                 var Photos = from pa in result.PhotoAlbums
-                             join el in ListOfPhotos on pa.Photo.ElasticId equals el.Id
+                             join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
             var album =
@@ -150,7 +151,7 @@ namespace Lama.BusinessLogic.Services
             {
                 Id = result.Id,
                 Title = result.Title,
-                Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.ElasticId),
+                Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id),
                 PhotoAlbums = Photos.ToList()
             };
             

@@ -17,7 +17,7 @@ namespace Lama.DataAccess.Interfaces
                                     int? page = null, int? amount = null);
         Task<TEntity> GetAsync(int id);
 
-        Task InsertAsync(TEntity entity);
+        Task<TEntity> InsertAsync(TEntity entity);
 
         Task DeleteAsync(object id);
         void Delete(TEntity entityToDelete);

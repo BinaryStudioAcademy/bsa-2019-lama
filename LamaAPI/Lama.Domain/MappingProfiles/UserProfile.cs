@@ -2,7 +2,7 @@
 
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.User;
-using Lama.Domain.BlobModels;
+using Lama.Domain.DTO.Photo;
 
 namespace Lama.Domain.MappingProfiles
 {
@@ -11,7 +11,7 @@ namespace Lama.Domain.MappingProfiles
         public UserProfile()
         {
             CreateMap<UserDTO, User>().ReverseMap();
-            CreateMap<PhotoReceived, Photo>().ReverseMap();
+            CreateMap<CreatePhotoDTO, Photo>().ReverseMap();
         }
     }
 }
