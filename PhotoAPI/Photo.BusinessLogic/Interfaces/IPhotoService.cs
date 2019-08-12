@@ -15,10 +15,10 @@ namespace Photo.BusinessLogic.Interfaces
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
         Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task MarkPhotoAsDeleted(int photoId);
+        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
-        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
     }
 }
