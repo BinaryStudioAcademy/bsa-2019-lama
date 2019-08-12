@@ -117,13 +117,13 @@ namespace Photo.BusinessLogic.Services
                 Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
                 Value = false
             });
-            /*
+            
             mustClauses.Add(new TermQuery
             {
                 Field = Infer.Field<PhotoDocument>(t => t.UserId),
                 Value = userId,
             });
-            */
+           
             mustClauses.Add(new MatchQuery
             {
                 Field = Infer.Field<PhotoDocument>(p => p.BlobId),
