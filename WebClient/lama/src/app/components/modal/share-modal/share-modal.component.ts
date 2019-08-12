@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-share-modal',
@@ -20,6 +21,7 @@ export class ShareModalComponent implements OnInit {
   imageUrl: string;
   copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
+  sharingRoute: String = "main/shared";
 
   constructor() {
 
@@ -36,7 +38,7 @@ export class ShareModalComponent implements OnInit {
   public createShareableLink(){
       this.initInvariableFields();
       let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/shared/${encodedPhotoData}`;
+      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
   }
 
   public copyShareableLink(){
