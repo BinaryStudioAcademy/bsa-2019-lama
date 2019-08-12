@@ -15,7 +15,7 @@ export class MainAlbumComponent implements OnInit {
 
   isContent:boolean = false;
   isMenu:boolean = true;
-
+  imgname = require("../../../../assets/icon-no-image.svg");
   constructor() { }
 
   ngOnInit() {

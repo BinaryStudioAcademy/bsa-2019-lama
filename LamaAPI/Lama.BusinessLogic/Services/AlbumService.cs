@@ -20,7 +20,7 @@ namespace Lama.BusinessLogic.Services
     {
         private readonly IPhotoService _photoService;
         IConfiguration configuration;
-        public AlbumService(ApplicationDbContext Context,IConfiguration configuration, IPhotoService _photoService) 
+        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService)
             : base(Context)
         {
             this._photoService = _photoService;
@@ -104,7 +104,7 @@ namespace Lama.BusinessLogic.Services
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
-                 .ThenInclude(x=>x.Photo)
+                 .ThenInclude(x => x.Photo)
                 .Include(x => x.Photo)
                 .Where(x => x.UserId == UserId).ToListAsync();
 
@@ -118,15 +118,28 @@ namespace Lama.BusinessLogic.Services
                              join el in ListOfPhotos on pa.Photo.ElasticId equals el.Id
                              select el;
 
-                albums.Add(
-                new ReturnAlbum()
+
+                if (item.Photo != null)
                 {
-                    Id = item.Id,
-                    Title = item.Title,
-                    Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.ElasticId),
-                    PhotoAlbums = Photos.ToList()
+                    albums.Add(
+                    new ReturnAlbum()
+                    {
+                        Id = item.Id,
+                        Title = item.Title,
+                        Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.ElasticId),
+                        PhotoAlbums = Photos.ToList()
+                    }
+                    );
                 }
-                );
+                else
+                {
+                    albums.Add(
+                        new ReturnAlbum()
+                        {
+                            Id = item.Id,
+                            Title = item.Title,
+                        });
+                }
             }
             return albums;
         }
@@ -141,19 +154,22 @@ namespace Lama.BusinessLogic.Services
 
             var ListOfPhotos = await _photoService.GetAll();
 
-                var Photos = from pa in result.PhotoAlbums
-                             join el in ListOfPhotos on pa.Photo.ElasticId equals el.Id
-                             select el;
+            var Photos = from pa in result.PhotoAlbums
+                         join el in ListOfPhotos on pa.Photo.ElasticId equals el.Id
+                         select el;
 
-            var album =
-            new ReturnAlbum()
+
+            var album = new ReturnAlbum()
             {
                 Id = result.Id,
-                Title = result.Title,
-                Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.ElasticId),
-                PhotoAlbums = Photos.ToList()
+                Title = result.Title
             };
-            
+
+            if (result.Photo != null)
+            {
+                album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.ElasticId);
+                album.PhotoAlbums = Photos.ToList();
+            }
             return album;
         }
     }
