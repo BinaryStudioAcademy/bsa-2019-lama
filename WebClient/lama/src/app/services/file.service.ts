@@ -46,7 +46,7 @@ export class FileService
   }
   public ReactionPhoto(NewReaction: NewLike)
   {
-    return this.client.post(`${environment.lamaApiUrl}/api/photo/reaction`,NewReaction);
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/reaction`, NewReaction);
   }
   public getFirstGuidFromString(str: string): string
   {

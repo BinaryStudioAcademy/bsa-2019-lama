@@ -169,17 +169,16 @@ export class PhotoModalComponent implements OnInit
     let hasreaction = this.photo.reaction.some( x => x.userId === parseInt(this.currentUser.id));
     if(hasreaction)
     {
-      react = false;
+      // delete reaction;
     }
     else
-      react = true;
-
+    {
     const newReaction: NewLike = {
       photoId: this.photo.id,
-      userId: parseInt(this.currentUser.id),
-      reaction: react
+      userId: parseInt(this.currentUser.id)
      }
      this.fileService.ReactionPhoto(newReaction).subscribe(x => alert("ok"));
+    }
   }
 
   forceDownload(event){

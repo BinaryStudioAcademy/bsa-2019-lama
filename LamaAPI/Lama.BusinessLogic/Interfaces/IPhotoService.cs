@@ -3,6 +3,7 @@ using Lama.Domain.DTO.Photo;
 using Lama.Domain.DbModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Interfaces
 {
@@ -19,5 +20,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id);
+        Task AddReaction(NewLikeDTO newLike);
     }
 }

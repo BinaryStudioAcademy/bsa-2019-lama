@@ -56,7 +56,12 @@ namespace Lama.BusinessLogic.Services
         {
             throw new NotImplementedException();
         }
-
+        public async Task AddReaction(NewLikeDTO newLike)
+        {
+            var like = _mapper.Map<Like>(newLike);
+            await _context.GetRepository<Like>().InsertAsync(like);
+            await _context.SaveAsync();
+        }
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos)
         {
             Photo[] savedPhotos = new Photo[photos.Length];

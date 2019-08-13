@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.BusinessLogic.Interfaces;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.Controllers
 {
@@ -30,6 +31,11 @@ namespace Lama.Controllers
         public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
         {
             return _service.CreateAll(photos);
+        }
+        [HttpPost("reaction")]
+        public Task PostReaction([FromBody] NewLikeDTO newLike)
+        {
+            return _service.AddReaction(newLike);
         }
         #endregion
 
