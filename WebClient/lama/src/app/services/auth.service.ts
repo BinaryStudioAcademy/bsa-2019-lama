@@ -90,7 +90,8 @@ export class AuthService {
     return localStorage.getItem("idKey");
   }
 
-  public saveCreadeatins(user: firebase.User) {
+  public async saveCreadeatins(user: firebase.User) {
+    
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
     let names = user.displayName.split(' ');
@@ -104,6 +105,12 @@ export class AuthService {
       firstName = names[0];
       lastName = names[1];
     }
+    this._user = {
+      firstName: firstName,
+      lastName: lastName,
+      email: user.email,
+      photo: {imageUrl: user.photoURL}
+    }
     this.toDataUrl(user.photoURL, (img) => {
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
@@ -113,7 +120,10 @@ export class AuthService {
           email: user.email,
           photo: { imageUrl: img}
         }
-      this.registerUser(this._user);
+      this.registerUser(this._user).subscribe(id => {
+        console.log(id);
+        localStorage.setItem('userId', id.toString());
+      });
     })
   }  
 
@@ -132,11 +142,8 @@ export class AuthService {
   }
 
 
-  public registerUser(user: UserCreate) {
-    this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions).subscribe(id => {
-      console.log(id);
-      localStorage.setItem('userId', id.toString());
-    })
+  public registerUser(user: UserCreate): Observable<any> {
+    return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
   }
   
 }
