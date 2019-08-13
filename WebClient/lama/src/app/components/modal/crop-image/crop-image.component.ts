@@ -6,7 +6,7 @@ import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 
 import { FileService } from 'src/app/services/file.service';
 
-import { ImageEditedArgs } from 'src/app/models';
+import { ImageCroppedArgs } from 'src/app/models';
 
 @Component({
   selector: 'app-crop-image',
@@ -38,7 +38,7 @@ export class CropImageComponent implements OnInit
 
   // events
   @Output()
-  public saveClickedEvent = new EventEmitter<ImageEditedArgs>();
+  public saveClickedEvent = new EventEmitter<ImageCroppedArgs>();
   @Output()
   public cancelClickedEvent = new EventEmitter();
 

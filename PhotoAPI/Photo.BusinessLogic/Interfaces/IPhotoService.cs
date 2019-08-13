@@ -1,6 +1,5 @@
 ﻿using Photo.Domain.BlobModels;
 using Photo.Domain.DataTransferObjects;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,7 +14,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
         Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task MarkPhotoAsDeleted(int photoId);
-        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);

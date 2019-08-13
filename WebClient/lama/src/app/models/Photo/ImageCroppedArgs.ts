@@ -1,4 +1,4 @@
-export interface ImageEditedArgs
+export interface ImageCroppedArgs
 {
     originalImageUrl: string;
     croppedImageBase64: string;

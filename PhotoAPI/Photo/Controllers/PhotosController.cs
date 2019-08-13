@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,11 +60,6 @@ namespace Photo.Controllers
             return await this.photoService.Create(values);
         }
 
-        [HttpPost("ArchivePhotos")]
-        public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] values)
-        {
-            return await this.photoService.GetPhotos(values);
-        }
         [HttpPost("avatar")]
         public async Task<int> PostAvatar([FromBody] CreatePhotoDTO value)
         {

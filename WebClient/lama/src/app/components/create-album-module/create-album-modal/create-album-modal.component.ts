@@ -23,9 +23,7 @@ export class CreateAlbumModalComponent implements OnInit {
   albumWithExistPhotos: NewAlbumWithExistPhotos;
   ExistPhotosId: number[] = [];
 
-  albumName: string='';
-  checkForm: boolean = true;
-
+  albumName: string = '';
   activeColor: string = '#00d1b2';
   overlayColor: string = 'rgba(255,255,255,0.5)';
   dragging: boolean = false;
@@ -94,6 +92,8 @@ export class CreateAlbumModalComponent implements OnInit {
   }
   this.loaded = true;
   }
+
+
   _handleReaderLoaded(e) {
       var reader = e.target;
       this.imageSrc = reader.result;
@@ -102,12 +102,7 @@ export class CreateAlbumModalComponent implements OnInit {
 
   CreateAlbum()
   {
-    if(this.albumName == '')
-    {
-      console.log(this.albumName)
-      this.checkForm = false;
-    }
-    else{
+    if(this.albumName.length !== 0){
     if (this.LoadNewImage === true) {
      this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
      this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
@@ -124,10 +119,6 @@ export class CreateAlbumModalComponent implements OnInit {
 
   ChoosePhoto(e)
   {
-    this.ExistPhotosId = [];
-    this.photos = [];
-    this.ExistPhotos = [];
-
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
     const componentRef = this.entry.createComponent(factory);
@@ -149,7 +140,7 @@ export class CreateAlbumModalComponent implements OnInit {
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
-      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id);
+      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id || photo.blobId);
     }
   }
   

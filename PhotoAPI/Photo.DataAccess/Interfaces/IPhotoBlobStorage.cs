@@ -1,7 +1,4 @@
-﻿using Photo.Domain.BlobModels;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Photo.DataAccess.Interfaces
 {
@@ -10,6 +7,5 @@ namespace Photo.DataAccess.Interfaces
         Task<string> LoadPhotoToBlob(byte[] blob, string filename);
         Task<string> LoadAvatarToBlob(byte[] blob);
         Task DeleteFileAsync(string blobName);
-        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
     }
 }

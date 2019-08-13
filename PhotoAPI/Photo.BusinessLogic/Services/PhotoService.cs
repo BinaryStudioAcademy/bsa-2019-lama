@@ -32,10 +32,7 @@ namespace Photo.BusinessLogic.Services
             return elasticStorage.Find(criteria);
         }
 
-        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
-        {
-            return await storage.GetPhotos(values);
-        }
+
         // METHODS
         public Task<IEnumerable<PhotoDocument>> Get()
         {

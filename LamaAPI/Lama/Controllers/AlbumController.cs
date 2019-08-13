@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
-using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
 using Microsoft.AspNetCore.Http;
@@ -32,11 +31,6 @@ namespace Lama.Controllers
         public async Task CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotos album)
         {
             await _service.CreateAlbumWithExistPhotos(album);
-        }
-        [HttpPost("ArchivePhotos")]
-        public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
-        {
-            return await _service.GetPhotos(photoDocuments);
         }
         [HttpPut]
         public async Task UpdateAlbum([FromBody] Album album)

@@ -96,9 +96,11 @@ namespace Lama.BusinessLogic.Services
 
             item.Id = insertedPhoto.Id;
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
             var response = await httpClient.PostAsJsonAsync($"{url}api/photos/avatar", item);
 
             return response.IsSuccessStatusCode ? insertedPhoto : null;
+
         }
         
         #endregion
