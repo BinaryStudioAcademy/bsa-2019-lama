@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using Lama.Domain.BlobModels;
-using Lama.Domain.DataTransferObjects.Photo;
+using Lama.Domain.DTO.Photo;
 using Lama.BusinessLogic.Interfaces;
 
 namespace Lama.Controllers
@@ -25,10 +25,18 @@ namespace Lama.Controllers
         }
 
         // METHODS
+        #region CREATE
         [HttpPost]
-        public async Task ReceivePhoto([FromBody] PhotoReceived[] photos)
+        public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
         {
-            await _service.CreateAll(photos);
+            return _service.CreateAll(photos);
+        }
+        #endregion
+
+        [HttpGet("search/{criteria}")]
+        public async Task<IEnumerable<UploadPhotoResultDTO>> FindPhotos(string criteria)
+        {
+            return await _service.FindPhoto(criteria);
         }
 
         [HttpPut]

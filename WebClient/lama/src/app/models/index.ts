@@ -8,8 +8,8 @@ export * from './Photo/photo';
 export * from './Photo/photoRaw';
 export * from './Photo/updatePhotoDTO';
 export * from './Photo/updatedPhotoResultDTO';
-export * from './Photo/ImageCroppedArgs';
+export * from './Photo/ImageEditedArgs';
 export * from './Photo/deletedPhotoList';
 export * from './Photo/deletedPhotoDTO';
 export * from './Photo/photoToDeleteRestoreDTO';
-
+export * from './Photo/updatedPhotoResultDTO';

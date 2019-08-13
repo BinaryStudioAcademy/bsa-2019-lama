@@ -7,9 +7,9 @@
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
             <a href="#" class="dropdown-item">Remove Album</a>
             <a href="#" class="dropdown-item">Share Album</a>
-            <a href="#" class="dropdown-item">Download Album</a>
+            <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
         </div>
-        <img src="{{ album.photo.blob256Id || album.photo.blobId }}" (click)="clickPerformed()">
+        <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
     </div>
     <div class="description has-text-centered">
         <p>{{album.name}}</p>

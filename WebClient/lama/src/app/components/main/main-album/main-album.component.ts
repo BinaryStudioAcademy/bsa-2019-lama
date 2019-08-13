@@ -2,6 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Album } from 'src/app/models/Album/album';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 
+import { saveAs } from "file-saver";
+import * as JSZip from 'jszip';
+import { HttpClient } from '@angular/common/http';
+import { PhotoRaw } from 'src/app/models';
 
 @Component({
   selector: 'main-album',
@@ -12,11 +16,12 @@ export class MainAlbumComponent implements OnInit {
 
   @Input ('_album') album: ViewAlbum;
   @Output() onClick = new EventEmitter<ViewAlbum>();
+  @Output() ClickDownload = new EventEmitter<ViewAlbum>();
 
   isContent:boolean = false;
   isMenu:boolean = true;
-
-  constructor() { }
+  imgname = require("../../../../assets/icon-no-image.svg");
+  constructor(private _http: HttpClient) { }
 
   ngOnInit() {
   }
@@ -34,4 +39,9 @@ export class MainAlbumComponent implements OnInit {
     this.isContent = false;
     this.isMenu = true;
   }
+
+  DownloadAlbum(event) {
+    this.ClickDownload.emit(this.album);
+  }
+
 }
