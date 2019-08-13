@@ -15,6 +15,7 @@ export class MainAlbumComponent implements OnInit {
 
   isContent:boolean = false;
   isMenu:boolean = true;
+  showSharedModal: boolean = false;
 
   constructor() { }
 
@@ -33,5 +34,10 @@ export class MainAlbumComponent implements OnInit {
   {
     this.isContent = false;
     this.isMenu = true;
+  }
+
+  public openShareModal(): void
+  {
+    this.showSharedModal = true;
   }
 }
