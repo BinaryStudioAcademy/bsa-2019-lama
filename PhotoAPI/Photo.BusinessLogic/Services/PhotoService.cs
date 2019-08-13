@@ -59,6 +59,9 @@ namespace Photo.BusinessLogic.Services
         }
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
         {
+            string filename = Path.GetFileName(updatePhotoDTO.BlobId);
+            string ext = Path.GetExtension(filename);
+            string file = filename.Replace(ext, "");
             string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
 
             byte[] newImageBlob = Convert.FromBase64String(base64);
@@ -68,9 +71,9 @@ namespace Photo.BusinessLogic.Services
             
             UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
             {
-                BlobId = await storage.LoadPhotoToBlob(newImageBlob, null),
-                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64), null),
-                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256), null),
+                BlobId = await storage.LoadPhotoToBlob(newImageBlob, $"{filename}"),
+                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64), $"{file}_64{ext}"),
+                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256), $"{file}_256{ext}"),
             };
 
             await elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
