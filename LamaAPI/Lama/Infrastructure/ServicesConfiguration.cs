@@ -42,6 +42,7 @@ namespace Lama.Infrastructure
             services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
                                                     serviceProvider.GetService<ApplicationDbContext>()) );
             services.AddScoped<IAlbumService, AlbumService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
 
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
