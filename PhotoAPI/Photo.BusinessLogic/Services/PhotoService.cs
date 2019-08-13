@@ -118,6 +118,7 @@ namespace Photo.BusinessLogic.Services
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
                     Id = items[i].Id,
+                    Name = filename,
                     BlobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}"),
                     Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64), $"{file}_64{ext}"),
                     Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256), $"{file}_256{ext}"),
@@ -142,6 +143,7 @@ namespace Photo.BusinessLogic.Services
             await Create(new PhotoDocument
             {
                 Id = item.Id,
+                Name = Guid.NewGuid().ToString(),
                 BlobId = await storage.LoadAvatarToBlob(blob),
                 Blob64Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                 Blob256Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
