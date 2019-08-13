@@ -31,6 +31,8 @@ namespace Lama.BusinessLogic.Services
         {
             var sharedPhotoData = await Context.Photos
                 .Include(photo => photo.PhotoState)
+                .Include(photo => photo.SharedPhotos)
+                .ThenInclude(shared => shared.User)
                 .Include(photo => photo.Likes)
                 .ThenInclude(like => like.User)
                 .Include(photo => photo.Comments)
@@ -70,10 +72,17 @@ namespace Lama.BusinessLogic.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task SharingPhoto(SharedPhoto sharedPhoto)
+        public async Task ProcessSharedPhoto(SharedPhoto sharedPhoto)
         {
-            await Context.SharedPhotos.AddAsync(sharedPhoto);
-            await Context.SaveChangesAsync();
+            var alreadyShared =  await Context.SharedPhotos.
+                                FirstOrDefaultAsync(photo => 
+                                                                photo.UserId == sharedPhoto.UserId && photo.PhotoId == sharedPhoto.PhotoId);
+            
+            if (alreadyShared == null)
+            {
+                await Context.SharedPhotos.AddAsync(sharedPhoto);
+                await Context.SaveChangesAsync();
+            }
         }
     }
 }
