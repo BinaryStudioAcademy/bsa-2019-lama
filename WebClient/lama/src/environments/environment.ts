@@ -13,7 +13,7 @@ export const environment = {
     appId: "1:363275556201:web:52ab2e1fd986b9ca"
   },
   clientApiUrl:"http://localhost:4200",
-  lamaApiUrl: "https://localhost:5000",
+  lamaApiUrl: "http://localhost:5000",
   photoEditing:
   {
     crop:
