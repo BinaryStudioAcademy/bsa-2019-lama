@@ -22,6 +22,8 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
+        private string v;
+        private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
         public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
         {
@@ -30,6 +32,7 @@ namespace Lama.BusinessLogic.Services
             httpClient = new HttpClient();
             this._mapper = _mapper;
         }
+
 
         public void Dispose()
         {
@@ -135,7 +138,8 @@ namespace Lama.BusinessLogic.Services
   
             for (int i = 0; i < photos.Count() ; i++)
             {
-                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(_context.GetRepository<Like>().GetAsync(x=> x.PhotoId == photos[i].Id));
+                var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
             }
             return photos;
         }
@@ -149,11 +153,11 @@ namespace Lama.BusinessLogic.Services
             var responseContent = await response.Content.ReadAsStringAsync();
 
             var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
-            var photos = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(PhotoDocuments);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
 
             for (int i = 0; i < photos.Count(); i++)
             {
-                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(_context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id));
+                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id));
             }
             return photos;
         }
