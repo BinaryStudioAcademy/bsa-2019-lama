@@ -1,3 +1,5 @@
+import { Reaction } from '../Reaction/Reaction';
+
 export interface PhotoRaw
 {
     id?: number;
@@ -12,4 +14,5 @@ export interface PhotoRaw
     location?: string;
     userId?: number;
     categoryId?: number;
+    reaction: Reaction[];
 }

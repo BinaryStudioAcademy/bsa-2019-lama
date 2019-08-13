@@ -106,8 +106,8 @@ export class MainPhotosContainerComponent implements OnInit {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.currentUser = this.currentUser;
   }
-  
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);

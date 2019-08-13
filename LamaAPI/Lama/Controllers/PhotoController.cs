@@ -45,7 +45,7 @@ namespace Lama.Controllers
             return _service.UpdatePhoto(photoToUpdate);
         }
         [HttpGet]
-        public async Task<IEnumerable<PhotoDocument>> LoadPhotos()
+        public async Task<IEnumerable<PhotoDocumentDTO>> LoadPhotos()
         {
             return await _service.GetAll();
         }

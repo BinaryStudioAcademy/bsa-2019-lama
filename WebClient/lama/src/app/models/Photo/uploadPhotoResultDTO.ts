@@ -1,3 +1,5 @@
+import { Reaction } from '../Reaction/Reaction';
+
 export interface UploadPhotoResultDTO
 {
     id: number;
@@ -8,4 +10,5 @@ export interface UploadPhotoResultDTO
     sharedLink: string;
     isDeleted: boolean;
     description: string;
+    reaction: Reaction[];
 };

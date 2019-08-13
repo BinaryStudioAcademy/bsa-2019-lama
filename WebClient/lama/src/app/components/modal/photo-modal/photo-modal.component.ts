@@ -6,6 +6,8 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
 import { FileService } from 'src/app/services';
+import { User } from 'src/app/models/User/user';
+import { NewReaction } from 'src/app/models/Reaction/NewReaction';
 
 @Component({
   selector: 'app-photo-modal',
@@ -19,12 +21,11 @@ export class PhotoModalComponent implements OnInit
   public photo: PhotoRaw;
   public isShown: boolean;
   public showSharedModal: boolean = false;
-
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
 
   // events
-  @Output() 
+  @Output()
   public deletePhotoEvenet = new EventEmitter<number>();
 
   // fields
@@ -34,6 +35,7 @@ export class PhotoModalComponent implements OnInit
   private editingMenuItem: MenuItem[];
   private deletingMenuItem: MenuItem[];
 
+  currentUser: User;
   // constructors
   constructor(fileService: FileService)
   {
@@ -110,6 +112,7 @@ export class PhotoModalComponent implements OnInit
 
 
   }
+
   public mouseLeftOverlayHandler(): void
   {
     this.shownMenuItems = this.defaultMenuItem;
@@ -154,6 +157,29 @@ export class PhotoModalComponent implements OnInit
 
         this.deletePhotoEvenet.emit(this.photo.id);
       });
+  }
+  public ReactionPhoto(event)
+  {
+    if(this.photo.userId === parseInt(this.currentUser.id))
+    {
+      //return;
+    }
+    let react:boolean;
+
+    let hasreaction = this.photo.reaction.some( x => x.userId === parseInt(this.currentUser.id));
+    if(hasreaction)
+    {
+      react = false;
+    }
+    else
+      react = true;
+
+    const newReaction: NewReaction = {
+      photoId: this.photo.id,
+      userId: parseInt(this.currentUser.id),
+      reaction: react
+     }
+     this.fileService.ReactionPhoto(newReaction).subscribe(x => alert("ok"));
   }
 
   forceDownload(event){
