@@ -9,6 +9,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 })
 export class MainPhotoComponent implements OnInit {
 
+  isFavorite:boolean = false;
   // properties
   @Input ('_photo') photo: PhotoRaw;
   @Output() onClick = new EventEmitter<PhotoRaw>();
