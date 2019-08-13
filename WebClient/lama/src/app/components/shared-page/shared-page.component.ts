@@ -8,6 +8,7 @@ import { SharedPageDataset } from 'src/app/models/sharedPageDataset';
 import {User} from 'firebase';
 import { UserService } from 'src/app/services/user.service';
 import { Photo } from 'src/app/models';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -18,10 +19,11 @@ import { Photo } from 'src/app/models';
 export class SharedPageComponent implements OnInit {
 
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
-  userData: SharedPageDataset;
+  userData: Subject<any> = new Subject<any>();
   authenticatedUser: User;
   sharedLinkData: string;
   updatedPhoto: PhotoRaw =<PhotoRaw>{};
+  data: any;
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private sharingService: SharingService) {
 
@@ -30,17 +32,30 @@ export class SharedPageComponent implements OnInit {
 
   ngOnInit() {
     this.decodeUserData();
+    this.sendSharingData();
 
     //TODO receive user data for shared page (e.g photo author, photo's likes, comments)
-    // this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(shareData => {
-    //   this.userData = shareData;
-    // })
+
 
     //No proper data in database yet, so we are not updating
     this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId, this.sharedLinkData).subscribe(updated => {
       this.updatedPhoto = updated
       console.log(this.updatedPhoto.sharedLink);
+
     });
+    this.checkSubjectData();
+  }
+
+  private checkSubjectData(){
+    this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(
+      shareData => {this.userData.next(shareData);},
+       error => {console.log(error)});
+
+    this.userData.subscribe(data => this.data = data);
+  }
+
+  private sendSharingData() {
+    this.sharingService.sendSharedPhoto(this.sharedPhoto).subscribe(x => x);
   }
 
   private decodeUserData(){

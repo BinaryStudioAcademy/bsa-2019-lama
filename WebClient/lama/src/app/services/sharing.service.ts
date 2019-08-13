@@ -21,6 +21,9 @@ export class SharingService {
     headers: new HttpHeaders({'Content-Type': 'text/plain; charset=utf-8'})
   }
 
+  public sendSharedPhoto(sharedPhoto: SharedPhoto): Observable<SharedPhoto>{
+    return this.httpClient.post<SharedPhoto>(`${this.lamaApiUrl}/${this.routePrefix}`,sharedPhoto);
+  }
 
   public getPhotoEntity(photoId: number): Observable<SharedPhoto> {
     return this.httpClient.get<SharedPhoto>(`${this.lamaApiUrl}/${this.routePrefix}/${photoId}`);
