@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -53,17 +54,14 @@ export class PhotoUploadModalComponent implements OnInit {
       this.photos = []
       for (let i=0; i<files.length; i++) 
       {
-        // let compressedFile;
-        // this._ngxPicaService.compressImage(files[i], environment.compressionOptions.maxSizeMB).subscribe(img => {
-        //   compressedFile = img;
-        //   this.showSpinner = false;
-        //   this.toBase64(compressedFile).then(f => {
-        //     this.photos.push({imageUrl: f})
-        //   })
-        // });
-        // let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        let exifObj = load(await this.toBase64(files[i]));
+        let d = dump(exifObj);
+        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        let base64 = await this.toBase64(compressedFile);
+        remove(base64);
+        let modifiedObject = insert(d, base64);
         this.showSpinner = false;
-        this.photos.push({imageUrl: await this.toBase64(files[i]), filename: files[i].name})
+        this.photos.push({imageUrl: modifiedObject, filename: files[i].name})
      };
   }
 

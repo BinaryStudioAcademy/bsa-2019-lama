@@ -71,9 +71,18 @@ namespace Photo.DataAccess.Implementation
             if (filename != null)
                 name = filename;
             string blobName = name;
+            string contentType;
+            try
+            {
+                contentType = metadata[7].Tags[2].Description;
+            }
+            catch (Exception)
+            {
+                contentType = "image/jpg";
+            }
 
             CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
-            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
 
             return cloudBlockBlob.Uri.ToString();
