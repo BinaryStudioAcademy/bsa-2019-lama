@@ -48,4 +48,9 @@ export class AlbumService {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<[]>(this.baseUrl + this.routeAlbum + '/ArchivePhotos' , photos , { headers });
   }
+
+  public removeAlbum(albumId: number){
+    console.log(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
+    return this.http.delete<number>(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
+  }
 }

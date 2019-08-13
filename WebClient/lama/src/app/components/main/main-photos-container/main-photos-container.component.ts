@@ -41,22 +41,33 @@ export class MainPhotosContainerComponent implements OnInit {
   {
     this.resolver = resolver;
   }
-  ngOnInit(){ 
+  ngOnInit(){
 
     this.httpService.getData(`users/${localStorage.getItem('userId')}`)
-    .subscribe((user) => 
+    .subscribe((user) =>
     {
-      this.currentUser = user;
-      this.GetPhotos(parseInt(this.currentUser.id));
+      //this.currentUser = user;
+      this.GetPhotos();
     });
   }
 
-  GetPhotos(UserId: number) {
+  public GetPhotos() {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false
       this.showSpinner = true
       this.photos = []
-    this.service.receiveUsersPhotos(UserId).subscribe(info => {
+    this.service.receivePhoto().subscribe(info => {
+      this.photos = info as PhotoRaw[];
+      this.showSpinner = false;
+    });
+  }
+
+  public GetUserPhotos(UserId: number) {
+    this.isNothingFounded = false;
+    this.shared.isSearchTriggeredAtLeastOnce = false
+      this.showSpinner = true
+      this.photos = []
+    this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
@@ -107,7 +118,7 @@ export class MainPhotosContainerComponent implements OnInit {
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
   }
-  
+
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);

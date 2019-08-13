@@ -13,6 +13,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Lama.BusinessLogic.Exceptions;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -143,6 +145,23 @@ namespace Lama.BusinessLogic.Services
                     (await httpClient.PostAsJsonAsync($"{url}api/photos/ArchivePhotos", photoDocuments)).Content.ReadAsStringAsync());
             }
             }
+
+        public async Task<int> RemoveAlbum(int id)
+        {
+            var albumToDelete = await Context.Albums.FindAsync(id);
+            if (albumToDelete == null)
+            {
+                throw new NotFoundException(nameof(Album), id);
+            }
+
+            //TODO: Add video and shared albums deletion when they will be implemented
+            UnbindEntitiesFromAlbum(albumToDelete);
+            Context.Albums.Remove(albumToDelete);
+            await Context.SaveChangesAsync();
+            return id;
+        }
+
+        
         public async Task<ReturnAlbum> FindAlbum(int Id)
         {
             var result = await Context.Albums
@@ -169,6 +188,40 @@ namespace Lama.BusinessLogic.Services
                 album.PhotoAlbums = Photos.ToList();
             }
             return album;
+        }
+        private void UnbindEntitiesFromAlbum(Album album)
+        {
+            UnbindPhotosFromAlbum(album);
+            UnbindVideosFromAlbum(album);
+            UnbindSharedFromAlbum(album);
+        }
+
+        private void UnbindPhotosFromAlbum(Album album)
+        {
+            var photoAlbumsFromDeletingAlbum = 
+                Context.PhotoAlbums.Where(photo => EF.Property<int>(photo, "AlbumId") == album.Id);
+            foreach (var photoAlbum in photoAlbumsFromDeletingAlbum)
+            {
+                album.PhotoAlbums.Remove(photoAlbum);
+            }
+        }
+        private void UnbindVideosFromAlbum(Album album)
+        {
+            var videoAlbumsFromDeletingAlbum =
+                Context.VideoAlbums.Where(video => EF.Property<int>(video, "AlbumId") == album.Id);
+            foreach (var videoAlbum in videoAlbumsFromDeletingAlbum)
+            {
+                album.VideoAlbums.Remove(videoAlbum);
+            }
+        }
+        private void UnbindSharedFromAlbum(Album album)
+        {
+            var sharedAlbumsFromDeletingAlbum =
+                Context.SharedAlbums.Where(user => EF.Property<int>(user, "AlbumId") == album.Id);
+            foreach (var sharedAlbum in sharedAlbumsFromDeletingAlbum)
+            {
+                album.SharedAlbums.Remove(sharedAlbum);
+            }
         }
     }
 }
