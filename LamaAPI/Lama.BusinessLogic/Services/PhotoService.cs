@@ -119,7 +119,7 @@ namespace Lama.BusinessLogic.Services
         }
 
         #region GET
-        public async Task<IEnumerable<PhotoDocument>> GetAll()
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetAll()
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -127,7 +127,7 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(responseContent);
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
