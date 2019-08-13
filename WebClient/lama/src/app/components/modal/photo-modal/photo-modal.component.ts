@@ -7,7 +7,7 @@ import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
 import { FileService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
-import { NewReaction } from 'src/app/models/Reaction/NewReaction';
+import { NewLike } from 'src/app/models/Reaction/NewLike';
 
 @Component({
   selector: 'app-photo-modal',
@@ -174,7 +174,7 @@ export class PhotoModalComponent implements OnInit
     else
       react = true;
 
-    const newReaction: NewReaction = {
+    const newReaction: NewLike = {
       photoId: this.photo.id,
       userId: parseInt(this.currentUser.id),
       reaction: react

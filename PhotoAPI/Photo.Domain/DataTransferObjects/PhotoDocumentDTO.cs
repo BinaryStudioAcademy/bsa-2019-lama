@@ -1,9 +1,9 @@
-﻿using Lama.Domain.DTO.Reaction;
+﻿using Photo.Domain.DataTransferObjects.Reaction;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lama.Domain.DTO.Photo
+namespace Photo.Domain.DataTransferObjects
 {
     public class PhotoDocumentDTO
     {
@@ -19,6 +19,6 @@ namespace Lama.Domain.DTO.Photo
         public string Location { get; set; }
         public int UserId { get; set; }
         public int CategoryId { get; set; }
-        public LikeDTO[] Reactions {set;get;}
+        public ReactionDTO[] Reactions { set; get; }
     }
 }

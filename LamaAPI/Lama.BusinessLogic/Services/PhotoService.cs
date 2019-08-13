@@ -11,7 +11,8 @@ using Lama.DataAccess.Interfaces;
 using Lama.Domain.DbModels;
 using System.Linq;
 using Lama.Domain.DTO.Photo;
-
+using AutoMapper;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -21,12 +22,13 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
-
-        public PhotoService(string url, IUnitOfWork context)
+        private readonly IMapper _mapper;
+        public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
+            this._mapper = _mapper;
         }
 
         public void Dispose()
@@ -127,10 +129,18 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(responseContent);
+            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+
+  
+            for (int i = 0; i < photos.Count() ; i++)
+            {
+                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(_context.GetRepository<Like>().GetAsync(x=> x.PhotoId == photos[i].Id));
+            }
+            return photos;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -138,7 +148,14 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(PhotoDocuments);
+
+            for (int i = 0; i < photos.Count(); i++)
+            {
+                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(_context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id));
+            }
+            return photos;
         }
 
         public async Task<PhotoDocument> Get(int id)

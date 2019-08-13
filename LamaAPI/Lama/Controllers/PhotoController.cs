@@ -50,7 +50,7 @@ namespace Lama.Controllers
             return await _service.GetAll();
         }
         [HttpGet("user/{id}")]
-        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
             return await _service.GetUserPhotos(id);
         }

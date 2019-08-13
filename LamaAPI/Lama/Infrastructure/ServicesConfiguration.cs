@@ -25,6 +25,7 @@ namespace Lama.Infrastructure
         public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAutoMapper(typeof(UserProfile).Assembly);
+            services.AddAutoMapper(typeof(PhotoProfile).Assembly);
         }
         public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {

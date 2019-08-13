@@ -1,4 +1,4 @@
-import { Reaction } from '../Reaction/Reaction';
+import { Reaction } from '../Reaction/Liek';
 
 export interface PhotoRaw
 {

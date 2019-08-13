@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lama.Domain.DTO.Reaction
+namespace Photo.Domain.DataTransferObjects.Reaction
 {
-    public class LikeDTO
+    public class ReactionDTO
     {
         public string UserId { set; get; }
+        public bool Reaction { set; get; }
     }
 }
