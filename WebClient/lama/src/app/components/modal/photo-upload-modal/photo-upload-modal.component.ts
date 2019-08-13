@@ -54,14 +54,21 @@ export class PhotoUploadModalComponent implements OnInit {
       this.photos = []
       for (let i=0; i<files.length; i++) 
       {
-        let exifObj = load(await this.toBase64(files[i]));
-        let d = dump(exifObj);
-        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
-        let base64 = await this.toBase64(compressedFile);
-        remove(base64);
-        let modifiedObject = insert(d, base64);
-        this.showSpinner = false;
-        this.photos.push({imageUrl: modifiedObject, filename: files[i].name})
+        if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
+          let exifObj = load(await this.toBase64(files[i]));
+          let d = dump(exifObj);
+          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+          let base64 = await this.toBase64(compressedFile);
+          remove(base64);
+          let modifiedObject = insert(d, base64);
+          this.showSpinner = false;
+          this.photos.push({imageUrl: modifiedObject, filename: files[i].name})
+        }
+        else {
+          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+          this.showSpinner = false;
+          this.photos.push({imageUrl: await this.toBase64(compressedFile), filename: files[i].name})
+        }
      };
   }
 
