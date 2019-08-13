@@ -65,6 +65,10 @@ export class MainPhotosContainerComponent implements OnInit {
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
+    }, err => {
+      console.log(err);
+      this.showSpinner = false;
+      this.isNothingFounded = true;
     });
   }
 
