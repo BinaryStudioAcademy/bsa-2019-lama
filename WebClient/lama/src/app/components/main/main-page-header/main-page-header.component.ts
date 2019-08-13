@@ -17,17 +17,20 @@ import { HttpService } from 'src/app/services/http.service';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-
+  @Output() onClick = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
+
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   private avatarUrl;
+  public showSidebarMenu: boolean;
+
   // constructors
-  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService) 
+  constructor(public auth: AuthService, private router: Router, resolver: ComponentFactoryResolver, private shared: SharedService, private http: HttpService)
   {
     this.resolver = resolver;
   }
-  
+
 
   ngOnInit() {
   }
@@ -58,5 +61,10 @@ export class MainPageHeaderComponent implements OnInit {
 
     });
     componentRef.instance.toggleModal();
+  }
+
+  public onMenuClicked(event){
+    this.showSidebarMenu = !this.showSidebarMenu;
+    this.onClick.emit(this.showSidebarMenu);
   }
 }
