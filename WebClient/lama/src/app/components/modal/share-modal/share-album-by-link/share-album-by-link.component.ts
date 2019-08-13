@@ -69,9 +69,6 @@ export class ShareAlbumByLinkComponent implements OnInit {
 
     private initInvariableFields(){
       this.sharedAlbum.albumId = this.receivedAlbum.id;
-      this.sharedAlbum.sharedAlbumUrl += this.receivedAlbum.photoAlbums.forEach(function(photo) {
-        return photo.blobId;
-      });
       this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
     }
 }
