@@ -28,9 +28,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task SharingAlbum(SharedAlbum sharedAlbum)
         {
-			var album = (await Context.SharedAlbums.FirstOrDefaultAsync(a => a.AlbumId == sharedAlbum.AlbumId && a.userId == sharedAlbum.userId));
+			var album = (await Context.SharedAlbums.FirstOrDefaultAsync(a => a.AlbumId == sharedAlbum.AlbumId && a.UserId == sharedAlbum.UserId));
 			
-			if(album != null)
+			if(album == null)
 			{
 				await Context.SharedAlbums.AddAsync(sharedAlbum);
 				await Context.SaveChangesAsync();
