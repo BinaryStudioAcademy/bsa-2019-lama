@@ -1,3 +1,5 @@
+import { Like } from '../like';
+
 export interface Photo
 {
     imageUrl: string;

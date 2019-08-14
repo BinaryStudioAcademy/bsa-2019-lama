@@ -19,11 +19,11 @@ import { Subject } from 'rxjs';
 export class SharedPageComponent implements OnInit {
 
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
-  userData: Subject<any> = new Subject<any>();
+  userSubject: Subject<any> = new Subject<any>();
   authenticatedUser: User;
   sharedLinkData: string;
   updatedPhoto: PhotoRaw =<PhotoRaw>{};
-  data: any;
+  userData: SharedPageDataset;
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private sharingService: SharingService) {
 
@@ -43,15 +43,16 @@ export class SharedPageComponent implements OnInit {
       console.log(this.updatedPhoto.sharedLink);
 
     });
-    this.checkSubjectData();
+    this.getUserData();
+
   }
 
-  private checkSubjectData(){
+  private getUserData(){
     this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(
-      shareData => {this.userData.next(shareData);},
+      shareData => {this.userSubject.next(shareData);},
        error => {console.log(error)});
 
-    this.userData.subscribe(data => this.data = data);
+    this.userSubject.subscribe(data => this.userData = data);
   }
 
   private sendSharingData() {
