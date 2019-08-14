@@ -1,24 +1,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PhotoModalComponent } from './photo-modal.component';
+import { ShareAlbumByEmailComponent } from './share-album-by-email.component';
 
-describe('PhotoModalComponent', () => {
-  let component: PhotoModalComponent;
-  let fixture: ComponentFixture<PhotoModalComponent>;
+describe('ShareAlbumByEmailComponent', () => {
+  let component: ShareAlbumByEmailComponent;
+  let fixture: ComponentFixture<ShareAlbumByEmailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PhotoModalComponent ]
+      declarations: [ ShareAlbumByEmailComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PhotoModalComponent);
+    fixture = TestBed.createComponent(ShareAlbumByEmailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-  
 
   it('should create', () => {
     expect(component).toBeTruthy();

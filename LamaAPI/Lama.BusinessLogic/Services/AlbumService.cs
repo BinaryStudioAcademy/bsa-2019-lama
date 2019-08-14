@@ -1,4 +1,5 @@
-﻿using Lama.BusinessLogic.Interfaces;
+﻿using AutoMapper;
+using Lama.BusinessLogic.Interfaces;
 using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.Domain.BlobModels;
@@ -23,13 +24,15 @@ namespace Lama.BusinessLogic.Services
         private readonly IPhotoService _photoService;
         private IUnitOfWork _context;
         IConfiguration configuration;
-        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context)
+        private readonly IMapper _mapper;
+        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context,IMapper _mapper)
             : base(Context)
         {
             this._photoService = _photoService;
             this._context = context;
             this.configuration = configuration;
             this._context = context;
+            this._mapper = _mapper;
         }
 
         public async Task CreateAlbumWithNewPhotos(NewAlbum album)
@@ -59,12 +62,13 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < PhotosToCreate.Length; ++i)
             {
-                    PhotosToCreate[i] = new CreatePhotoDTO()
-                    {
-                        Id = savedPhotos[i].Id,
-                        AuthorId = user.Id,
-                        ImageUrl = PhotosAlbum[i].ImageUrl,
-                        Description = PhotosAlbum[i].Description
+                PhotosToCreate[i] = new CreatePhotoDTO()
+                {
+                    Id = savedPhotos[i].Id,
+                    AuthorId = user.Id,
+                    ImageUrl = PhotosAlbum[i].ImageUrl,
+                    Description = PhotosAlbum[i].Description,
+                    FileName = PhotosAlbum[i].FileName
                     };
             }
 
@@ -134,7 +138,8 @@ namespace Lama.BusinessLogic.Services
                 .Include(x => x.Photo)
                 .Where(x => x.UserId == UserId).ToListAsync();
 
-            var ListOfPhotos = await _photoService.GetAll();
+            var ListOfPhotos = _mapper.Map<IEnumerable<PhotoDocument>>(await _photoService.GetAll());
+
 
             List<ReturnAlbum> albums = new List<ReturnAlbum>();
             foreach (var item in result)
@@ -176,9 +181,9 @@ namespace Lama.BusinessLogic.Services
                 .Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
-            var ListOfPhotos = await _photoService.GetAll();
+            var ListOfPhotos = _mapper.Map<IEnumerable<PhotoDocument>>(await _photoService.GetAll());
 
-                var Photos = from pa in result.PhotoAlbums
+            var Photos = from pa in result.PhotoAlbums
                              join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 

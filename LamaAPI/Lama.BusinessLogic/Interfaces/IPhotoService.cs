@@ -3,6 +3,7 @@ using Lama.Domain.DTO.Photo;
 using Lama.Domain.DbModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Interfaces
 {
@@ -11,13 +12,15 @@ namespace Lama.BusinessLogic.Interfaces
         Task<IEnumerable<UploadPhotoResultDTO>> FindPhoto(string criteria);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos);
         Task<Photo> CreateAvatar(CreatePhotoDTO item);
-        Task<IEnumerable<PhotoDocument>> GetAll();
+        Task<IEnumerable<PhotoDocumentDTO>> GetAll();
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> Get(int id);
         Task MarkPhotoAsDeleted(int photosToDeleteId);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
-        Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id);
+        Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id);
+        Task AddReaction(NewLikeDTO newLike);
+        Task RemoveReaction(NewLikeDTO removeLike);
     }
 }

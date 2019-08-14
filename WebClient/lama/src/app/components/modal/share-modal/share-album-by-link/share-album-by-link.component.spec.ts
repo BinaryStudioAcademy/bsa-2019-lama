@@ -1,24 +1,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PhotoModalComponent } from './photo-modal.component';
+import { ShareAlbumByLinkComponent } from './share-album-by-link.component';
 
-describe('PhotoModalComponent', () => {
-  let component: PhotoModalComponent;
-  let fixture: ComponentFixture<PhotoModalComponent>;
+describe('ShareAlbumByLinkComponent', () => {
+  let component: ShareAlbumByLinkComponent;
+  let fixture: ComponentFixture<ShareAlbumByLinkComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PhotoModalComponent ]
+      declarations: [ ShareAlbumByLinkComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PhotoModalComponent);
+    fixture = TestBed.createComponent(ShareAlbumByLinkComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-  
 
   it('should create', () => {
     expect(component).toBeTruthy();
