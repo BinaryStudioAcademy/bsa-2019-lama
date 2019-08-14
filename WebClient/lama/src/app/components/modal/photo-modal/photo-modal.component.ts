@@ -64,7 +64,6 @@ export class PhotoModalComponent implements OnInit {
     else {
       this.hasUserReaction = false;
     }
-    //alert(this.hasUserReaction);
   }
 
   private initializeMenuItem() {
@@ -137,7 +136,7 @@ export class PhotoModalComponent implements OnInit {
       .subscribe(updatedPhotoDTO =>
         {
           Object.assign(this.photo, updatedPhotoDTO);
-          this.updatePhotoEvent.emit(updatePhotoDTO);
+        //  this.updatePhotoEvent.emit(updatePhotoDTO);
           this.goBackToImageView();
         });
   }
@@ -161,8 +160,9 @@ export class PhotoModalComponent implements OnInit {
       });
   }
   public ReactionPhoto(event) {
+   
     if (this.photo.userId === parseInt(this.currentUser.id)) {
-      return;
+  
     }
     let hasreaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
     const newReaction: NewLike = {
