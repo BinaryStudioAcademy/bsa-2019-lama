@@ -42,21 +42,24 @@ export class MainPhotosContainerComponent implements OnInit {
   {
     this.resolver = resolver;
   }
-  ngOnInit(){ 
+
+  ngOnInit(){
     this.GetPhotos();
+
     this.httpService.getData(`users/${localStorage.getItem('userId')}`)
-    .subscribe((user) => 
+    .subscribe((user) =>
     {
+
       this.currentUser = user;
     });
   }
 
-  GetUserPhotos(UserId: number) {
+  public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false
       this.showSpinner = true
       this.photos = []
-    this.service.receiveUsersPhotos(UserId).subscribe(info => {
+    this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
@@ -124,6 +127,7 @@ export class MainPhotosContainerComponent implements OnInit {
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
+
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);

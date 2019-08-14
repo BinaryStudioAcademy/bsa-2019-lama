@@ -43,11 +43,12 @@ namespace Lama.Controllers
         {
 
         }
-        [HttpDelete]
-        public async Task DeleteAlbum([FromBody] int id)
+        [HttpDelete("{id}")]
+        public async Task<int> DeleteAlbum(int id)
         {
-
+            return await _service.RemoveAlbum(id);
         }
+        
         [HttpGet("{id}")]
         public async Task<List<ReturnAlbum>> GetUserAlbums(int id)
         {
