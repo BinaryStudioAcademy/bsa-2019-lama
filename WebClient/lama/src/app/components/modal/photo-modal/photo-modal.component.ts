@@ -3,7 +3,7 @@ import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
-import { UpdatePhotoDTO, ImageCroppedArgs, MenuItem } from 'src/app/models';
+import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
 import { FileService } from 'src/app/services';
 
@@ -115,12 +115,12 @@ export class PhotoModalComponent implements OnInit
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public cropImageHandler(croppedImage: ImageCroppedArgs): void
+  public imageHandler(editedImage: ImageEditedArgs): void
   {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
-      blobId: croppedImage.originalImageUrl,
-      imageBase64: croppedImage.croppedImageBase64
+      blobId: editedImage.originalImageUrl,
+      imageBase64: editedImage.croppedImageBase64
     };
 
     this.fileService.update(updatePhotoDTO)
@@ -156,5 +156,23 @@ export class PhotoModalComponent implements OnInit
       });
   }
 
-
+  forceDownload(event){
+    let element = event.target as Element;
+    var url = element.getAttribute("data-href");
+    var fileName = element.getAttribute("data-href");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+    xhr.onload = function(){
+        var urlCreator = window.URL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = imageUrl;
+        tag.download = fileName;
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+    }
+    xhr.send();
+  }
 }

@@ -16,13 +16,16 @@ import { AngularFireAuth } from '@angular/fire/auth';
 })
 export class MainPageHeaderComponent implements OnInit {
 
-
+  @Output() onClick = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
+
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  private avatarUrl;
+  private avatarUrl;  
   private searchCriteria: string = "";
   private isActive: boolean  = false;
+  
+  public showSidebarMenu: boolean;
 
   // constructors
   constructor(public auth: AuthService, private router: Router,
@@ -31,7 +34,7 @@ export class MainPageHeaderComponent implements OnInit {
   {
     this.resolver = resolver;
   }
-  
+
 
   ngOnInit() {  
     let id = localStorage.getItem('userId')
@@ -86,5 +89,10 @@ export class MainPageHeaderComponent implements OnInit {
       this.shared.photos.push(...data);
     });
     componentRef.instance.toggleModal();
+  }
+
+  public onMenuClicked(event){
+    this.showSidebarMenu = !this.showSidebarMenu;
+    this.onClick.emit(this.showSidebarMenu);
   }
 }

@@ -130,7 +130,7 @@ namespace Lama.BusinessLogic.Services
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
-                 .ThenInclude(x=>x.Photo)
+                 .ThenInclude(x => x.Photo)
                 .Include(x => x.Photo)
                 .Where(x => x.UserId == UserId).ToListAsync();
 
@@ -144,19 +144,30 @@ namespace Lama.BusinessLogic.Services
                              join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
-                albums.Add(
-                new ReturnAlbum()
+                var album = new ReturnAlbum()
                 {
                     Id = item.Id,
-                    Title = item.Title,
-                    Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id),
-                    PhotoAlbums = Photos.ToList()
+                    Title = item.Title
+                };
+                if(item.Photo != null)
+                {
+                    album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
+                    album.PhotoAlbums = Photos.ToList();
                 }
-                );
+                albums.Add(album);
             }
             return albums;
         }
-
+        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments)
+        {
+            string url = configuration["PhotoApiUrl"];
+            using (HttpClient httpClient = new HttpClient())
+            {
+                return JsonConvert.DeserializeObject<List<Byte[]>>(
+                    await
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos/ArchivePhotos", photoDocuments)).Content.ReadAsStringAsync());
+            }
+            }
         public async Task<ReturnAlbum> FindAlbum(int Id)
         {
             var result = await Context.Albums
@@ -171,15 +182,17 @@ namespace Lama.BusinessLogic.Services
                              join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
-            var album =
-            new ReturnAlbum()
+
+            var album = new ReturnAlbum()
             {
                 Id = result.Id,
                 Title = result.Title,
-                Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id),
-                PhotoAlbums = Photos.ToList()
             };
-            
+            if(result.Photo != null)
+            {
+                album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
+                album.PhotoAlbums = Photos.ToList();
+            }
             return album;
         }
     }

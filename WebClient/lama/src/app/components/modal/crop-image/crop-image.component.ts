@@ -6,7 +6,7 @@ import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 
 import { FileService } from 'src/app/services/file.service';
 
-import { ImageCroppedArgs } from 'src/app/models';
+import { ImageEditedArgs } from 'src/app/models';
 
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 
@@ -40,7 +40,7 @@ export class CropImageComponent implements OnInit
 
   // events
   @Output()
-  public saveClickedEvent = new EventEmitter<ImageCroppedArgs>();
+  public saveClickedEvent = new EventEmitter<ImageEditedArgs>();
   @Output()
   public cancelClickedEvent = new EventEmitter();
 

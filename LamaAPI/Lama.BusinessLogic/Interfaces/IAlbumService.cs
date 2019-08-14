@@ -1,4 +1,5 @@
-﻿using Lama.Domain.DbModels;
+﻿using Lama.Domain.BlobModels;
+using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task CreateAlbumWithNewPhotos(NewAlbum album);
         Task<List<ReturnAlbum>> FindAll(int UserId);
         Task<ReturnAlbum> FindAlbum(int Id);
+        Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments);
     }
 }
