@@ -116,11 +116,18 @@ export class MainPhotosContainerComponent implements OnInit {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
   
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  public updatePhotoHandler(updatedPhoto: PhotoRaw): void
+  {
+    let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
+    this.photos[index] = updatedPhoto
   }
 
 }
