@@ -86,8 +86,8 @@ namespace Lama.BusinessLogic.Services
         public async Task ProcessSharedPhoto(SharedPhoto sharedPhoto)
         {
             var alreadyShared =  await Context.SharedPhotos.
-                                FirstOrDefaultAsync(photo => 
-                                                                photo.UserId == sharedPhoto.UserId && photo.PhotoId == sharedPhoto.PhotoId);
+                                FirstOrDefaultAsync(shared => 
+                                    shared.UserId == sharedPhoto.UserId && shared.PhotoId == sharedPhoto.PhotoId);
             
             if (alreadyShared == null)
             {
