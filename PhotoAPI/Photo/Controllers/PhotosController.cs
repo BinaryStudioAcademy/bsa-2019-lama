@@ -19,11 +19,13 @@ namespace Photo.Controllers
     {
         // FIELDS
         IPhotoService photoService;
+        IMessageService messageService;
 
         // CONSTRUCTORS
-        public PhotosController(IPhotoService photoService)
+        public PhotosController(IPhotoService photoService, IMessageService messageService)
         {
             this.photoService = photoService;
+            this.messageService = messageService;
         }
 
         // ACTIONS

@@ -1,25 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using Services.Models;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
 using System;
 using Nest;
+using Photo.Domain.Settings;
 using Photo.Domain.BlobModels;
+using Photo.Domain.MappingProfiles;
 using Photo.BusinessLogic.Services;
 using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Implementation;
 using Photo.DataAccess.Interfaces;
+using Photo.Infrastructure;
 using AutoMapper;
-using Photo.Domain.MappingProfiles;
+
+using NestConnectionSettings = Nest.ConnectionSettings;
+using QueueConnectionSettings = Services.Models.ConnectionSettings;
 
 namespace Photo.Infrastructure
 {
     public static class ServicesConfiguration
     {
-        public static void AddQueueService(this IServiceCollection services)
+        public static void AddQueueService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>();
+            services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>(
+                f => new DefaultConnectionFactory(configuration.Bind<QueueConnectionSettings>("Queues:ConnectionSettings")));
             services.AddSingleton<IConnectionProvider, ConnectionProvider>();
         }
 
@@ -29,10 +36,9 @@ namespace Photo.Infrastructure
             string defaultIndex = configuration["elasticsearch:index"];
             Uri uri = new Uri(url);
 
-            ConnectionSettings settings = new ConnectionSettings(uri)
+            NestConnectionSettings settings = new NestConnectionSettings(uri)
                 .DefaultIndex(defaultIndex)
-                .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));
-                
+                .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));                
             
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
             services.AddSingleton<IElasticStorage>(f => new ElasticStorage(defaultIndex, f.GetService<IElasticClient>()));
@@ -41,14 +47,26 @@ namespace Photo.Infrastructure
         {
             services.AddAutoMapper(typeof(PhotoProfile).Assembly);
         }
+
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
-            CreateBlobStorageSettings createBlobStorageSettings = new CreateBlobStorageSettings();
-            configuration.Bind("BlobStorageSettings", createBlobStorageSettings);
+            services.AddScoped<IMessageService, MessageService>(serviceProvider => MessageServiceFactory(serviceProvider, configuration));
 
-            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(f => new PhotoBlobStore(createBlobStorageSettings));
-
+            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
+                f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
+            
             services.AddScoped<IPhotoService, PhotoService>();
+        }
+        private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
+        {
+            IConnectionProvider connectionProvider = serviceProvider.GetService<IConnectionProvider>();
+
+            MessageServiceSettings messageServiceSettings = new MessageServiceSettings()
+            {
+                PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
+            };
+
+            return new MessageService(messageServiceSettings);
         }
     }
 }
