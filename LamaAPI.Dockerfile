@@ -11,5 +11,6 @@ WORKDIR source
 RUN dotnet publish -c Release -o output
 
 FROM base AS final
-WORKDIR /src/source/output
+COPY --from=build /src/source/Lama/output .
+CMD dotnet dev-certs https --trust
 ENTRYPOINT ["dotnet", "Lama.dll"]
