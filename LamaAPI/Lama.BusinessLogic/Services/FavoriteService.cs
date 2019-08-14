@@ -45,18 +45,17 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
-        public async Task UpdateState(FavoriteDTO[] favorites, int userId)
+        public async Task<int> CreateFavorite(Favorite favorite)
         {
-            foreach(var fav in favorites)
-            {
-                if (fav.State == FavoriteState.MarkedToFavorite)
-                    await Create(new Favorite { PhotoId = fav.PhotoId, UserId = userId });
-                if (fav.State == FavoriteState.UnmarkedFavorite)
-                {
-                    Favorite f = await Context.Favorites.Where(e => e.PhotoId == fav.PhotoId && e.UserId == userId).FirstAsync();
-                    await Delete(f);
-                }
-            }
+            return await Create(favorite);
+        }
+
+        public async Task<int> DeleteFavorite(int id)
+        {
+            Favorite fav = await Context.Favorites.Where(f => f.Id == id).FirstOrDefaultAsync();
+            if (fav != null)
+                return await Delete(fav);
+            return -1;
         }
     }
 }

@@ -36,10 +36,16 @@ namespace Lama.Controllers
             return await _service.GetFavoritesIds(userId);
         }
 
-        [HttpPut("{userId}")]
-        public async Task UpdateAlbum(int userId, [FromBody] FavoriteDTO[] dto)
+        [HttpDelete]
+        public async Task<int> CreateFavorite(int userId)
         {
-            await _service.UpdateState(dto, userId);
+            return await _service.DeleteFavorite(userId);
+        }
+
+        [HttpDelete]
+        public async Task<int> DeleteFavorite(int userId)
+        {
+            return await _service.DeleteFavorite(userId);
         }
         
         

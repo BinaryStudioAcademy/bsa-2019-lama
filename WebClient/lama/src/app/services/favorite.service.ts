@@ -1,30 +1,32 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavoriteService {
-  public baseUrl: string = environment.lamaApiUrl + '/api/favorite/';
-  constructor(private _http: Http) { 
+  private baseUrl: string = environment.lamaApiUrl + '/api/favorite/';
+  private ids: string = "ids/";
+  private photos: string = "photos/";
+  constructor(private _http: HttpClient) { 
   }
 
   getFavoritesIds(userId: number): Observable<any> {
-      return this._http.get(this.baseUrl+"ids/"+userId).pipe(map(response => {
-        return response.json();
-      }));
+      return this._http.get<number[]>(this.baseUrl+this.ids+userId);
   }
 
   getFavoritesPhotos(userId: number): Observable<any> {
-    return this._http.get(this.baseUrl+"photos/"+userId).pipe(map(response => {
-      return response.json();
-    }));
+    return this._http.get<Favorite[]>(this.baseUrl+this.photos+userId);
 }
 
-  updateFavorites(userId: number, favorites: []): Observable<any> {
-    return this._http.put(this.baseUrl+userId, favorites);
+  createFavorite(){
+
+  }
+
+  deleteFavorite(){
+
   }
 }
