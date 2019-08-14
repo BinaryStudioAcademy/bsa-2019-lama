@@ -1,4 +1,4 @@
-﻿namespace Photo.Domain.BlobModels
+﻿namespace Photo.Domain.Settings
 {
     public class CreateBlobStorageSettings
     {

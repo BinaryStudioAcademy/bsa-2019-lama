@@ -29,7 +29,7 @@ namespace Photo
 
             services.AddMapper(Configuration);
             services.AddElasticSearch(Configuration);
-            services.AddQueueService();
+            services.AddQueueService(Configuration);
             services.AddBusinessLogicServices(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            

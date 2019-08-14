@@ -1,19 +1,16 @@
 ﻿using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Shared.Protocol;
-using Photo.DataAccess.Interfaces;
-using Photo.Domain.BlobModels;
-using Photo.Domain.Settings;
+
+using Processors.Domain.Settings;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MetadataExtractor;
-using System.IO;
-using System.Drawing;
 
-namespace Photo.DataAccess.Implementation
+namespace Processors.DataAccess.Implementation
 {
-    public class PhotoBlobStore : IPhotoBlobStorage
+    public class PhotoBlobStore : Interfaces.IPhotoBlobStorage
     {
         // FIELDS
         private CloudBlobContainer cloudBlobContainerPhotos;
@@ -48,7 +45,7 @@ namespace Photo.DataAccess.Implementation
             };
 
             cloudBlobContainerPhotos.SetPermissionsAsync(permissions);
-            cloudBlobContainerAvatars.SetPermissionsAsync(permissions);            
+            cloudBlobContainerAvatars.SetPermissionsAsync(permissions);
         }
 
         private void ConfigureCors(ServiceProperties serviceProperties, IList<string> allowedOrigins)
@@ -65,47 +62,15 @@ namespace Photo.DataAccess.Implementation
         }
 
         // METHODS
-        public async Task<string> LoadPhotoToBlob(byte[] blob, string filename)
+        public async Task<string> LoadPhotoToBlob(byte[] blob)
         {
-            var metadata = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
-            string name = Guid.NewGuid().ToString();
-            if (filename != null)
-                name = filename;
-            string blobName = name;
-            string contentType;
-            try
-            {
-                contentType = metadata[7].Tags[2].Description;
-            }
-            catch (Exception)
-            {
-                contentType = "image/jpg";
-            }
+            string blobName = Guid.NewGuid().ToString() + ".jpg";
 
             CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
-            cloudBlockBlob.Properties.ContentType = contentType;
-            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
+            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
 
             return cloudBlockBlob.Uri.ToString();
-        }
-        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
-        {
-            List<Byte[]> list = new List<Byte[]>(); 
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                var folderName = "images/";
-                var index = values[i].OriginalBlobId.IndexOf(folderName);
-                var text = values[i].OriginalBlobId.Substring(index+folderName.Length);
-                CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(text);
-
-                await cloudBlob.FetchAttributesAsync();
-                long fileByteLength = cloudBlob.Properties.Length;
-                Byte[] myByteArray = new Byte[fileByteLength];
-                await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
-                list.Add(myByteArray);
-            }
-            return list;
         }
         public async Task<string> LoadAvatarToBlob(byte[] blob)
         {
@@ -114,11 +79,31 @@ namespace Photo.DataAccess.Implementation
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return cloudBlockBlob.Uri.ToString();
         }
-
-        public async Task DeleteFileAsync(string blobName)
+        
+        public async Task<byte[]> GetPhoto(string fileName)
         {
-            CloudBlockBlob blob = this.cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
-            await blob.DeleteIfExistsAsync();
+            CloudBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(fileName);
+
+            await cloudBlob.FetchAttributesAsync();
+            long fileByteLength = cloudBlob.Properties.Length;
+
+            byte[] byteArray = new byte[fileByteLength];
+            await cloudBlob.DownloadToByteArrayAsync(byteArray, 0);
+
+            return byteArray;
+        }
+
+        public async Task<byte[]> GetAvatar(string fileName)
+        {
+            CloudBlob cloudBlob = cloudBlobContainerAvatars.GetBlockBlobReference(fileName);
+
+            await cloudBlob.FetchAttributesAsync();
+            long fileByteLength = cloudBlob.Properties.Length;
+
+            byte[] byteArray = new byte[fileByteLength];
+            await cloudBlob.DownloadToByteArrayAsync(byteArray, 0);
+
+            return byteArray;
         }
     }
 }
