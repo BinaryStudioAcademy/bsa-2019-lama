@@ -3,9 +3,12 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO;
+using Lama.Domain.DTO.Photo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +18,15 @@ namespace Lama.Controllers
     [ApiController]
     public class SharedPhotosController: ControllerBase
     {
-        private readonly SharingPhotoService _sharingPhotoService;
+        private readonly ISharingPhotoService _sharingPhotoService;
 
-        public SharedPhotosController(SharingPhotoService sharingPhotoService)
+        public SharedPhotosController(ISharingPhotoService sharingPhotoService)
         {
             _sharingPhotoService = sharingPhotoService;
         }
         
         [HttpGet("{id}")]
-        public async Task<Photo> GetSharedPhoto(int id)
+        public async Task<SharedPhotoDTO> GetSharedPhoto(int id)
         {
             return await _sharingPhotoService.Get(id);
         }
@@ -31,7 +34,7 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
         {
-            await _sharingPhotoService.SharingPhoto(sharedPhoto);
+            await _sharingPhotoService.ProcessSharedPhoto(sharedPhoto);
 		}
 		
         [HttpPut("{id}")]
