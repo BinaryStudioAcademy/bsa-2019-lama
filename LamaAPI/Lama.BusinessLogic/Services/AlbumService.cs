@@ -62,12 +62,13 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < PhotosToCreate.Length; ++i)
             {
-                    PhotosToCreate[i] = new CreatePhotoDTO()
-                    {
-                        Id = savedPhotos[i].Id,
-                        AuthorId = user.Id,
-                        ImageUrl = PhotosAlbum[i].ImageUrl,
-                        Description = PhotosAlbum[i].Description
+                PhotosToCreate[i] = new CreatePhotoDTO()
+                {
+                    Id = savedPhotos[i].Id,
+                    AuthorId = user.Id,
+                    ImageUrl = PhotosAlbum[i].ImageUrl,
+                    Description = PhotosAlbum[i].Description,
+                    FileName = PhotosAlbum[i].FileName
                     };
             }
 
