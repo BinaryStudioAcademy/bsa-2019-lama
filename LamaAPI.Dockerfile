@@ -5,10 +5,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
-COPY LamaAPI/ ./source/
-COPY ./Shared/ ./Shared/
-WORKDIR /src/source
-RUN dotnet publish -c Release -o ./output -v n
+COPY LamaAPI/ source/
+COPY Shared/ Shared/
+WORKDIR source
+RUN dotnet publish -c Release -o /output -v n
 
 FROM base AS final
 WORKDIR /output
