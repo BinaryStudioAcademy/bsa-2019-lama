@@ -21,6 +21,7 @@ namespace Lama.Controllers
         {
             _service = service;
         }
+
         [HttpPost]
         public async Task<int> RegisterUser([FromBody] UserDTO user)
         {

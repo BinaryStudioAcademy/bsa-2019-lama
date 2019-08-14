@@ -23,13 +23,13 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpClientModule} from '@angular/common/http';
-
 import { SharedModule, ModalModule, RemovedPhotosModule, UiModule, LandingModule } from 'src/app/components';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
 import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
 import {SharedPageHeaderComponent} from './components/shared-page/shared-page-header/shared-page-header.component';
+import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 
 @NgModule({
   declarations:
@@ -49,7 +49,8 @@ import {SharedPageHeaderComponent} from './components/shared-page/shared-page-he
     ViewAlbumComponent,
     ViewAlbumPhotosComponent,
     SharedPageComponent,
-    SharedPageHeaderComponent
+    SharedPageHeaderComponent,
+    SharedPageAlbumComponent
   ],
   imports:
   [

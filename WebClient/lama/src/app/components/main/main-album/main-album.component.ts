@@ -21,6 +21,8 @@ export class MainAlbumComponent implements OnInit {
 
   isContent:boolean = false;
   isMenu:boolean = true;
+  showSharedModal: boolean = false;
+
   imgname = require("../../../../assets/icon-no-image.svg");
   constructor(private _http: HttpClient, private albumService: AlbumService) { }
 
@@ -41,6 +43,11 @@ export class MainAlbumComponent implements OnInit {
     this.isMenu = true;
   }
 
+  public openShareModal(): void
+  {
+    this.showSharedModal = true;
+  }
+  
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }

@@ -1,3 +1,5 @@
+import { Like } from '../Reaction/Like';
+
 export interface PhotoRaw
 {
     id?: number;
@@ -12,4 +14,5 @@ export interface PhotoRaw
     location?: string;
     userId?: number;
     categoryId?: number;
+    reactions: Like[];
 }

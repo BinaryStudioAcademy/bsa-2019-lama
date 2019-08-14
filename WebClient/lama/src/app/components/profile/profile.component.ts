@@ -26,6 +26,7 @@ export class ProfileComponent implements OnInit {
     photo: {imageUrl: '',
     description: ''}
   };;
+  isSuccesfull: boolean = true;
   photoUrl: string;
   testReceivedUser: User;
   showSpinner: boolean = true;
@@ -33,10 +34,15 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
+      this.isSuccesfull = true;
       this.user = u;
       this.showSpinner = false;
       this.photoUrl = u.photoUrl;
       this.sharedService.avatar = {imageUrl: u.photoUrl};
+    }, err => {
+      console.log(err);
+      this.showSpinner = false;
+      this.isSuccesfull = false;
     });
 	
     this.userForm = new FormGroup({
