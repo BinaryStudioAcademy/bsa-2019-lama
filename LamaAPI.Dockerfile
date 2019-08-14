@@ -8,8 +8,8 @@ WORKDIR /src
 COPY LamaAPI/ source/
 COPY Shared/ Shared/
 WORKDIR source
-RUN dotnet publish -c Release -o /output -v n
+RUN dotnet publish -c Release -o output
 
 FROM base AS final
-WORKDIR /output
+WORKDIR /src/source/output
 ENTRYPOINT ["dotnet", "Lama.dll"]
