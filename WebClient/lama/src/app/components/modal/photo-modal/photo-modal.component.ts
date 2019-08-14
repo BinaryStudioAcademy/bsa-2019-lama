@@ -161,8 +161,9 @@ export class PhotoModalComponent implements OnInit {
   }
   public ReactionPhoto(event) {
    
+    console.log(this.currentUser);
     if (this.photo.userId === parseInt(this.currentUser.id)) {
-  
+      return;
     }
     let hasreaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
     const newReaction: NewLike = {

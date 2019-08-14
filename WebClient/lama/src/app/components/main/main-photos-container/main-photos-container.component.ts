@@ -44,6 +44,11 @@ export class MainPhotosContainerComponent implements OnInit {
   }
   ngOnInit(){ 
     this.GetPhotos();
+    this.httpService.getData(`users/${localStorage.getItem('userId')}`)
+    .subscribe((user) => 
+    {
+      this.currentUser = user;
+    });
   }
 
   GetUserPhotos(UserId: number) {
