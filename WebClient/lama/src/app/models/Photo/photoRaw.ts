@@ -14,5 +14,5 @@ export interface PhotoRaw
     location?: string;
     userId?: number;
     categoryId?: number;
-    reaction: Like[];
+    reactions: Like[];
 }

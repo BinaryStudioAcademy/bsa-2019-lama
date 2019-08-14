@@ -62,6 +62,13 @@ namespace Lama.BusinessLogic.Services
             await _context.GetRepository<Like>().InsertAsync(like);
             await _context.SaveAsync();
         }
+        public async Task RemoveReaction(NewLikeDTO removeLike)
+        {
+            var collect = await _context.GetRepository<Like>().GetAsync();
+            var like = collect.Where(x => x.PhotoId == removeLike.PhotoId && x.UserId == removeLike.UserId).FirstOrDefault();
+            _context.GetRepository<Like>().Delete(like);
+            await _context.SaveAsync();
+        }
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos)
         {
             Photo[] savedPhotos = new Photo[photos.Length];
@@ -144,7 +151,7 @@ namespace Lama.BusinessLogic.Services
             for (int i = 0; i < photos.Count() ; i++)
             {
                 var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
-                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
             }
             return photos;
         }
@@ -162,7 +169,8 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < photos.Count(); i++)
             {
-                var reaction = _mapper.Map<IEnumerable<LikeDTO>>(await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id));
+                var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
             }
             return photos;
         }

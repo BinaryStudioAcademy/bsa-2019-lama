@@ -13,7 +13,11 @@ namespace Lama.Domain.MappingProfiles
         {
             CreateMap<Like, LikeDTO>()
                 .ForMember(x => x.UserId, opt => opt.MapFrom(x => x.UserId));
-            CreateMap<LikeDTO, Like>();
+            CreateMap<LikeDTO, Like>()
+                .ForMember(x => x.UserId, opt => opt.MapFrom(x => x.UserId));
+            CreateMap<NewLikeDTO, Like>()
+                .ForMember(x => x.PhotoId, opt => opt.MapFrom(x => x.PhotoId))
+                .ForMember(x => x.UserId, opt => opt.MapFrom(x => x.UserId));
         }
     }
 }

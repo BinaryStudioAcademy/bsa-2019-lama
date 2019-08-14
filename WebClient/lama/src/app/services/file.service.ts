@@ -48,6 +48,10 @@ export class FileService
   {
     return this.client.post(`${environment.lamaApiUrl}/api/photo/reaction`, NewReaction);
   }
+  public RemoveReactionPhoto(Reaction: NewLike)
+  {
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/removereaction`, Reaction);
+  }
   public getFirstGuidFromString(str: string): string
   {
     return str.match('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}')[0];

@@ -10,5 +10,5 @@ export interface UploadPhotoResultDTO
     sharedLink: string;
     isDeleted: boolean;
     description: string;
-    reaction: Like[];
+    reactions: Like[];
 };

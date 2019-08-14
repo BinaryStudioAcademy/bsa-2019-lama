@@ -21,5 +21,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id);
         Task AddReaction(NewLikeDTO newLike);
+        Task RemoveReaction(NewLikeDTO removeLike);
     }
 }

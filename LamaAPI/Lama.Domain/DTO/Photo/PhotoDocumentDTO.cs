@@ -19,6 +19,6 @@ namespace Lama.Domain.DTO.Photo
         public string Location { get; set; }
         public int UserId { get; set; }
         public int CategoryId { get; set; }
-        public LikeDTO[] Reactions {set;get;}
+        public IEnumerable<LikeDTO> Reactions {set;get;}
     }
 }

@@ -6,6 +6,6 @@ namespace Lama.Domain.DTO.Reaction
 {
     public class LikeDTO
     {
-        public string UserId { set; get; }
+        public int UserId { set; get; }
     }
 }
