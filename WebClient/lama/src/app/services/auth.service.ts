@@ -23,9 +23,9 @@ export class AuthService {
 
   constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
         this.afAuth.idToken.subscribe(token => {
-          this.token =  token
+          this.token =  token;
           localStorage.setItem('idKey',this.token)});
-        this.userService.getCurrentUser().then(() => this.isUserExisted = true)
+        this.userService.getCurrentUserFirebase().then(() => this.isUserExisted = true)
         .catch(() => this.isUserExisted = false)
    }
 
@@ -74,7 +74,7 @@ export class AuthService {
   }
 
 
-  public doLogout(){
+  public doLogout(){    
     return new Promise((resolve, reject) => {
       if(firebase.auth().currentUser){
         this.afAuth.auth.signOut();
@@ -84,6 +84,11 @@ export class AuthService {
         reject();
       }
     });
+  }
+
+  public getLoggedUserId(): string
+  {
+    return localStorage.getItem("userId");
   }
 
   public getToken() {
@@ -111,7 +116,8 @@ export class AuthService {
       email: user.email,
       photo: {imageUrl: user.photoURL}
     }
-    this.toDataUrl(user.photoURL, (img) => {
+    this.toDataUrl(user.photoURL, (img) => 
+    {
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
         this._user = {
@@ -120,10 +126,11 @@ export class AuthService {
           email: user.email,
           photo: { imageUrl: img}
         }
-      this.registerUser(this._user).subscribe(id => {
-        console.log(id);
-        localStorage.setItem('userId', id.toString());
-      });
+
+        this.registerUser(this._user).subscribe(id => {
+          console.log(id);
+          localStorage.setItem('userId', id.toString());
+        });
     })
   }  
 

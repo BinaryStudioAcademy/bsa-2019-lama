@@ -11,6 +11,7 @@ namespace Lama.Domain.MappingProfiles
         public UserProfile()
         {
             CreateMap<UserDTO, User>().ReverseMap();
+            CreateMap<User, GetUserDTO>();
         }
     }
 }

@@ -179,10 +179,18 @@ export class PhotoModalComponent implements OnInit {
       userId: parseInt(this.currentUser.id)
     }
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => { this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); this.hasUserReaction = false }  );
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => 
+        {
+           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
+           this.hasUserReaction = false 
+        });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(x => { this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); this.hasUserReaction = true }  );
+      this.fileService.ReactionPhoto(newReaction).subscribe(x => 
+        { 
+          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); 
+          this.hasUserReaction = true;
+        });
     }
   }
 
