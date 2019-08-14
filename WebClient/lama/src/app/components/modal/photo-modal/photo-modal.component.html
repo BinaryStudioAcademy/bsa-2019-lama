@@ -33,7 +33,7 @@
                                                 <div class="column" *ngFor="let item of shownMenuItems">
                                                     <div (click)="menuClickHandler(item)">
                                                         <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
-                                                            <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload($event)">
+                                                            <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
                                                                 <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
                                                             </a>
                                                         </ng-template>
