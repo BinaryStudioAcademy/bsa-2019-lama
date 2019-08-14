@@ -8,6 +8,7 @@ using Photo.DataAccess.Interfaces;
 using Photo.Domain.DataTransferObjects;
 
 using AutoMapper;
+using System.IO;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -61,6 +62,9 @@ namespace Photo.BusinessLogic.Services
         }
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
         {
+            string filename = Path.GetFileName(updatePhotoDTO.BlobId);
+            string ext = Path.GetExtension(filename);
+            string file = filename.Replace(ext, "");
             string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
 
             byte[] newImageBlob = Convert.FromBase64String(base64);
@@ -70,9 +74,9 @@ namespace Photo.BusinessLogic.Services
             
             UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
             {
-                BlobId = await storage.LoadPhotoToBlob(newImageBlob),
-                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64)),
-                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256)),
+                BlobId = await storage.LoadPhotoToBlob(newImageBlob, $"{filename}"),
+                Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 64), $"{file}_64{ext}"),
+                Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(newImageBlob, 256), $"{file}_256{ext}"),
             };
 
             await elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
@@ -113,14 +117,18 @@ namespace Photo.BusinessLogic.Services
             {
                 string base64 = ConvertToBase64(items[i].ImageUrl);
                 byte[] blob = Convert.FromBase64String(base64);
+                var filename = items[i].FileName;
+                var ext = Path.GetExtension(filename);
+                string file = filename.Replace(ext, "");
 
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
                     Id = items[i].Id,
-                    BlobId = await storage.LoadPhotoToBlob(blob),
-                    Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
-                    Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),
-                    OriginalBlobId = await storage.LoadPhotoToBlob(blob),
+                    Name = filename,
+                    BlobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}"),
+                    Blob64Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 64), $"{file}_64{ext}"),
+                    Blob256Id = await storage.LoadPhotoToBlob(ImageProcessingsService.CreateThumbnail(blob, 256), $"{file}_256{ext}"),
+                    OriginalBlobId = await storage.LoadPhotoToBlob(blob, $"{file}_origin{ext}"),
                     UserId = items[i].AuthorId,
                     Description = items[i].Description
                 };
@@ -141,6 +149,7 @@ namespace Photo.BusinessLogic.Services
             await Create(new PhotoDocument
             {
                 Id = item.Id,
+                Name = Guid.NewGuid().ToString(),
                 BlobId = await storage.LoadAvatarToBlob(blob),
                 Blob64Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 64)),
                 Blob256Id = await storage.LoadAvatarToBlob(ImageProcessingsService.CreateThumbnail(blob, 256)),

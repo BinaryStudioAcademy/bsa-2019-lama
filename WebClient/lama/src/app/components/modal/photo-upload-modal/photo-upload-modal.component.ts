@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 
 @Component({
   selector: 'photo-upload-modal',
@@ -32,7 +33,7 @@ export class PhotoUploadModalComponent implements OnInit {
     let userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) 
     {
-      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId) }
+      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId), filename: this.photos[i].filename }
     }
     this.fileService.sendPhoto(this.photos)
     .subscribe(uploadedPhotos => 
@@ -48,14 +49,26 @@ export class PhotoUploadModalComponent implements OnInit {
       await this.onFileDropped(files);
     }
   }
-  async onFileDropped(files) {
+  async onFileDropped(files: File[]) {
       this.showSpinner = true;
       this.photos = []
       for (let i=0; i<files.length; i++) 
       {
-        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
-        this.showSpinner = false;
-        this.photos.push({imageUrl: await this.toBase64(compressedFile)})
+        if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
+          let exifObj = load(await this.toBase64(files[i]));
+          let d = dump(exifObj);
+          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+          let base64 = await this.toBase64(compressedFile);
+          remove(base64);
+          let modifiedObject = insert(d, base64);
+          this.showSpinner = false;
+          this.photos.push({imageUrl: modifiedObject, filename: files[i].name})
+        }
+        else {
+          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+          this.showSpinner = false;
+          this.photos.push({imageUrl: await this.toBase64(compressedFile), filename: files[i].name})
+        }
      };
   }
 
