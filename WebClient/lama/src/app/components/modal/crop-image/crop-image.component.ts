@@ -59,11 +59,11 @@ export class CropImageComponent implements OnInit
   {
     const event: ImageCroppedEvent = await this.imageCropper.crop();
     let modified = event.base64;
-    if (this.imageToCropBase64.indexOf("image/jpeg") != -1 || this.imageToCropBase64.indexOf("image/jpeg") != -1 ) {
+    if (this.imageToCropBase64.indexOf("image/jpeg") != -1 || this.imageToCropBase64.indexOf("image/jpg") != -1 ) {
       let exifObj = load(this.imageToCropBase64);
       let d = dump(exifObj);
       let jpg = insert(d, event.base64);
-      let modified = insert(d, jpg);
+      modified = jpg
       console.log(load(modified));
     }
     this.saveClickedEvent.emit({
