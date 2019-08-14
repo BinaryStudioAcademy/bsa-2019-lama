@@ -23,7 +23,6 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpClientModule} from '@angular/common/http';
-
 import { SharedModule, ModalModule, RemovedPhotosModule, UiModule, LandingModule } from 'src/app/components';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';

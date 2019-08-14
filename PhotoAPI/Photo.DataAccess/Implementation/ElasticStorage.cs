@@ -42,7 +42,7 @@ namespace Photo.DataAccess.Implementation
         {
             await elasticClient.UpdateAsync(
                 new DocumentPath<PhotoDocument>(item),
-         
+
                 u => u.Index(indexName).Doc(item));
         }
 
@@ -93,6 +93,40 @@ namespace Photo.DataAccess.Implementation
             };
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
+
+        public async Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        {
+            var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
+             .Query(q => q
+                 .Bool(d => d
+                     .Must(m => m
+                         .Match(k => k
+                             .Field(f => f.BlobId)
+                             .Query(".*images.*")
+                         ), m => m
+                         .Match(k => k
+                             .Field(f => f.IsDeleted)
+                             .Query("false")
+                         ), m => m
+                         .Bool(b => b
+                            .MinimumShouldMatch(1)
+                             .Should(s => s
+                                 .Wildcard(w => w
+                                     .Field(f => f.Description)
+                                     .Value($"*{criteria}*")
+                                  ), s => s
+                                 .Wildcard(w => w
+                                     .Field(f => f.Name)
+                                     .Value($"*{criteria}*")
+                                 )
+                              )
+                          )
+                     )
+                )
+            ));
+            return requestResult.Documents;
+        }
+
         public async Task<IEnumerable<PhotoDocument>> GetDeletedPhoto()
         {
             SearchRequest<PhotoDocument> searchRequest = new SearchRequest<PhotoDocument>
@@ -110,7 +144,7 @@ namespace Photo.DataAccess.Implementation
                     */
             };
 
-           return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
@@ -122,13 +156,13 @@ namespace Photo.DataAccess.Implementation
                 Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
                 Value = false
             });
-            
+
             mustClauses.Add(new TermQuery
             {
                 Field = Infer.Field<PhotoDocument>(t => t.UserId),
                 Value = userId,
             });
-            
+
             mustClauses.Add(new MatchQuery
             {
                 Field = Infer.Field<PhotoDocument>(p => p.BlobId),

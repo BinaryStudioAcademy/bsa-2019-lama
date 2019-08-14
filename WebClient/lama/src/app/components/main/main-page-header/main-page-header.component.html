@@ -1,6 +1,6 @@
 <header class="navbar is-fixed-top">
     <div class="align-right">
-        <a><i class="material-icons">reorder</i></a>
+        <a><i class="material-icons" (click)="onMenuClicked($event)">reorder</i></a>
         <div class="logo">
             <img src="assets/alpaca-icon-19.jpg">
             <p>Lama</p>
@@ -11,14 +11,14 @@
     <div class="search-bar is-hidden-mobile">
         <div class="field has-addons">
             <div class="control input-form">
-                <input class="input" type="text" placeholder="Find a photo">
+                <input class="input" type="text" placeholder="Find a photo" [(ngModel)]="searchCriteria">
             </div>
             <div class="control">
-                <a class="button is-primary">
+                <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{'not-active': !isActive}">
                     Search
                 </a>
             </div>
-            
+
             <!--upload-->
             <a (click)="openModalClicked($event)"class="button is-primary is-hidden-mobile add">
                 <i class="material-icons">cloud_upload</i>

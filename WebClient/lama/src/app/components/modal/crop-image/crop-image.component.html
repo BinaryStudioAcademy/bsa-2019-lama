@@ -1,11 +1,11 @@
 <div>
-
     <!--cropped image-->
     <div class="cropper-container">
         <image-cropper #cropper
             [imageBase64]="imageToCropBase64"
             [cropperMinWidth]="cropperMinWidth"
             [cropperMinHeight]="cropperMinHeight"
+            format="jpeg"
             [maintainAspectRatio]="false">
         </image-cropper>
     </div>

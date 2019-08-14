@@ -10,6 +10,7 @@ import { SpinnerComponent } from '../../ui/spinner/spinner.component';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
+import { AuthService } from 'src/app/services';
 
 @Component({
   selector: 'main-photos-container',
@@ -22,7 +23,8 @@ export class MainPhotosContainerComponent implements OnInit {
   // showUploadModal: boolean = false;
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
-
+  isNothingFounded: boolean;
+  isSearchTriggered: boolean;
   currentUser : User;
 
   // fields
@@ -36,34 +38,57 @@ export class MainPhotosContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService,
-    private httpService: HttpService)
+    private httpService: HttpService, private auth: AuthService)
   {
     this.resolver = resolver;
   }
   ngOnInit(){ 
-
-    this.httpService.getData(`users/${localStorage.getItem('userId')}`)
-    .subscribe((user) => 
-    {
-      this.currentUser = user;
-      this.GetPhotos(parseInt(this.currentUser.id));
-    });
+    this.GetPhotos();
   }
 
-  GetPhotos(UserId: number)
-  {
+  GetUserPhotos(UserId: number) {
+    this.isNothingFounded = false;
+    this.shared.isSearchTriggeredAtLeastOnce = false
+      this.showSpinner = true
+      this.photos = []
     this.service.receiveUsersPhotos(UserId).subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
   }
-  ngDoCheck() 
-  {
+
+  GetPhotos() {
+    this.isNothingFounded = false;
+    this.shared.isSearchTriggeredAtLeastOnce = false
+      this.showSpinner = true
+      this.photos = []
+    this.service.receivePhoto().subscribe(info => {
+      this.photos = info as PhotoRaw[];
+      this.showSpinner = false;
+    }, err => {
+      console.log(err);
+      this.showSpinner = false;
+      this.isNothingFounded = true;
+    });
+  }
+
+  ngDoCheck() {
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
         this.photos.push(element);
       });
     }
+    if (this.shared.foundedPhotos.length != 0 && this.shared.isSearchTriggered) {
+      this.photos = this.shared.foundedPhotos;
+      this.isNothingFounded = false;
+    }
+    if (this.shared.foundedPhotos.length == 0 && this.shared.isSearchTriggered) {
+      this.photos = [];
+      this.isNothingFounded = true;
+    }
+    this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
+    this.shared.isSearchTriggered = false;
+    this.shared.foundedPhotos = []
     this.shared.photos = []
   }
 

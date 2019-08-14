@@ -9,7 +9,7 @@
             <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
             <a href="#" class="dropdown-item">Download Album</a>
         </div>
-        <img src="{{ album.photo.blob256Id || album.photo.blobId }}" (click)="clickPerformed()">
+        <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
     </div>
     <div class="description has-text-centered">
         <p>{{album.name}}</p>
