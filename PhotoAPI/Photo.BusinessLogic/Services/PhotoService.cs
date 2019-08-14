@@ -154,7 +154,7 @@ namespace Photo.BusinessLogic.Services
                 BlobId = blobId,
                 Blob64Id = blobId,
                 Blob256Id = blobId,
-                OriginalBlobId = await storage.LoadPhotoToBlob(blob),
+                OriginalBlobId = await storage.LoadAvatarToBlob(blob),
                 UserId = item.AuthorId,
                 Description = item.Description
             });
