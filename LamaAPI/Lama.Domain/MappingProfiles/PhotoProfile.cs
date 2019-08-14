@@ -1,4 +1,5 @@
 using AutoMapper;
+using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Photo;
 
@@ -10,8 +11,6 @@ namespace Lama.Domain.MappingProfiles
         {
             CreateMap<CreatePhotoDTO, Photo>().ReverseMap();
             CreateMap<PhotoDTO, Photo>().ReverseMap();
-            CreateMap<PhotoDocument, PhotoDocumentDTO>().ReverseMap();
-            
         }
     }
 }
