@@ -1,0 +1,98 @@
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
+import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { User } from 'src/app/models/User/user';
+import { HttpService } from 'src/app/services/http.service';
+import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
+import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
+import { UserService } from 'src/app/services/user.service';
+
+@Component({
+  selector: 'app-share-album-by-email',
+  templateUrl: './share-album-by-email.component.html',
+  styleUrls: ['./share-album-by-email.component.sass']
+})
+export class ShareAlbumByEmailComponent implements OnInit {
+
+  @Input() receivedAlbum: ViewAlbum;
+
+  @Output() onClose = new EventEmitter();
+
+  DISAPPEARING_TIMEOUT: number = 1000;
+  sharedLink: string = '';
+  sharedEmail: string = '';
+  imageUrl: string;
+  copyClicked: boolean = false;
+  sharedAlbum: SharedAlbum = <SharedAlbum>{};
+  userEmails: Array<string>;
+  sharingRoute: String = "main/shared/album";
+  showSuccessIcon: boolean = false;
+
+  constructor(private userService: UserService) {
+
+  }
+
+  ngOnInit() {
+  }
+
+  public cancel(){
+    this.onClose.emit(null);
+  }
+
+  public AddEmail(){
+    let user: User = this.userService.getUserByEmail(this.sharedEmail);
+    
+    if(user.email)
+    {
+		this.userEmails.push(user.email);
+		this.showSuccessIcon = true;
+    }
+    else
+    {
+		this.showSuccessIcon = false;
+    }
+  }
+  
+	public createShareableLink(){
+      this.initInvariableFields();
+      let encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
+      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
+  }
+
+  
+  public copyShareableLink(){
+    let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = this.sharedLink;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+      console.log(`${this.sharedLink} was copied`);
+      this.copyClicked = !this.copyClicked;
+	  
+      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
+    }
+
+    public encodeAlbumData(album: SharedAlbum): string{
+      let encoded = btoa(JSON.stringify(album)).replace("/","___");
+      encoded += btoa(JSON.stringify(this.userEmails)).replace("/","___");
+      console.log(encoded);
+      return encoded;
+    }
+
+    private initInvariableFields(){
+      this.sharedAlbum.albumId = this.receivedAlbum.id;
+      this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+    }
+	
+	public GenerateClick() {
+		this.createShareableLink();
+	}
+
+}
