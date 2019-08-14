@@ -28,6 +28,8 @@ export class PhotoModalComponent implements OnInit {
   // events
   @Output()
   public deletePhotoEvenet = new EventEmitter<number>();
+  @Output()
+  public updatePhotoEvent = new EventEmitter<PhotoRaw>();
 
   // fields
   private fileService: FileService;
@@ -132,11 +134,12 @@ export class PhotoModalComponent implements OnInit {
     };
 
     this.fileService.update(updatePhotoDTO)
-      .subscribe(updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-
-        this.goBackToImageView();
-      });
+      .subscribe(updatedPhotoDTO =>
+        {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.updatePhotoEvent.emit(updatePhotoDTO);
+          this.goBackToImageView();
+        });
   }
 
   public goBackToImageView(): void {

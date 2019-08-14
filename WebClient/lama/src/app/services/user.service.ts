@@ -3,6 +3,8 @@ import 'rxjs/Rx';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
+import { HttpService } from './http.service';
+import { User } from '../models/User/user';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,8 @@ export class UserService {
 
   constructor(
     public db: AngularFirestore,
-    public afAuth: AngularFireAuth
+    public afAuth: AngularFireAuth,
+    public httpService: HttpService
   ){  }
 
 
@@ -37,5 +40,11 @@ export class UserService {
         resolve(res);
       }, err => reject(err))
     })
+  }
+  
+  public getUserByEmail(email: string) {
+    let user: User;
+    this.httpService.getData(`users/${email}`).subscribe((data:User) => user = data);
+    return user;
   }
 }
