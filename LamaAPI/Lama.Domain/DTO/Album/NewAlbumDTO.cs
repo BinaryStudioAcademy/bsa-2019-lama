@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Lama.Domain.DTO.Album
 {
-    public class NewAlbum
+    public class NewAlbumDTO
     {
         public string Title { set; get; }
         public NewPhoto Photo { set; get;}

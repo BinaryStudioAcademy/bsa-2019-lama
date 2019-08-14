@@ -25,8 +25,6 @@ namespace Lama.Infrastructure
         public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAutoMapper(typeof(UserProfile).Assembly);
-            services.AddAutoMapper(typeof(PhotoProfile).Assembly);
-            services.AddAutoMapper(typeof(ReactionProfile).Assembly);
         }
         public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {
@@ -41,10 +39,13 @@ namespace Lama.Infrastructure
         {
             services.AddScoped<UserService>();
             services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
-            services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
-                                                    serviceProvider.GetService<ApplicationDbContext>()) );
+            services.AddScoped<ISharingPhotoService, SharingPhotoService>(serviceProvider => 
+                new SharingPhotoService(
+                    serviceProvider.GetService<ApplicationDbContext>(),
+                    serviceProvider.GetService<IMapper>(),
+                    serviceProvider.GetService<IPhotoService>(),
+                    configuration["PhotoApiUrl"]));;
             services.AddScoped<IAlbumService, AlbumService>();
-
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
         {

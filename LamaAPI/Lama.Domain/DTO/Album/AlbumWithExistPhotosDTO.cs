@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lama.Domain.DTO.Album
 {
-    public class AlbumWithExistPhotos
+    public class AlbumWithExistPhotosDTO
     {
         public string Title { set; get; }
         public int AuthorId { set; get; }
