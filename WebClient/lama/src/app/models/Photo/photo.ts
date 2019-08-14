@@ -4,4 +4,5 @@ export interface Photo
     authorId?: number;
     author?: string;
     description?: string;
+    filename?: string;
 }

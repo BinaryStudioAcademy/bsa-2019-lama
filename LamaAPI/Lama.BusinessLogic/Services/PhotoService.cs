@@ -85,7 +85,8 @@ namespace Lama.BusinessLogic.Services
             }
 
             // send photos to Photo project
-            var response = await httpClient.PostAsJsonAsync($"{url}api/photos", photos);
+            StringContent content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<UploadPhotoResultDTO[]>(responseContent);

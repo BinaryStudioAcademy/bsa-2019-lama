@@ -25,6 +25,14 @@
                                     </app-rotate-image>
                                 </ng-template>
 
+
+
+                                <!--crop template-->
+                                <ng-template ngSwitchCase="rotate">
+                                    <app-rotate-image [imageToRotate]="photo.blobId" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="imageHandler($event)">
+                                    </app-rotate-image>
+                                </ng-template>
+
                                 <!--default image template-->
                                 <ng-template ngSwitchDefault>
                                     <div class="is-relative main-photo">
