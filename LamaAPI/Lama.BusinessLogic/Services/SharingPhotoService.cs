@@ -28,10 +28,10 @@ namespace Lama.BusinessLogic.Services
         private readonly IPhotoService _photoService;
 
         //TODO: move services declaration to startup and pass only url instead of configuration
-        public SharingPhotoService(ApplicationDbContext context,IMapper mapper, IPhotoService photoService,IConfiguration configuration)
+        public SharingPhotoService(ApplicationDbContext context,IMapper mapper, IPhotoService photoService, string url)
             :base(context)
         {
-            _photoApiUrl = configuration["PhotoApiUrl"];
+            _photoApiUrl = url;
             _mapper = mapper;
             _photoService = photoService;
         }

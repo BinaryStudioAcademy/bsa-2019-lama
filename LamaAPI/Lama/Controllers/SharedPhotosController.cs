@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
@@ -17,9 +18,9 @@ namespace Lama.Controllers
     [ApiController]
     public class SharedPhotosController: ControllerBase
     {
-        private readonly SharingPhotoService _sharingPhotoService;
+        private readonly ISharingPhotoService _sharingPhotoService;
 
-        public SharedPhotosController(SharingPhotoService sharingPhotoService)
+        public SharedPhotosController(ISharingPhotoService sharingPhotoService)
         {
             _sharingPhotoService = sharingPhotoService;
         }
