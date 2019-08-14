@@ -22,7 +22,6 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
-        private string v;
         private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
         public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
