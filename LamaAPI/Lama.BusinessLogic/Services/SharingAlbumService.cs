@@ -26,7 +26,7 @@ namespace Lama.BusinessLogic.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task SharingPhoto(SharedAlbum sharedAlbum)
+        public async Task SharingAlbum(SharedAlbum sharedAlbum)
         {
             await Context.SharedAlbums.AddAsync(sharedAlbum);
             await Context.SaveChangesAsync();

@@ -31,7 +31,7 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedAlbum sharedAlbum)
         {
-            await _sharingAlbumService.SharingPhoto(sharedAlbum);
+            await _sharingAlbumService.SharingAlbum(sharedAlbum);
         }
     }
 }
