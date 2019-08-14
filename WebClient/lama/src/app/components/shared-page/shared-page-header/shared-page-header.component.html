@@ -5,15 +5,14 @@
     </div>
   </div>
   <div *ngIf="isAuthenticated" class="navbar-end">
-      <div class="image is-64x64">
-          <img *ngIf="userPhoto" [src]="userPhoto">
-        </div>
-
       <div class="navbar-item">
           <a class="text">
             <strong>{{userName}}</strong>
           </a>
       </div>
+      <div class="image is-64x64">
+          <img class="is-rounded" *ngIf="userPhoto" [src]="userPhoto">
+        </div>
     <div class="navbar-item">
         <a class="button is-primary" (click)="logOut()">
           <strong>Logout</strong>
