@@ -10,6 +10,8 @@ import { NewAlbum } from 'src/app/models/Album/NewAlbum';
 import { isUndefined } from 'util';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
+import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
@@ -23,7 +25,7 @@ export class CreateAlbumModalComponent implements OnInit {
   albumWithExistPhotos: NewAlbumWithExistPhotos;
   ExistPhotosId: number[] = [];
 
-  albumName: string='';
+  albumName: string = '';
   checkForm: boolean = true;
 
   activeColor: string = '#00d1b2';
@@ -45,7 +47,7 @@ export class CreateAlbumModalComponent implements OnInit {
   constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService) {
     this.isShown = true;
     this.resolver = resolver;
-   }
+  }
 
   ngOnInit() {
   }
@@ -53,18 +55,18 @@ export class CreateAlbumModalComponent implements OnInit {
 
 
   handleDragEnter() {
-      this.dragging = true;
+    this.dragging = true;
   }
 
   handleDragLeave() {
-      this.dragging = false;
+    this.dragging = false;
   }
 
   handleDrop(e) {
-      const files = e.dataTransfer.files;
-      e.preventDefault();
-      this.dragging = false;
-      this.LoadFile(files);
+    const files = e.dataTransfer.files;
+    e.preventDefault();
+    this.dragging = false;
+    this.LoadFile(files);
   }
 
 
@@ -78,52 +80,56 @@ export class CreateAlbumModalComponent implements OnInit {
       this.photos = [];
     }
     this.LoadNewImage = true;
-    if (files && files[0]) {
-      let filesAmount = files.length;
-      for (let i = 0; i < filesAmount; i++) {
-              this.loaded = false;
-              let reader = new FileReader();
-              var pattern = /image-*/;
 
-              if (files[i].type.match(pattern)) {
-                const compressFile = await imageCompression(files[i], environment.compressionOptions);
-                reader.onload = this._handleReaderLoaded.bind(this);
-                reader.readAsDataURL(compressFile);
-            }
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
+        let exifObj = load(await this.toBase64(files[i]));
+        let d = dump(exifObj);
+        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        let base64 = await this.toBase64(compressedFile);
+        remove(base64);
+        let modifiedObject = insert(d, base64);
+        this.photos.push({ imageUrl: modifiedObject, filename: files[i].name })
       }
-  }
-  this.loaded = true;
-  }
-  _handleReaderLoaded(e) {
-      var reader = e.target;
-      this.imageSrc = reader.result;
-      this.photos.push({imageUrl: this.imageSrc});
+      else {
+        let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+        this.photos.push({ imageUrl: await this.toBase64(compressedFile), filename: files[i].name });
+      }
+    };
+
+    this.loaded = true;
   }
 
-  CreateAlbum()
-  {
-    if(this.albumName == '')
-    {
+  public toBase64(file): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+
+  CreateAlbum() {
+    if (this.albumName == '') {
       console.log(this.albumName)
       this.checkForm = false;
     }
-    else{
-    if (this.LoadNewImage === true) {
-     this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
-     this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
-    } else {
-      this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId , authorId: parseInt(this.currentUser.id) };
-      this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos).subscribe((e) => this.toggleModal());
+    else {
+      if (this.LoadNewImage === true) {
+        this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
+        this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
+      } else {
+        this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: parseInt(this.currentUser.id) };
+        this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos).subscribe((e) => this.toggleModal());
+      }
     }
   }
-  }
-  toggleModal()
-  {
+  toggleModal() {
     this.isShown = false;
   }
 
-  ChoosePhoto(e)
-  {
+  ChoosePhoto(e) {
     this.ExistPhotosId = [];
     this.photos = [];
     this.ExistPhotos = [];
@@ -133,28 +139,26 @@ export class CreateAlbumModalComponent implements OnInit {
     const componentRef = this.entry.createComponent(factory);
     let instance = componentRef.instance as ChooseStoragePhotosComponent;
     instance.currentUser = this.currentUser;
-    instance.onChange.subscribe((e)=>this.onChange(e));
+    instance.onChange.subscribe((e) => this.onChange(e));
   }
-  public onChange(photo: PhotoRaw)
-  {
-    if(this.LoadNewImage === true)
-    {
+  public onChange(photo: PhotoRaw) {
+    if (this.LoadNewImage === true) {
       this.photos = [];
     }
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.photos.push({imageUrl: photo.blob256Id || photo.blobId});
+      this.photos.push({ imageUrl: photo.blob256Id || photo.blobId });
       this.ExistPhotos.push(photo);
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
-      this.photos = this.photos.filter( x => x.imageUrl !== photo.blob256Id);
+      this.photos = this.photos.filter(x => x.imageUrl !== photo.blob256Id);
     }
   }
-  
-  @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef }) 
-  private entry: ViewContainerRef; 
+
+  @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
+  private entry: ViewContainerRef;
 
   private resolver: ComponentFactoryResolver;
 

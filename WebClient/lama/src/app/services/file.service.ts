@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 
 import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO, DeletedPhotoDTO, PhotoToDeleteRestoreDTO } from '../models';
 import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
+import { NewLike } from '../models/Reaction/NewLike';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,14 @@ export class FileService
   {
     return this.client.put(`${environment.lamaApiUrl}/api/photo`, photoToUpdate)
             .pipe(map(res => res as UpdatedPhotoResultDTO));
+  }
+  public ReactionPhoto(NewReaction: NewLike)
+  {
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/reaction`, NewReaction);
+  }
+  public RemoveReactionPhoto(Reaction: NewLike)
+  {
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/removereaction`, Reaction);
   }
   public getFirstGuidFromString(str: string): string
   {

@@ -11,7 +11,8 @@ using Lama.DataAccess.Interfaces;
 using Lama.Domain.DbModels;
 using System.Linq;
 using Lama.Domain.DTO.Photo;
-
+using AutoMapper;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -21,13 +22,17 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
-
-        public PhotoService(string url, IUnitOfWork context)
+        private string v;
+        private IUnitOfWork unitOfWork;
+        private readonly IMapper _mapper;
+        public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
+            this._mapper = _mapper;
         }
+
 
         public void Dispose()
         {
@@ -51,7 +56,19 @@ namespace Lama.BusinessLogic.Services
         {
             throw new NotImplementedException();
         }
-
+        public async Task AddReaction(NewLikeDTO newLike)
+        {
+            var like = _mapper.Map<Like>(newLike);
+            await _context.GetRepository<Like>().InsertAsync(like);
+            await _context.SaveAsync();
+        }
+        public async Task RemoveReaction(NewLikeDTO removeLike)
+        {
+            var collect = await _context.GetRepository<Like>().GetAsync();
+            var like = collect.Where(x => x.PhotoId == removeLike.PhotoId && x.UserId == removeLike.UserId).FirstOrDefault();
+            _context.GetRepository<Like>().Delete(like);
+            await _context.SaveAsync();
+        }
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos)
         {
             Photo[] savedPhotos = new Photo[photos.Length];
@@ -120,7 +137,7 @@ namespace Lama.BusinessLogic.Services
         }
 
         #region GET
-        public async Task<IEnumerable<PhotoDocument>> GetAll()
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetAll()
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -128,10 +145,19 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+
+  
+            for (int i = 0; i < photos.Count() ; i++)
+            {
+                var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
+            }
+            return photos;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -139,7 +165,15 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+
+            for (int i = 0; i < photos.Count(); i++)
+            {
+                var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
+            }
+            return photos;
         }
 
         public async Task<PhotoDocument> Get(int id)

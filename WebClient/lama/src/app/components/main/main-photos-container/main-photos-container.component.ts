@@ -44,6 +44,11 @@ export class MainPhotosContainerComponent implements OnInit {
   }
   ngOnInit(){ 
     this.GetPhotos();
+    this.httpService.getData(`users/${localStorage.getItem('userId')}`)
+    .subscribe((user) => 
+    {
+      this.currentUser = user;
+    });
   }
 
   GetUserPhotos(UserId: number) {
@@ -116,9 +121,9 @@ export class MainPhotosContainerComponent implements OnInit {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
-  
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);

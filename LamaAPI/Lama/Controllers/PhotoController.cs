@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.BusinessLogic.Interfaces;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.Controllers
 {
@@ -31,6 +32,16 @@ namespace Lama.Controllers
         {
             return _service.CreateAll(photos);
         }
+        [HttpPost("reaction")]
+        public async Task PostReaction([FromBody] NewLikeDTO newLike)
+        {
+            await _service.AddReaction(newLike);
+        }
+        [HttpPost("removereaction")]
+        public async Task RemoveReaction([FromBody] NewLikeDTO removeLike)
+        {
+            await _service.RemoveReaction(removeLike);
+        }
         #endregion
 
         [HttpGet("search/{criteria}")]
@@ -45,12 +56,12 @@ namespace Lama.Controllers
             return _service.UpdatePhoto(photoToUpdate);
         }
         [HttpGet]
-        public async Task<IEnumerable<PhotoDocument>> LoadPhotos()
+        public async Task<IEnumerable<PhotoDocumentDTO>> LoadPhotos()
         {
             return await _service.GetAll();
         }
         [HttpGet("user/{id}")]
-        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
             return await _service.GetUserPhotos(id);
         }
