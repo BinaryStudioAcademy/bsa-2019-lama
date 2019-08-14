@@ -155,4 +155,6 @@ export class PhotoModalComponent implements OnInit
         this.deletePhotoEvenet.emit(this.photo.id);
       });
   }
+
+
 }
