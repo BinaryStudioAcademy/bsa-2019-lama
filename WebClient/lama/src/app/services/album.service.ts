@@ -50,7 +50,6 @@ export class AlbumService {
   }
 
   public removeAlbum(albumId: number){
-    console.log(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
     return this.http.delete<number>(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
   }
 }
