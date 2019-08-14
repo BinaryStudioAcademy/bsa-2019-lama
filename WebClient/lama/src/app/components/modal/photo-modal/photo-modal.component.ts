@@ -19,6 +19,7 @@ export class PhotoModalComponent implements OnInit
   public photo: PhotoRaw;
   public isShown: boolean;
   public showSharedModal: boolean = false;
+  public showEditModal: boolean = false;
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -105,7 +106,7 @@ export class PhotoModalComponent implements OnInit
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
-      this.shownMenuItems = this.editingMenuItem;
+      this.openEditModal();
     }
 
 
@@ -145,6 +146,12 @@ export class PhotoModalComponent implements OnInit
   {
     this.showSharedModal = true;
   }
+  
+  private openEditModal(): void
+  {
+	this.showEditModal = true;
+  }
+  
   private deleteImage(): void
   {
     this.fileService.markPhotoAsDeleted(this.photo.id)

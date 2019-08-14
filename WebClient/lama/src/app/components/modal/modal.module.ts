@@ -11,6 +11,7 @@ import { RotateImageComponent } from './rotate-image/rotate-image.component'
 import { ShareByEmailModalComponent } from './share-modal/share-by-email-modal/share-by-email-modal.component';
 import { ShareByLinkModalComponent } from './share-modal/share-by-link-modal/share-by-link-modal.component';
 import { ShareModalComponent } from './share-modal/share-modal/share-modal.component';
+import { EditModalComponent } from './edit-modal/edit-modal.component';
 
 @NgModule(
 {
@@ -22,15 +23,15 @@ import { ShareModalComponent } from './share-modal/share-modal/share-modal.compo
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, RotateImageComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, RotateImageComponent, EditModalComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, EditModalComponent
   ],
   entryComponents:
   [
-    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent
+    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, EditModalComponent
   ]
 })
 export class ModalModule { }

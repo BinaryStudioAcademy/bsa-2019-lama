@@ -11,25 +11,6 @@
                     <div class="column is-9">
                             <div [ngSwitch]="clickedMenuItem?.title">
 
-                                <!--crop template-->
-                                <ng-template ngSwitchCase="crop">
-                                    <app-crop-image
-                                        [imageToCrop]="photo.blobId"
-                                        (cancelClickedEvent)="goBackToImageView()"
-                                        (saveClickedEvent)="imageHandler($event)">
-                                    </app-crop-image>
-                                </ng-template>
-
-
-
-                                        <!--crop template-->
-                                        <ng-template ngSwitchCase="rotate">
-                                            <app-rotate-image
-                                                [imageToRotate]="photo.blobId"
-                                                (cancelClickedEvent)="goBackToImageView()"
-                                                (saveClickedEvent)="imageHandler($event)">
-                                            </app-rotate-image>
-                                        </ng-template>
 
                                 <!--default image template-->
                                 <ng-template ngSwitchDefault>
@@ -141,5 +122,6 @@
         </div>
     </div>
     <app-share-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-modal>
+	<app-edit-modal [photo]="photo" *ngIf="showEditModal" (onClose)="showSharedModal=false" (onDone)="imageHandler($event)"></app-edit-modal>
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>
