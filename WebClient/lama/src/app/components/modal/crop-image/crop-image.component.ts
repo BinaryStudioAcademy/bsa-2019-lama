@@ -8,6 +8,8 @@ import { FileService } from 'src/app/services/file.service';
 
 import { ImageEditedArgs } from 'src/app/models';
 
+import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+
 @Component({
   selector: 'app-crop-image',
   templateUrl: './crop-image.component.html',
@@ -56,15 +58,24 @@ export class CropImageComponent implements OnInit
   public async saveClickHandler(): Promise<void>
   {
     const event: ImageCroppedEvent = await this.imageCropper.crop();
-
+    let modified = event.base64;
+    if (this.imageToCropBase64.indexOf("image/jpeg") != -1 || this.imageToCropBase64.indexOf("image/jpg") != -1 ) {
+      let exifObj = load(this.imageToCropBase64);
+      let d = dump(exifObj);
+      let jpg = insert(d, event.base64);
+      modified = jpg
+      console.log(load(modified));
+    }
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      croppedImageBase64: event.base64
+      croppedImageBase64: modified
     });
   }
   public cancelClickHandler(): void
   {
     this.cancelClickedEvent.emit();
   }
+
+  
 
 }
