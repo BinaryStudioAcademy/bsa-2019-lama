@@ -1,8 +1,10 @@
 ﻿using Lama.BusinessLogic.Interfaces;
 using Lama.DataAccess;
+using Lama.DataAccess.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
+using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -19,53 +21,76 @@ namespace Lama.BusinessLogic.Services
     public class AlbumService : BaseService<Album>, IAlbumService
     {
         private readonly IPhotoService _photoService;
+        private IUnitOfWork _context;
         IConfiguration configuration;
-        public AlbumService(ApplicationDbContext Context,IConfiguration configuration, IPhotoService _photoService) 
+        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context)
             : base(Context)
         {
             this._photoService = _photoService;
+            this._context = context;
             this.configuration = configuration;
+            this._context = context;
         }
 
         public async Task CreateAlbumWithNewPhotos(NewAlbum album)
         {
             string url = configuration["PhotoApiUrl"];
+            var PhotosAlbum = album.Photos;
+
+
+            Photo[] savedPhotos = new Photo[PhotosAlbum.Length];
+
+            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
+
+            Album TempAlbum = new Album()
+            {
+                Title = album.Title,
+                User = user
+            };
+
+            for (int i = 0; i < PhotosAlbum.Length; ++i)
+            {
+                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(new Photo());
+            }
+            await _context.SaveAsync();
+
+
+            CreatePhotoDTO[] PhotosToCreate = new CreatePhotoDTO[PhotosAlbum.Length];
+
+            for (int i = 0; i < PhotosToCreate.Length; ++i)
+            {
+                    PhotosToCreate[i] = new CreatePhotoDTO()
+                    {
+                        Id = savedPhotos[i].Id,
+                        AuthorId = user.Id,
+                        ImageUrl = PhotosAlbum[i].ImageUrl,
+                        Description = PhotosAlbum[i].Description
+                    };
+            }
+
+            List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
+
+            for (int i = 0; i < savedPhotos.Length; i++)
+            {
+                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i] , Album = TempAlbum });
+            }
+
+            if (savedPhotos.Length != 0)
+            {
+                TempAlbum.Photo = savedPhotos[0];
+                TempAlbum.PhotoAlbums = photoAlbums;
+            }
 
             using (HttpClient httpClient = new HttpClient())
             {
                 var elasticIds = (JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(
                     await
-                    (await httpClient.PostAsJsonAsync($"{url}api/photos", album.Photos)).Content.ReadAsStringAsync()))
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate)).Content.ReadAsStringAsync()))
                     .Select(x => x.Id);
 
 
 
-                var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
-                Album TempAlbum = new Album()
-                {
-                    Title = album.Title,
-                    User = user
-                };
-
-
-                List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
-                List<Photo> photos = new List<Photo>();
-
-                for (int i = 0; i < album.Photos.Length; i++)
-                {
-                    var TempPhoto = new Photo();
-                    photos.Add(TempPhoto);
-                    photoAlbums.Add(new PhotoAlbum() { Photo = TempPhoto, Album = TempAlbum });
-                }
-
-                if (photos.Count != 0)
-                {
-                    TempAlbum.Photo = photos[0];
-                    TempAlbum.PhotoAlbums = photoAlbums;
-                }
-
                 await Context.Albums.AddAsync(TempAlbum);
-                await Context.Photos.AddRangeAsync(photos);
                 await Context.SaveChangesAsync();
             }
         }

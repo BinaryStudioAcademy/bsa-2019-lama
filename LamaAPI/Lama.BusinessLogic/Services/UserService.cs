@@ -29,15 +29,23 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<int> Create(UserDTO item)
         {
-            await Context.Users.AddAsync(_mapper.Map<User>(item));
-            await Context.SaveChangesAsync();
-            var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
-            item.Photo.AuthorId = user.Id;
-            var avatar = await _photoService.CreateAvatar(item.Photo);
-            user.AvatarId = avatar.Id;
-            Context.Users.Update(user);
-            await Context.SaveChangesAsync();
-            return (await Context.Users.FirstOrDefaultAsync(u => u.Id == user.Id)).Id;
+            try
+            {
+                await Context.Users.AddAsync(_mapper.Map<User>(item));
+                await Context.SaveChangesAsync();
+                var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
+                item.Photo.AuthorId = user.Id;
+                var avatar = await _photoService.CreateAvatar(item.Photo);
+                user.AvatarId = avatar.Id;
+                Context.Users.Update(user);
+                await Context.SaveChangesAsync();
+                return (await Context.Users.FirstOrDefaultAsync(u => u.Id == user.Id)).Id;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return 0;
         }
 
         public async Task<int> UpdateUser(UserDTO user)
