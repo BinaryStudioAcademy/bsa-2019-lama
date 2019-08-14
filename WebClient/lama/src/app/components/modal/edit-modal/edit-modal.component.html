@@ -1,0 +1,59 @@
+<div class="modal is-active">
+    <div class="modal-background" (click)="closeModal()"></div>
+
+    <!--content-->
+    <div class="modal-content">
+        <div class="container">
+            <div class="notification">
+                <div class="columns">
+
+                    <!--photo-->
+                    <div class="column is-9">
+                            <div [ngSwitch]="clickedTabsItem">
+
+                                <!--crop template-->
+                                <ng-template ngSwitchCase="crop">
+                                    <app-crop-image
+                                        [imageToCrop]="photo.blobId"
+                                        (cancelClickedEvent)="goBackToImageView()"
+                                        (saveClickedEvent)="save($event)">
+                                    </app-crop-image>
+                                </ng-template>
+
+
+
+                                        <!--crop template-->
+                                <ng-template ngSwitchCase="rotate">
+                                    <app-rotate-image
+										  [imageToRotate]="photo.blobId"
+                                          (cancelClickedEvent)="goBackToImageView()"
+                                          (saveClickedEvent)="save($event)">
+                                    </app-rotate-image>
+                                </ng-template>
+                            </div>
+
+
+                    </div>
+
+                    <div class="column is-3">
+                        <div class="tabs is-centered">
+						  <ul>
+							<li><a (click)="displayCrop()">Crop</a></li>
+							<li><a (click)="displayRotate()">Rotate</a></li>
+							<li><a>Exposure</a></li>
+							<li><a>Filter</a></li>
+						  </ul>
+						</div>
+						<div class="column is-half has-text-centered">
+							<a class="button is-primary">
+							  Done
+							</a>
+						</div>
+                    </div>
+                </div>
+				
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
+</div>

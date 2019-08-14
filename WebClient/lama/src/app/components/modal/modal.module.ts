@@ -14,6 +14,7 @@ import { ShareAlbumComponent } from './share-modal/share-album/share-album.compo
 import { ShareAlbumByLinkComponent } from './share-modal/share-album-by-link/share-album-by-link.component';
 import { ShareAlbumByEmailComponent } from './share-modal/share-album-by-email/share-album-by-email.component';
 import { ShareModalComponent } from './share-modal/share-modal/share-modal.component';
+import { EditModalComponent } from './edit-modal/edit-modal.component';
 
 @NgModule(
 {
@@ -25,15 +26,15 @@ import { ShareModalComponent } from './share-modal/share-modal/share-modal.compo
   ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, RotateImageComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
+    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, RotateImageComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
+    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
   ],
   entryComponents:
   [
-    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
+    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
   ]
 })
 export class ModalModule { }

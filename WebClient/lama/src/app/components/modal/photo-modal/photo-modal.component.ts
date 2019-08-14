@@ -22,6 +22,8 @@ export class PhotoModalComponent implements OnInit {
   public photo: PhotoRaw;
   public isShown: boolean;
   public showSharedModal: boolean = false;
+  public showEditModal: boolean = false;
+
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
 
@@ -114,11 +116,10 @@ export class PhotoModalComponent implements OnInit {
     // download
 
     // edit
-    if (clickedMenuItem === this.defaultMenuItem[3]) {
-      this.shownMenuItems = this.editingMenuItem;
+    if (clickedMenuItem === this.defaultMenuItem[3])
+    {
+      this.openEditModal();
     }
-
-
   }
 
   public mouseLeftOverlayHandler(): void {
@@ -151,7 +152,14 @@ export class PhotoModalComponent implements OnInit {
   private openShareModal(): void {
     this.showSharedModal = true;
   }
-  private deleteImage(): void {
+  
+  private openEditModal(): void
+  {
+	this.showEditModal = true;
+  }
+  
+  private deleteImage(): void
+  {
     this.fileService.markPhotoAsDeleted(this.photo.id)
       .subscribe(res => {
         this.closeModal();
