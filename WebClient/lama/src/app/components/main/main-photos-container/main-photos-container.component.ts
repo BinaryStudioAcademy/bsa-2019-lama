@@ -26,6 +26,7 @@ export class MainPhotosContainerComponent implements OnInit {
   isNothingFounded: boolean;
   isSearchTriggered: boolean;
   currentUser : User;
+  selectedPhotos: PhotoRaw[];
 
   // fields
   private resolver: ComponentFactoryResolver;

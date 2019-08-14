@@ -11,6 +11,7 @@ export class MainPhotoComponent implements OnInit {
 
   // properties
   @Input ('_photo') photo: PhotoRaw;
+  isSelected: boolean = false;
   @Output() onClick = new EventEmitter<PhotoRaw>();
 
   // constructors
@@ -24,5 +25,12 @@ export class MainPhotoComponent implements OnInit {
   public clickPerformed(): void
   {
     this.onClick.emit(this.photo);
+  }
+
+  public selectItem(): void 
+  {
+    let elements = document.getElementsByClassName('overlay');
+
+    this.isSelected = !this.isSelected;
   }
 }
