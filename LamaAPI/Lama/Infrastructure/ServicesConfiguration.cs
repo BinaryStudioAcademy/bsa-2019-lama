@@ -25,6 +25,13 @@ namespace Lama.Infrastructure
         public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAutoMapper(typeof(UserProfile).Assembly);
+            services.AddAutoMapper(typeof(AlbumProfile).Assembly);
+            services.AddAutoMapper(typeof(CommentProfile).Assembly);
+            services.AddAutoMapper(typeof(FavoriteProfile).Assembly);
+            services.AddAutoMapper(typeof(LikeProfile).Assembly);
+            services.AddAutoMapper(typeof(PhotoAlbumProfile).Assembly);
+            services.AddAutoMapper(typeof(PhotoProfile).Assembly);
+            services.AddAutoMapper(typeof(SharedPhotoProfile).Assembly);
         }
         public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {
@@ -39,8 +46,7 @@ namespace Lama.Infrastructure
         {
             services.AddScoped<UserService>();
             services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>()));
-            services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
-                                                    serviceProvider.GetService<ApplicationDbContext>()) );
+            services.AddScoped<SharingPhotoService>();
             services.AddScoped<IAlbumService, AlbumService>();
 
         }

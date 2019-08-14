@@ -5,47 +5,58 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Lama.BusinessLogic.Exceptions;
 using Lama.BusinessLogic.Interfaces;
 using Lama.DataAccess;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO;
+using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services
 {
-    public class SharingPhotoService: BaseService<Photo>
+
+
+    public class SharingPhotoService: BaseService<Photo>, ISharingPhotoService
     {
         private string _photoApiUrl;
+        private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public SharingPhotoService(string photoApiUrl,ApplicationDbContext context)
+        public SharingPhotoService(ApplicationDbContext context,IMapper mapper, IPhotoService photoService,IConfiguration configuration)
             :base(context)
         {
-            _photoApiUrl = photoApiUrl;
+            _photoApiUrl = configuration["PhotoApiUrl"];
+            _mapper = mapper;
+            _photoService = photoService;
         }
         
 
-        public async Task<Photo> Get(int id)
+        public async Task<SharedPhotoDTO> Get(int id)
         {
-            var sharedPhotoData = await Context.Photos
-                .Include(photo => photo.PhotoState)
-                .Include(photo => photo.SharedPhotos)
-                .ThenInclude(shared => shared.User)
-                .Include(photo => photo.Likes)
-                .ThenInclude(like => like.User)
-                .Include(photo => photo.Comments)
-                .ThenInclude(comment => comment.User)
-                .Include(photo => photo.User)
-                .FirstOrDefaultAsync(photoId => photoId.Id == id);
-
+            var sharedPhotoData = await Context.SharedPhotos
+                .Include(sharedPhoto => sharedPhoto.User)
+                .ThenInclude(user => user.Photo)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                    .ThenInclude(photo => photo.Likes)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                    .ThenInclude(photo => photo.Comments)
+                .FirstOrDefaultAsync(sharedPhoto => sharedPhoto.PhotoId == id);
+            
             if (sharedPhotoData == null)
             {
-                throw new NotFoundException(nameof(Photo), id);
+                throw new NotFoundException(nameof(SharedPhoto), id);
             }
+            var url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
+            
+            var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
+            mappedResponse.User.PhotoUrl = url;
 
-            return sharedPhotoData;
+            return mappedResponse;
         }
 
         public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)

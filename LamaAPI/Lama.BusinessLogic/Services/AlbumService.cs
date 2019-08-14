@@ -29,7 +29,7 @@ namespace Lama.BusinessLogic.Services
             this.configuration = configuration;
         }
 
-        public async Task CreateAlbumWithNewPhotos(NewAlbum album)
+        public async Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
 
@@ -37,15 +37,15 @@ namespace Lama.BusinessLogic.Services
             {
                 var elasticIds = (JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(
                     await
-                    (await httpClient.PostAsJsonAsync($"{url}api/photos", album.Photos)).Content.ReadAsStringAsync()))
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", albumDto.Photos)).Content.ReadAsStringAsync()))
                     .Select(x => x.Id);
 
 
 
-                var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
+                var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == albumDto.AuthorId);
                 Album TempAlbum = new Album()
                 {
-                    Title = album.Title,
+                    Title = albumDto.Title,
                     User = user
                 };
 
@@ -53,7 +53,7 @@ namespace Lama.BusinessLogic.Services
                 List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
                 List<Photo> photos = new List<Photo>();
 
-                for (int i = 0; i < album.Photos.Length; i++)
+                for (int i = 0; i < albumDto.Photos.Length; i++)
                 {
                     var TempPhoto = new Photo();
                     photos.Add(TempPhoto);
@@ -71,7 +71,7 @@ namespace Lama.BusinessLogic.Services
                 await Context.SaveChangesAsync();
             }
         }
-        public async Task CreateAlbumWithExistPhotos(AlbumWithExistPhotos album)
+        public async Task CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
         {
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
             Album TempAlbum = new Album()
@@ -103,7 +103,7 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
 
         }
-        public async Task<List<ReturnAlbum>> FindAll(int UserId)
+        public async Task<List<ReturnAlbumDTO>> FindAll(int UserId)
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
@@ -113,7 +113,7 @@ namespace Lama.BusinessLogic.Services
 
             var ListOfPhotos = await _photoService.GetAll();
 
-            List<ReturnAlbum> albums = new List<ReturnAlbum>();
+            List<ReturnAlbumDTO> albums = new List<ReturnAlbumDTO>();
             foreach (var item in result)
             {
 
@@ -121,7 +121,7 @@ namespace Lama.BusinessLogic.Services
                              join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
 
-                var album = new ReturnAlbum()
+                var album = new ReturnAlbumDTO()
                 {
                     Id = item.Id,
                     Title = item.Title
@@ -153,8 +153,7 @@ namespace Lama.BusinessLogic.Services
             {
                 throw new NotFoundException(nameof(Album), id);
             }
-
-            //TODO: Add video and shared albums deletion when they will be implemented
+            
             UnbindEntitiesFromAlbum(albumToDelete);
             Context.Albums.Remove(albumToDelete);
             await Context.SaveChangesAsync();
@@ -162,7 +161,7 @@ namespace Lama.BusinessLogic.Services
         }
 
         
-        public async Task<ReturnAlbum> FindAlbum(int Id)
+        public async Task<ReturnAlbumDTO> FindAlbum(int Id)
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
@@ -177,7 +176,7 @@ namespace Lama.BusinessLogic.Services
                              select el;
 
 
-            var album = new ReturnAlbum()
+            var album = new ReturnAlbumDTO()
             {
                 Id = result.Id,
                 Title = result.Title,

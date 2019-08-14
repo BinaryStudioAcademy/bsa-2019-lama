@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO;
+using Lama.Domain.DTO.Photo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +25,7 @@ namespace Lama.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<Photo> GetSharedPhoto(int id)
+        public async Task<SharedPhotoDTO> GetSharedPhoto(int id)
         {
             return await _sharingPhotoService.Get(id);
         }
