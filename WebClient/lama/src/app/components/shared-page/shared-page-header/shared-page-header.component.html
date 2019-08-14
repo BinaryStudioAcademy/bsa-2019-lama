@@ -4,7 +4,7 @@
       <img src="../../../assets/alpaca-icon-19.jpg">
     </div>
   </div>
-  <div class="navbar-end">
+  <div *ngIf="isAuthenticated" class="navbar-end">
       <div class="image is-64x64">
           <img *ngIf="userPhoto" [src]="userPhoto">
         </div>
@@ -15,7 +15,7 @@
           </a>
       </div>
     <div class="navbar-item">
-        <a class="button is-primary">
+        <a class="button is-primary" (click)="logOut()">
           <strong>Logout</strong>
         </a>
     </div>
