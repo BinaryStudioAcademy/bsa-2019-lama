@@ -47,14 +47,18 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<int> CreateFavorite(Favorite favorite)
         {
-            return await Create(favorite);
+            await Create(favorite);
+            return (await Context.Favorites.LastAsync()).Id;
         }
 
-        public async Task<int> DeleteFavorite(int id)
+        public async Task<int> DeleteFavorite(int userId, int photoId)
         {
-            Favorite fav = await Context.Favorites.Where(f => f.Id == id).FirstOrDefaultAsync();
+            Favorite fav = await Context.Favorites.Where(f => f.UserId == userId && f.PhotoId == photoId).FirstOrDefaultAsync();
             if (fav != null)
-                return await Delete(fav);
+            {
+                await Delete(fav);
+                return fav.Id;
+            }
             return -1;
         }
     }

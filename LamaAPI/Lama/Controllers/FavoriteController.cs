@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DTO;
+using Lama.Domain.DbModels;
 
 namespace Lama.Controllers
 {
@@ -36,16 +37,16 @@ namespace Lama.Controllers
             return await _service.GetFavoritesIds(userId);
         }
 
-        [HttpDelete]
-        public async Task<int> CreateFavorite(int userId)
+        [HttpPost]
+        public async Task<int> CreateFavorite([FromBody]Favorite favorite )
         {
-            return await _service.DeleteFavorite(userId);
+            return await _service.CreateFavorite(favorite);
         }
 
-        [HttpDelete]
-        public async Task<int> DeleteFavorite(int userId)
+        [HttpDelete("{userId}/{photoId}")]
+        public async Task<int> DeleteFavorite(int userId, int photoId)
         {
-            return await _service.DeleteFavorite(userId);
+            return await _service.DeleteFavorite(userId, photoId);
         }
         
         

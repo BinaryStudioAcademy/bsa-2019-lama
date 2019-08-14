@@ -9,7 +9,7 @@ namespace Lama.BusinessLogic.Interfaces
     {
         Task<IEnumerable<PhotoDocument>> GetFavoritesPhotos(int userId);
         Task<IEnumerable<int>> GetFavoritesIds(int userId);
-        Task<int> CreateFavorite(Favorite favorites);
-        Task<int> DeleteFavorite(int id);
+        Task<int> CreateFavorite(Favorite favorite);
+        Task<int> DeleteFavorite(int userId, int photoId);
     }
 }

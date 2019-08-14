@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { Favorite } from '../models/favorite';
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +22,11 @@ export class FavoriteService {
     return this._http.get<Favorite[]>(this.baseUrl+this.photos+userId);
 }
 
-  createFavorite(){
-
+  createFavorite(favorite: Favorite): Observable<any>{
+    return this._http.post<Favorite>(this.baseUrl,favorite);
   }
 
-  deleteFavorite(){
-
+  deleteFavorite(userId:number, photoId: number): Observable<any>{
+    return this._http.delete(this.baseUrl+userId+"/"+photoId);
   }
 }
