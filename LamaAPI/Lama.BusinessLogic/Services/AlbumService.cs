@@ -40,16 +40,16 @@ namespace Lama.BusinessLogic.Services
         public async Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
-            var PhotosAlbum = album.Photos;
+            var PhotosAlbum = albumDto.Photos;
 
 
             Photo[] savedPhotos = new Photo[PhotosAlbum.Length];
 
-            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
+            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == albumDto.AuthorId);
 
             Album TempAlbum = new Album()
             {
-                Title = album.Title,
+                Title = albumDto.Title,
                 User = user
             };
 
