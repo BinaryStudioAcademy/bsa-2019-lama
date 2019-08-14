@@ -8,6 +8,7 @@ using Photo.DataAccess.Interfaces;
 using Photo.Domain.DataTransferObjects;
 
 using AutoMapper;
+using System.IO;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -63,12 +64,15 @@ namespace Photo.BusinessLogic.Services
         }
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
         {
+            string filename = Path.GetFileName(updatePhotoDTO.BlobId);
+            string ext = Path.GetExtension(filename);
+            string file = filename.Replace(ext, "");
             string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
             byte[] newImageBlob = Convert.FromBase64String(base64);
 
             await DeleteOldBlobsAsync(elasticId: updatePhotoDTO.Id);
 
-            string blobId = await storage.LoadPhotoToBlob(newImageBlob);
+            string blobId = await storage.LoadPhotoToBlob(newImageBlob, $"{filename}");
 
             UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
             {
@@ -117,16 +121,22 @@ namespace Photo.BusinessLogic.Services
             {
                 string base64 = ConvertToBase64(items[i].ImageUrl);
                 byte[] blob = Convert.FromBase64String(base64);
+                var filename = items[i].FileName;
+                var ext = Path.GetExtension(filename);
+                string file = filename.Replace(ext, "");
 
-                string blobId = await storage.LoadPhotoToBlob(blob);
+                string blobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}");
 
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
                     Id = items[i].Id,
+                    Name = filename,
+
                     BlobId = blobId,
                     Blob64Id = blobId,
                     Blob256Id = blobId,
-                    OriginalBlobId = await storage.LoadPhotoToBlob(blob),
+                    OriginalBlobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}"),
+
                     UserId = items[i].AuthorId,
                     Description = items[i].Description
                 };
@@ -151,9 +161,12 @@ namespace Photo.BusinessLogic.Services
             await Create(new PhotoDocument
             {
                 Id = item.Id,
+                Name = Guid.NewGuid().ToString(),
+
                 BlobId = blobId,
                 Blob64Id = blobId,
                 Blob256Id = blobId,
+
                 OriginalBlobId = await storage.LoadAvatarToBlob(blob),
                 UserId = item.AuthorId,
                 Description = item.Description

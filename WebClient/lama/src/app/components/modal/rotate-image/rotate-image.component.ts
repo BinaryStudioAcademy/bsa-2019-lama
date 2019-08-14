@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, Renderer } from '@angular/core';
 import { FileService } from 'src/app/services';
 import { ImageEditedArgs } from 'src/app/models/Photo/ImageEditedArgs';
+import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 
 
 @Component({
@@ -34,6 +35,11 @@ export class RotateImageComponent implements OnInit {
   }
 
   rotateBase64Image90deg(base64Image, isClockwise) {
+    let d;
+    if (base64Image.indexOf("image/jpeg") != -1 || base64Image.indexOf("image/jpeg") != -1 ) {
+      let exifObj = load(base64Image);
+      d = dump(exifObj)
+    }
     var offScreenCanvas = document.createElement('canvas');
     var offScreenCanvasCtx = offScreenCanvas.getContext('2d');
 
@@ -51,8 +57,11 @@ export class RotateImageComponent implements OnInit {
         offScreenCanvasCtx.translate(-offScreenCanvas.height, 0);
     }
     offScreenCanvasCtx.drawImage(img, 0, 0);
-
-    return offScreenCanvas.toDataURL("image/jpeg", 100);
+    let base64Result = offScreenCanvas.toDataURL("image/jpeg", 100);
+    if (base64Image.indexOf("image/jpeg") != -1 || base64Image.indexOf("image/jpeg") != -1 ) {
+      return insert(d, base64Result)
+    }
+    return base64Result;
 }
 
 CounterClockwiseHandler(){

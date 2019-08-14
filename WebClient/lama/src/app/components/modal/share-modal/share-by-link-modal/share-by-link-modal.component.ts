@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { SharingService } from 'src/app/services/sharing.service';
 
 @Component({
   selector: 'app-share-by-link-modal',
@@ -22,12 +23,13 @@ export class ShareByLinkModalComponent implements OnInit {
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
   sharingRoute: String = "main/shared";
 
-  constructor() {
+  constructor(private sharingService: SharingService) {
 
   }
 
   ngOnInit() {
     this.createShareableLink();
+
   }
 
   public cancel(){

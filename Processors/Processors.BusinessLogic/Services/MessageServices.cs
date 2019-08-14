@@ -36,11 +36,11 @@ namespace Processors.BusinessLogic.Services
         }
 
         // METHODS
-        public async Task RunAsync()
+        public async Task RunAsync(int millisecondsTimeout)
         {
             while (true)
             {
-                ReceiveData receiveData = consumer.Receive(2500);
+                ReceiveData receiveData = consumer.Receive(millisecondsTimeout);
 
                 if (receiveData != null)
                 {

@@ -1,0 +1,53 @@
+<div class="comments">
+    <p class="is-size-2">Comments</p>
+
+    <!--add new comment-->
+    <div class="add-comment" >
+
+        <textarea [(ngModel)]='newCommentText' class="textarea " placeholder="e.g. Hello world" rows="2"></textarea>
+        <div class="buttons is-right">
+            <button class="button is-primary" (click)="createCommentHandler()">Send</button>
+        </div>
+    </div>
+
+    <!--spinner-->
+    <spinner *ngIf="!commentList"></spinner>
+    
+    <!--no comments-->
+    <div *ngIf="commentList && !commentList.length">
+        <p>no comments found</p>
+    </div>
+
+    <!--comment list-->
+    <div class="comments-list">
+        
+        <div *ngFor="let comment of commentList">
+
+                <article class="media">
+                    <figure class="media-left">
+                        <p class="image is-32x32">
+                            <img src="{{ comment.authorAvatar64Url || 'assets/default_avatar.png' }}">
+                        </p>
+                    </figure>
+        
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="is-size-8">
+                                <strong>{{ comment.authorFirstName }} {{ comment.authorLastName }}</strong>
+                                <br> 
+                                {{ comment.commentText }}
+                            </p>
+                        </div>
+                    </div>
+        
+                    <!--delete-->
+                    <div class="media-right" *ngIf="isDeleteBtnShown(comment)">
+                        <button class="delete" (click)="deleteCommentHandler(comment.commentId)"></button>
+                    </div>
+                </article>
+        
+            </div>
+
+    </div>
+
+</div>

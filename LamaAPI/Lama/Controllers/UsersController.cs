@@ -9,6 +9,10 @@ using Lama.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
 using Lama.Domain.DTO.User;
 using Lama.Domain.BlobModels;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Lama.Infrastructure;
 
 namespace Lama.Controllers
 {
@@ -21,28 +25,53 @@ namespace Lama.Controllers
         {
             _service = service;
         }
+
+        /*
+        [HttpGet]
+        [Route("current")]
+        public async Task<GetUserDTO> GetCurrentUser()
+        {
+            int loggedUserId = this.GetClaim<int>("UserId");
+
+            return await _service.GetUser(loggedUserId);
+        }
+        */
         [HttpPost]
         public async Task<int> RegisterUser([FromBody] UserDTO user)
         {
-            var isExists = await _service.GetByEmail(user.Email);
-            if (isExists != null)
-            {
-                return (int)isExists.Id;
-            }
-            return await _service.Create(user);
+            UserDTO userDTO = await _service.GetByEmail(user.Email);
+            int userId = userDTO != null ? userDTO.Id.Value : await _service.Create(user);
+
+            //await AuthenticateAsync(userId);
+
+            return userId;
+        }
+        /*
+        [HttpGet]
+        [Route("logout")]
+        public Task Logout()
+        {
+            return HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
+        [NonAction]
+        private async Task AuthenticateAsync(int userId)
+        {
+            Claim[] claims = new Claim[]
+            {
+                new Claim("UserId", userId.ToString()),
+            };
+
+            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        }
+        */
         [HttpPut]
         public async Task<int> UpdateUser([FromBody] UserDTO user)
         {
              return await _service.UpdateUser(user);
         }
 
-        [HttpGet]
-        public async Task Get()
-        {
-           
-        }
 
         [HttpGet("{id}")]
         public async Task<UserDTO> Get(int id)
@@ -55,23 +84,6 @@ namespace Lama.Controllers
         {
             return await _service.GetByEmail(email);
         }
-
-        //[HttpPost]
-        //public async Task Post([FromBody] User value)
-        //{
-            
-        //}
-
-        //[HttpPut]
-        //public async Task Put([FromBody] User value)
-        //{
-        //    await _service.Update(value);
-        //}
-
-        [HttpDelete("{id}")]
-        public async Task Delete(int id)
-        {
-
-        }
+        
     }
 }

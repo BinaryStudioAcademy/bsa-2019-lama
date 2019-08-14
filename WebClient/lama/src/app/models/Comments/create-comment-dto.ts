@@ -1,5 +1,5 @@
-export interface Comment{
-  id: number;
+export interface CreateCommentDTO
+{
   text: string;
   photoId: number;
   userId: number;

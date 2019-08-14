@@ -7,7 +7,9 @@ using Photo.Domain.Settings;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using MetadataExtractor;
+using System.IO;
+using System.Drawing;
 
 namespace Photo.DataAccess.Implementation
 {
@@ -63,12 +65,25 @@ namespace Photo.DataAccess.Implementation
         }
 
         // METHODS
-        public async Task<string> LoadPhotoToBlob(byte[] blob)
+        public async Task<string> LoadPhotoToBlob(byte[] blob, string filename)
         {
-            string blobName = Guid.NewGuid().ToString() + ".jpg";
+            var metadata = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            string name = Guid.NewGuid().ToString();
+            if (filename != null)
+                name = filename;
+            string blobName = name;
+            string contentType;
+            try
+            {
+                contentType = metadata[7].Tags[2].Description;
+            }
+            catch (Exception)
+            {
+                contentType = "image/jpg";
+            }
 
             CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
-            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
 
             return cloudBlockBlob.Uri.ToString();

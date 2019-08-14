@@ -34,7 +34,7 @@ namespace Lama.BusinessLogic.Services
             return await Context.Set<T>().AsNoTracking().ToListAsync();
         }
 
-        public async virtual Task<T> Update(T t, object key)
+        public virtual async Task<T> Update(T t, object key)
         {
             if (t == null)
                 return null;

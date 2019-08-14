@@ -38,11 +38,17 @@ namespace Lama.Infrastructure
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<UserService>();
-            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>()));
-            services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
-                                                    serviceProvider.GetService<ApplicationDbContext>()) );
-            services.AddScoped<IAlbumService, AlbumService>();
+            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
 
+            services.AddScoped<IAlbumService, AlbumService>();
+            services.AddScoped<ICommentService, CommentService>();
+
+            services.AddScoped<ISharingPhotoService, SharingPhotoService>(serviceProvider => 
+                new SharingPhotoService(
+                    serviceProvider.GetService<ApplicationDbContext>(),
+                    serviceProvider.GetService<IMapper>(),
+                    serviceProvider.GetService<IPhotoService>(),
+                    configuration["PhotoApiUrl"]));;
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
         {

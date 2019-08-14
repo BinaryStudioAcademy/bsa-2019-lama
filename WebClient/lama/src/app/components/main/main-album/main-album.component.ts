@@ -6,6 +6,7 @@ import { saveAs } from "file-saver";
 import * as JSZip from 'jszip';
 import { HttpClient } from '@angular/common/http';
 import { PhotoRaw } from 'src/app/models';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'main-album',
@@ -20,8 +21,10 @@ export class MainAlbumComponent implements OnInit {
 
   isContent:boolean = false;
   isMenu:boolean = true;
+  showSharedModal: boolean = false;
+
   imgname = require("../../../../assets/icon-no-image.svg");
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient, private albumService: AlbumService) { }
 
   ngOnInit() {
   }
@@ -40,8 +43,17 @@ export class MainAlbumComponent implements OnInit {
     this.isMenu = true;
   }
 
+  public openShareModal(): void
+  {
+    this.showSharedModal = true;
+  }
+  
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
+  }
+
+  public removeAlbum(){
+    this.albumService.removeAlbum(this.album.id).subscribe( x => x);
   }
 
 }
