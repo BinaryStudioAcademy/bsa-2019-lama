@@ -39,15 +39,8 @@ namespace Lama.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new UserProfile());
-                mc.AddProfile(new PhotoProfile());
-                mc.AddProfile(new ReactionProfile());
-            });
-            IMapper mapper = mappingConfig.CreateMapper();
             services.AddScoped<UserService>();
-            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>(),mapper));
+            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], services.BuildServiceProvider().GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
             services.AddScoped(serviceProvider => new SharingPhotoService(configuration["PhotoApiUrl"],
                                                     serviceProvider.GetService<ApplicationDbContext>()) );
             services.AddScoped<IAlbumService, AlbumService>();
