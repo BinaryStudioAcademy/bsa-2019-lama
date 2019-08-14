@@ -67,6 +67,7 @@ namespace Lama.BusinessLogic.Services
                 photos[i].Id = savedPhotos[i].Id;
             }
 
+            // send photos to Photo project
             StringContent content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"{url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
