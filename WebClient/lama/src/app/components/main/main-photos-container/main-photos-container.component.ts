@@ -4,6 +4,7 @@ import { Photo } from 'src/app/models';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { FileService } from 'src/app/services/file.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { SpinnerComponent } from '../../ui/spinner/spinner.component';
@@ -26,7 +27,8 @@ export class MainPhotosContainerComponent implements OnInit {
   isNothingFounded: boolean;
   isSearchTriggered: boolean;
   currentUser : User;
-  selectedPhotos: PhotoRaw[];
+  selectedPhotos: PhotoRaw[] = [];
+  isAtLeastOnePhotoSelected = false;
 
   // fields
   private resolver: ComponentFactoryResolver;
@@ -99,6 +101,12 @@ export class MainPhotosContainerComponent implements OnInit {
     this.shared.isSearchTriggered = false;
     this.shared.foundedPhotos = []
     this.shared.photos = []
+    if (this.selectedPhotos.length > 0) {
+      this.isAtLeastOnePhotoSelected = true;
+    }
+    else {
+      this.isAtLeastOnePhotoSelected = false;
+    }
   }
 
 
@@ -116,6 +124,17 @@ export class MainPhotosContainerComponent implements OnInit {
   public uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void
   {
       this.photos.push(...uploadedPhotos);
+  }
+
+  public photoSelected(eventArgs: PhotoRawState)
+  {
+    if (eventArgs.isSelected)
+      this.selectedPhotos.push(eventArgs.photo);
+    else 
+    {
+      const index = this.selectedPhotos.indexOf(eventArgs.photo);
+      this.selectedPhotos.splice(index, 1);
+    }
   }
 
   public photoClicked(eventArgs: PhotoRaw)

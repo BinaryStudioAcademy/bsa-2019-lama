@@ -1,9 +1,25 @@
-
 <div class="content-header">
     <h2 id="photos-container-title">Recent images: </h2>
     <a (click)="GetPhotos()" class="button is-primary" *ngIf="isSearchTriggered">
         Show all photos?
     </a>
+    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                <span>Options</span>
+            </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item">
+                    <p>Delete</p>
+                </div>
+                <div class="dropdown-item">
+                    <p>Download</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <spinner *ngIf="showSpinner"></spinner>
@@ -13,7 +29,7 @@
     <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
     <!--photo list-->
     <div *ngFor="let item of photos">
-        <main-photo [_photo]="item" (onClick)="photoClicked($event)"></main-photo>
+        <main-photo [_photo]="item" (onClick)="photoClicked($event)" (onSelect)="photoSelected($event)"></main-photo>
     </div>
 
     <!--modal-->

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
 
 @Component({
   selector: 'main-photo',
@@ -13,6 +14,7 @@ export class MainPhotoComponent implements OnInit {
   @Input ('_photo') photo: PhotoRaw;
   isSelected: boolean = false;
   @Output() onClick = new EventEmitter<PhotoRaw>();
+  @Output() onSelect = new EventEmitter<PhotoRawState>();
 
   // constructors
   constructor() { }
@@ -29,8 +31,7 @@ export class MainPhotoComponent implements OnInit {
 
   public selectItem(): void 
   {
-    let elements = document.getElementsByClassName('overlay');
-
     this.isSelected = !this.isSelected;
+    this.onSelect.emit({photo: this.photo, isSelected: this.isSelected});
   }
 }
