@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
+import * as bulma from 'bulma-calendar';
 
 @Component({
   selector: 'app-datepicker',
