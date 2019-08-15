@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Album } from 'src/app/models/Album/album';
-import { Photo } from 'src/app/models';
+import { Photo, PhotoRaw } from 'src/app/models';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -49,6 +49,11 @@ export class ViewAlbumComponent implements OnInit {
           })
       this._favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
     }
+  }
+
+  public photoClicked(eventArgs: PhotoRaw)
+  {
+    
   }
 
 }
