@@ -179,16 +179,16 @@ export class PhotoModalComponent implements OnInit {
       userId: parseInt(this.currentUser.id)
     }
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => 
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
         {
-           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
-           this.hasUserReaction = false 
+           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id));
+           this.hasUserReaction = false
         });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(x => 
-        { 
-          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); 
+      this.fileService.ReactionPhoto(newReaction).subscribe(x =>
+        {
+          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)});
           this.hasUserReaction = true;
         });
     }
@@ -196,7 +196,7 @@ export class PhotoModalComponent implements OnInit {
 
   forceDownload() {
     let url = this.photo.blobId;
-    var fileName = this.photo.blobId;
+    var fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.responseType = "blob";
