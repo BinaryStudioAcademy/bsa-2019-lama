@@ -96,6 +96,9 @@ export class ViewAlbumComponent implements OnInit {
       id: this.album.id,
       photoIds: ids 
     })
+    if (this.album.photoAlbums.length === 0) {
+      this.albumService.removeAlbum(this.album.id);
+    }
   }
 
 
