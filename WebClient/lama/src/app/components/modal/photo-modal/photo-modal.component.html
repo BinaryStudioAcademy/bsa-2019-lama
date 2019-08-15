@@ -24,13 +24,33 @@
                                         <div class="columns has-text-centered">
 
                                             <div class="column" *ngFor="let item of shownMenuItems">
-                                                <div (click)="menuClickHandler(item)">
-                                                    <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
+                                                <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
+													<ng-template ngSwitchCase="share">
+                                                        <div class="dropdown is-up" >
+														  <div class="dropdown-trigger">
+															<i class="material-icons is-block">{{ item.icon }}</i>
+															<span> {{ item.title }} </span>
+														  </div>
+														  <div *ngIf="showSharedModal" class="columns share-container has-background-white is-active">
+															  <div class="column is-two-fifths has-text-centered">
+																<a class="button is-primary is-small" (click)="openShareByLink()">
+																  By link
+																</a>
+															  </div>
+															  <div class="column is-two-fifths has-text-centered">
+																<a class="button is-primary is-small" (click)="openShareByEmail()">
+																  By email
+																</a>
+																</div>
+															</div>
+														</div>
+                                                    </ng-template>
+                                                    <ng-template ngSwitchCase="download">
                                                         <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
                                                             <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
                                                         </a>
                                                     </ng-template>
-                                                    <ng-template #other>
+                                                    <ng-template ngSwitchDefault>
                                                         <i class="material-icons is-block">{{ item.icon }}</i>
                                                         <span> {{ item.title }} </span>
                                                     </ng-template>
@@ -56,7 +76,7 @@
                             <!--set like-->
                             <div class="likes">
                                 <a class="reaction"><img [src]="hasUserReaction ? 'assets//icons/like.svg' : 'assets//icons/no-like.svg' " alt="" (click)="ReactionPhoto(event)"></a>
-                                <div class="count"><span>{{photo.reactions.length}}</span></div>
+                                <div class="count"><span>{{photo.reactions?.length}}</span></div>
                             </div>
 
                             <!--reactions list-->
@@ -90,9 +110,10 @@
             </div>
         </div>
     </div>
+	<app-share-by-link-modal [receivedPhoto]='photo' *ngIf="showSharedByLinkModal" (onClose)="showSharedByLinkModal=false"></app-share-by-link-modal>
+	<app-share-by-email-modal  [receivedPhoto]='photo' *ngIf="showSharedByEmailModal" (onClose)="showSharedByEmailModal=false"></app-share-by-email-modal>
 
-    <app-share-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-modal>
-	<app-edit-modal [photo]="photo" *ngIf="showEditModal" (onClose)="showSharedModal=false" (onDone)="imageHandler($event)"></app-edit-modal>
+    <app-edit-modal [photo]="photo" *ngIf="showEditModal" (onClose)="showSharedModal=false" (onDone)="imageHandler($event)"></app-edit-modal>
 
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>
