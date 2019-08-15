@@ -5,7 +5,7 @@
            <a (click)="$event.stopPropagation()" (click)="selectItem()"><i [ngStyle]="{'color': isSelected ? 'lightblue' : 'white'}" class="material-icons">check_circle_outline</i></a>
         </div>
         <div class="bottom">
-            <a (click)="mark()"><i class="material-icons" [appFavorite]="isFavorite">star_border</i></a>
+            <a (click)="$event.stopPropagation()" (click)="mark()"><i class="material-icons" [appFavorite]="isFavorite">star_border</i></a>
             <a><p>{{photo.description}}</p></a>
             <a><i class="material-icons">comment</i></a>
         </div>

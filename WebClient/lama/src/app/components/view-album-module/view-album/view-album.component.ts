@@ -18,7 +18,7 @@ export class ViewAlbumComponent implements OnInit {
 
   @Input() album: ViewAlbum = { } as ViewAlbum;
 
-  favorites: Set<number>;
+  favorites: Set<number> = new Set<number>();
   AlbumId: number;
   loading : boolean = false;
   private routeSubscription: Subscription;

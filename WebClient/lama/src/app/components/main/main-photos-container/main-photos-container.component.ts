@@ -34,7 +34,7 @@ export class MainPhotosContainerComponent implements OnInit {
   currentUser : User;
   selectedPhotos: PhotoRaw[] = [];
   isAtLeastOnePhotoSelected = false;
-  favorites: Set<number>;
+  favorites: Set<number> = new Set<number>();
 
   // fields
   private resolver: ComponentFactoryResolver;
