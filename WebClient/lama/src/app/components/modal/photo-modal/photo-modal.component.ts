@@ -74,7 +74,8 @@ export class PhotoModalComponent implements OnInit {
         { title: "share", icon: "share" },
         { title: "remove", icon: "clear" },
         { title: "download", icon: "cloud_download" },
-        { title: "edit", icon: "edit" }
+        { title: "edit", icon: "edit" },
+        {title: "info" , icon: "info"}
       ];
     this.editingMenuItem =
       [
@@ -119,6 +120,12 @@ export class PhotoModalComponent implements OnInit {
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
       this.openEditModal();
+    }
+
+    // info
+    if(clickedMenuItem === this.defaultMenuItem[4])
+    {
+
     }
   }
 
