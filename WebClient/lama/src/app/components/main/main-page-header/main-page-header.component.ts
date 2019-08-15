@@ -21,9 +21,9 @@ export class MainPageHeaderComponent implements OnInit {
 
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  private avatarUrl;  
-  private searchCriteria: string = "";
-  private isActive: boolean  = false;
+  public avatarUrl;  
+  public searchCriteria: string = "";
+  public isActive: boolean  = false;
   
   public showSidebarMenu: boolean;
 

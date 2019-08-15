@@ -5,7 +5,7 @@ WORKDIR /app
 COPY WebClient/lama .
 
 RUN npm install && \
-    npm run build
+    npm run prod
 
 FROM nginx:alpine
 
