@@ -2,8 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Album } from 'src/app/models/Album/album';
-import { PhotoRaw } from 'src/app/models';
-import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
+import { Photo, PhotoRaw } from 'src/app/models';
+import {PhotoRawState} from 'src/app/models/Photo/photoRawState';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -45,6 +45,7 @@ export class ViewAlbumComponent implements OnInit {
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !=0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
+      this.loading = true;
     }
     else if(this.AlbumId ==0){
       let userId: number = parseInt(localStorage.getItem("userId"));
@@ -54,9 +55,13 @@ export class ViewAlbumComponent implements OnInit {
             this.album.id = 0;
             this.album.title = "Favorite photos";
           })
-      this._favoriteService.getFavoritesIds(userId).subscribe(data => this.favorites = new Set<number>(data));
+      this._favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
     }
-    this.loading = true;
+  }
+
+  public photoClicked(eventArgs: PhotoRaw)
+  {
+    
   }
   ngDoCheck() {
     if (this.selectedPhotos.length > 0) {
@@ -97,7 +102,7 @@ export class ViewAlbumComponent implements OnInit {
       photoIds: ids 
     })
     if (this.album.photoAlbums.length === 0) {
-      this.albumService.removeAlbum(this.album.id);
+      this.albumService.removeAlbum(this.album.id).subscribe(e => console.log(e));
     }
   }
 

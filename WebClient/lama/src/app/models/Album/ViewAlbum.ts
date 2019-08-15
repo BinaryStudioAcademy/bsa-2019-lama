@@ -5,4 +5,5 @@ export interface ViewAlbum {
     title: string;
     photo: PhotoRaw;
     photoAlbums: PhotoRaw[];
+    name: string;
 }
