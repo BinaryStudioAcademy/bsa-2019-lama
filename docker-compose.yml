@@ -17,10 +17,12 @@ services:
   #     - elasticsearch
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
-    #image: lama-api
     ports:
       - "5000:5000"
     environment:
       ConnectionStrings:ConnectionLocal: ${LamaDBConnectionString}
       ASPNETCORE_URLS: http://+:5000
-
+  lamaweb:
+    image: krasnovnikita/bsa2019-lama:lama-web
+    ports:
+      - "4200:80"
