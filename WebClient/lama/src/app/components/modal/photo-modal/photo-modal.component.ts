@@ -22,6 +22,7 @@ export class PhotoModalComponent implements OnInit
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
+
   public showSharedModal: boolean = false;
 
   public clickedMenuItem: MenuItem;
@@ -34,6 +35,7 @@ export class PhotoModalComponent implements OnInit
   public deletePhotoEvenet = new EventEmitter<number>();
   @Output()
   public updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  public hasUserReaction: boolean;
 
   // fields
   private fileService: FileService;
@@ -43,7 +45,6 @@ export class PhotoModalComponent implements OnInit
   private deletingMenuItem: MenuItem[];
 
   currentUser: User;
-  private hasUserReaction: boolean;
   
   // constructors
   constructor(fileService: FileService) {
@@ -147,7 +148,7 @@ export class PhotoModalComponent implements OnInit
   {
     this.isEditing = false;
   }
-  protected closeModal(): void {
+  public closeModal(): void {
     this.isShown = false;
   }
 
@@ -164,7 +165,7 @@ export class PhotoModalComponent implements OnInit
         this.deletePhotoEvenet.emit(this.photo.id);
       });
   }
-  public ReactionPhoto(event) {
+  public ReactionPhoto() {
 
     console.log(this.currentUser);
     if (this.photo.userId === parseInt(this.currentUser.id)) {
@@ -176,16 +177,16 @@ export class PhotoModalComponent implements OnInit
       userId: parseInt(this.currentUser.id)
     }
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => 
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
         {
            this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
            this.hasUserReaction = false;
         });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(x => 
-        { 
-          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); 
+      this.fileService.ReactionPhoto(newReaction).subscribe(x =>
+        {
+          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)});
           this.hasUserReaction = true;
         });
     }
@@ -193,7 +194,7 @@ export class PhotoModalComponent implements OnInit
 
   forceDownload() {
     let url = this.photo.blobId;
-    var fileName = this.photo.blobId;
+    var fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.responseType = "blob";

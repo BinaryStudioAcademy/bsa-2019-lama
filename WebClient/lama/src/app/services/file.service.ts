@@ -73,6 +73,14 @@ export class FileService
   }
   public receivePhoto(): Observable<PhotoRaw[]>
   {
+    const stubs: PhotoRaw[] =
+    [
+      { blobId: 'https://picsum.photos/id/392/536/354', reactions: [] },
+      { blobId: 'https://picsum.photos/id/393/536/354', reactions: [] },
+      { blobId: 'https://picsum.photos/id/394/536/354', reactions: [] },
+    ];
+
+    return Observable.of(stubs);
     return this.client.get<PhotoRaw[]>(`${environment.lamaApiUrl}/api/photo`, this.httpOptions);
   }
   public receiveUsersPhotos(userId: number): Observable<PhotoRaw[]>

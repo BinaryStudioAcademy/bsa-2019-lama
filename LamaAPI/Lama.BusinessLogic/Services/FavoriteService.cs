@@ -28,7 +28,12 @@ namespace Lama.BusinessLogic.Services
             foreach(var far in favorites)
             {
                 PhotoDocument pd = await _photoService.Get(far.PhotoId);
-                photos.Add(pd);
+                if(pd==null)
+                {
+                    await DeleteFavorite(userId, far.PhotoId);
+                }
+                else if (!pd.IsDeleted)
+                    photos.Add(pd);
             }
             return photos;
         }
@@ -37,7 +42,7 @@ namespace Lama.BusinessLogic.Services
         {
 
             List<int> photos = new List<int>();
-            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId ).ToListAsync();
             foreach (var far in favorites)
             {
                 photos.Add(far.PhotoId);

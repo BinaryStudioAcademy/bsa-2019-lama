@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Album } from 'src/app/models/Album/album';
-import { Photo } from 'src/app/models';
+import { Photo, PhotoRaw } from 'src/app/models';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -37,6 +37,7 @@ export class ViewAlbumComponent implements OnInit {
   ngOnInit() {
     if (this.loading === false && this.AlbumId !=0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
+      this.loading = true;
     }
     else if(this.AlbumId ==0){
       let userId: number = parseInt(localStorage.getItem("userId"));
@@ -46,9 +47,13 @@ export class ViewAlbumComponent implements OnInit {
             this.album.id = 0;
             this.album.title = "Favorite photos";
           })
-      this._favoriteService.getFavoritesIds(userId).subscribe(data => this.favorites = new Set<number>(data));
+      this._favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
     }
-    this.loading = true;
+  }
+
+  public photoClicked(eventArgs: PhotoRaw)
+  {
+    
   }
 
 }
