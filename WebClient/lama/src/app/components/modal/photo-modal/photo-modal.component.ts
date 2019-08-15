@@ -16,16 +16,19 @@ import { parse } from 'querystring';
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit {
+export class PhotoModalComponent implements OnInit 
+{
   // properties
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
-  public showSharedModal = false;
-  public showEditModal = false;
+
+  public showSharedModal: boolean = false;
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
+
+  public isEditing: boolean;
 
   // events
   @Output()
@@ -42,6 +45,7 @@ export class PhotoModalComponent implements OnInit {
   private deletingMenuItem: MenuItem[];
 
   currentUser: User;
+  
   // constructors
   constructor(fileService: FileService) {
     this.isShown = true;
@@ -57,11 +61,6 @@ export class PhotoModalComponent implements OnInit {
   ngOnInit() {
     if (this.photo.reactions != null) {
       this.hasUserReaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
-      if (this.hasUserReaction) {
-        this.hasUserReaction = true;
-      } else {
-        this.hasUserReaction = false;
-      }
     }
     else {
       this.hasUserReaction = false;
@@ -118,7 +117,7 @@ export class PhotoModalComponent implements OnInit {
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
-      this.openEditModal();
+      this.isEditing = true;
     }
   }
 
@@ -126,24 +125,28 @@ export class PhotoModalComponent implements OnInit {
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public imageHandler(editedImage: ImageEditedArgs): void {
+  public saveEditedImageHandler(editedImage: ImageEditedArgs): void 
+  {
+    console.log(this.fileService.getExif(editedImage.editedImageBase64));
+
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
-      imageBase64: editedImage.croppedImageBase64
+      imageBase64: editedImage.editedImageBase64
     };
 
     this.fileService.update(updatePhotoDTO)
       .subscribe(updatedPhotoDTO =>
         {
           Object.assign(this.photo, updatedPhotoDTO);
-        //  this.updatePhotoEvent.emit(updatePhotoDTO);
+
           this.goBackToImageView();
         });
   }
 
-  public goBackToImageView(): void {
-    this.clickedMenuItem = null;
+  public goBackToImageView(): void 
+  {
+    this.isEditing = false;
   }
   public closeModal(): void {
     this.isShown = false;
@@ -151,11 +154,6 @@ export class PhotoModalComponent implements OnInit {
 
   private openShareModal(): void {
     this.showSharedModal = true;
-  }
-
-  private openEditModal(): void
-  {
-	this.showEditModal = true;
   }
 
   private deleteImage(): void
@@ -181,8 +179,8 @@ export class PhotoModalComponent implements OnInit {
     if (hasreaction) {
       this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
         {
-           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id));
-           this.hasUserReaction = false
+           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
+           this.hasUserReaction = false;
         });
     }
     else {

@@ -39,7 +39,12 @@ namespace Lama.BusinessLogic.Services
             for(int i = 0; i < comments.Length; ++i)
             {
                 commentLists[i] = mapper.Map<CommentListDTO>(comments[i]);
-                commentLists[i].AuthorAvatar64Url = (await photoService.Get(comments[i].PhotoId)).Blob64Id;
+
+                if (comments[i].User.AvatarId.HasValue)
+                {
+                    commentLists[i].AuthorAvatar64Url = 
+                        (await photoService.Get(comments[i].User.AvatarId.Value)).Blob64Id;
+                }
             }
 
             return commentLists;
