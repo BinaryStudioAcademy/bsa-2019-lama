@@ -10,21 +10,33 @@ import { PhotoRaw } from 'src/app/models';
 
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { FavoriteService } from 'src/app/services/favorite.service';
 
 @Component({
   selector: 'app-main-albums-container',
   templateUrl: './main-albums-container.component.html',
-  styleUrls: ['./main-albums-container.component.sass']
+  styleUrls: ['./main-albums-container.component.sass'],
+  providers: [FavoriteService]
 })
 export class MainAlbumsContainerComponent implements OnInit {
 
   @Input() albums: ViewAlbum[];
   currentUser : User;
+  favorite: ViewAlbum = null;
 
   ArchivePhotos = [];
   ngOnInit() {
-    this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
+    let userId = parseInt(localStorage.getItem('userId'));
+    this.httpService.getData('users/'+userId).subscribe((u) => {
       this.currentUser = u; this.GetAlbums();
+      this._favoriteService.getFavoritesPhotos(userId).subscribe(data => {
+        if(data.length != 0){
+          this.favorite = { } as ViewAlbum;
+          this.favorite.photoAlbums = data;
+          this.favorite.id = 0;
+          this.favorite.title = "Favorite photos";
+        }
+      });
     });
   }
 
@@ -35,7 +47,7 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private router: Router, private albumService: AlbumService,
-    private httpService: HttpService) {
+    private httpService: HttpService, private _favoriteService: FavoriteService) {
     this.resolver = resolver;
   }
 

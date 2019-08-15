@@ -10,12 +10,14 @@ import { SpinnerComponent } from '../../ui/spinner/spinner.component';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
+import { FavoriteService } from 'src/app/services/favorite.service';
 import { AuthService } from 'src/app/services';
 
 @Component({
   selector: 'main-photos-container',
   templateUrl: './main-photos-container.component.html',
-  styleUrls: ['./main-photos-container.component.sass']
+  styleUrls: ['./main-photos-container.component.sass'],
+  providers: [FavoriteService]
 })
 export class MainPhotosContainerComponent implements OnInit {
 
@@ -26,6 +28,7 @@ export class MainPhotosContainerComponent implements OnInit {
   isNothingFounded: boolean;
   isSearchTriggered: boolean;
   currentUser : User;
+  favorites: Set<number>;
 
   // fields
   private resolver: ComponentFactoryResolver;
@@ -38,7 +41,7 @@ export class MainPhotosContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService,
-    private httpService: HttpService, private auth: AuthService)
+    private httpService: HttpService, private auth: AuthService, private _favoriteService: FavoriteService)
   {
     this.resolver = resolver;
   }
@@ -49,9 +52,10 @@ export class MainPhotosContainerComponent implements OnInit {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`)
     .subscribe((user) =>
     {
-
       this.currentUser = user;
-    });
+      this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
+          .subscribe(data => this.favorites = new Set<number>(data));
+      });
   }
 
   public GetUserPhotos(UserId: number) {

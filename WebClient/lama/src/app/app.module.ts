@@ -29,6 +29,8 @@ import {ViewAlbumPhotosComponent} from './components/view-album-module/view-albu
 import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
 import {SharedPageHeaderComponent} from './components/shared-page/shared-page-header/shared-page-header.component';
+import { FavoriteDirective } from './directives/favorite.directive';
+import { CheckFavoriteDirective } from './directives/check-favorite.directive';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 
 @NgModule({
@@ -50,6 +52,8 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
     ViewAlbumPhotosComponent,
     SharedPageComponent,
     SharedPageHeaderComponent,
+    FavoriteDirective,
+    CheckFavoriteDirective,
     SharedPageAlbumComponent
   ],
   imports:
