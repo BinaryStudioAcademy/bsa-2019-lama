@@ -14,7 +14,7 @@ export class RotateImageComponent implements OnInit {
   constructor(private _imageService: FileService, private el: ElementRef, private renderer: Renderer) {
    }
 
-  private imageToRotateBase64: string;
+  public imageToRotateBase64: string;
   private imageUrl: string;
 
   @Input()

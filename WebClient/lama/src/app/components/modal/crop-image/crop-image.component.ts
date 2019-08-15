@@ -19,7 +19,7 @@ export class CropImageComponent implements OnInit
 {
   // fields
   private imageUrl: string;
-  private imageToCropBase64: string;
+  public imageToCropBase64: string;
   private imageService: FileService;
 
   // properties

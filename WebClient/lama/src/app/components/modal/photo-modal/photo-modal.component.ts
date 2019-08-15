@@ -21,8 +21,8 @@ export class PhotoModalComponent implements OnInit {
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
-  public showSharedModal: boolean = false;
-  public showEditModal: boolean = false;
+  public showSharedModal = false;
+  public showEditModal = false;
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -32,6 +32,7 @@ export class PhotoModalComponent implements OnInit {
   public deletePhotoEvenet = new EventEmitter<number>();
   @Output()
   public updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  public hasUserReaction: boolean;
 
   // fields
   private fileService: FileService;
@@ -41,7 +42,6 @@ export class PhotoModalComponent implements OnInit {
   private deletingMenuItem: MenuItem[];
 
   currentUser: User;
-  private hasUserReaction: boolean;
   // constructors
   constructor(fileService: FileService) {
     this.isShown = true;
@@ -145,7 +145,7 @@ export class PhotoModalComponent implements OnInit {
   public goBackToImageView(): void {
     this.clickedMenuItem = null;
   }
-  protected closeModal(): void {
+  public closeModal(): void {
     this.isShown = false;
   }
 
@@ -167,7 +167,7 @@ export class PhotoModalComponent implements OnInit {
         this.deletePhotoEvenet.emit(this.photo.id);
       });
   }
-  public ReactionPhoto(event) {
+  public ReactionPhoto() {
 
     console.log(this.currentUser);
     if (this.photo.userId === parseInt(this.currentUser.id)) {
