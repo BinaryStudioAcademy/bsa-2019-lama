@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
+import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { Favorite } from 'src/app/models/favorite';
 
@@ -15,8 +16,10 @@ export class MainPhotoComponent implements OnInit {
   isFavorite:boolean = false;
   // properties
   @Input ('_photo') photo: PhotoRaw;
+  isSelected: boolean = false;
   @Input ('_id') id: number = -1;
   @Output() onClick = new EventEmitter<PhotoRaw>();
+  @Output() onSelect = new EventEmitter<PhotoRawState>();
 
   // constructors
   constructor(private _favoriteService: FavoriteService) {
@@ -46,6 +49,11 @@ export class MainPhotoComponent implements OnInit {
     this.onClick.emit(this.photo);
   }
 
+  public selectItem(): void 
+  {
+    this.isSelected = !this.isSelected;
+    this.onSelect.emit({photo: this.photo, isSelected: this.isSelected});
+  }
   public mark(){
     if(this.isFavorite){
       this._favoriteService.deleteFavorite(this.photo.userId, this.photo.id).subscribe(
