@@ -6,6 +6,7 @@ import { ViewAlbum } from '../models/Album/ViewAlbum';
 import { NewAlbum } from '../models/Album/NewAlbum';
 import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
 import { PhotoRaw } from '../models';
+import { UpdateAlbum } from '../models/Album/updatedAlbum';
 
 @Injectable({
   providedIn: 'root'
@@ -39,9 +40,9 @@ export class AlbumService {
     return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
 }
 
-  public updateAlbum(album: Album) {
+  public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');
-      return this.http.put<Album>(this.baseUrl + this.routeAlbum , album , { headers });
+      return this.http.put<UpdateAlbum>(this.baseUrl + this.routeAlbum , album , { headers }).subscribe(e => console.log(e));
   }
 
   public ArchiveAlbum(photos: PhotoRaw[]) {

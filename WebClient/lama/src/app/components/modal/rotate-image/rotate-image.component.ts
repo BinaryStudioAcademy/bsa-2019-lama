@@ -14,7 +14,7 @@ export class RotateImageComponent implements OnInit {
   constructor(private _imageService: FileService, private el: ElementRef, private renderer: Renderer) {
    }
 
-  private imageToRotateBase64: string;
+  public imageToRotateBase64: string;
   private imageUrl: string;
 
   @Input()
@@ -76,7 +76,7 @@ ClockwiseHandler(){
   {
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      croppedImageBase64: this.imageToRotateBase64
+      editedImageBase64: this.imageToRotateBase64
     });
   }
 

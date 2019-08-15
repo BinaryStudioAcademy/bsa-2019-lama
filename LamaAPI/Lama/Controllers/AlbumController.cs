@@ -39,9 +39,9 @@ namespace Lama.Controllers
             return await _service.GetPhotos(photoDocuments);
         }
         [HttpPut]
-        public async Task UpdateAlbum([FromBody] Album album)
+        public async Task UpdateAlbum([FromBody] UpdateAlbumDTO album)
         {
-
+            await _service.UpdateAlbum(album);
         }
         [HttpDelete("{id}")]
         public async Task<int> DeleteAlbum(int id)

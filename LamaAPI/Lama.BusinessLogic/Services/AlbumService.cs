@@ -37,6 +37,22 @@ namespace Lama.BusinessLogic.Services
             this._mapper = _mapper;
         }
 
+        public async Task UpdateAlbum(UpdateAlbumDTO album)
+        {
+   
+            var photoAlbums = Context.PhotoAlbums.Where(i => i.AlbumId == album.Id);
+            List<int> ids = photoAlbums.Select(i => i.PhotoId).ToList();
+            var removedIds = ids.Except(album.PhotoIds);
+            List<PhotoAlbum> removedPhotoAlbums = new List<PhotoAlbum>();
+            foreach (var item in removedIds)
+            {
+                var photoAlbum = photoAlbums.FirstOrDefault(i => i.PhotoId == item);
+                removedPhotoAlbums.Add(photoAlbum);
+            }
+            Context.PhotoAlbums.RemoveRange(removedPhotoAlbums);
+            await Context.SaveChangesAsync();
+        }
+
         public async Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];

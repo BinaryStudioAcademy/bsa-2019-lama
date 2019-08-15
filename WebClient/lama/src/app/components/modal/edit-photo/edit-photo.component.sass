@@ -1,0 +1,50 @@
+.is-no-flex
+    flex: none
+
+.edit-container
+  width: 100%
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  min-height: 500px
+
+summary
+    background-color: #24292e
+    padding: 10px
+    color: #eee
+    cursor: pointer
+    
+details
+    background-color: #fff
+    .drop-content
+        padding: 10px
+        
+        button:hover
+            color: #00d1b2
+        table
+            width: 100%
+            td 
+                text-align: center
+            
+
+.menu 
+    opacity: 0.85
+    background: rgba(0, 0, 0, 0.5)
+    background-image: linear-gradient(rgba(45,45,45,0.5), rgba(45,45,45,1))
+    color: #f1f1f1
+    transition: .5s ease
+    font-size: 20px
+    padding: 20px
+    text-align: center
+    
+    .columns
+        margin: -20px
+
+        .column:hover
+            color: #00d1b2
+            opacity: 1
+            cursor: pointer
+            -webkit-box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)
+            -moz-box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)
+            box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)

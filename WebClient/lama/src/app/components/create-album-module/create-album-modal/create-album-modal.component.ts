@@ -35,6 +35,7 @@ export class CreateAlbumModalComponent implements OnInit {
   imageSrc: string = '';
   LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
+  baseColor: any;
 
   ExistPhotos: PhotoRaw[] = [];
 
