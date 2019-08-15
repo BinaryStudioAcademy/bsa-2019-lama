@@ -37,4 +37,4 @@ services:
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
     ports:
-      - "4200:80"
+      - "80:80"
