@@ -32,7 +32,7 @@ services:
       - "6000:6000"
     environment:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
-      ASPNETCORE_URLS: http://+:5000
+      ASPNETCORE_URLS: http://+:6000
 
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
