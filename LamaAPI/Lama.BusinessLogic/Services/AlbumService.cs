@@ -41,12 +41,7 @@ namespace Lama.BusinessLogic.Services
         {
    
             var photoAlbums = Context.PhotoAlbums.Where(i => i.AlbumId == album.Id);
-            List<int> ids = new List<int>();
-            foreach(var item in photoAlbums)
-            {
-                ids.Add(item.PhotoId);
-            }
-
+            List<int> ids = photoAlbums.Select(i => i.PhotoId).ToList();
             var removedIds = ids.Except(album.PhotoIds);
             List<PhotoAlbum> removedPhotoAlbums = new List<PhotoAlbum>();
             foreach (var item in removedIds)

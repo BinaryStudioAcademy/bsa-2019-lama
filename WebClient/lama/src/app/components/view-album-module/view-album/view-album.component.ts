@@ -64,12 +64,7 @@ export class ViewAlbumComponent implements OnInit {
     
   }
   ngDoCheck() {
-    if (this.selectedPhotos.length > 0) {
-      this.isAtLeastOnePhotoSelected = true;
-    }
-    else {
-      this.isAtLeastOnePhotoSelected = false;
-    }
+    this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0
   }
 
   public photoSelected(eventArgs: PhotoRawState)
