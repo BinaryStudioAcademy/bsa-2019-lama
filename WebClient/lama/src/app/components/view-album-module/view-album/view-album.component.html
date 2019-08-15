@@ -1,6 +1,23 @@
-<div class="close">
+<div class="navigation">
     <div class="image">
         <a routerLink="/main/albums"><img src="assets/icons/back.svg" alt=""></a>
+    </div>
+    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                <span>Options</span>
+            </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item" (click)="deleteImages()">
+                    <p>Delete</p>
+                </div>
+                <div class="dropdown-item" (click)="downloadImages()">
+                    <p>Download</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="container">
@@ -9,8 +26,11 @@
     </div>
     <div *ngIf="loading" class="items-container-centered">
         <div *ngFor="let item of album.photoAlbums">
-            <main-photo [_photo]="item" [_id]="favorites.has(item.id)==true?item.id:-1" (onClick)="photoClicked($event)"></main-photo>
-            <!--<app-view-album-photos [_photo]="item"></app-view-album-photos>-->
+            <main-photo [_photo]="item" 
+                        [_id]="favorites.has(item.id)==true?item.id:-1" 
+                        (onClick)="photoClicked($event)"
+                        (onSelect)="photoSelected($event)">
+            </main-photo>
         </div>
     </div>
 </div>

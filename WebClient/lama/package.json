@@ -32,6 +32,7 @@
     "firebase": "^6.3.4",
     "font-awesome": "^4.7.0",
     "jszip": "^3.2.2",
+    "jszip-utils": "^0.1.0",
     "ngx-image-cropper": "^1.4.1",
     "piexifjs": "^1.0.6",
     "rxjs": "~6.4.0",
