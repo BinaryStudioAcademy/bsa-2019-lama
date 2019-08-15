@@ -35,7 +35,6 @@ export class ViewAlbumComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.loading);
     if (this.loading === false && this.AlbumId !=0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
       this.loading = true;
