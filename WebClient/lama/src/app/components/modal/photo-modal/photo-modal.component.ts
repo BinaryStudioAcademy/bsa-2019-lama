@@ -24,7 +24,6 @@ export class PhotoModalComponent implements OnInit
   public isShown: boolean;
 
   public showSharedModal: boolean = false;
-  public showEditModal: boolean = false;
   public showSharedByLinkModal: boolean = false;
   public showSharedByEmailModal: boolean = false;
 
