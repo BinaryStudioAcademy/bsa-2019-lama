@@ -176,10 +176,7 @@ export class MainPhotosContainerComponent implements OnInit {
       });
     });
   }
-
-  // public downloadImages(): void {
-
-  // }
+  
   public urlToPromise(url) {
     return new Promise(function(resolve, reject) {
         JSZipUtils.getBinaryContent(url, function (err, data) {
