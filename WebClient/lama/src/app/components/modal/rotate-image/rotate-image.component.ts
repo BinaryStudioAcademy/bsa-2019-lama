@@ -76,7 +76,7 @@ ClockwiseHandler(){
   {
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      croppedImageBase64: this.imageToRotateBase64
+      editedImageBase64: this.imageToRotateBase64
     });
   }
 

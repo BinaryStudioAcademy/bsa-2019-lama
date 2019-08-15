@@ -4,6 +4,8 @@ import { environment } from '../../environments/environment';
 
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { load, dump, insert } from 'piexifjs';
+
 
 import { PhotoRaw, Photo, UpdatedPhotoResultDTO, UpdatePhotoDTO, DeletedPhotoDTO, PhotoToDeleteRestoreDTO } from '../models';
 import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
@@ -39,6 +41,23 @@ export class FileService
       reader.readAsDataURL(blob);
     });
   }
+  public getExif(imageBase64: string): any
+  {
+    return load(imageBase64);
+  }
+  public copyExif(imageBase64: string): string
+  {
+    let modified = imageBase64;
+
+    if (imageBase64.indexOf('image/jpeg') !== -1 || imageBase64.indexOf('image/jpg') !== -1) 
+    {
+      const exifObj = load(imageBase64);
+      const d = dump(exifObj);
+      modified = insert(d, imageBase64);
+    }
+
+    return modified;
+  }
   public update(photoToUpdate: UpdatePhotoDTO): Observable<UpdatedPhotoResultDTO>
   {
     return this.client.put(`${environment.lamaApiUrl}/api/photo`, photoToUpdate)
@@ -53,16 +72,16 @@ export class FileService
     return this.client.post(`${environment.lamaApiUrl}/api/photo/removereaction`, Reaction);
   }
   public receivePhoto(): Observable<PhotoRaw[]>
-  { 
+  {
     return this.client.get<PhotoRaw[]>(`${environment.lamaApiUrl}/api/photo`, this.httpOptions);
   }
-  public receiveUsersPhotos(userId:number): Observable<PhotoRaw[]>
-  { 
+  public receiveUsersPhotos(userId: number): Observable<PhotoRaw[]>
+  {
     return this.client.get(`${environment.lamaApiUrl}/api/photo/user/${userId}`, this.httpOptions)
       .pipe(map(res => res as PhotoRaw[]));
   }
   public markPhotoAsDeleted(photosToDeleteId: number): Observable<object>
-  { 
+  {
     return this.client.delete(`${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`);
   }
   public getDeletedPhotos(): Observable<DeletedPhotoDTO[]>
@@ -71,12 +90,12 @@ export class FileService
       .pipe(map(res => res as DeletedPhotoDTO[]));
   }
   public deletePhotosPermanently(photosToDelete: PhotoToDeleteRestoreDTO[]): Observable<object>
-  {    
+  {
     return this.client.post(`${environment.lamaApiUrl}/api/photo/delete_permanently`, photosToDelete);
   }
-  
+
   public restoresDeletedPhotos(photosToRestore: PhotoToDeleteRestoreDTO[]): Observable<object>
-  {    
-    return this.client.post(`${environment.lamaApiUrl}/api/photo/restore`, photosToRestore)
+  {
+    return this.client.post(`${environment.lamaApiUrl}/api/photo/restore`, photosToRestore);
   }
 }

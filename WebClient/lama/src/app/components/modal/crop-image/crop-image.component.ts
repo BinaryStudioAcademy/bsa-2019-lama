@@ -68,7 +68,7 @@ export class CropImageComponent implements OnInit
     }
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      croppedImageBase64: modified
+      editedImageBase64: modified
     });
   }
   public cancelClickHandler(): void
