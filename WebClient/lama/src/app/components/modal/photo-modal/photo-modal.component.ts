@@ -11,6 +11,7 @@ import { NewLike } from 'src/app/models/Reaction/NewLike';
 import {Like } from 'src/app/models/Reaction/Like';
 import { parse } from 'querystring';
 
+
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
@@ -119,7 +120,9 @@ export class PhotoModalComponent implements OnInit {
     // info
     if(clickedMenuItem === this.defaultMenuItem[4])
     {
-
+      let element =  document.getElementById("info-content");
+      element.style.visibility = 'visible';
+      element.style.width="500px";
     }
   }
 

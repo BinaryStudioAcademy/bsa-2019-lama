@@ -47,43 +47,70 @@
 
 
                     <!--right panel-->
-                    <div class="column is-4">
+                    <div class="column is-6 flex-content">
+                        <div class="photo-profile">
+                            <!--likes-->
+                            <div>
+                                <p class="is-size-2">Reactions</p>
 
-                        <!--likes-->
-                        <div>
-                            <p class="is-size-2">Reactions</p>
+                                <!--set like-->
+                                <div class="likes">
+                                    <a class="reaction"><img [src]="hasUserReaction ? 'assets//icons/like.svg' : 'assets//icons/no-like.svg' " alt="" (click)="ReactionPhoto(event)"></a>
+                                    <div class="count"><span>{{photo.reactions.length}}</span></div>
+                                </div>
 
-                            <!--set like-->
-                            <div class="likes">
-                                <a class="reaction"><img [src]="hasUserReaction ? 'assets//icons/like.svg' : 'assets//icons/no-like.svg' " alt="" (click)="ReactionPhoto(event)"></a>
-                                <div class="count"><span>{{photo.reactions.length}}</span></div>
-                            </div>
+                                <!--reactions list-->
+                                <div class="reactions">
 
-                            <!--reactions list-->
-                            <div class="reactions">
+                                    <div *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]">
+                                        <article class="media">
+                                            <figure class="media-left">
+                                                <p class="image is-32x32">
+                                                    <img class="is-rounded" src="https://i.pravatar.cc/32?img=3" alt="User avarar">
+                                                </p>
+                                            </figure>
+                                            <div class="media-content">
+                                                <span class="field">Nickname</span>
+                                            </div>
+                                        </article>
+                                    </div>
 
-                                <div *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]">
-                                    <article class="media">
-                                        <figure class="media-left">
-                                            <p class="image is-32x32">
-                                                <img class="is-rounded" src="https://i.pravatar.cc/32?img=3" alt="User avarar">
-                                            </p>
-                                        </figure>
-                                        <div class="media-content">
-                                            <span class="field">Nickname</span>
-                                        </div>
-                                    </article>
                                 </div>
 
                             </div>
 
+                            <!--comments-->
+                            <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
                         </div>
-
-                        <!--comments-->
-                        <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
-
-                    </div>
-                    <div class="column is-2">
+                        <div id="info-content" class="information">
+                            <div class="flex-content info">
+                                <div class="titl">
+                                    <h4 class="title is-4">Information</h4>
+                                </div>
+                                <div class="item-description">
+                                    <div class="field">
+                                        <div class="control">
+                                            <textarea class="textarea is-primary" placeholder="Description" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item-albums">
+                                    <div class="subtitl">
+                                        <h4 class="subtitle is-5">Albums</h4>
+                                    </div>
+                                    <div class="flex-album">
+                                        <div class="album">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="item-date">
+                                    <input type="date">
+                                    <app-datepicker></app-datepicker>
+                                </div>
+                                <div class="item-name"></div>
+                                <div class="item-location"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

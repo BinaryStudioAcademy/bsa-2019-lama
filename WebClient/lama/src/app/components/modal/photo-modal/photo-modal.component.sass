@@ -1,3 +1,5 @@
+@import '~compass-mixins/lib/compass/css3'
+
 @media screen and (min-width: 1000px)
     .modal-content
         width: 70%
@@ -5,6 +7,18 @@
 @media screen and (max-width: 1000px)
     .modal-content
         width: 100%
+
+
+@mixin transition($transition...) 
+    -moz-transition:    $transition
+    -o-transition:      $transition
+    -webkit-transition: $transition
+    transition:         $transition
+
+
+
+.notification
+    height: 650px
 
 .column a 
     text-decoration: none
@@ -14,7 +28,7 @@
   flex-direction: column
   justify-content: center
   align-items: center
-  min-height: 500px
+  min-height: 610px
 
 .main-photo img
     width: auto !important
@@ -70,3 +84,52 @@ article
    bottom: 0
    right: 0
 
+
+
+.information
+    width: 0px
+    margin-left: 15px
+    visibility: hidden
+    @include transition(all 300ms linear)
+
+.flex-content
+    display: flex
+
+
+.info
+    flex-direction: column
+
+.titl
+    overflow: hidden
+    max-height: 27px
+
+.subtitl
+    max-height: 25px
+    overflow: hidden
+
+
+    
+.item-description
+    margin-top: 15px
+
+.item-albums
+    margin-top: 15px
+
+
+.item-date
+    margin-top: 15px
+
+
+.item-name
+    margin-top: 15px
+
+.item-location
+    margin-top: 15px
+
+
+.photo-profile
+    width: 100%
+
+.flex-album
+    height: 175px
+    background: green

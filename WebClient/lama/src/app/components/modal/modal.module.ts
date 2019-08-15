@@ -17,6 +17,7 @@ import { ShareModalComponent } from './share-modal/share-modal/share-modal.compo
 import { CommentsListComponent } from './comments-list/comments-list.component';
 import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 @NgModule(
 {
@@ -36,7 +37,8 @@ import { EditModalComponent } from './edit-modal/edit-modal.component';
     CropImageComponent, RotateImageComponent,
     ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
     ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
-    CommentsListComponent
+    CommentsListComponent,
+    DatepickerComponent
   ],
   exports:
   [
