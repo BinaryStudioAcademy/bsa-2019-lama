@@ -31,8 +31,6 @@ export class MainPhotosContainerComponent implements OnInit {
   favorites: Set<number>;
 
   // fields
-  private resolver: ComponentFactoryResolver;
-
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
@@ -40,10 +38,16 @@ export class MainPhotosContainerComponent implements OnInit {
   private modalUploadPhotoEntry: ViewContainerRef;
 
   // constructors
-  constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService,
-    private httpService: HttpService, private auth: AuthService, private _favoriteService: FavoriteService)
+  constructor(
+    private resolver: ComponentFactoryResolver,
+    private service: FileService,
+    private _e: ElementRef,
+    private shared: SharedService,
+    private httpService: HttpService,
+    private auth: AuthService,
+    private _favoriteService: FavoriteService)
   {
-    this.resolver = resolver;
+    this.favorites = new Set<number>();
   }
 
   ngOnInit(){
@@ -60,9 +64,9 @@ export class MainPhotosContainerComponent implements OnInit {
 
   public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
-    this.shared.isSearchTriggeredAtLeastOnce = false
-      this.showSpinner = true
-      this.photos = []
+    this.shared.isSearchTriggeredAtLeastOnce = false;
+    this.showSpinner = true;
+    this.photos = [];
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
