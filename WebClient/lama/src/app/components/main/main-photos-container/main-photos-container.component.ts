@@ -32,7 +32,7 @@ export class MainPhotosContainerComponent implements OnInit {
   isNothingFounded: boolean;
   isSearchTriggered: boolean;
   currentUser : User;
-  selectedPhotos: PhotoRaw[] = [];
+  selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
 
@@ -54,7 +54,7 @@ export class MainPhotosContainerComponent implements OnInit {
 
   ngOnInit(){
     this.GetPhotos();
-
+    this.selectedPhotos = []
     this.httpService.getData(`users/${localStorage.getItem('userId')}`)
     .subscribe((user) =>
     {
@@ -106,6 +106,9 @@ export class MainPhotosContainerComponent implements OnInit {
       this.isNothingFounded = true;
     }
     this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
+    if (this.isSearchTriggered) {
+      this.selectedPhotos = []
+    }
     this.shared.isSearchTriggered = false;
     this.shared.foundedPhotos = []
     this.shared.photos = []
@@ -176,7 +179,7 @@ export class MainPhotosContainerComponent implements OnInit {
       });
     });
   }
-  
+
   public urlToPromise(url) {
     return new Promise(function(resolve, reject) {
         JSZipUtils.getBinaryContent(url, function (err, data) {

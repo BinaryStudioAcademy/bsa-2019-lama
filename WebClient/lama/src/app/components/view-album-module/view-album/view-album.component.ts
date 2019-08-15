@@ -26,7 +26,7 @@ export class ViewAlbumComponent implements OnInit {
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
   loading : boolean = false;
-  selectedPhotos: PhotoRaw[] = [];
+  selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
@@ -42,6 +42,7 @@ export class ViewAlbumComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !=0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
     }
