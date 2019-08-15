@@ -10,7 +10,7 @@ import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
 import {Like } from 'src/app/models/Reaction/Like';
 import { parse } from 'querystring';
-
+import * as  bulmaCalendar from 'bulma-calendar';
 
 @Component({
   selector: 'app-photo-modal',
@@ -56,6 +56,14 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    const calendars = bulmaCalendar.attach('[type="date"]');
+    calendars.forEach(calendar => {
+      calendar.on('select', date => {
+        console.log(date);
+      });
+    });
+
+
      let reactions = this.photo.reactions;
     console.log(parseInt(this.currentUser.id));
     console.log(reactions);
@@ -218,15 +226,15 @@ export class PhotoModalComponent implements OnInit {
   }
 
   openModalForPickDate(event) {
-    const overlay = document.getElementsByClassName('overlay2')[0];
-    const modalElem = document.getElementsByClassName('modal2')[0];
+    const overlay = document.getElementsByClassName('overlay-date')[0];
+    const modalElem = document.getElementsByClassName('modal-date')[0];
     modalElem.classList.add('active');
     overlay.classList.add('active');
   }
   CloseModalForPickDate(event)
   {
-    const overlay = document.getElementsByClassName('overlay2')[0];
-    const modalElem = document.getElementsByClassName('modal2')[0];
+    const overlay = document.getElementsByClassName('overlay-date')[0];
+    const modalElem = document.getElementsByClassName('modal-date')[0];
     modalElem.classList.remove('active');
     overlay.classList.remove('active');
   }
