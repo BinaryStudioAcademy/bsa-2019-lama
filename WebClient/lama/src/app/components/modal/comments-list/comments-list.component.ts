@@ -44,7 +44,9 @@ export class CommentsListComponent implements OnInit
   private getComments() 
   {
     this.commentService.getComments(this.photoId)
-      .subscribe(comments => this.commentList = comments);
+      .subscribe(
+        comments => this.commentList = comments,
+        err => this.commentList = []);
   }
 
   // methods

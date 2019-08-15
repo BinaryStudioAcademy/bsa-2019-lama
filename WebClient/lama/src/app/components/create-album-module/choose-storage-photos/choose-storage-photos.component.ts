@@ -28,7 +28,7 @@ export class ChooseStoragePhotosComponent implements OnInit {
     this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
   }
 
-  toggleModal(e)
+  toggleModal()
   {
     this.IsShow = false;
   }

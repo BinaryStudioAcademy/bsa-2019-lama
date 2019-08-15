@@ -21,7 +21,7 @@ export class ChoosePhotoComponent implements OnInit {
   ngOnInit() {
   }
 
-  public clickPerformed(event): void
+  public clickPerformed(): void
   {
     this.Choose = !this.Choose;
     this.onClick.emit(this.photo);
