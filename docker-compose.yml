@@ -1,20 +1,20 @@
 version: '3'
 
 services:
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
-  #   restart: always
-  #   environment:
-  #     discovery.type: single-node
-  #   expose:
-  #     - "9200"
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.3.0
-  #   restart: always
-  #   ports:
-  #     - "5601:5601"
-  #   depends_on:
-  #     - elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    restart: always
+    environment:
+      discovery.type: single-node
+    expose:
+      - "9200"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.0
+    restart: always
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
     ports:
@@ -25,4 +25,4 @@ services:
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
     ports:
-      - "4200:80"
+      - "80:80"
