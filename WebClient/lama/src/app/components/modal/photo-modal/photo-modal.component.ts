@@ -29,6 +29,7 @@ export class PhotoModalComponent implements OnInit
   public shownMenuItems: MenuItem[];
 
   public isEditing: boolean;
+  showEditModal: boolean;
 
   // events
   @Output()
