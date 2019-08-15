@@ -1,11 +1,11 @@
 <a class="link_album">
     <div class="album">
 
-        <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu($event)">
+        <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu()">
             <img src="assets//icons//three-dots-menu.svg" alt="">
         </div>
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
-            <a href="#" class="dropdown-item">Remove Album</a>
+            <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
             <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
 
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>

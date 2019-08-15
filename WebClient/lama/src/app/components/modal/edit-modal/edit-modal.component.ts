@@ -32,4 +32,8 @@ export class EditModalComponent implements OnInit {
   displayRotate() {
 	this.clickedTabsItem = "rotate";
   }
+
+  closeModal() {
+    
+  }
 }

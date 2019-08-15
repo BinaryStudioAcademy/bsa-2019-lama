@@ -19,7 +19,7 @@ export class CropImageComponent implements OnInit
 {
   // fields
   private imageUrl: string;
-  private imageToCropBase64: string;
+  public imageToCropBase64: string;
   private imageService: FileService;
 
   // properties
@@ -68,7 +68,7 @@ export class CropImageComponent implements OnInit
     }
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      croppedImageBase64: modified
+      editedImageBase64: modified
     });
   }
   public cancelClickHandler(): void
