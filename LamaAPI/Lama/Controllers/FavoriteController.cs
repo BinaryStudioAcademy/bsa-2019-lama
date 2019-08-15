@@ -34,7 +34,7 @@ namespace Lama.Controllers
         [Route("ids/{userId}")]
         public async Task<IEnumerable<int>> GetFavoritesIds(int userId)
         {
-            return await _service.GetFavoritesIds(userId);
+            return await _service.GetFavoritesPhotosId(userId);
         }
 
         [HttpPost]
@@ -48,7 +48,11 @@ namespace Lama.Controllers
         {
             return await _service.DeleteFavorite(userId, photoId);
         }
-        
-        
+
+        [HttpDelete("{userId}")]
+        public async Task<int> DeleteFavorites(int userId)
+        {
+            return await _service.DeleteFavoritesForUser(userId);
+        }
     }
 }
