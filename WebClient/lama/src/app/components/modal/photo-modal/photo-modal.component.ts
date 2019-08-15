@@ -216,4 +216,21 @@ export class PhotoModalComponent implements OnInit {
     }
     xhr.send();
   }
+
+  openModalForPickDate(event) {
+    const overlay = document.getElementsByClassName('overlay2')[0];
+    const modalElem = document.getElementsByClassName('modal2')[0];
+    modalElem.classList.add('active');
+    overlay.classList.add('active');
+  }
+  CloseModalForPickDate(event)
+  {
+    const overlay = document.getElementsByClassName('overlay2')[0];
+    const modalElem = document.getElementsByClassName('modal2')[0];
+    modalElem.classList.remove('active');
+    overlay.classList.remove('active');
+  }
+  openModalForPickCoord(event) {
+
+  }
 }

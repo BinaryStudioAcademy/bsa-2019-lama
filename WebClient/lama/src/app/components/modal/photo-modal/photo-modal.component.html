@@ -104,7 +104,17 @@
                                     </div>
                                 </div>
                                 <div class="item-date">
-                                    <app-datepicker></app-datepicker>
+
+                                    <div class="datetimepicker-dummy is-primary" (click)="openModalForPickDate($event)">
+                                        <div class="datetimepicker-dummy-wrapper">
+                                            <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input" type="text" value="09/25/2018">
+                                        </div>
+                                    </div>
+                                    <div class="modal2">
+                                        <app-datepicker></app-datepicker>
+                                    </div>
+                                    <div class="overlay2" (click)="CloseModalForPickDate(event)"></div>
+
                                 </div>
                                 <div class="item-name"></div>
                                 <div class="item-location"></div>
