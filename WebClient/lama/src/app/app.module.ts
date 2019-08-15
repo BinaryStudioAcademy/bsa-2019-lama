@@ -23,7 +23,6 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpClientModule} from '@angular/common/http';
-
 import { SharedModule, ModalModule, RemovedPhotosModule, UiModule, LandingModule } from 'src/app/components';
 import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
 import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
@@ -32,6 +31,7 @@ import { SharedPageComponent } from './components/shared-page/shared-page.compon
 import {SharedPageHeaderComponent} from './components/shared-page/shared-page-header/shared-page-header.component';
 import { FavoriteDirective } from './directives/favorite.directive';
 import { CheckFavoriteDirective } from './directives/check-favorite.directive';
+import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 
 @NgModule({
   declarations:
@@ -53,7 +53,8 @@ import { CheckFavoriteDirective } from './directives/check-favorite.directive';
     SharedPageComponent,
     SharedPageHeaderComponent,
     FavoriteDirective,
-    CheckFavoriteDirective
+    CheckFavoriteDirective,
+    SharedPageAlbumComponent
   ],
   imports:
   [

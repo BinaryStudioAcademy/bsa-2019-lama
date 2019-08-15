@@ -10,10 +10,11 @@ namespace Lama.BusinessLogic.Interfaces
 {
     public interface IAlbumService : IBaseService<Album>
     {
-        Task CreateAlbumWithExistPhotos(AlbumWithExistPhotos album);
-        Task CreateAlbumWithNewPhotos(NewAlbum album);
-        Task<List<ReturnAlbum>> FindAll(int UserId);
-        Task<ReturnAlbum> FindAlbum(int Id);
+        Task CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album);
+        Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto);
+        Task<List<ReturnAlbumDTO>> FindAll(int UserId);
+        Task<ReturnAlbumDTO> FindAlbum(int Id);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments);
+        Task<int> RemoveAlbum(int id);
     }
 }

@@ -6,6 +6,5 @@
 
         void DeclareExchange(string exchangeName, string exchangeType);
         void BindQueue(string exchangeName, string queueName, string routingKey);
-        void ConfigureConsumer(string QueueName, RabbitMQ.Client.IBasicConsumer basicConsumer);
     }
 }

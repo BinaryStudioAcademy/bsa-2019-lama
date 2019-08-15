@@ -11,6 +11,7 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
 import { FavoriteService } from 'src/app/services/favorite.service';
+import { AuthService } from 'src/app/services';
 
 @Component({
   selector: 'main-photos-container',
@@ -40,30 +41,47 @@ export class MainPhotosContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private service: FileService, private _e: ElementRef, private shared: SharedService,
-    private httpService: HttpService, private _favoriteService: FavoriteService)
+    private httpService: HttpService, private auth: AuthService, private _favoriteService: FavoriteService)
   {
     this.resolver = resolver;
   }
-  ngOnInit(){ 
+
+  ngOnInit(){
+    this.GetPhotos();
 
     this.httpService.getData(`users/${localStorage.getItem('userId')}`)
-    .subscribe((user) => 
+    .subscribe((user) =>
     {
       this.currentUser = user;
       this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
           .subscribe(data => this.favorites = new Set<number>(data));
-      this.GetPhotos(parseInt(this.currentUser.id));
       });
   }
 
-  GetPhotos(UserId: number) {
+  public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false
       this.showSpinner = true
       this.photos = []
-    this.service.receiveUsersPhotos(UserId).subscribe(info => {
+    this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
+    });
+  }
+
+  GetPhotos() {
+    this.isNothingFounded = false;
+    this.shared.isSearchTriggeredAtLeastOnce = false;
+    this.showSpinner = true;
+    this.photos = [];
+    this.service.receivePhoto().subscribe(info => {
+      this.photos = info as PhotoRaw[];
+      this.showSpinner = false;
+      console.log(this.photos);
+    }, err => {
+      console.log(err);
+      this.showSpinner = false;
+      this.isNothingFounded = true;
     });
   }
 
@@ -111,15 +129,19 @@ export class MainPhotosContainerComponent implements OnInit {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.currentUser = this.currentUser;
+    componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
-  
+
   public deletePhotoHandler(photoToDeleteId: number): void
   {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
-  getIds(): number{
-    return 1;
+  public updatePhotoHandler(updatedPhoto: PhotoRaw): void
+  {
+    let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
+    this.photos[index] = updatedPhoto
   }
 
 }

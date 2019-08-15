@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using Lama.BusinessLogic.Services;
 using Lama.DataAccess.Repositories;
 using Lama.Domain.DbModels;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lama
 {
@@ -19,7 +21,7 @@ namespace Lama
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Connection = Configuration.GetConnectionString("ConnectionLocal");
+            Connection = configuration["ConnectionStrings:ConnectionLocal"];
         }
 
         public IConfiguration Configuration { get; }
@@ -43,6 +45,7 @@ namespace Lama
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            UpdateDatabase(app);
             if (env.IsDevelopment())
             {
                 IdentityModelEventSource.ShowPII = true;
@@ -58,6 +61,17 @@ namespace Lama
             app.UseCors("MyPolicy");
 
             app.UseMvc();
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }

@@ -23,9 +23,9 @@ export class AuthService {
 
   constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
         this.afAuth.idToken.subscribe(token => {
-          this.token =  token
+          this.token =  token;
           localStorage.setItem('idKey',this.token)});
-        this.userService.getCurrentUser().then(() => this.isUserExisted = true)
+        this.userService.getCurrentUserFirebase().then(() => this.isUserExisted = true)
         .catch(() => this.isUserExisted = false)
    }
 
@@ -74,7 +74,7 @@ export class AuthService {
   }
 
 
-  public doLogout(){
+  public doLogout(){    
     return new Promise((resolve, reject) => {
       if(firebase.auth().currentUser){
         this.afAuth.auth.signOut();
@@ -86,11 +86,17 @@ export class AuthService {
     });
   }
 
+  public getLoggedUserId(): string
+  {
+    return localStorage.getItem("userId");
+  }
+
   public getToken() {
     return localStorage.getItem("idKey");
   }
 
-  public saveCreadeatins(user: firebase.User) {
+  public async saveCreadeatins(user: firebase.User) {
+    
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
     let names = user.displayName.split(' ');
@@ -104,7 +110,14 @@ export class AuthService {
       firstName = names[0];
       lastName = names[1];
     }
-    this.toDataUrl(user.photoURL, (img) => {
+    this._user = {
+      firstName: firstName,
+      lastName: lastName,
+      email: user.email,
+      photo: {imageUrl: user.photoURL}
+    }
+    this.toDataUrl(user.photoURL, (img) => 
+    {
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
         this._user = {
@@ -113,7 +126,11 @@ export class AuthService {
           email: user.email,
           photo: { imageUrl: img}
         }
-      this.registerUser(this._user);
+
+        this.registerUser(this._user).subscribe(id => {
+          console.log(id);
+          localStorage.setItem('userId', id.toString());
+        });
     })
   }  
 
@@ -132,11 +149,8 @@ export class AuthService {
   }
 
 
-  public registerUser(user: UserCreate) {
-    this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions).subscribe(id => {
-      console.log(id);
-      localStorage.setItem('userId', id.toString());
-    })
+  public registerUser(user: UserCreate): Observable<any> {
+    return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
   }
   
 }

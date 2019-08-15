@@ -41,7 +41,7 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
 
 
-  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef }) 
+  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
 
@@ -72,7 +72,7 @@ export class MainAlbumsContainerComponent implements OnInit {
     var zip = new JSZip();
     for(let i =0;i<this.ArchivePhotos.length;i++)
     zip.file(`image${i+1}.jpg`, this.ArchivePhotos[i], {base64: true});
-    
+
     zip.generateAsync({type:"blob"})
     .then(function(content) {
         saveAs(content, name);
@@ -88,5 +88,4 @@ export class MainAlbumsContainerComponent implements OnInit {
     };
     this.router.navigate(['/main/album',eventArgs.id], navigationExtras);
   }
-
 }

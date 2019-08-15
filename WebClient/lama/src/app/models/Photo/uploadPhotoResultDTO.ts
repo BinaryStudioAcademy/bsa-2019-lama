@@ -1,3 +1,5 @@
+import { Like } from '../Reaction/Like';
+
 export interface UploadPhotoResultDTO
 {
     id: number;
@@ -8,4 +10,5 @@ export interface UploadPhotoResultDTO
     sharedLink: string;
     isDeleted: boolean;
     description: string;
+    reactions: Like[];
 };

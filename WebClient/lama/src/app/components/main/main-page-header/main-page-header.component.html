@@ -1,6 +1,6 @@
 <header class="navbar is-fixed-top">
     <div class="align-right">
-        <a><i class="material-icons">reorder</i></a>
+        <a><i class="material-icons" (click)="onMenuClicked($event)">reorder</i></a>
         <div class="logo">
             <img src="assets/alpaca-icon-19.jpg">
             <p>Lama</p>
@@ -18,7 +18,7 @@
                     Search
                 </a>
             </div>
-            
+
             <!--upload-->
             <a (click)="openModalClicked($event)"class="button is-primary is-hidden-mobile add">
                 <i class="material-icons">cloud_upload</i>
