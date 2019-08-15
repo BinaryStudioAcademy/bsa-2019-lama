@@ -11,12 +11,13 @@ import * as JSZipUtils from 'jszip-utils';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { element } from 'protractor';
+import { ZipService } from 'src/app/services/zip.service';
 
 @Component({
   selector: 'app-view-album',
   templateUrl: './view-album.component.html',
   styleUrls: ['./view-album.component.sass'],
-  providers: [FavoriteService]
+  providers: [FavoriteService, ZipService]
 })
 export class ViewAlbumComponent implements OnInit {
 
@@ -31,7 +32,8 @@ export class ViewAlbumComponent implements OnInit {
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
 
-  constructor(private route: ActivatedRoute, private router: Router,private albumService:AlbumService, private _favoriteService: FavoriteService) 
+  constructor(private route: ActivatedRoute, private router: Router,private albumService:AlbumService,
+     private _favoriteService: FavoriteService, private zipService: ZipService) 
   { 
     this.routeSubscription = route.params.subscribe(params=>this.AlbumId=params['id']);
     this.route.queryParams.subscribe(params => {
@@ -101,29 +103,7 @@ export class ViewAlbumComponent implements OnInit {
     }
   }
 
-
-  public urlToPromise(url) {
-    return new Promise(function(resolve, reject) {
-        JSZipUtils.getBinaryContent(url, function (err, data) {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-    }
-public downloadImages() {
-    var zip = new JSZip();
-    this.selectedPhotos.forEach(element => {
-      var filename = element.blobId.replace(/^.*[\\\/]/, '')
-      zip.file(filename, this.urlToPromise(element.blobId), {binary:true});
-    });
-    zip.generateAsync({type:"blob"})
-    .then(function callback(blob) {
-        // see FileSaver.js
-        saveAs(blob, "images.zip");
-    });
+  public downloadImages() {
+    this.zipService.downloadImages(this.selectedPhotos);
   }
-
 }

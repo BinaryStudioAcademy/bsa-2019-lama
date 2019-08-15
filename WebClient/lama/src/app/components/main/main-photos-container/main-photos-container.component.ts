@@ -16,12 +16,13 @@ import { AuthService } from 'src/app/services';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
+import { ZipService } from 'src/app/services/zip.service';
 
 @Component({
   selector: 'main-photos-container',
   templateUrl: './main-photos-container.component.html',
   styleUrls: ['./main-photos-container.component.sass'],
-  providers: [FavoriteService]
+  providers: [FavoriteService, ZipService]
 })
 export class MainPhotosContainerComponent implements OnInit {
 
@@ -51,7 +52,8 @@ export class MainPhotosContainerComponent implements OnInit {
     private shared: SharedService,
     private httpService: HttpService,
     private auth: AuthService,
-    private _favoriteService: FavoriteService)
+    private _favoriteService: FavoriteService,
+    private zipService: ZipService)
   {
     this.favorites = new Set<number>();
   }
@@ -184,27 +186,7 @@ export class MainPhotosContainerComponent implements OnInit {
     });
   }
 
-  public urlToPromise(url) {
-    return new Promise(function(resolve, reject) {
-        JSZipUtils.getBinaryContent(url, function (err, data) {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
-        });
-    });
-    }
-public downloadImages() {
-    var zip = new JSZip();
-    this.selectedPhotos.forEach(element => {
-      var filename = element.blobId.replace(/^.*[\\\/]/, '')
-      zip.file(filename, this.urlToPromise(element.blobId), {binary:true});
-    });
-    zip.generateAsync({type:"blob"})
-    .then(function callback(blob) {
-        // see FileSaver.js
-        saveAs(blob, "images.zip");
-    });
+  public downloadImages() {
+      this.zipService.downloadImages(this.selectedPhotos);
   }
 }
