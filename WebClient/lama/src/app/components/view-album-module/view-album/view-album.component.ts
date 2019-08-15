@@ -10,6 +10,7 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import * as JSZipUtils from 'jszip-utils';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-view-album',
@@ -75,6 +76,28 @@ export class ViewAlbumComponent implements OnInit {
       this.selectedPhotos.splice(index, 1);
     }
   }
+
+  public deleteImages(): void {
+    let indexes = new Array<number>();
+    this.selectedPhotos.forEach(element => {
+      indexes.push(this.album.photoAlbums.findIndex(i => i.id === element.id));
+    });
+    indexes.forEach(element => {
+      this.album.photoAlbums.splice(element, 1);
+    });
+    let ids = new Array<number>();
+    this.album.photoAlbums.forEach(element => {
+      ids.push(element.id);
+    })
+    this.selectedPhotos = []
+    this.albumService.updateAlbum({
+      title: this.album.title,
+      id: this.album.id,
+      photoIds: ids 
+    })
+  }
+
+
   public urlToPromise(url) {
     return new Promise(function(resolve, reject) {
         JSZipUtils.getBinaryContent(url, function (err, data) {
