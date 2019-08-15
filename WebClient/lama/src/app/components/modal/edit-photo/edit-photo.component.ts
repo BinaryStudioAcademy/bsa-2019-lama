@@ -13,7 +13,7 @@ export class EditPhotoComponent implements OnInit
 {  
   // fields
   private imageUrl: string;
-  public imageToEditBase64: string;
+  private imageToEditBase64: string;
   private imageService: FileService;
 
   // properties
