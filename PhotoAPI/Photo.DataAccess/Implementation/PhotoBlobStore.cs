@@ -3,6 +3,7 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Shared.Protocol;
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.BlobModels;
+using Photo.Domain.Settings;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -93,16 +94,16 @@ namespace Photo.DataAccess.Implementation
 
             for (int i = 0; i < values.Length; i++)
             {
-                    var folderName = "images/";
-                    var index = values[i].OriginalBlobId.IndexOf(folderName);
-                    var text = values[i].OriginalBlobId.Substring(index+folderName.Length);
-                    CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(text);
+                var folderName = "images/";
+                var index = values[i].OriginalBlobId.IndexOf(folderName);
+                var text = values[i].OriginalBlobId.Substring(index+folderName.Length);
+                CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(text);
 
-                    await cloudBlob.FetchAttributesAsync();
-                    long fileByteLength = cloudBlob.Properties.Length;
-                    Byte[] myByteArray = new Byte[fileByteLength];
-                    await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
-                    list.Add(myByteArray);
+                await cloudBlob.FetchAttributesAsync();
+                long fileByteLength = cloudBlob.Properties.Length;
+                Byte[] myByteArray = new Byte[fileByteLength];
+                await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
+                list.Add(myByteArray);
             }
             return list;
         }

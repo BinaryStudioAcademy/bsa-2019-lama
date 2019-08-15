@@ -70,12 +70,13 @@ export class MainPhotosContainerComponent implements OnInit {
 
   GetPhotos() {
     this.isNothingFounded = false;
-    this.shared.isSearchTriggeredAtLeastOnce = false
-      this.showSpinner = true
-      this.photos = []
+    this.shared.isSearchTriggeredAtLeastOnce = false;
+    this.showSpinner = true;
+    this.photos = [];
     this.service.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
+      console.log(this.photos);
     }, err => {
       console.log(err);
       this.showSpinner = false;

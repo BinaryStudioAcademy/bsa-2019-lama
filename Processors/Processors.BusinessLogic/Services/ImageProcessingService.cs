@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Drawing;
 
-namespace Photo.BusinessLogic.Services
+namespace Processors.BusinessLogic.Services
 {
-    public static class ImageProcessingsService
+    public class ImageProcessingService : Interfaces.IImageProcessingService
     {
-        public static byte[] CreateThumbnail(byte[] PassedImage, int LargestSide)
+        public byte[] CreateThumbnail(byte[] PassedImage, int LargestSide)
         {
             byte[] ReturnedThumbnail;
 
@@ -33,14 +30,14 @@ namespace Photo.BusinessLogic.Services
                     newHeight = (int)(HW_ratio * (double)startBitmap.Height);
                 }
                 Bitmap newBitmap = new Bitmap(newWidth, newHeight);
-                newBitmap = ResizeImage(startBitmap, newWidth, newHeight);  
+                newBitmap = ResizeImage(startBitmap, newWidth, newHeight);
                 newBitmap.Save(NewMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
                 ReturnedThumbnail = NewMemoryStream.ToArray();
             }
             return ReturnedThumbnail;
         }
 
-        private static Bitmap ResizeImage(Bitmap image, int width, int height)
+        private Bitmap ResizeImage(Bitmap image, int width, int height)
         {
             Bitmap resizedImage = new Bitmap(width, height);
             using (Graphics gfx = Graphics.FromImage(resizedImage))
@@ -49,7 +46,6 @@ namespace Photo.BusinessLogic.Services
                     new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);
             }
             return resizedImage;
-
         }
     }
 }

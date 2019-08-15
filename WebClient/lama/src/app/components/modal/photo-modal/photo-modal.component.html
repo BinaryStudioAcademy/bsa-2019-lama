@@ -8,57 +8,51 @@
                 <div class="columns">
 
                     <!--photo-->
-                    <div class="column is-9">
+                    <div class="column is-8">
                         <div [ngSwitch]="clickedMenuItem?.title">
 
-                            <!--crop template-->
-                            <ng-template ngSwitchCase="crop">
-                                <app-crop-image [imageToCrop]="photo.blobId" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="imageHandler($event)">
-                                </app-crop-image>
-                            </ng-template>
+                            <!--default image template-->
+                            <ng-template ngSwitchDefault>
+                                <div class="is-relative main-photo">
+                                    <!--image-->
+                                    <img src="{{ photo.blobId }}" alt="Image">
 
-                            <div [ngSwitch]="clickedMenuItem?.title">
-                                <!--default image template-->
-                                <ng-template ngSwitchDefault>
-                                    <div class="is-relative main-photo">
-                                        <!--image-->
-                                        <img src="{{ photo.blobId }}" alt="Image">
+                                    <!--overlay-->
+                                    <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
 
-                                        <!--overlay-->
-                                        <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
+                                        <!--menu items-->
+                                        <div class="columns has-text-centered">
 
-                                            <!--menu items-->
-                                            <div class="columns has-text-centered">
-
-                                                <div class="column" *ngFor="let item of shownMenuItems">
-                                                    <div (click)="menuClickHandler(item)">
-                                                        <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
-                                                            <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload($event)">
-                                                                <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
-                                                            </a>
-                                                        </ng-template>
-                                                        <ng-template #other>
-                                                            <i class="material-icons is-block">{{ item.icon }}</i>
-                                                            <span> {{ item.title }} </span>
-                                                        </ng-template>
-                                                    </div>
+                                            <div class="column" *ngFor="let item of shownMenuItems">
+                                                <div (click)="menuClickHandler(item)">
+                                                    <ng-template [ngIf]="item.title == 'download'" [ngIfElse]="other">
+                                                        <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
+                                                            <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
+                                                        </a>
+                                                    </ng-template>
+                                                    <ng-template #other>
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>
+                                                    </ng-template>
                                                 </div>
-
                                             </div>
+
                                         </div>
-
                                     </div>
-                                </ng-template>
 
-                            </div>
-
-
+                                </div>
+                            </ng-template>
                         </div>
+                    </div>
+
+
+                    <!--right panel-->
+                    <div class="column is-4">
 
                         <!--likes-->
-                        <div class="column is-3">
+                        <div>
                             <p class="is-size-2">Reactions</p>
-
+                            
                             <!--set like-->
                             <div class="likes">
                                 <a class="reaction"><img [src]="hasUserReaction ? 'assets//icons/like.svg' : 'assets//icons/no-like.svg' " alt="" (click)="ReactionPhoto(event)"></a>
@@ -79,58 +73,26 @@
                                             <span class="field">Nickname</span>
                                         </div>
                                     </article>
-                                </div>
+                                </div>    
 
                             </div>
-
-                        </div>
-                    </div>
-
-                    <!--comments-->
-                    <div class="comments">
-                        <p class="is-size-2">Comments</p>
-
-                        <!--add new comment-->
-                        <div class="add-comment">
-
-                            <textarea class="textarea " placeholder="e.g. Hello world" rows="3"></textarea>
-                            <div class="buttons is-right">
-                                <button class="button is-primary">Send</button>
-                            </div>
+    
                         </div>
 
-                        <!--comment list-->
-                        <div *ngFor="let i of [0,1,2,3,4]">
-
-                            <article class="media">
-                                <figure class="media-left">
-                                    <p class="image is-64x64">
-                                        <img src="https://i.pravatar.cc/128?img=5">
-                                    </p>
-                                </figure>
-
-                                <div class="media-content">
-                                    <div class="content">
-                                        <p>
-                                            <strong>Jane Smith</strong>
-                                            <br> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa sem. Etiam finibus odio quis feugiat facilisis.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="media-right">
-                                    <button class="delete"></button>
-                                </div>
-                            </article>
-
-                        </div>
+                            
+                        <!--comments-->
+                        <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
 
                     </div>
+                        
                 </div>
+                
             </div>
         </div>
     </div>
+
     <app-share-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-modal>
 	<app-edit-modal [photo]="photo" *ngIf="showEditModal" (onClose)="showSharedModal=false" (onDone)="imageHandler($event)"></app-edit-modal>
+
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>

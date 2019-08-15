@@ -42,10 +42,5 @@ namespace Services.Implementation.RabbitMq
             channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
             channel.QueueBind(queueName, exchangeName, routingKey);
         }
-        public void ConfigureConsumer(string QueueName, IBasicConsumer basicConsumer)
-        {
-            channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-            channel.BasicConsume(QueueName, autoAck: false, consumer: basicConsumer);
-        }
     }
 }

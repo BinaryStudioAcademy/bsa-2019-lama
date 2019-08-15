@@ -14,6 +14,8 @@ import { ShareAlbumComponent } from './share-modal/share-album/share-album.compo
 import { ShareAlbumByLinkComponent } from './share-modal/share-album-by-link/share-album-by-link.component';
 import { ShareAlbumByEmailComponent } from './share-modal/share-album-by-email/share-album-by-email.component';
 import { ShareModalComponent } from './share-modal/share-modal/share-modal.component';
+import { CommentsListComponent } from './comments-list/comments-list.component';
+import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 
 @NgModule(
@@ -24,17 +26,30 @@ import { EditModalComponent } from './edit-modal/edit-modal.component';
     ImageCropperModule,
     UiModule
   ],
+  providers:
+  [
+    CommentService,
+  ],
   declarations:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, CropImageComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, RotateImageComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, EditModalComponent,
+    CropImageComponent, RotateImageComponent,
+    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
+    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
+    CommentsListComponent
   ],
   exports:
   [
-    PhotoModalComponent, PhotoUploadModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
+    PhotoModalComponent, PhotoUploadModalComponent, EditModalComponent,
+    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
+    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
   ],
   entryComponents:
   [
-    PhotoUploadModalComponent, PhotoModalComponent, ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent, ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent, EditModalComponent
+    PhotoUploadModalComponent, PhotoModalComponent, EditModalComponent,
+    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
+    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
+
   ]
 })
 export class ModalModule { }

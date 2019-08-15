@@ -152,12 +152,12 @@ export class PhotoModalComponent implements OnInit {
   private openShareModal(): void {
     this.showSharedModal = true;
   }
-  
+
   private openEditModal(): void
   {
 	this.showEditModal = true;
   }
-  
+
   private deleteImage(): void
   {
     this.fileService.markPhotoAsDeleted(this.photo.id)
@@ -168,7 +168,7 @@ export class PhotoModalComponent implements OnInit {
       });
   }
   public ReactionPhoto(event) {
-   
+
     console.log(this.currentUser);
     if (this.photo.userId === parseInt(this.currentUser.id)) {
       return;
@@ -179,17 +179,24 @@ export class PhotoModalComponent implements OnInit {
       userId: parseInt(this.currentUser.id)
     }
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => { this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); this.hasUserReaction = false }  );
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => 
+        {
+           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
+           this.hasUserReaction = false 
+        });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(x => { this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); this.hasUserReaction = true }  );
+      this.fileService.ReactionPhoto(newReaction).subscribe(x => 
+        { 
+          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)}); 
+          this.hasUserReaction = true;
+        });
     }
   }
 
-  forceDownload(event) {
-    let element = event.target as Element;
-    var url = element.getAttribute("data-href");
-    var fileName = element.getAttribute("data-href");
+  forceDownload() {
+    let url = this.photo.blobId;
+    var fileName = this.photo.blobId;
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.responseType = "blob";

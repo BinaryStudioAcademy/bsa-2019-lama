@@ -9,5 +9,12 @@
             VirtualHost = "/";
             HostName = "localhost";
         }
+        public DefaultConnectionFactory(Models.ConnectionSettings connectionSettings)
+        {
+            UserName = connectionSettings.UserName;
+            Password = connectionSettings.Password;
+            VirtualHost = connectionSettings.VirtualHost;
+            HostName = connectionSettings.HostName;
+        }
     }
 }

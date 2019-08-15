@@ -13,3 +13,13 @@ export * from './Photo/deletedPhotoList';
 export * from './Photo/deletedPhotoDTO';
 export * from './Photo/photoToDeleteRestoreDTO';
 export * from './Photo/updatedPhotoResultDTO';
+
+// comments
+export * from './Comments/comment-dto';
+export * from './Comments/comment-list-dto';
+export * from './Comments/create-comment-dto';
+
+// user
+export * from './User/user';
+export * from './User/get-user-dto';
+export * from './User/userCreate';

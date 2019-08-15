@@ -90,6 +90,18 @@ namespace Lama.BusinessLogic.Services
             return dto;
         }
 
+        public async Task<GetUserDTO> GetUser(int id)
+        {
+            User user = await Context.Users.FindAsync(id);
+            Photo avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
+            string url = (await _photoService.Get(avatar.Id)).Blob256Id;
+
+            GetUserDTO dto = _mapper.Map<GetUserDTO>(user);
+            dto.Avatar = url;
+
+            return dto;
+        }
+
         public async Task Update(User user)
         {
             var updateUser = Context.Users.FirstOrDefault(u => u.Id == user.Id);
