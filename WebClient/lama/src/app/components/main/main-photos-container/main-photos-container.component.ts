@@ -12,6 +12,9 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
 import { AuthService } from 'src/app/services';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import * as JSZipUtils from 'jszip-utils';
 
 @Component({
   selector: 'main-photos-container',
@@ -167,6 +170,33 @@ export class MainPhotosContainerComponent implements OnInit {
       .subscribe(res => {
         this.deletePhotoHandler(element.id);
       });
+    });
+  }
+
+  // public downloadImages(): void {
+
+  // }
+  public urlToPromise(url) {
+    return new Promise(function(resolve, reject) {
+        JSZipUtils.getBinaryContent(url, function (err, data) {
+            if(err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+    }
+public downloadImages() {
+    var zip = new JSZip();
+    this.selectedPhotos.forEach(element => {
+      var filename = element.blobId.replace(/^.*[\\\/]/, '')
+      zip.file(filename, this.urlToPromise(element.blobId), {binary:true});
+    });
+    zip.generateAsync({type:"blob"})
+    .then(function callback(blob) {
+        // see FileSaver.js
+        saveAs(blob, "images.zip");
     });
   }
 }
