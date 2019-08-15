@@ -9,7 +9,7 @@
     </div>
     <div *ngIf="loading" class="items-container-centered">
         <div *ngFor="let item of album.photoAlbums">
-            <main-photo [_photo]="item" [_id]="favorites.has(item.id)==true?item.id:-1" (onClick)="photoClicked($event)"></main-photo>
+            <main-photo [_photo]="item"  (onClick)="photoClicked($event)"></main-photo> <!--[_id]="favorites.has(item.id)==true?item.id:-1"-->
             <!--<app-view-album-photos [_photo]="item"></app-view-album-photos>-->
         </div>
     </div>

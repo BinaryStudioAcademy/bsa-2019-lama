@@ -26,5 +26,5 @@ export class ChoosePhotoComponent implements OnInit {
     this.Choose = !this.Choose;
     this.onClick.emit(this.photo);
   }
-  
+
 }

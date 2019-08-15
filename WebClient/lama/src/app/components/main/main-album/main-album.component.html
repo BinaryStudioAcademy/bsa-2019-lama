@@ -7,7 +7,7 @@
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
             <a href="#" class="dropdown-item">Remove Album</a>
             <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
-
+            <a class="dropdown-item" (click)="openSetCoverModal()">Set Album cover</a>
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
         </div>
         <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
@@ -16,5 +16,6 @@
         <p>{{album.name}}</p>
     </div>
     <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
+    <app-set-album-cover-modal [receivedAlbum]='album' *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
 

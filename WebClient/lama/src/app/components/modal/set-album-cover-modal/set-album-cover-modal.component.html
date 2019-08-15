@@ -1,0 +1,27 @@
+<div class="modal is-active" >
+  <div (click)="toggleModal($event)"></div>
+
+  <div class="head notification size">
+
+      <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
+      <h4 class="title is-4">Choose album cover</h4>
+  </div>
+
+  <!--content-->
+  <div class="modal-content size">
+      <div class="notification color">
+          <!--photos-->
+          <div class="items-container-centered height">
+              <div *ngFor="let item of receivedAlbum.photoAlbums">
+                <app-choose-album-cover [photo]="item" (onClick)="clickPerformed($event)"></app-choose-album-cover>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+  <div class="modal-card-foot foot size buttons is-right">
+      <a class="button is-primary" (click)="toggleModal()">Save Changes</a>
+  </div>
+</div>
+

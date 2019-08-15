@@ -22,6 +22,7 @@ export class MainAlbumComponent implements OnInit {
   isContent:boolean = false;
   isMenu:boolean = true;
   showSharedModal: boolean = false;
+  showSetCoverModal: boolean = false;
 
   imgname = require("../../../../assets/icon-no-image.svg");
   constructor(private _http: HttpClient, private albumService: AlbumService) { }
@@ -47,7 +48,13 @@ export class MainAlbumComponent implements OnInit {
   {
     this.showSharedModal = true;
   }
-  
+
+  public openSetCoverModal(){
+    console.log("set cover opened");
+    this.showSetCoverModal = !this.showSetCoverModal;
+    console.log(this.showSetCoverModal);
+  }
+
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
