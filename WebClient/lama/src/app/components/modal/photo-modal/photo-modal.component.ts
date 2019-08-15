@@ -55,17 +55,11 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.photo.reactions != null) {
-      this.hasUserReaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
-      if (this.hasUserReaction) {
-        this.hasUserReaction = true;
-      } else {
-        this.hasUserReaction = false;
-      }
-    }
-    else {
-      this.hasUserReaction = false;
-    }
+     let reactions = this.photo.reactions;
+    console.log(parseInt(this.currentUser.id));
+    console.log(reactions);
+     this.hasUserReaction = reactions.some(x => x.userId == parseInt(this.currentUser.id));
+     console.log(this.hasUserReaction);
   }
 
   private initializeMenuItem() {

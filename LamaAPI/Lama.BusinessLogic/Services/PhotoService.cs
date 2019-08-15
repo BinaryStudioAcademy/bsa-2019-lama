@@ -152,7 +152,7 @@ namespace Lama.BusinessLogic.Services
             for (int i = 0; i < photos.Count() ; i++)
             {
                 var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
-                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.LikeDTO>>(getLike);
+                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.Reaction.LikeDTO>>(getLike);
             }
             return photos;
         }
@@ -171,7 +171,7 @@ namespace Lama.BusinessLogic.Services
             for (int i = 0; i < photos.Count(); i++)
             {
                 var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
-                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.LikeDTO>>(like);
+                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.Reaction.LikeDTO>>(like);
             }
             return photos;
         }
