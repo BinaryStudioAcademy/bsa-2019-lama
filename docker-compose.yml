@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
     restart: always
@@ -8,6 +9,7 @@ services:
       discovery.type: single-node
     expose:
       - "9200"
+
   kibana:
     image: docker.elastic.co/kibana/kibana:7.3.0
     restart: always
@@ -15,6 +17,7 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
     ports:
@@ -22,7 +25,16 @@ services:
     environment:
       ConnectionStrings:ConnectionLocal: ${LamaDBConnectionString}
       ASPNETCORE_URLS: http://+:5000
+
+  photoapi:
+    image: krasnovnikita/bsa2019-lama:photo-api
+    ports:
+      - "6000:6000"
+    environment:
+      BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      ASPNETCORE_URLS: http://+:5000
+
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
     ports:
-      - "80:80"
+      - "4200:80"
