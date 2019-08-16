@@ -43,13 +43,12 @@ export class PhotoModalComponent implements OnInit {
   private hasUserReaction: boolean;
 
   // location
-  title: string = 'AGM project';
   latitude: number;
   longitude: number;
   zoom: number;
   address: string;
   private geoCoder;
-
+  GPS: any;
   @ViewChild('search', { static: true })
   public searchElementRef: ElementRef;
 
@@ -77,45 +76,18 @@ export class PhotoModalComponent implements OnInit {
     this.hasUserReaction = reactions.some(x => x.userId == parseInt(this.currentUser.id));
     this.GetFile();
 
-    // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      this.setCurrentLocation();
-      this.geoCoder = new google.maps.Geocoder;
-
-      /*
-      let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-        types: ['address']
-      });
-      autocomplete.addListener('place_changed', () => {
-        this.ngZone.run(() => {
-          // get the place result
-          let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-          // verify result
-          if (place.geometry === undefined || place.geometry === null) {
-            return;
-          }
-
-          // set latitude, longitude and zoom
-          this.latitude = place.geometry.location.lat();
-          this.longitude = place.geometry.location.lng();
-          this.zoom = 12;
-        });
-      });*/
-    });
   }
 
+  ConvertDMSToDD(degrees: number, minutes: number, seconds: number, direction): number {
+    let dd = degrees + minutes / 60 + seconds / (60 * 60);
+
+    if (direction == "S" || direction == "W") {
+      dd = dd * -1;
+    } // Don't do anything for N or E
+    return dd;
+  }
   // Get Current Location Coordinates
-  private setCurrentLocation() {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-        this.zoom = 8;
-        this.getAddress(this.latitude, this.longitude);
-      });
-    }
-  }
+
   markerDragEnd($event: MouseEvent) {
     console.log($event);
     this.latitude = $event.coords.lat;
@@ -124,17 +96,15 @@ export class PhotoModalComponent implements OnInit {
   }
   getAddress(latitude, longitude) {
     this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
-      console.log(results);
-      console.log(status);
       if (status === 'OK') {
         if (results[0]) {
           this.zoom = 12;
           this.address = results[0].formatted_address;
         } else {
-          window.alert('No results found');
+          alert('No results found');
         }
       } else {
-        window.alert('Geocoder failed due to: ' + status);
+        alert('Geocoder failed due to: ' + status);
       }
     });
   }
@@ -144,23 +114,60 @@ export class PhotoModalComponent implements OnInit {
   GetFile() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blob256Id, true);
-    xhr.onload = function () {
-
+    xhr.onload = () => {
       var response = xhr.responseText;
       var binary = ""
-
       for (let i = 0; i < response.length; i++) {
         binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
       }
-
       let src = 'data:image/jpeg;base64,' + btoa(binary);
       let exifObj = load(src);
-      let gps = exifObj["GPS"];
-      console.log(gps);
-    }
+      console.log(exifObj);
+      this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
+      this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
 
+
+      // load Places Autocomplete
+      this.mapsAPILoader.load().then(() => {
+
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            console.log(this.longitude);
+            //this.latitude = position.coords.latitude;
+            //this.longitude = position.coords.longitude;
+            this.zoom = 8;
+            this.getAddress(this.latitude, this.longitude);
+          });
+        }
+        
+        this.geoCoder = new google.maps.Geocoder;
+
+        /*
+        let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+          types: ['address']
+        });
+        autocomplete.addListener('place_changed', () => {
+          this.ngZone.run(() => {
+            // get the place result
+            let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+  
+            // verify result
+            if (place.geometry === undefined || place.geometry === null) {
+              return;
+            }
+  
+            // set latitude, longitude and zoom
+            this.latitude = place.geometry.location.lat();
+            this.longitude = place.geometry.location.lng();
+            this.zoom = 12;
+          });
+        });*/
+      });
+
+    }
     xhr.overrideMimeType('text/plain; charset=x-user-defined');
     xhr.send();
+
   }
   private initializeMenuItem() {
     this.defaultMenuItem =
