@@ -74,7 +74,7 @@ export class AuthService {
   }
 
 
-  public doLogout(){    
+  public doLogout(){
     return new Promise((resolve, reject) => {
       if(firebase.auth().currentUser){
         this.afAuth.auth.signOut();
@@ -86,9 +86,9 @@ export class AuthService {
     });
   }
 
-  public getLoggedUserId(): string
+  public getLoggedUserId()
   {
-    return localStorage.getItem("userId");
+    return Number(localStorage.getItem("userId"));
   }
 
   public getToken() {
@@ -96,7 +96,7 @@ export class AuthService {
   }
 
   public async saveCreadeatins(user: firebase.User) {
-    
+
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
     let names = user.displayName.split(' ');
@@ -116,7 +116,7 @@ export class AuthService {
       email: user.email,
       photo: {imageUrl: user.photoURL}
     }
-    this.toDataUrl(user.photoURL, (img) => 
+    this.toDataUrl(user.photoURL, (img) =>
     {
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
@@ -132,7 +132,7 @@ export class AuthService {
           localStorage.setItem('userId', id.toString());
         });
     })
-  }  
+  }
 
   public toDataUrl(url, callback) {
     var xhr = new XMLHttpRequest();
@@ -152,5 +152,5 @@ export class AuthService {
   public registerUser(user: UserCreate): Observable<any> {
     return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
   }
-  
+
 }

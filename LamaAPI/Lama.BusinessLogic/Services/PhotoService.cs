@@ -53,11 +53,14 @@ namespace Lama.BusinessLogic.Services
                     .GetAsync(l => l.PhotoId == photoDocumentDTO.Id))
                     .ToArray();
 
-                photoDocumentDTO.Reactions = _mapper.Map<Domain.DTO.LikeDTO[]>(likes);
+                photoDocumentDTO.Reactions = _mapper.Map<LikeDTO[]>(likes);
 
-                foreach (Domain.DTO.LikeDTO like in photoDocumentDTO.Reactions)
+                foreach (LikeDTO like in photoDocumentDTO.Reactions)
                 {
-                    like.Photo.Likes = null;
+                    if (like.Photo != null)
+                    {
+                        like.Photo.Likes = null;
+                    }
                 }
             }
 
@@ -172,7 +175,7 @@ namespace Lama.BusinessLogic.Services
             for (int i = 0; i < photos.Count() ; i++)
             {
                 var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
-                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.LikeDTO>>(getLike);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
             }
             return photos;
         }
@@ -191,7 +194,7 @@ namespace Lama.BusinessLogic.Services
             for (int i = 0; i < photos.Count(); i++)
             {
                 var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
-                photos[i].Reactions = _mapper.Map<IEnumerable<Domain.DTO.LikeDTO>>(like);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
             }
             return photos;
         }

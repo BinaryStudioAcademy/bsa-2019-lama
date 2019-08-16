@@ -1,4 +1,3 @@
-import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
 
 export interface UploadPhotoResultDTO

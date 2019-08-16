@@ -123,13 +123,13 @@ export class CreateAlbumModalComponent implements OnInit {
       this.checkForm = false;
     } else {
       if (this.LoadNewImage === true) {
-        this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
+        this.album = { title: this.albumName, photo: this.photos[0], authorId: this.currentUser.id, photos: this.photos };
         this.albumService.createAlbumWithNewPhotos(this.album)
-        .subscribe((createdAlbum) => 
-        {         
+        .subscribe((createdAlbum) =>
+        {
           console.log(createdAlbum);
-          
-          
+
+
           this.createdAlbumEvent.emit({
             id: createdAlbum.id,
             name: createdAlbum.title,
@@ -140,9 +140,9 @@ export class CreateAlbumModalComponent implements OnInit {
           this.toggleModal();
         });
       } else {
-        this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: parseInt(this.currentUser.id) };
+        this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: this.currentUser.id };
         this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos)
-        .subscribe((createdAlbum) => 
+        .subscribe((createdAlbum) =>
         {
           console.log(createdAlbum);
 
