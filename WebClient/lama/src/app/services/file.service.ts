@@ -63,9 +63,9 @@ export class FileService
     return this.client.put(`${environment.lamaApiUrl}/api/photo`, photoToUpdate)
             .pipe(map(res => res as UpdatedPhotoResultDTO));
   }
-  public ReactionPhoto(NewReaction: NewLike)
+  public ReactionPhoto(NewReaction: NewLike): Observable<number>
   {
-    return this.client.post(`${environment.lamaApiUrl}/api/photo/reaction`, NewReaction);
+    return this.client.post<number>(`${environment.lamaApiUrl}/api/photo/reaction`, NewReaction);
   }
   public RemoveReactionPhoto(Reaction: NewLike)
   {
