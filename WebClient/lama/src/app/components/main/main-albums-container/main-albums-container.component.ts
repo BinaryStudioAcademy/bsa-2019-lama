@@ -7,7 +7,7 @@ import { User } from 'src/app/models/User/user';
 import { HttpService } from 'src/app/services/http.service';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw } from 'src/app/models';
-
+import * as exif from 'exif-js';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
@@ -60,6 +60,7 @@ export class MainAlbumsContainerComponent implements OnInit {
     var zip = new JSZip();
     for(let i =0;i<this.ArchivePhotos.length;i++)
     zip.file(`image${i+1}.jpg`, this.ArchivePhotos[i], {base64: true});
+
 
     zip.generateAsync({type:"blob"})
     .then(function(content) {
