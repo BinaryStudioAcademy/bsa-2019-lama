@@ -7,7 +7,7 @@ import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-mod
 import { SharedModule } from '../shared.module';
 import { CropImageComponent } from './crop-image/crop-image.component';
 import { UiModule } from '../ui/ui.module';
-import { RotateImageComponent } from './rotate-image/rotate-image.component'
+import { RotateImageComponent } from './rotate-image/rotate-image.component';
 import { ShareByEmailModalComponent } from './share-modal/share-by-email-modal/share-by-email-modal.component';
 import { ShareByLinkModalComponent } from './share-modal/share-by-link-modal/share-by-link-modal.component';
 import { ShareAlbumComponent } from './share-modal/share-album/share-album.component';
@@ -18,6 +18,8 @@ import { CommentsListComponent } from './comments-list/comments-list.component';
 import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
+import { EditPhotoComponent } from './edit-photo/edit-photo.component';
+
 @NgModule(
 {
   imports:
@@ -40,7 +42,8 @@ import { AgmCoreModule } from '@agm/core';
     CropImageComponent, RotateImageComponent,
     ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
     ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
-    CommentsListComponent
+    CommentsListComponent,
+    EditPhotoComponent
   ],
   exports:
   [

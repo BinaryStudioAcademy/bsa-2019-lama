@@ -15,6 +15,9 @@ import { AlbumService } from 'src/app/services/album.service';
 })
 export class MainAlbumComponent implements OnInit {
 
+  @Output()
+  public deleteAlbumEvent: EventEmitter<ViewAlbum> = new EventEmitter<ViewAlbum>();
+
   @Input ('_album') album: ViewAlbum;
   @Output() onClick = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
@@ -52,6 +55,7 @@ export class MainAlbumComponent implements OnInit {
 
   public removeAlbum() {
     this.albumService.removeAlbum(this.album.id).subscribe( x => x);
+    this.deleteAlbumEvent.emit(this.album);
   }
 
 }
