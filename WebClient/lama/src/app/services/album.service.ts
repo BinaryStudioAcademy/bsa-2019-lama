@@ -7,6 +7,8 @@ import { NewAlbum } from '../models/Album/NewAlbum';
 import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
 import { PhotoRaw } from '../models';
 import { UpdateAlbum } from '../models/Album/updatedAlbum';
+import { Observable } from 'rxjs';
+import { ReturnAlbumDTO } from '../models/Album/return-album-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -27,23 +29,27 @@ export class AlbumService {
       return this.http.get<ViewAlbum[]>(this.baseUrl + this.routeAlbum + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
 
-  public getAlbum(userId: number , httpParams?: any) {
+  public getAlbum(userId: number , httpParams?: any)
+  {
     return this.http.get<ViewAlbum>(this.baseUrl + this.routeAlbum + '/album'+ `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
-  public createAlbumWithNewPhotos(album: NewAlbum) {
+  public createAlbumWithNewPhotos(album: NewAlbum): Observable<ReturnAlbumDTO>
+  {
       const headers = new HttpHeaders().set('content-type', 'application/json');
-      return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto', album , { headers });
+      return this.http.post<ReturnAlbumDTO>(this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto', album , { headers });
   }
 
-  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
+  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos): Observable<ReturnAlbumDTO>
+  {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
+    return this.http.post<ReturnAlbumDTO>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
   }
 
   public updateAlbumCover(album: UpdateAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
-  }
+  }    
+}
 
   public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');

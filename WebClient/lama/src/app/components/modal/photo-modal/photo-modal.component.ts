@@ -5,7 +5,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
-import { FileService } from 'src/app/services';
+import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
 import {Like } from 'src/app/models/Reaction/Like';
@@ -24,6 +24,8 @@ export class PhotoModalComponent implements OnInit
   public isShown: boolean;
 
   public showSharedModal: boolean = false;
+  public showSharedByLinkModal: boolean = false;
+  public showSharedByEmailModal: boolean = false;
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -40,6 +42,8 @@ export class PhotoModalComponent implements OnInit
 
   // fields
   private fileService: FileService;
+  private authService: AuthService;
+  private userService: UserService;
 
   private defaultMenuItem: MenuItem[];
   private editingMenuItem: MenuItem[];
@@ -48,10 +52,12 @@ export class PhotoModalComponent implements OnInit
   currentUser: User;
   
   // constructors
-  constructor(fileService: FileService) {
+  constructor(fileService: FileService, authService: AuthService, userService: UserService) {
     this.isShown = true;
 
     this.fileService = fileService;
+    this.authService = authService;
+    this.userService = userService;
 
     this.initializeMenuItem();
 
@@ -60,12 +66,21 @@ export class PhotoModalComponent implements OnInit
   }
 
   ngOnInit() {
-    if (this.photo.reactions != null) {
-      this.hasUserReaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
-    }
-    else {
-      this.hasUserReaction = false;
-    }
+    const loggedUserId: number = parseInt(this.authService.getLoggedUserId());
+
+    this.userService.getUser(loggedUserId)
+      .subscribe(user =>
+        {
+          this.currentUser = user;
+
+          if (this.photo.reactions != null) {
+            this.hasUserReaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
+          }
+          else {
+            this.hasUserReaction = false;
+          }
+        });
+
   }
 
   private initializeMenuItem() {
@@ -143,6 +158,8 @@ export class PhotoModalComponent implements OnInit
 
           this.goBackToImageView();
         });
+		
+	this.updatePhotoEvent.emit(this.photo);
   }
 
   public goBackToImageView(): void 
@@ -154,7 +171,20 @@ export class PhotoModalComponent implements OnInit
   }
 
   private openShareModal(): void {
-    this.showSharedModal = true;
+    this.showSharedModal = !this.showSharedModal;
+  }
+
+  private openEditModal(): void
+  {
+	this.showEditModal = true;
+  }
+  
+  openShareByLink() {
+    this.showSharedByLinkModal = true;
+  }
+
+  openShareByEmail() {
+    this.showSharedByEmailModal = true;
   }
 
   private deleteImage(): void
@@ -168,11 +198,17 @@ export class PhotoModalComponent implements OnInit
   }
   public ReactionPhoto() {
 
-    console.log(this.currentUser);
-    if (this.photo.userId === parseInt(this.currentUser.id)) {
-      return;
-    }
-    let hasreaction = this.photo.reactions.some(x => x.userId === parseInt(this.currentUser.id));
+    // TODO: you can not like your own photos
+    // but currently we are testing
+    // so lets suppose you can like any photos
+
+    // TODO: uncomment line below
+    // also maybe hide like from HTML if its your photo
+
+    //if (this.photo.userId === parseInt(this.currentUser.id)) return;
+
+
+    let hasreaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
     const newReaction: NewLike = {
       photoId: this.photo.id,
       userId: parseInt(this.currentUser.id)
@@ -180,14 +216,18 @@ export class PhotoModalComponent implements OnInit
     if (hasreaction) {
       this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
         {
-           this.photo.reactions = this.photo.reactions.filter(x=> x.userId != parseInt(this.currentUser.id)); 
+           this.photo.reactions = this.photo.reactions.filter(x=> x.user.id != parseInt(this.currentUser.id)); 
            this.hasUserReaction = false;
         });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(x =>
+      this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId =>
         {
-          this.photo.reactions.push({ userId: parseInt(this.currentUser.id)});
+          this.photo.reactions.push({ 
+            id: newLikeId,
+            user: { id: parseInt(this.currentUser.id) }, 
+            photo: { id: this.photo.id },
+          });
           this.hasUserReaction = true;
         });
     }

@@ -12,17 +12,18 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
 import { FavoriteService } from 'src/app/services/favorite.service';
-import { AuthService } from 'src/app/services';
+import { AuthService, UserService } from 'src/app/services';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
 import { ZipService } from 'src/app/services/zip.service';
+import { delay } from 'q';
 
 @Component({
   selector: 'main-photos-container',
   templateUrl: './main-photos-container.component.html',
   styleUrls: ['./main-photos-container.component.sass'],
-  providers: [FavoriteService, ZipService]
+  providers: [FavoriteService, ZipService, UserService]
 })
 export class MainPhotosContainerComponent implements OnInit {
 
@@ -48,12 +49,10 @@ export class MainPhotosContainerComponent implements OnInit {
   constructor(
     private resolver: ComponentFactoryResolver,
     private service: FileService,
-    private _e: ElementRef,
     private shared: SharedService,
-    private httpService: HttpService,
-    private auth: AuthService,
     private _favoriteService: FavoriteService,
-    private zipService: ZipService)
+    private zipService: ZipService,
+    private userService: UserService)
   {
     this.favorites = new Set<number>();
   }
@@ -61,14 +60,25 @@ export class MainPhotosContainerComponent implements OnInit {
   ngOnInit(){
     this.GetPhotos();
     this.selectedPhotos = []
-    this.httpService.getData(`users/${localStorage.getItem('userId')}`)
-    .subscribe((user) =>
-    {
-      this.currentUser = user;
+    let userId: string = localStorage.getItem('userId');
+    if(userId == null){
+      let email = localStorage.getItem('email');
+      if(email != null)
+        this.userService.getUserByEmailObservation(email)
+          .subscribe(user => this.initializeUserAndFavorites(user));
+      else
+        console.log("Occured error! Please, try later");
+      }
+    else
+      this.userService.getUser(parseInt(userId))
+        .subscribe(user => this.initializeUserAndFavorites(user));
+  }
+
+  initializeUserAndFavorites(user: User){
+    this.currentUser = user;
       this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
           .subscribe(data => this.favorites = new Set<number>(data));
-      });
-  }
+    };
 
   public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
@@ -173,7 +183,7 @@ export class MainPhotosContainerComponent implements OnInit {
   public updatePhotoHandler(updatedPhoto: PhotoRaw): void
   {
     let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
-    this.photos[index] = updatedPhoto
+    this.photos[index] = updatedPhoto;
   }
 
   private deleteImages(): void

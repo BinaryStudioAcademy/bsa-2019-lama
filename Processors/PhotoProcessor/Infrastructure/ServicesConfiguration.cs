@@ -42,6 +42,7 @@ namespace PhotoProcessor.Infrastructure
             configuration = new ConfigurationBuilder()
                                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                                 .AddJsonFile("appsettings.json")
+                                .AddEnvironmentVariables()
                                 .Build();
 
             Configure();

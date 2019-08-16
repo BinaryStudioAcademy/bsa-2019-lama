@@ -1,4 +1,5 @@
 import { Like } from '../Reaction/Like';
+import { LikeDTO } from '../Reaction/LikeDTO';
 
 export interface PhotoRaw
 {
@@ -14,5 +15,5 @@ export interface PhotoRaw
     location?: string;
     userId?: number;
     categoryId?: number;
-    reactions: Like[];
+    reactions: LikeDTO[];
 }

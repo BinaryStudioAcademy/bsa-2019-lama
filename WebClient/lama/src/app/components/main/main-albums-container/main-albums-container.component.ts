@@ -6,7 +6,7 @@ import { AlbumService } from 'src/app/services/album.service';
 import { User } from 'src/app/models/User/user';
 import { HttpService } from 'src/app/services/http.service';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-import { PhotoRaw } from 'src/app/models';
+import { PhotoRaw, CreatedAlbumsArgs } from 'src/app/models';
 
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -35,6 +35,7 @@ export class MainAlbumsContainerComponent implements OnInit {
           this.favorite.photoAlbums = data;
           this.favorite.id = 0;
           this.favorite.title = "Favorite photos";
+          this.favorite.photo = this.favorite.photoAlbums[0];
         }
       });
     });
@@ -61,7 +62,21 @@ export class MainAlbumsContainerComponent implements OnInit {
      const factory = this.resolver.resolveComponentFactory(CreateAlbumModalComponent);
      const componentRef = this.entry.createComponent(factory);
      componentRef.instance.currentUser = this.currentUser;
-    // created album
+     componentRef.instance.createdAlbumEvent.subscribe((createdAlbums: CreatedAlbumsArgs) =>
+     {
+        this.albums.push({
+          id: createdAlbums.id,
+          name: createdAlbums.name,
+          title: createdAlbums.name,
+          photo:
+          {
+            blob256Id: createdAlbums.photoUrl,
+            blobId: createdAlbums.photoUrl,
+            reactions: [],
+          },
+          photoAlbums: []
+        });
+     });
   }
   ArchiveAlbum(event: ViewAlbum)
   {
@@ -87,5 +102,9 @@ export class MainAlbumsContainerComponent implements OnInit {
       }
     };
     this.router.navigate(['/main/album', eventArgs.id], navigationExtras);
+  }
+  public deleteAlbumHandler(albumToDelete: ViewAlbum)
+  {
+    this.albums = this.albums.filter(a => a !== albumToDelete);
   }
 }

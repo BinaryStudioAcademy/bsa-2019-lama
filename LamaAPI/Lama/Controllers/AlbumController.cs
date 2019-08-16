@@ -24,14 +24,16 @@ namespace Lama.Controllers
         }
 
         [HttpPost("CreateWithNewPhoto")]
-        public async Task CreateAlbumWithNewPhotos([FromBody] NewAlbumDTO albumDto)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos([FromBody] NewAlbumDTO albumDto)
         {
-            await _service.CreateAlbumWithNewPhotos(albumDto);
+            int createdAlbumId = await _service.CreateAlbumWithNewPhotos(albumDto);
+            return await _service.FindAlbum(createdAlbumId);
         }
         [HttpPost("CreateWithExistPhoto")]
-        public async Task CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotosDTO album)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotosDTO album)
         {
-            await _service.CreateAlbumWithExistPhotos(album);
+            int createdAlbumId = await _service.CreateAlbumWithExistPhotos(album);
+            return await _service.FindAlbum(createdAlbumId);
         }
         [HttpPost("ArchivePhotos")]
         public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
@@ -67,11 +69,6 @@ namespace Lama.Controllers
         {
             return await _service.FindAlbum(id);
         }
-
-        [HttpGet]
-        public async Task<string> GetAlbums()
-        {
-            return null;
-        }
+        
     }
 }

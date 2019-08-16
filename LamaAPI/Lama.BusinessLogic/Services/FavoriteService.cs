@@ -7,33 +7,67 @@ using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
 using System.Linq;
 using Lama.Domain.DTO;
+using AutoMapper;
+using Lama.Domain.DTO.Photo;
 
 namespace Lama.BusinessLogic.Services
 {
     public class FavoriteService : BaseService<Favorite>, IFavoriteService
     {
+        private readonly IMapper mapper;
         private readonly IPhotoService _photoService;
-        
-        public FavoriteService(IPhotoService photoService, ApplicationDbContext context)
-            :base(context)
+
+        public FavoriteService(IPhotoService photoService, ApplicationDbContext context, IMapper mapper)
+            : base(context)
         {
+            this.mapper = mapper;
             _photoService = photoService;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> GetFavoritesPhotos(int userId)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetFavoritesPhotos(int userId)
         {
 
             List<PhotoDocument> photos = new List<PhotoDocument>();
-            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f=> f.UserId == userId).ToListAsync();
-            foreach(var far in favorites)
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+            foreach (var far in favorites)
             {
                 PhotoDocument pd = await _photoService.Get(far.PhotoId);
-                if(pd==null)
+                if (pd == null)
                 {
                     await DeleteFavorite(userId, far.PhotoId);
                 }
                 else if (!pd.IsDeleted)
                     photos.Add(pd);
+            }
+
+            PhotoDocumentDTO[] photoDocumentDTOs = mapper.Map<PhotoDocumentDTO[]>(photos);
+            foreach(PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            {
+                photoDocumentDTO.Reactions =
+                    mapper.Map<LikeDTO[]>(
+                    Context.Likes
+                    .Where(l => l.PhotoId == photoDocumentDTO.Id)
+                    .ToArray());
+
+                foreach (LikeDTO like in photoDocumentDTO.Reactions)
+                {
+                    like.Photo.Likes = null;
+                }
+            }
+
+
+
+            return photoDocumentDTOs;
+        }
+
+        public async Task<IEnumerable<int>> GetFavoritesPhotosId(int userId)
+        {
+
+            List<int> photos = new List<int>();
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+            foreach (var far in favorites)
+            {
+                photos.Add(far.PhotoId);
             }
             return photos;
         }
@@ -42,10 +76,10 @@ namespace Lama.BusinessLogic.Services
         {
 
             List<int> photos = new List<int>();
-            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId ).ToListAsync();
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
             foreach (var far in favorites)
             {
-                photos.Add(far.PhotoId);
+                photos.Add(far.Id);
             }
             return photos;
         }
@@ -65,6 +99,17 @@ namespace Lama.BusinessLogic.Services
                 return fav.Id;
             }
             return -1;
+        }
+
+        public async Task<int> DeleteFavoritesForUser(int userId)
+        {
+            IEnumerable<int> favorites = await GetFavoritesIds(userId);
+            foreach (var f in favorites)
+            {
+                Favorite fav = await Context.Favorites.FindAsync(f);
+                Context.Favorites.Remove(fav);
+            }
+            return await Context.SaveChangesAsync();
         }
     }
 }
