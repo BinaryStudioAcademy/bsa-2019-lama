@@ -85,12 +85,13 @@
                         <div id="info-content" class="information">
                             <div class="flex-content info">
                                 <div class="titl">
-                                    <h4 class="title is-4">Information</h4>
+                                    <h4 class="title is-4">Information </h4>
+                                    <img src="assets/icons/right-arrow.svg" alt="" (click)="CloseInfo(event)">
                                 </div>
                                 <div class="item-description">
                                     <div class="field">
                                         <div class="control">
-                                            <textarea class="textarea is-primary" placeholder="Description" rows="2"></textarea>
+                                            <textarea class="textarea is-primary" [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -100,13 +101,14 @@
                                     </div>
                                     <div class="flex-album">
                                         <div class="album">
+
                                         </div>
                                     </div>
                                 </div>
                                 <div class="item-date">
                                     <div class="datetimepicker-dummy is-primary" (click)="openModalForPickDate($event)">
                                         <div class="datetimepicker-dummy-wrapper">
-                                            <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input size" type="text" value="09/25/2018">
+                                            <input placeholder="" readonly="readonly" [ngModel]="photo.uploadDate | date:'MM/dd/yyyy'" class="datetimepicker-dummy-input size" type="text">
                                         </div>
                                     </div>
                                     <div class="modal-date">
@@ -114,13 +116,6 @@
                                     </div>
                                     <div class="overlay-date" (click)="CloseModalForPickDate(event)"></div>
 
-                                </div>
-                                <div class="item-name">
-                                    <div class="field">
-                                        <div class="control">
-                                            <input class="input is-primary" type="text" placeholder="Name">
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="item-location">
                                     <!-- <div class="form-group">
@@ -131,7 +126,9 @@
                                         <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
                                     </agm-map>
                                     -->
-                                    <h5>Address: {{address}}</h5>
+                                    <div class="adress">
+                                        <h4 class="title is-6">{{address}}</h4>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -28,9 +28,9 @@ export class PhotoModalComponent implements OnInit {
 
   // events
   @Output()
-  public deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvenet = new EventEmitter<number>();
   @Output()
-  public updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  updatePhotoEvent = new EventEmitter<PhotoRaw>();
 
   // fields
   private fileService: FileService;
@@ -57,6 +57,7 @@ export class PhotoModalComponent implements OnInit {
     this.isShown = true;
 
     this.fileService = fileService;
+
 
     this.initializeMenuItem();
 
@@ -139,7 +140,7 @@ export class PhotoModalComponent implements OnInit {
             this.getAddress(this.latitude, this.longitude);
           });
         }
-        
+
         this.geoCoder = new google.maps.Geocoder;
 
         /*
@@ -330,5 +331,11 @@ export class PhotoModalComponent implements OnInit {
   }
   openModalForPickCoord(event) {
 
+  }
+  CloseInfo(event)
+  {
+    let element = document.getElementById("info-content");
+    element.style.visibility = 'hidden';
+    element.style.width = "0px";
   }
 }

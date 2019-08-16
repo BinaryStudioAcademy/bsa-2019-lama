@@ -37,22 +37,20 @@ export class MainAlbumComponent implements OnInit {
      this.isContent = true;
      this.isMenu = false;
   }
-  public leave($event)
-  {
+  public leave($event) {
     this.isContent = false;
     this.isMenu = true;
   }
 
-  public openShareModal(): void
-  {
+  public openShareModal(): void {
     this.showSharedModal = true;
   }
-  
+
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
 
-  public removeAlbum(){
+  public removeAlbum() {
     this.albumService.removeAlbum(this.album.id).subscribe( x => x);
   }
 
