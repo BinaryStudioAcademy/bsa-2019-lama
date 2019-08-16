@@ -148,6 +148,10 @@ namespace Lama.BusinessLogic.Services
             var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
             var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
 
+            if (photos == null)
+            {
+                return null;
+            }
   
             for (int i = 0; i < photos.Count() ; i++)
             {
