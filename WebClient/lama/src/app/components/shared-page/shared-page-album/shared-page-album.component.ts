@@ -46,7 +46,7 @@ export class SharedPageAlbumComponent implements OnInit {
   }
 
   ngOnInit() {
-    let userId: number = 1;//parseInt(localStorage.getItem("userId"));
+    let userId: number = parseInt(localStorage.getItem("userId"));
     this.selectedPhotos = [];
     this.albumService.getAlbum(this.sharedAlbum.albumId).subscribe( x => {this.album = x.body; });
 	this.loading = true;
