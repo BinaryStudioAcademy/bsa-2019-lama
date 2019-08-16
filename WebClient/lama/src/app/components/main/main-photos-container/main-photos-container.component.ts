@@ -82,10 +82,10 @@ export class MainPhotosContainerComponent implements OnInit {
     }
   }
 
-  initializeUserAndFavorites(user: User){
+  initializeUserAndFavorites(user: User) {
     this.currentUser = user;
-      this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
-          .subscribe(data => this.favorites = new Set<number>(data));
+    this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
+        .subscribe(data => this.favorites = new Set<number>(data));
     };
 
   public GetUserPhotos(UserId: number) {
