@@ -1,4 +1,4 @@
-﻿using Lama.Domain.DTO.Reaction;
+﻿using like = Lama.Domain.DTO.Reaction;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +19,6 @@ namespace Lama.Domain.DTO.Photo
         public string Location { get; set; }
         public int UserId { get; set; }
         public int CategoryId { get; set; }
-        public IEnumerable<LikeDTO> Reactions {set;get;}
+        public IEnumerable<like.LikeDTO> Reactions {set;get;}
     }
 }

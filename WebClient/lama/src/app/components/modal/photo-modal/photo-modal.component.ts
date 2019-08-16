@@ -1,15 +1,15 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-
-
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
-import {Like } from 'src/app/models/Reaction/Like';
-import { parse } from 'querystring';
+import * as  bulmaCalendar from 'bulma-calendar';
+import { load } from 'piexifjs';
+import { MapsAPILoader, MouseEvent } from '@agm/core';
+import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'app-photo-modal',
@@ -27,6 +27,8 @@ export class PhotoModalComponent implements OnInit
   public showSharedByLinkModal: boolean = false;
   public showSharedByEmailModal: boolean = false;
 
+  albums: PhotoDetailsAlbum[];
+
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
 
@@ -35,7 +37,7 @@ export class PhotoModalComponent implements OnInit
 
   // events
   @Output()
-  public deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvenet = new EventEmitter<number>();
   @Output()
   public updatePhotoEvent = new EventEmitter<PhotoRaw>();
   public hasUserReaction: boolean;
@@ -50,22 +52,74 @@ export class PhotoModalComponent implements OnInit
   private deletingMenuItem: MenuItem[];
 
   currentUser: User;
-  
-  // constructors
-  constructor(fileService: FileService, authService: AuthService, userService: UserService) {
-    this.isShown = true;
 
+
+  // location
+  latitude: number;
+  longitude: number;
+  zoom: number;
+  address: string;
+  private geoCoder;
+  GPS: any;
+  @ViewChild('search', { static: true })
+  public searchElementRef: ElementRef;
+
+  // constructors
+  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone,private albumService:AlbumService,
+    authService: AuthService, userService: UserService) {
+    this.isShown = true;
     this.fileService = fileService;
     this.authService = authService;
     this.userService = userService;
 
     this.initializeMenuItem();
-
     this.shownMenuItems = this.defaultMenuItem;
     this.clickedMenuItem = null;
   }
 
   ngOnInit() {
+    const calendars = bulmaCalendar.attach('[type="date"]');
+    calendars.forEach(calendar => {
+      calendar.on('select', date => {
+        // console.log(date);
+      });
+    });
+    let reactions = this.photo.reactions;
+
+    this.hasUserReaction = reactions.some(x => x.user.id == parseInt(this.currentUser.id));
+    this.GetFile();
+    this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe((e) => this.albums = e.body);
+  }
+
+  ConvertDMSToDD(degrees: number, minutes: number, seconds: number, direction): number {
+    let dd = degrees + minutes / 60 + seconds / (60 * 60);
+
+    if (direction == "S" || direction == "W") {
+      dd = dd * -1;
+    } // Don't do anything for N or E
+    return dd;
+  }
+  // Get Current Location Coordinates
+
+  markerDragEnd($event: MouseEvent) {
+    console.log($event);
+    this.latitude = $event.coords.lat;
+    this.longitude = $event.coords.lng;
+    this.getAddress(this.latitude, this.longitude);
+  }
+  getAddress(latitude, longitude) {
+    this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
+      if (status === 'OK') {
+        if (results[0]) {
+          this.zoom = 12;
+          this.address = results[0].formatted_address;
+        } else {
+          alert('No results found');
+        }
+      } else {
+        alert('Geocoder failed due to: ' + status);
+      }
+    });
     const loggedUserId: number = parseInt(this.authService.getLoggedUserId());
 
     this.userService.getUser(loggedUserId)
@@ -83,13 +137,74 @@ export class PhotoModalComponent implements OnInit
 
   }
 
+  // GET EXIF
+
+  GetFile() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', this.photo.blob256Id, true);
+    xhr.onload = () => {
+      var response = xhr.responseText;
+      var binary = ""
+      for (let i = 0; i < response.length; i++) {
+        binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
+      }
+      let src = 'data:image/jpeg;base64,' + btoa(binary);
+      let exifObj = load(src);
+      console.log(exifObj);
+      this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
+      this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
+
+
+      // load Places Autocomplete
+      this.mapsAPILoader.load().then(() => {
+
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            console.log(this.longitude);
+            //this.latitude = position.coords.latitude;
+            //this.longitude = position.coords.longitude;
+            this.zoom = 8;
+            this.getAddress(this.latitude, this.longitude);
+          });
+        }
+
+        this.geoCoder = new google.maps.Geocoder;
+
+        /*
+        let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+          types: ['address']
+        });
+        autocomplete.addListener('place_changed', () => {
+          this.ngZone.run(() => {
+            // get the place result
+            let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+  
+            // verify result
+            if (place.geometry === undefined || place.geometry === null) {
+              return;
+            }
+  
+            // set latitude, longitude and zoom
+            this.latitude = place.geometry.location.lat();
+            this.longitude = place.geometry.location.lng();
+            this.zoom = 12;
+          });
+        });*/
+      });
+
+    }
+    xhr.overrideMimeType('text/plain; charset=x-user-defined');
+    xhr.send();
+
+  }
   private initializeMenuItem() {
     this.defaultMenuItem =
       [
         { title: "share", icon: "share" },
         { title: "remove", icon: "clear" },
         { title: "download", icon: "cloud_download" },
-        { title: "edit", icon: "edit" }
+        { title: "edit", icon: "edit" },
+        { title: "info", icon: "info" }
       ];
     this.editingMenuItem =
       [
@@ -108,6 +223,7 @@ export class PhotoModalComponent implements OnInit
     this.clickedMenuItem = clickedMenuItem;
 
 
+    console.log(clickedMenuItem);
     // share
     if (clickedMenuItem === this.defaultMenuItem[0]) {
       this.openShareModal();
@@ -133,9 +249,18 @@ export class PhotoModalComponent implements OnInit
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
+      console.log(5);
       this.isEditing = true;
     }
-  }
+
+    // info
+    if (clickedMenuItem === this.defaultMenuItem[4]) {
+      let element = document.getElementById("info-content");
+      element.style.visibility = 'visible';
+      element.style.width = "auto";
+    }
+
+}
 
   public mouseLeftOverlayHandler(): void {
     this.shownMenuItems = this.defaultMenuItem;
@@ -174,9 +299,8 @@ export class PhotoModalComponent implements OnInit
     this.showSharedModal = !this.showSharedModal;
   }
 
-  private openEditModal(): void
-  {
-	this.showEditModal = true;
+  private openEditModal(): void {
+    this.showEditModal = true;
   }
   
   openShareByLink() {
@@ -187,8 +311,7 @@ export class PhotoModalComponent implements OnInit
     this.showSharedByEmailModal = true;
   }
 
-  private deleteImage(): void
-  {
+  private deleteImage(): void {
     this.fileService.markPhotoAsDeleted(this.photo.id)
       .subscribe(res => {
         this.closeModal();
@@ -250,5 +373,27 @@ export class PhotoModalComponent implements OnInit
       document.body.removeChild(tag);
     }
     xhr.send();
+  }
+
+  openModalForPickDate(event) {
+    const overlay = document.getElementsByClassName('overlay-date')[0];
+    const modalElem = document.getElementsByClassName('modal-date')[0];
+    modalElem.classList.add('active');
+    overlay.classList.add('active');
+  }
+  CloseModalForPickDate(event) {
+    const overlay = document.getElementsByClassName('overlay-date')[0];
+    const modalElem = document.getElementsByClassName('modal-date')[0];
+    modalElem.classList.remove('active');
+    overlay.classList.remove('active');
+  }
+  openModalForPickCoord(event) {
+
+  }
+  CloseInfo(event)
+  {
+    let element = document.getElementById("info-content");
+    element.style.visibility = 'hidden';
+    element.style.width = "0px";
   }
 }
