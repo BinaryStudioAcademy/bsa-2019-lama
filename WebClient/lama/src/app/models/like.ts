@@ -1,3 +1,5 @@
+
+
 export interface Like{
   id: number;
   photoId: number;
