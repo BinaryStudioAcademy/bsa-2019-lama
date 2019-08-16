@@ -47,6 +47,7 @@ export class MainAlbumComponent implements OnInit {
      this.isContent = true;
      this.isMenu = false;
   }
+
   leave($event) {
     this.isContent = false;
     this.isMenu = true;
@@ -63,10 +64,9 @@ export class MainAlbumComponent implements OnInit {
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
-
+  
   removeAlbum() {
     this.albumService.removeAlbum(this.album.id).subscribe( x => x);
     this.deleteAlbumEvent.emit(this.album);
   }
-
 }

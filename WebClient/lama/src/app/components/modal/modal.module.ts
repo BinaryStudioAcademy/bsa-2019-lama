@@ -18,6 +18,7 @@ import { ShareModalComponent } from './share-modal/share-modal/share-modal.compo
 import { CommentsListComponent } from './comments-list/comments-list.component';
 import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
+import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
 
 @NgModule(
@@ -27,7 +28,11 @@ import { EditPhotoComponent } from './edit-photo/edit-photo.component';
     SharedModule,
     ImageCropperModule,
     UiModule,
-    CreateAlbumModule
+    CreateAlbumModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
+      libraries: ['places']
+    })
   ],
   providers:
   [

@@ -1,3 +1,5 @@
+@import '~compass-mixins/lib/compass/css3'
+
 @media screen and (min-width: 1000px)
     .modal-content
         width: 70%
@@ -5,6 +7,18 @@
 @media screen and (max-width: 1000px)
     .modal-content
         width: 100%
+
+
+@mixin transition($transition...) 
+    -moz-transition:    $transition
+    -o-transition:      $transition
+    -webkit-transition: $transition
+    transition:         $transition
+
+
+
+.notification
+    height: 700px
 
 .column a 
     text-decoration: none
@@ -14,10 +28,14 @@
   flex-direction: column
   justify-content: center
   align-items: center
-  min-height: 500px
+  min-height: 610px
 
 .main-photo img
     width: auto !important
+
+agm-map 
+    height: 100px
+
 
 .reactions
     margin-top: 10px
@@ -69,6 +87,134 @@ article
    position: absolute
    bottom: 0
    right: 0
+
+
+
+.information
+    width: 0px
+    margin-left: 15px
+    visibility: hidden
+    @include transition(all 300ms linear)
+
+.flex-content
+    display: flex
+
+
+.info
+    flex-direction: column
+
+
+
+.titl
+    overflow: hidden
+    max-height: 27px
+    width: 100%
+
+.titl img
+    float: right
+    display: inline-block
+    height: 27px
+    width: 27px
+
+.titl h4
+    display: inline-block
+
+.subtitl
+    max-height: 25px
+    overflow: hidden
+
+
+    
+.item-description
+    margin-top: 15px
+
+.item-albums
+    margin-top: 15px
+
+
+.item-date
+    margin-top: 15px
+
+
+
+.item-location
+    margin-top: 15px
+
+
+.photo-profile
+    width: 100%
+
+.flex-album
+    max-height: 190px
+    display: flex
+
+.album
+    display: flex
+    align-content: center
+    margin-top: 3px
+    height: 60px
+    width: 200px
+    
+.album img
+    height: 55px
+
+.album h4
+    overflow: hidden
+    margin-left: 5px
+    height: 55px
+    display: inline-block
+    
+.adress
+    overflow: hidden
+    max-height: 54px
+    max-width: 150px
+
+
+
+
+// MODAL
+
+.overlay-date  
+   opacity: 0
+   visibility: hidden   
+   position: fixed
+   top: 0
+   left: 0
+   width: 100%
+   height: 100%
+   background-color: rgba(0, 0, 0, .5)
+   z-index: 30
+   transition: .3s all
+
+.size
+    min-width: 100%
+
+.datetimepicker
+    width: 100%
+
+.modal-date
+   opacity: 0
+   visibility: hidden
+   width: 352px
+   margin: -178px 0 0 -178px
+   position: fixed
+   background: black
+   top: 50%
+   left: 50%
+   z-index: 40
+   
+   text-align: center
+   border-radius: 3px
+   background-color: #fff
+   transition: 0.3s all
+
+
+.active
+   opacity: 1
+   visibility: visible
+
+
+
    
 .share-container
    position: absolute
