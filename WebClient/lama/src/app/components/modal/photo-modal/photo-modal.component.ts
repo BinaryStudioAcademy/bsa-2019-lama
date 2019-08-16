@@ -223,6 +223,7 @@ export class PhotoModalComponent implements OnInit
     this.clickedMenuItem = clickedMenuItem;
 
 
+    console.log(clickedMenuItem);
     // share
     if (clickedMenuItem === this.defaultMenuItem[0]) {
       this.openShareModal();
@@ -246,10 +247,9 @@ export class PhotoModalComponent implements OnInit
     // download
 
     // edit
-    if (clickedMenuItem === this.defaultMenuItem[4]) {
-      this.openEditModal();
     if (clickedMenuItem === this.defaultMenuItem[3])
     {
+      console.log(5);
       this.isEditing = true;
     }
 
@@ -257,9 +257,9 @@ export class PhotoModalComponent implements OnInit
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       let element = document.getElementById("info-content");
       element.style.visibility = 'visible';
-      element.style.width = "500px";
+      element.style.width = "auto";
     }
-  }
+
 }
 
   public mouseLeftOverlayHandler(): void {
