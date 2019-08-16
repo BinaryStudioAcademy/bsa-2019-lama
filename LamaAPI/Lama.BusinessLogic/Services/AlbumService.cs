@@ -4,7 +4,6 @@ using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
-using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,11 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
+
 using System.Threading.Tasks;
-using System.Xml.Linq;
+
 using Lama.BusinessLogic.Exceptions;
+using Lama.Domain.DTO.Album;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -52,7 +51,20 @@ namespace Lama.BusinessLogic.Services
             Context.PhotoAlbums.RemoveRange(removedPhotoAlbums);
             await Context.SaveChangesAsync();
         }
+        
+        public async Task<int?> UpdateCover(UpdateAlbumDTO album)
+        {
+            var albumToUpdate = await Context.Albums.FindAsync(album.Id);
 
+            if (albumToUpdate.CoverId != album.CoverId)
+            {
+                albumToUpdate.CoverId = album.CoverId;
+            }
+            
+            await Context.SaveChangesAsync();
+
+            return albumToUpdate.CoverId;
+        }
         public async Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
@@ -204,7 +216,6 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
             return id;
         }
-        
         public async Task<ReturnAlbumDTO> FindAlbum(int Id)
         {
             var result = await Context.Albums

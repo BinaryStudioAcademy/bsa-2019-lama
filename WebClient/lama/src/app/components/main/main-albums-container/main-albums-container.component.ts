@@ -86,6 +86,6 @@ export class MainAlbumsContainerComponent implements OnInit {
         album: eventArgs
       }
     };
-    this.router.navigate(['/main/album',eventArgs.id], navigationExtras);
+    this.router.navigate(['/main/album', eventArgs.id], navigationExtras);
   }
 }

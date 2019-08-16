@@ -1,3 +1,4 @@
-<div class="photo" (click)="clickPerformed()" > <!--[style.border]="Choose ? '5px solid #00d1b2' : 'none'"-->
-    <img src="{{ photo.blob256Id || photo.blobId }}">
+<div class="photo" (click)="clickPerformed()" [style.border]="isSelected ? '5px solid #00d1b2' : 'none'">
+    <img src="{{ cover.blob256Id || cover.blobId }}">
 </div>
+

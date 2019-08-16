@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { PhotoRaw } from 'src/app/models';
 
 @Component({
@@ -8,22 +8,21 @@ import { PhotoRaw } from 'src/app/models';
 })
 export class ChooseAlbumCoverComponent implements OnInit {
 
-  @Input ('photo') photo: PhotoRaw;
-  @Output() onClick = new EventEmitter<PhotoRaw>();
 
-  //Choose:boolean;
+  @Input() cover: PhotoRaw;
+  @Output() Click = new EventEmitter<PhotoRaw>(true);
+
+  isSelected: boolean;
 
   constructor() {
-    //this.Choose = false;
+    this.isSelected = false;
    }
 
   ngOnInit() {
-    console.log("app-choose-album-cover initialized")
   }
 
-  public clickPerformed(event): void
-  {
-    //this.Choose = !this.Choose;
-    this.onClick.emit(this.photo);
+  clickPerformed() {
+    this.isSelected = !this.isSelected;
+    this.Click.emit(this.cover);
   }
 }

@@ -43,6 +43,13 @@ namespace Lama.Controllers
         {
             await _service.UpdateAlbum(album);
         }
+
+        [HttpPut("updateCover")]
+        public async Task<int?> UpdateAlbumCover([FromBody] UpdateAlbumDTO album)
+        {
+            return await _service.UpdateCover(album);
+        }
+        
         [HttpDelete("{id}")]
         public async Task<int> DeleteAlbum(int id)
         {

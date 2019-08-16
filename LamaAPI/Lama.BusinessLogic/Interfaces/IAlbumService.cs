@@ -1,10 +1,10 @@
 ﻿using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
-using Lama.Domain.DTO.Album;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Lama.Domain.DTO.Album;
 
 namespace Lama.BusinessLogic.Interfaces
 {
@@ -17,5 +17,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<ReturnAlbumDTO> FindAlbum(int Id);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments);
         Task<int> RemoveAlbum(int id);
+        Task<int?> UpdateCover(UpdateAlbumDTO album);
     }
 }

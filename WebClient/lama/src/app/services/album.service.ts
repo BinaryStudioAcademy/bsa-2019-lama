@@ -38,7 +38,12 @@ export class AlbumService {
   public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<Album>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
-}
+  }
+
+  public updateAlbumCover(album: UpdateAlbum) {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
+  }
 
   public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');

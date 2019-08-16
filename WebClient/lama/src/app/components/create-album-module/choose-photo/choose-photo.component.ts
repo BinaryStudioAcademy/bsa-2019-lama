@@ -10,9 +10,9 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 export class ChoosePhotoComponent implements OnInit {
 
   @Input ('_photo') photo: PhotoRaw;
-  @Output() onClick = new EventEmitter<PhotoRaw>();
+  @Output() Click = new EventEmitter<PhotoRaw>();
 
-  Choose:boolean;
+  Choose: boolean;
 
   constructor() {
     this.Choose = false;
@@ -21,10 +21,9 @@ export class ChoosePhotoComponent implements OnInit {
   ngOnInit() {
   }
 
-  public clickPerformed(): void
-  {
+  clickPerformed() {
     this.Choose = !this.Choose;
-    this.onClick.emit(this.photo);
+    this.Click.emit(this.photo);
   }
 
 }

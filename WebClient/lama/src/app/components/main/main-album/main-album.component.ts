@@ -16,6 +16,7 @@ import { AlbumService } from 'src/app/services/album.service';
 export class MainAlbumComponent implements OnInit {
 
   @Input ('_album') album: ViewAlbum;
+
   @Output() onClick = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
 
@@ -30,36 +31,37 @@ export class MainAlbumComponent implements OnInit {
   ngOnInit() {
   }
 
-  public clickPerformed(): void {
+  clickPerformed(): void {
     this.onClick.emit(this.album);
   }
 
-  public clickMenu() {
+  receiveUpdatedCover(event: PhotoRaw) {
+    this.album.photo = event;
+    this.toggleSetCoverModal();
+  }
+
+  clickMenu() {
      this.isContent = true;
      this.isMenu = false;
   }
-  public leave($event)
-  {
+  leave($event) {
     this.isContent = false;
     this.isMenu = true;
   }
 
-  public openShareModal(): void
-  {
+  openShareModal() {
     this.showSharedModal = true;
   }
 
-  public openSetCoverModal(){
-    console.log("set cover opened");
+  toggleSetCoverModal() {
     this.showSetCoverModal = !this.showSetCoverModal;
-    console.log(this.showSetCoverModal);
   }
 
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
 
-  public removeAlbum(){
+  removeAlbum() {
     this.albumService.removeAlbum(this.album.id).subscribe( x => x);
   }
 
