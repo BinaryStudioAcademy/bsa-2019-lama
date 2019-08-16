@@ -24,6 +24,7 @@ services:
       - "5000:5000"
     environment:
       ConnectionStrings:ConnectionLocal: ${LamaDBConnectionString}
+      PhotoApiUrl: "http://photoapi:6000/"
       ASPNETCORE_URLS: http://+:5000
 
   photoapi:
