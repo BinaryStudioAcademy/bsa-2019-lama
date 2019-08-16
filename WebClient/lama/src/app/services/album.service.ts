@@ -6,6 +6,7 @@ import { ViewAlbum } from '../models/Album/ViewAlbum';
 import { NewAlbum } from '../models/Album/NewAlbum';
 import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
 import { PhotoRaw } from '../models';
+import { PhotoDetailsAlbum } from '../models/Album/PhotodetailsAlbum';
 import { UpdateAlbum } from '../models/Album/updatedAlbum';
 import { Observable } from 'rxjs';
 import { ReturnAlbumDTO } from '../models/Album/return-album-dto';
@@ -24,7 +25,10 @@ export class AlbumService {
   constructor(private http: HttpClient) {
   }
 
-
+  public GetPhotoDetailsAlbums(photoId:number ,httpParams?: any)
+  {
+    return this.http.get<PhotoDetailsAlbum[]>(this.baseUrl + this.routeAlbum+ '/details' + `/${photoId}`, { observe: 'response', headers: this.headers, params: httpParams });
+  }
   public getAlbums(userId:string , httpParams?: any) {
       return this.http.get<ViewAlbum[]>(this.baseUrl + this.routeAlbum + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
@@ -43,8 +47,13 @@ export class AlbumService {
   {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<ReturnAlbumDTO>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
-}
+  }
 
+  public updateAlbumCover(album: UpdateAlbum) {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
+  }
+  
   public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');
       return this.http.put<UpdateAlbum>(this.baseUrl + this.routeAlbum , album , { headers }).subscribe(e => console.log(e));

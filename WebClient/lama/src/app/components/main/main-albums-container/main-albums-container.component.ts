@@ -88,6 +88,7 @@ export class MainAlbumsContainerComponent implements OnInit {
     for(let i =0;i<this.ArchivePhotos.length;i++)
     zip.file(`image${i+1}.jpg`, this.ArchivePhotos[i], {base64: true});
 
+
     zip.generateAsync({type:"blob"})
     .then(function(content) {
         saveAs(content, name);
@@ -101,7 +102,7 @@ export class MainAlbumsContainerComponent implements OnInit {
         album: eventArgs
       }
     };
-    this.router.navigate(['/main/album',eventArgs.id], navigationExtras);
+    this.router.navigate(['/main/album', eventArgs.id], navigationExtras);
   }
   public deleteAlbumHandler(albumToDelete: ViewAlbum)
   {
