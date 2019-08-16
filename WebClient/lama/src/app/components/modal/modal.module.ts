@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
+import {CreateAlbumModule} from '../create-album-module/create-album.module'
 
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
@@ -27,6 +28,7 @@ import { EditPhotoComponent } from './edit-photo/edit-photo.component';
     SharedModule,
     ImageCropperModule,
     UiModule,
+    CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
       libraries: ['places']

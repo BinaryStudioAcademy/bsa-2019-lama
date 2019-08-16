@@ -5,11 +5,13 @@ import { CreateAlbumModalComponent } from './create-album-modal/create-album-mod
 import { ChooseStoragePhotosComponent } from './choose-storage-photos/choose-storage-photos.component';
 import {  ChoosePhotoComponent } from './choose-photo/choose-photo.component';
 
+
 @NgModule({
   declarations: [
     CreateAlbumModalComponent,
     ChoosePhotoComponent,
     ChooseStoragePhotosComponent
+
   ],
   imports: [
     CommonModule,

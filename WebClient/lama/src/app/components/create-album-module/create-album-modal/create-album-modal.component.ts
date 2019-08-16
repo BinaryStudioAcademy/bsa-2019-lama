@@ -121,8 +121,7 @@ export class CreateAlbumModalComponent implements OnInit {
     if (this.albumName == '') {
       console.log(this.albumName)
       this.checkForm = false;
-    }
-    else {
+    } else {
       if (this.LoadNewImage === true) {
         this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
         this.albumService.createAlbumWithNewPhotos(this.album)
@@ -160,6 +159,7 @@ export class CreateAlbumModalComponent implements OnInit {
       }
     }
   }
+
   toggleModal() {
     this.isShown = false;
   }

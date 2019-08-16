@@ -32,6 +32,8 @@ import {SharedPageHeaderComponent} from './components/shared-page/shared-page-he
 import { FavoriteDirective } from './directives/favorite.directive';
 import { CheckFavoriteDirective } from './directives/check-favorite.directive';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
+import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
+import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 
 @NgModule({
   declarations:
@@ -54,7 +56,9 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
     SharedPageHeaderComponent,
     FavoriteDirective,
     CheckFavoriteDirective,
-    SharedPageAlbumComponent
+    SharedPageAlbumComponent,
+    SetAlbumCoverModalComponent,
+    ChooseAlbumCoverComponent
   ],
   imports:
   [
