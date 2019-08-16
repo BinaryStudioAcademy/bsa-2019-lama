@@ -100,8 +100,9 @@
                                         <h4 class="subtitle is-5">Albums</h4>
                                     </div>
                                     <div class="flex-album">
-                                        <div class="album">
-
+                                        <div *ngFor="let album of albums" class="album">
+                                            <img src="{{album.photo?.imageUrl}}" alt="">
+                                            <h4 class="subtitle is-5">{{album.title}}</h4>
                                         </div>
                                     </div>
                                 </div>

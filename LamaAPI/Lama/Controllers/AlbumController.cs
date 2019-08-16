@@ -48,7 +48,11 @@ namespace Lama.Controllers
         {
             return await _service.RemoveAlbum(id);
         }
-        
+        [HttpGet("details/{id}")]
+        public async Task<List<AlbumPhotoDetails>> GetAlbumsPhotoDetails(int id)
+        {
+            return await _service.GetAlbumPhotoDetails(id);
+        }
         [HttpGet("{id}")]
         public async Task<List<ReturnAlbumDTO>> GetUserAlbums(int id)
         {

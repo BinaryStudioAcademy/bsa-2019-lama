@@ -11,6 +11,9 @@ namespace Lama.Domain.MappingProfiles
             CreateMap<AlbumWithExistPhotosDTO, Album>().ReverseMap();
             CreateMap<NewAlbumDTO, Album>().ReverseMap();
             CreateMap<ReturnAlbumDTO, Album>().ReverseMap();
+            CreateMap<Album, AlbumPhotoDetails>()
+                .ForMember(x => x.Title, opt => opt.MapFrom(x => x.Title))
+                .ForMember(x => x.Photo, opt => opt.Ignore());
         }
     }
 }

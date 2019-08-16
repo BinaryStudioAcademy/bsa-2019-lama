@@ -7,6 +7,8 @@ import { NewLike } from 'src/app/models/Reaction/NewLike';
 import * as  bulmaCalendar from 'bulma-calendar';
 import { load } from 'piexifjs';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
+import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'app-photo-modal',
@@ -22,6 +24,8 @@ export class PhotoModalComponent implements OnInit {
   public isShown: boolean;
   public showSharedModal: boolean = false;
   public showEditModal: boolean = false;
+
+  albums: PhotoDetailsAlbum[];
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -53,14 +57,10 @@ export class PhotoModalComponent implements OnInit {
   public searchElementRef: ElementRef;
 
   // constructors
-  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone) {
+  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone,private albumService:AlbumService) {
     this.isShown = true;
-
     this.fileService = fileService;
-
-
     this.initializeMenuItem();
-
     this.shownMenuItems = this.defaultMenuItem;
     this.clickedMenuItem = null;
   }
@@ -76,7 +76,7 @@ export class PhotoModalComponent implements OnInit {
 
     this.hasUserReaction = reactions.some(x => x.userId == parseInt(this.currentUser.id));
     this.GetFile();
-
+    this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe((e) => this.albums = e.body);
   }
 
   ConvertDMSToDD(degrees: number, minutes: number, seconds: number, direction): number {

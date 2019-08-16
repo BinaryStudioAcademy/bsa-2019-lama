@@ -20,7 +20,6 @@ export class PhotoUploadModalComponent implements OnInit {
   photos: Photo[] = [];
   desc: string[] = []; 
   showSpinner: boolean = false;
-
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<UploadPhotoResultDTO[]>();
 

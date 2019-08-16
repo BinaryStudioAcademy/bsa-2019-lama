@@ -173,8 +173,25 @@ namespace Lama.BusinessLogic.Services
                     await
                     (await httpClient.PostAsJsonAsync($"{url}api/photos/ArchivePhotos", photoDocuments)).Content.ReadAsStringAsync());
             }
-            }
+        }
 
+        public async Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id)
+        {
+
+                List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
+                var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x=>x.Album).Where(x=>x.Photo.Id == id).Select(x=>x.Album).ToListAsync();
+                foreach(var album in albums)
+                {              
+                    var Document = await _photoService.Get(album.CoverId.Value);
+                    var photo = _mapper.Map<PhotoAlbumDetails>(Document);
+                    var returnAlbum = _mapper.Map<AlbumPhotoDetails>(album);
+                    returnAlbum.Photo = photo;
+                    list.Add(returnAlbum);
+                }
+            
+
+            return list;
+        }
         public async Task<int> RemoveAlbum(int id)
         {
             var albumToDelete = await Context.Albums.FindAsync(id);
