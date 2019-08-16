@@ -6,8 +6,11 @@ services:
     image: rabbitmq:3-management
     container_name: 'rabbitmq'
     environment:
-      - RABBITMQ_DEFAULT_USER='guest'
-      - RABBITMQ_DEFAULT_PASS='guest'
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - '15672:15672'
+      - '5672:5672'
 
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
@@ -36,6 +39,7 @@ services:
     container_name: 'photo-processor'
     environment:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
     depends_on: 
       - rabbitmq
