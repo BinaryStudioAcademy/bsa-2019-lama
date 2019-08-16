@@ -52,9 +52,8 @@ export class AlbumService {
   public updateAlbumCover(album: UpdateAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
-  }    
-}
-
+  }
+  
   public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');
       return this.http.put<UpdateAlbum>(this.baseUrl + this.routeAlbum , album , { headers }).subscribe(e => console.log(e));
