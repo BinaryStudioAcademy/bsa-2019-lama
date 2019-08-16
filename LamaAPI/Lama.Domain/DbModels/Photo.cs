@@ -25,7 +25,7 @@ namespace Lama.Domain.DbModels
         [JsonIgnore]
         public ICollection<Favorite> Favorites { get; set; }
         [JsonIgnore]
-        public Album Album { get; set; }
+        public ICollection<Album> Album { get; set; }
         [JsonIgnore]
         public ICollection<PhotoAlbum> PhotoAlbums { get; set; }
         [JsonIgnore]
