@@ -145,6 +145,8 @@ export class PhotoModalComponent implements OnInit
 
           this.goBackToImageView();
         });
+		
+	this.updatePhotoEvent.emit(this.photo);
   }
 
   public goBackToImageView(): void 
