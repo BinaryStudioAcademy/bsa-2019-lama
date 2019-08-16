@@ -12,7 +12,6 @@ services:
       - '15672:15672'
       - '5672:5672'
 
-
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
     container_name: 'lama-api'
@@ -40,6 +39,7 @@ services:
     container_name: 'photo-processor'
     environment:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
     depends_on: 
       - rabbitmq
