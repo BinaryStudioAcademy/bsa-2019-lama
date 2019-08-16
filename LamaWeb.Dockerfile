@@ -9,5 +9,5 @@ RUN npm install && \
 
 FROM nginx:alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html/
+COPY --from=builder /app/dist/lama/**/* /usr/share/nginx/html/
 COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
