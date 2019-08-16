@@ -1,4 +1,5 @@
 import { Like } from '../Reaction/Like';
+import { LikeDTO } from '../Reaction/LikeDTO';
 
 export interface UploadPhotoResultDTO
 {
@@ -10,5 +11,5 @@ export interface UploadPhotoResultDTO
     sharedLink: string;
     isDeleted: boolean;
     description: string;
-    reactions: Like[];
+    reactions: LikeDTO[];
 };

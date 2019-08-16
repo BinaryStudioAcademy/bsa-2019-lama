@@ -33,9 +33,9 @@ namespace Lama.Controllers
             return _service.CreateAll(photos);
         }
         [HttpPost("reaction")]
-        public async Task PostReaction([FromBody] NewLikeDTO newLike)
+        public Task<int> PostReaction([FromBody] NewLikeDTO newLike)
         {
-            await _service.AddReaction(newLike);
+            return _service.AddReaction(newLike);
         }
         [HttpPost("removereaction")]
         public async Task RemoveReaction([FromBody] NewLikeDTO removeLike)

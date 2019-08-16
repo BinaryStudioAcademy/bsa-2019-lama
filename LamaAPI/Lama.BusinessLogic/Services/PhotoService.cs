@@ -56,11 +56,13 @@ namespace Lama.BusinessLogic.Services
         {
             throw new NotImplementedException();
         }
-        public async Task AddReaction(NewLikeDTO newLike)
+        public async Task<int> AddReaction(NewLikeDTO newLike)
         {
             var like = _mapper.Map<Like>(newLike);
             await _context.GetRepository<Like>().InsertAsync(like);
             await _context.SaveAsync();
+
+            return like.Id;
         }
         public async Task RemoveReaction(NewLikeDTO removeLike)
         {

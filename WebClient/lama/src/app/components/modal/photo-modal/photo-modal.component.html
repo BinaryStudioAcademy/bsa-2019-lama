@@ -92,12 +92,18 @@
                                 
                                 <!--set like-->
                                 <div class="likes">
-                                    <a class="reaction"><img [src]="hasUserReaction ? 'assets//icons/like.svg' : 'assets//icons/no-like.svg' " alt="" (click)="ReactionPhoto(event)"></a>
-                                    <div class="count"><span>{{photo?.reactions?.length}}</span></div>
+                                    <a class="reaction">
+                                        <img alt=""
+                                            [src]="hasUserReaction ? 'assets/icons/like.svg' : 'assets//icons/no-like.svg' "  
+                                            (click)="ReactionPhoto(event)">
+                                    </a>
+                                    <div class="count">
+                                        <span>{{photo?.reactions?.length}}</span>
+                                    </div>
                                 </div>
 
                                 <!--reactions list-->
-                                <div class="reactions">
+                                <!-- <div class="reactions">
 
                                     <div *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]">
                                         <article class="media">
@@ -112,7 +118,7 @@
                                         </article>
                                     </div>    
 
-                                </div>
+                                </div> -->
         
                             </div>
 
