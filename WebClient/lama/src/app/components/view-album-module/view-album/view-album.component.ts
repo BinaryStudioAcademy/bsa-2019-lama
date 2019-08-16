@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Album } from 'src/app/models/Album/album';
@@ -12,6 +12,8 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { element } from 'protractor';
 import { ZipService } from 'src/app/services/zip.service';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { User } from 'src/app/models/User/user';
 
 @Component({
   selector: 'app-view-album',
@@ -31,9 +33,14 @@ export class ViewAlbumComponent implements OnInit {
   isAtLeastOnePhotoSelected = false;
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
+  currentUser : User;
+  
+  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
+  private modalPhotoEntry: ViewContainerRef;
 
   constructor(private route: ActivatedRoute, private router: Router,private albumService:AlbumService,
-     private _favoriteService: FavoriteService, private zipService: ZipService) 
+     private _favoriteService: FavoriteService, private zipService: ZipService, 
+     private resolver: ComponentFactoryResolver) 
   { 
     this.routeSubscription = route.params.subscribe(params=>this.AlbumId=params['id']);
     this.route.queryParams.subscribe(params => {
@@ -62,8 +69,26 @@ export class ViewAlbumComponent implements OnInit {
 
   public photoClicked(eventArgs: PhotoRaw)
   {
-
+    this.modalPhotoEntry.clear();
+    const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
+    const componentRef = this.modalPhotoEntry.createComponent(factory);
+    componentRef.instance.photo = eventArgs;
+    componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.currentUser = this.currentUser;
+    componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
+  
+  public deletePhotoHandler(photoToDeleteId: number): void
+  {
+    this.album.photoAlbums = this.album.photoAlbums.filter(p => p.id !== photoToDeleteId);
+  }
+
+  public updatePhotoHandler(updatedPhoto: PhotoRaw): void
+  {
+    let index = this.album.photoAlbums.findIndex(i => i.id === updatedPhoto.id);
+    this.album.photoAlbums[index] = updatedPhoto
+  }
+  
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0
   }
