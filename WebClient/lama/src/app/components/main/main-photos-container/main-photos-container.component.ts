@@ -18,6 +18,7 @@ import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
 import { ZipService } from 'src/app/services/zip.service';
 import { delay } from 'q';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
   selector: 'main-photos-container',
@@ -69,9 +70,12 @@ export class MainPhotosContainerComponent implements OnInit {
       else
         console.log("Occured error! Please, try later");
       }
-    else
-      this.userService.getUser(parseInt(userId))
-        .subscribe(user => this.initializeUserAndFavorites(user));
+    else {
+      this._favoriteService.getFavoritesIds(parseInt(userId)).subscribe(data => {
+        this.favorites = new Set<number>(data);
+        console.log(data);
+      });
+    }
   }
 
   initializeUserAndFavorites(user: User){
