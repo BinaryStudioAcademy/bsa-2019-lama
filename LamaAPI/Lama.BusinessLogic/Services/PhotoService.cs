@@ -22,8 +22,6 @@ namespace Lama.BusinessLogic.Services
         private string url;
         private IUnitOfWork _context;
         private HttpClient httpClient;
-        private string v;
-        private IUnitOfWork unitOfWork;
         private readonly IMapper _mapper;
         public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
         {
@@ -39,7 +37,7 @@ namespace Lama.BusinessLogic.Services
             this.httpClient.Dispose();
         }
 
-        public async Task<IEnumerable<UploadPhotoResultDTO>> FindPhoto(string criteria)
+        public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(string criteria)
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -47,7 +45,23 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
+            IEnumerable<PhotoDocumentDTO> photoDocumentDTOs = JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(responseContent);
+
+            foreach (PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            {
+                Like[] likes =  (await _context.GetRepository<Like>()
+                    .GetAsync(l => l.PhotoId == photoDocumentDTO.Id))
+                    .ToArray();
+
+                photoDocumentDTO.Reactions = _mapper.Map<Domain.DTO.LikeDTO[]>(likes);
+
+                foreach (Domain.DTO.LikeDTO like in photoDocumentDTO.Reactions)
+                {
+                    like.Photo.Likes = null;
+                }
+            }
+
+            return photoDocumentDTOs;
         }
 
         // METHODS

@@ -62,11 +62,6 @@ namespace Lama.Controllers
         {
             return await _service.FindAlbum(id);
         }
-
-        [HttpGet]
-        public async Task<string> GetAlbums()
-        {
-            return null;
-        }
+        
     }
 }

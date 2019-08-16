@@ -5,7 +5,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
-import { FileService } from 'src/app/services';
+import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
 import {Like } from 'src/app/models/Reaction/Like';
@@ -42,6 +42,8 @@ export class PhotoModalComponent implements OnInit
 
   // fields
   private fileService: FileService;
+  private authService: AuthService;
+  private userService: UserService;
 
   private defaultMenuItem: MenuItem[];
   private editingMenuItem: MenuItem[];
@@ -50,10 +52,12 @@ export class PhotoModalComponent implements OnInit
   currentUser: User;
   
   // constructors
-  constructor(fileService: FileService) {
+  constructor(fileService: FileService, authService: AuthService, userService: UserService) {
     this.isShown = true;
 
     this.fileService = fileService;
+    this.authService = authService;
+    this.userService = userService;
 
     this.initializeMenuItem();
 
@@ -62,12 +66,21 @@ export class PhotoModalComponent implements OnInit
   }
 
   ngOnInit() {
-    if (this.photo.reactions != null) {
-      this.hasUserReaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
-    }
-    else {
-      this.hasUserReaction = false;
-    }
+    const loggedUserId: number = parseInt(this.authService.getLoggedUserId());
+
+    this.userService.getUser(loggedUserId)
+      .subscribe(user =>
+        {
+          this.currentUser = user;
+
+          if (this.photo.reactions != null) {
+            this.hasUserReaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
+          }
+          else {
+            this.hasUserReaction = false;
+          }
+        });
+
   }
 
   private initializeMenuItem() {
