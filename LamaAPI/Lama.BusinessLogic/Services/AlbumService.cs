@@ -53,7 +53,7 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
         }
 
-        public async Task CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
+        public async Task<int> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
             var PhotosAlbum = albumDto.Photos;
@@ -114,8 +114,10 @@ namespace Lama.BusinessLogic.Services
                 await Context.Albums.AddAsync(TempAlbum);
                 await Context.SaveChangesAsync();
             }
+
+            return TempAlbum.Id;
         }
-        public async Task CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
+        public async Task<int> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
         {
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
             Album TempAlbum = new Album()
@@ -145,6 +147,8 @@ namespace Lama.BusinessLogic.Services
 
             await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
+
+            return TempAlbum.Id;
 
         }
         public async Task<List<ReturnAlbumDTO>> FindAll(int UserId)
