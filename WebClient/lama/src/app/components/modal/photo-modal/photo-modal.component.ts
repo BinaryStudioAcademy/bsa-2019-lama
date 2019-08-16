@@ -24,6 +24,8 @@ export class PhotoModalComponent implements OnInit
   public isShown: boolean;
 
   public showSharedModal: boolean = false;
+  public showSharedByLinkModal: boolean = false;
+  public showSharedByEmailModal: boolean = false;
 
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -154,7 +156,23 @@ export class PhotoModalComponent implements OnInit
   }
 
   private openShareModal(): void {
-    this.showSharedModal = true;
+	  if(!this.showSharedModal)
+		this.showSharedModal = true;
+	  else
+		this.showSharedModal = false;
+  }
+
+  private openEditModal(): void
+  {
+	this.showEditModal = true;
+  }
+  
+  openShareByLink() {
+    this.showSharedByLinkModal = true;
+  }
+
+  openShareByEmail() {
+    this.showSharedByEmailModal = true;
   }
 
   private deleteImage(): void

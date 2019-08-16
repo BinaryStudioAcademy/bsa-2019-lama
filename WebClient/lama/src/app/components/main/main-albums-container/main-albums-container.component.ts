@@ -35,6 +35,7 @@ export class MainAlbumsContainerComponent implements OnInit {
           this.favorite.photoAlbums = data;
           this.favorite.id = 0;
           this.favorite.title = "Favorite photos";
+          this.favorite.photo = this.favorite.photoAlbums[0];
         }
       });
     });

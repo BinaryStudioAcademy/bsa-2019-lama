@@ -29,4 +29,8 @@ export class FavoriteService {
   deleteFavorite(userId:number, photoId: number): Observable<any>{
     return this._http.delete(this.baseUrl+userId+"/"+photoId);
   }
+
+  deleteAllFavorites(userId:number): Observable<any>{
+    return this._http.delete(this.baseUrl+userId);
+  }
 }

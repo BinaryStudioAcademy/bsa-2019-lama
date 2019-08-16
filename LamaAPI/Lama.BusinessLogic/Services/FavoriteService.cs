@@ -13,9 +13,9 @@ namespace Lama.BusinessLogic.Services
     public class FavoriteService : BaseService<Favorite>, IFavoriteService
     {
         private readonly IPhotoService _photoService;
-        
+
         public FavoriteService(IPhotoService photoService, ApplicationDbContext context)
-            :base(context)
+            : base(context)
         {
             _photoService = photoService;
         }
@@ -24,11 +24,11 @@ namespace Lama.BusinessLogic.Services
         {
 
             List<PhotoDocument> photos = new List<PhotoDocument>();
-            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f=> f.UserId == userId).ToListAsync();
-            foreach(var far in favorites)
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+            foreach (var far in favorites)
             {
                 PhotoDocument pd = await _photoService.Get(far.PhotoId);
-                if(pd==null)
+                if (pd == null)
                 {
                     await DeleteFavorite(userId, far.PhotoId);
                 }
@@ -38,14 +38,26 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
+        public async Task<IEnumerable<int>> GetFavoritesPhotosId(int userId)
+        {
+
+            List<int> photos = new List<int>();
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
+            foreach (var far in favorites)
+            {
+                photos.Add(far.PhotoId);
+            }
+            return photos;
+        }
+
         public async Task<IEnumerable<int>> GetFavoritesIds(int userId)
         {
 
             List<int> photos = new List<int>();
-            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId ).ToListAsync();
+            IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
             foreach (var far in favorites)
             {
-                photos.Add(far.PhotoId);
+                photos.Add(far.Id);
             }
             return photos;
         }
@@ -65,6 +77,17 @@ namespace Lama.BusinessLogic.Services
                 return fav.Id;
             }
             return -1;
+        }
+
+        public async Task<int> DeleteFavoritesForUser(int userId)
+        {
+            IEnumerable<int> favorites = await GetFavoritesIds(userId);
+            foreach (var f in favorites)
+            {
+                Favorite fav = await Context.Favorites.FindAsync(f);
+                Context.Favorites.Remove(fav);
+            }
+            return await Context.SaveChangesAsync();
         }
     }
 }

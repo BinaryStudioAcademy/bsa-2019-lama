@@ -51,21 +51,20 @@ export class ViewAlbumComponent implements OnInit {
   }
 
   ngOnInit() {
+    let userId: number = parseInt(localStorage.getItem("userId"));
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !=0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
-      this.loading = true;
     }
-    else if(this.AlbumId ==0){
-      let userId: number = parseInt(localStorage.getItem("userId"));
+    else if(this.AlbumId ==0){     
       this._favoriteService.getFavoritesPhotos(userId)
           .subscribe(data => {
             this.album.photoAlbums = data;
             this.album.id = 0;
             this.album.title = "Favorite photos";
           })
-      this._favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
     }
+    this._favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
   }
 
   public photoClicked(eventArgs: PhotoRaw)
