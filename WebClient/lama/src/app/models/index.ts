@@ -23,3 +23,6 @@ export * from './Comments/create-comment-dto';
 export * from './User/user';
 export * from './User/get-user-dto';
 export * from './User/userCreate';
+
+// albums
+export * from './Album/created-albums-args';

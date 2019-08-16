@@ -13,7 +13,7 @@
         <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
     </div>
     <div class="description has-text-centered">
-        <p>{{album.name}}</p>
+        <p>{{album.title}}</p>
     </div>
     <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
 </a>
