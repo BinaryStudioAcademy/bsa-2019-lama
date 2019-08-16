@@ -41,6 +41,7 @@ namespace Lama.Infrastructure
             services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
 
             services.AddScoped<IAlbumService, AlbumService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICommentService, CommentService>();
 
             services.AddScoped<ISharingPhotoService, SharingPhotoService>(serviceProvider => 

@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output, EventEmitter } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
-import { Photo, PhotoRaw } from 'src/app/models';
+import { Photo, PhotoRaw, CreatedAlbumsArgs } from 'src/app/models';
 import { environment } from '../../../../environments/environment';
 import { Album } from 'src/app/models/Album/album';
 import { User } from 'src/app/models/User/user';
@@ -35,8 +35,12 @@ export class CreateAlbumModalComponent implements OnInit {
   imageSrc: string = '';
   LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
+  baseColor: any;
 
   ExistPhotos: PhotoRaw[] = [];
+
+  @Output()
+  createdAlbumEvent = new EventEmitter<CreatedAlbumsArgs>();
 
   @Output()
   currentUser: User;
@@ -111,6 +115,9 @@ export class CreateAlbumModalComponent implements OnInit {
 
 
   CreateAlbum() {
+
+    let createdAlbum: CreatedAlbumsArgs;
+
     if (this.albumName == '') {
       console.log(this.albumName)
       this.checkForm = false;
@@ -118,10 +125,38 @@ export class CreateAlbumModalComponent implements OnInit {
     else {
       if (this.LoadNewImage === true) {
         this.album = { title: this.albumName, photo: this.photos[0], authorId: parseInt(this.currentUser.id), photos: this.photos };
-        this.albumService.createAlbumWithNewPhotos(this.album).subscribe((e) => this.toggleModal());
+        this.albumService.createAlbumWithNewPhotos(this.album)
+        .subscribe((createdAlbum) => 
+        {         
+          console.log(createdAlbum);
+          
+          
+          this.createdAlbumEvent.emit({
+            id: createdAlbum.id,
+            name: createdAlbum.title,
+            photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+            title: createdAlbum.title
+          });
+
+          this.toggleModal();
+        });
       } else {
         this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: parseInt(this.currentUser.id) };
-        this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos).subscribe((e) => this.toggleModal());
+        this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos)
+        .subscribe((createdAlbum) => 
+        {
+          console.log(createdAlbum);
+
+
+          this.createdAlbumEvent.emit({
+            id: createdAlbum.id,
+            name: createdAlbum.title,
+            photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+            title: createdAlbum.title
+          });
+
+          this.toggleModal();
+        });
       }
     }
   }

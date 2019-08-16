@@ -1,26 +1,69 @@
 version: '3'
 
 services:
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
-  #   restart: always
-  #   environment:
-  #     discovery.type: single-node
-  #   expose:
-  #     - "9200"
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.3.0
-  #   restart: always
-  #   ports:
-  #     - "5601:5601"
-  #   depends_on:
-  #     - elasticsearch
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+
+
   lamaapi:
     image: krasnovnikita/bsa2019-lama:lama-api
-    #image: lama-api
+    container_name: 'lama-api'
     ports:
       - "5000:5000"
     environment:
       ConnectionStrings:ConnectionLocal: ${LamaDBConnectionString}
+      PhotoApiUrl: "http://photoapi:6000/"
       ASPNETCORE_URLS: http://+:5000
 
+  photoapi:
+    image: krasnovnikita/bsa2019-lama:photo-api
+    container_name: 'photo-api'
+    ports:
+      - "6000:6000"
+    environment:
+      BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      elasticsearch:url: "http://elasticsearch:9200"
+      ASPNETCORE_URLS: http://+:6000
+    depends_on: 
+      - rabbitmq
+
+  photoprocessor:
+    image: krasnovnikita/bsa2019-lama:photo-processor
+    container_name: 'photo-processor'
+    environment:
+      BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      elasticsearch:url: "http://elasticsearch:9200"
+    depends_on: 
+      - rabbitmq
+
+  lamaweb:
+    image: krasnovnikita/bsa2019-lama:lama-web
+    container_name: 'lama-web'
+    ports:
+      - "80:80"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.0
+    container_name: 'elasticsearch'
+    restart: always
+    environment:
+      discovery.type: single-node
+    expose:
+      - "9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.3.0
+    container_name: 'kibana'
+    restart: always
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch

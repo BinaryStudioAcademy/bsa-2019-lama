@@ -1,15 +1,15 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS base
 WORKDIR /output
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
-COPY PhotoAPI/ ./source/
-COPY ./Shared/ ./Shared/
-WORKDIR /src/source
-RUN dotnet publish -c Release -o ./output -v n
+COPY PhotoAPI/ source/
+COPY Shared/ Shared/
+WORKDIR source
+RUN dotnet publish -c Release -o output
 
 FROM base AS final
-WORKDIR /output
+COPY --from=build /src/source/Photo/output .
 ENTRYPOINT ["dotnet", "Photo.dll"]
