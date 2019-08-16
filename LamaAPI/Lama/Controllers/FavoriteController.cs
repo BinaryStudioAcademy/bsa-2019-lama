@@ -9,6 +9,7 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DTO;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO.Photo;
 
 namespace Lama.Controllers
 {
@@ -25,9 +26,9 @@ namespace Lama.Controllers
 
         [HttpGet]
         [Route("photos/{userId}")]
-        public async Task<IEnumerable<PhotoDocument>> GetFavoritesPhotos(int userId)
+        public Task<IEnumerable<PhotoDocumentDTO>> GetFavoritesPhotos(int userId)
         {
-            return await _service.GetFavoritesPhotos(userId);
+            return _service.GetFavoritesPhotos(userId);
         }
 
         [HttpGet]

@@ -1,4 +1,5 @@
 ﻿using Lama.Domain.BlobModels;
+using Lama.Domain.DTO.Photo;
 using Lama.Domain.DTO.User;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,6 @@ namespace Lama.Domain.DTO.Album
         public int Id { get; set; }
         public string Title { get; set; }
         public PhotoDocument Photo { get; set; }
-        public IEnumerable<PhotoDocument> PhotoAlbums { get; set; }
+        public IEnumerable<PhotoDocumentDTO> PhotoAlbums { get; set; }
     }
 }

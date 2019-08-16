@@ -9,7 +9,7 @@ namespace Lama.BusinessLogic.Interfaces
 {
     public interface IPhotoService 
     {
-        Task<IEnumerable<UploadPhotoResultDTO>> FindPhoto(string criteria);
+        Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(string criteria);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos);
         Task<Photo> CreateAvatar(CreatePhotoDTO item);
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();
@@ -20,7 +20,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id);
-        Task AddReaction(NewLikeDTO newLike);
+        Task<int> AddReaction(NewLikeDTO newLike);
         Task RemoveReaction(NewLikeDTO removeLike);
     }
 }
