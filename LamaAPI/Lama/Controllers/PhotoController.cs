@@ -33,9 +33,9 @@ namespace Lama.Controllers
             return _service.CreateAll(photos);
         }
         [HttpPost("reaction")]
-        public Task<int> PostReaction([FromBody] NewLikeDTO newLike)
+        public async Task PostReaction([FromBody] NewLikeDTO newLike)
         {
-            return _service.AddReaction(newLike);
+            await _service.AddReaction(newLike);
         }
         [HttpPost("removereaction")]
         public async Task RemoveReaction([FromBody] NewLikeDTO removeLike)
@@ -45,9 +45,9 @@ namespace Lama.Controllers
         #endregion
 
         [HttpGet("search/{criteria}")]
-        public async Task<IEnumerable<UploadPhotoResultDTO>> FindPhotos(string criteria)
+        public Task<IEnumerable<PhotoDocumentDTO>> FindPhotos(string criteria)
         {
-            return await _service.FindPhoto(criteria);
+            return _service.FindPhoto(criteria);
         }
 
         [HttpPut]

@@ -71,6 +71,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
+    console.log(eventArgs);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
     componentRef.instance.currentUser = this.currentUser;
