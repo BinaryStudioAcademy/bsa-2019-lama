@@ -71,7 +71,10 @@ export class MainPhotosContainerComponent implements OnInit {
         console.log("Occured error! Please, try later");
       }
     else {
-      this.userService.getUser(parseInt(userId)).subscribe(user => this.currentUser = user);
+      this.userService.getUser(parseInt(userId)).subscribe(user => {
+        this.currentUser = user;
+        localStorage.setItem('userId', user.id);
+      });
       this._favoriteService.getFavoritesIds(parseInt(userId)).subscribe(data => {
         this.favorites = new Set<number>(data);
         console.log(data);
