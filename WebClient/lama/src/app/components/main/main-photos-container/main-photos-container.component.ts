@@ -66,9 +66,7 @@ export class MainPhotosContainerComponent implements OnInit {
       let email = localStorage.getItem('email');
       if(email != null)
         this.userService.getUserByEmailObservation(email)
-          .subscribe(user => this._favoriteService.getFavoritesIds(parseInt(user.id)).subscribe(fav => {
-            this.favorites = new Set<number>(fav);
-          }));
+          .subscribe(user => this.initializeUserAndFavorites(user));
       else
         console.log("Occured error! Please, try later");
       }
