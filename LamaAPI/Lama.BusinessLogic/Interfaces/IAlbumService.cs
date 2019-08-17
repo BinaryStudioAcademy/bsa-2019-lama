@@ -17,6 +17,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<ReturnAlbumDTO> FindAlbum(int Id);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] photoDocuments);
         Task<int> RemoveAlbum(int id);
+        Task<int> RemoveAlbumCover(int id);
         Task<int?> UpdateCover(UpdateAlbumDTO album);
         Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id);
     }

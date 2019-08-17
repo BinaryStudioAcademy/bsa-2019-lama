@@ -60,7 +60,9 @@ export class MainPageHeaderComponent implements OnInit {
             .then(() => {
               this.auth._user = null
               this.router.navigate(['/'])
+              let cover = localStorage.getItem("favoriteCover");
               localStorage.clear();
+              localStorage.setItem("favoriteCover", cover);
             })
             .catch(e => {console.log("user is not signed in")});
   }

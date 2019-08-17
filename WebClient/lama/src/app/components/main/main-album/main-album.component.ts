@@ -73,8 +73,7 @@ export class MainAlbumComponent implements OnInit {
       this.favoriteService.deleteAllFavorites(parseInt(userId)).subscribe(x => x);
       localStorage.removeItem("favoriteCover");
     }
-    else 
-    {
+    else {
       this.albumService.removeAlbum(this.album.id).subscribe( x => x);
     }
       this.deleteAlbumEvent.emit(this.album);

@@ -48,7 +48,14 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   GetAlbums() {
     let id =  this.currentUser.id;
-    this.albumService.getAlbums(id).subscribe(albums => {this.albums = albums.body;});
+    this.albumService.getAlbums(id).subscribe(albums => {
+      this.albums = albums.body;
+      this.albums.forEach(a => {
+        if(a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0)
+          a.photo = a.photoAlbums[0]; 
+        }
+      )
+    });
   }
 
   GetFavoriteAlbum(userId: number){
@@ -66,7 +73,6 @@ export class MainAlbumsContainerComponent implements OnInit {
         else{
           photo = this.favorite.photoAlbums.find(f=>f.id == parseInt(cover));
           if(photo == null){
-            localStorage.removeItem("favoriteCover");
             photo = this.favorite.photoAlbums[0];
           }
           else
@@ -129,8 +135,10 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
   public deleteAlbumHandler(albumToDelete: ViewAlbum)
   {
-    if(albumToDelete.id == 0)
+    if(albumToDelete.id == 0){
       this.showFavorite = false;
+      localStorage.removeItem("favoriteCover");
+    }
     else 
       this.albums = this.albums.filter(a => a !== albumToDelete);  
   }
