@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
@@ -11,7 +11,7 @@ import { Favorite } from 'src/app/models/favorite';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
-export class MainPhotoComponent implements OnInit {
+export class MainPhotoComponent implements OnChanges {
 
   isFavorite:boolean = false;
   // properties
@@ -25,7 +25,11 @@ export class MainPhotoComponent implements OnInit {
   constructor(private _favoriteService: FavoriteService) {
    }
 
-  ngOnInit() {
+   ngOnChanges(){
+    this.checkFavorite();
+  }
+
+  checkFavorite(){
     if(this.id==-1)
       this.isFavorite = false;
     else 
