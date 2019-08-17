@@ -18,8 +18,7 @@ import { isUndefined } from 'util';
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit
-{
+export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
   public photo: PhotoRaw;
@@ -67,7 +66,7 @@ export class PhotoModalComponent implements OnInit
   public searchElementRef: ElementRef;
 
   // constructors
-  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone,private albumService:AlbumService,
+  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone, private albumService: AlbumService,
     authService: AuthService, userService: UserService) {
     this.isShown = true;
     this.fileService = fileService;
@@ -131,17 +130,16 @@ export class PhotoModalComponent implements OnInit
     const loggedUserId: number = this.authService.getLoggedUserId();
 
     this.userService.getUser(loggedUserId)
-      .subscribe(user =>
-        {
-          this.currentUser = user;
+      .subscribe(user => {
+        this.currentUser = user;
 
-          if (this.photo.reactions != null) {
-            this.hasUserReaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
-          }
-          else {
-            this.hasUserReaction = false;
-          }
-        });
+        if (this.photo.reactions != null) {
+          this.hasUserReaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
+        }
+        else {
+          this.hasUserReaction = false;
+        }
+      });
 
   }
 
@@ -149,7 +147,7 @@ export class PhotoModalComponent implements OnInit
 
   GetFile() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', this.photo.blob256Id, true);
+    xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
       var response = xhr.responseText;
       var binary = ""
@@ -159,50 +157,48 @@ export class PhotoModalComponent implements OnInit
       let src = 'data:image/jpeg;base64,' + btoa(binary);
       let exifObj = load(src);
       let GPS = exifObj["GPS"];
-      console.log(GPS);
-      console.log(isNaN(GPS));
-      
-      this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
-      this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
-      
 
-      // load Places Autocomplete
-      this.mapsAPILoader.load().then(() => {
+      if (exifObj["GPS"][1] == "N") {
+        this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
+        this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
 
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            console.log(this.longitude);
-            //this.latitude = position.coords.latitude;
-            //this.longitude = position.coords.longitude;
-            this.zoom = 8;
-            this.getAddress(this.latitude, this.longitude);
+        // load Places Autocomplete
+        this.mapsAPILoader.load().then(() => {
+
+          if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              console.log(this.longitude);
+              //this.latitude = position.coords.latitude;
+              //this.longitude = position.coords.longitude;
+              this.zoom = 8;
+              this.getAddress(this.latitude, this.longitude);
+            });
+          }
+
+          this.geoCoder = new google.maps.Geocoder;
+
+          /*
+          let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+            types: ['address']
           });
-        }
-
-        this.geoCoder = new google.maps.Geocoder;
-
-        /*
-        let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-          types: ['address']
+          autocomplete.addListener('place_changed', () => {
+            this.ngZone.run(() => {
+              // get the place result
+              let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+  
+              // verify result
+              if (place.geometry === undefined || place.geometry === null) {
+                return;
+              }
+  
+              // set latitude, longitude and zoom
+              this.latitude = place.geometry.location.lat();
+              this.longitude = place.geometry.location.lng();
+              this.zoom = 12;
+            });
+          });*/
         });
-        autocomplete.addListener('place_changed', () => {
-          this.ngZone.run(() => {
-            // get the place result
-            let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-            // verify result
-            if (place.geometry === undefined || place.geometry === null) {
-              return;
-            }
-
-            // set latitude, longitude and zoom
-            this.latitude = place.geometry.location.lat();
-            this.longitude = place.geometry.location.lng();
-            this.zoom = 12;
-          });
-        });*/
-      });
-
+      }
     }
     xhr.overrideMimeType('text/plain; charset=x-user-defined');
     xhr.send();
@@ -258,8 +254,7 @@ export class PhotoModalComponent implements OnInit
     // download
 
     // edit
-    if (clickedMenuItem === this.defaultMenuItem[3])
-    {
+    if (clickedMenuItem === this.defaultMenuItem[3]) {
       console.log(5);
       this.isEditing = true;
     }
@@ -271,14 +266,13 @@ export class PhotoModalComponent implements OnInit
       element.style.width = "auto";
     }
 
-}
+  }
 
   public mouseLeftOverlayHandler(): void {
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public saveEditedImageHandler(editedImage: ImageEditedArgs): void
-  {
+  public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
     console.log(this.fileService.getExif(editedImage.editedImageBase64));
 
     const updatePhotoDTO: UpdatePhotoDTO = {
@@ -288,18 +282,16 @@ export class PhotoModalComponent implements OnInit
     };
 
     this.fileService.update(updatePhotoDTO)
-      .subscribe(updatedPhotoDTO =>
-        {
-          Object.assign(this.photo, updatedPhotoDTO);
+      .subscribe(updatedPhotoDTO => {
+        Object.assign(this.photo, updatedPhotoDTO);
 
-          this.goBackToImageView();
-        });
+        this.goBackToImageView();
+      });
 
-	this.updatePhotoEvent.emit(this.photo);
+    this.updatePhotoEvent.emit(this.photo);
   }
 
-  public goBackToImageView(): void
-  {
+  public goBackToImageView(): void {
     this.isEditing = false;
   }
   public closeModal(): void {
@@ -348,24 +340,22 @@ export class PhotoModalComponent implements OnInit
       userId: this.currentUser.id
     }
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
-        {
-           this.photo.reactions = this.photo.reactions.filter(x => x.userId !== this.currentUser.id);
-           this.hasUserReaction = false;
-        });
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => {
+        this.photo.reactions = this.photo.reactions.filter(x => x.userId !== this.currentUser.id);
+        this.hasUserReaction = false;
+      });
     }
     else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId =>
-        {
-          this.photo.reactions.push({
-            id: newLikeId,
-            userId: this.currentUser.id,
-            photoId: this.photo.id,
-            user: {id: this.currentUser.id} as Entity,
-            photo: { id: this.photo.id } as Entity,
-          });
-          this.hasUserReaction = true;
+      this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId => {
+        this.photo.reactions.push({
+          id: newLikeId,
+          userId: this.currentUser.id,
+          photoId: this.photo.id,
+          user: { id: this.currentUser.id } as Entity,
+          photo: { id: this.photo.id } as Entity,
         });
+        this.hasUserReaction = true;
+      });
     }
   }
 
@@ -403,8 +393,7 @@ export class PhotoModalComponent implements OnInit
   openModalForPickCoord(event) {
 
   }
-  CloseInfo(event)
-  {
+  CloseInfo(event) {
     let element = document.getElementById("info-content");
     element.style.visibility = 'hidden';
     element.style.width = "0px";

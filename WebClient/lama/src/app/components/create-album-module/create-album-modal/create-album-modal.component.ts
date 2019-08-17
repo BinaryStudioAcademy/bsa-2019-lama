@@ -86,6 +86,7 @@ export class CreateAlbumModalComponent implements OnInit {
     this.LoadNewImage = true;
 
     for (let i = 0; i < files.length; i++) {
+      this.loaded = false;
       if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
         let exifObj = load(await this.toBase64(files[i]));
         let d = dump(exifObj);
