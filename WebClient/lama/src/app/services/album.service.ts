@@ -67,4 +67,8 @@ export class AlbumService {
   public removeAlbum(albumId: number){
     return this.http.delete<number>(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
   }
+
+  public removeAlbumCover(albumId: number){
+    return this.http.delete(`${this.baseUrl}${this.routeAlbum}/cover/${albumId}`);
+  }
 }

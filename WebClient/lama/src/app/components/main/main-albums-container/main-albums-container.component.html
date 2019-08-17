@@ -9,20 +9,23 @@
             <p>New album</p>
         </div>
     </a>
-    <div *ngIf="favorite!=null">
+    <div *ngIf="showFavorite">
         <main-album [_album]="favorite" 
-            (onClick)="albumClicked($event)" 
-            (ClickDownload)="ArchiveAlbum($event)"></main-album>
-    </div>
-    <div *ngFor="let item of albums">
-        <main-album 
-            [_album]="item" 
+            [_isFavorite]="true"
             (onClick)="albumClicked($event)" 
             (ClickDownload)="ArchiveAlbum($event)"
             (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
     </div>
-
+    <div *ngFor="let item of albums">
+        <main-album 
+            [_album]="item" 
+            [_isFavorite]="false"
+            (onClick)="albumClicked($event)" 
+            (ClickDownload)="ArchiveAlbum($event)"
+            (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        </main-album>
+    </div>
 
     <template #CreateAlbumnContainer></template>
 
