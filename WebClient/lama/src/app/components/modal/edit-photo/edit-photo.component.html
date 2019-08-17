@@ -1,30 +1,22 @@
-<div class="tile is-ancestor">        
-    
+<div class="tile is-ancestor">
+
     <!--left panel-->
     <div class="tile is-parent">
-                
-        <!--image-->            
+
+        <!--image-->
         <div class="edit-container">
-            <image-cropper #editor
-                [imageBase64]="imageToEditBase64"
-                [cropperMinWidth]="cropperMinWidth"
-                [cropperMinHeight]="cropperMinHeight"
-                [maintainAspectRatio]="false"
-
-                format="jpeg"                
-
-                (imageCropped)="imageCroppedHandler($event)">
+            <image-cropper #editor [imageBase64]="imageToEditBase64" [cropperMinWidth]="cropperMinWidth" [cropperMinHeight]="cropperMinHeight" [maintainAspectRatio]="false" format="jpeg" (imageCropped)="imageCroppedHandler($event)">
             </image-cropper>
         </div>
-    
+
     </div>
 
     <!--right panel-->
     <div class="tile is-4 is-vertical is-parent">
 
         <!--edit image option-->
-        <div class="tile is-child">            
-            
+        <div class="tile is-child">
+
             <!--crop-->
             <details>
                 <summary>Crop</summary>
@@ -48,69 +40,65 @@
                 <summary>Rotate</summary>
 
                 <div class="drop-content">
-                    <div class="columns" >
+                    <div class="columns">
 
-                        <div class="column has-text-centered">    
-                            <button class="button is-dark" 
-                                (click)="rotateLeftHandler()">
+                        <div class="column has-text-centered">
+                            <button class="button is-dark" (click)="rotateLeftHandler()">
                                 <i class="material-icons is-block">rotate_left</i>
-                            </button>                                        
+                            </button>
                         </div>
 
-                        <div class="column has-text-centered">    
-                            <button class="button is-dark"
-                                (click)="rotateRightHandler()">
+                        <div class="column has-text-centered">
+                            <button class="button is-dark" (click)="rotateRightHandler()">
                                 <i class="material-icons is-block">rotate_right</i>
-                            </button>                                            
+                            </button>
                         </div>
 
                     </div>
                 </div>
             </details>
-            
+
             <!--flip-->
             <details>
-                    <summary>Flip</summary>
-    
-                    <div class="drop-content">
-                        <div class="columns" >
-    
-                            <div class="column has-text-centered">    
-                                <button class="button is-dark" 
-                                    (click)="flipHorizontalHandler()">
+                <summary>Flip</summary>
+
+                <div class="drop-content">
+                    <div class="columns">
+
+                        <div class="column has-text-centered">
+                            <button class="button is-dark" (click)="flipHorizontalHandler()">
                                     <i class="material-icons is-block">border_vertical</i>
-                                </button>                                        
-                            </div>
-    
-                            <div class="column has-text-centered">    
-                                <button class="button is-dark"
-                                    (click)="flipVerticalHandler()">
-                                    <i class="material-icons is-block">border_horizontal</i>
-                                </button>                                            
-                            </div>
-    
+                                </button>
                         </div>
+
+                        <div class="column has-text-centered">
+                            <button class="button is-dark" (click)="flipVerticalHandler()">
+                                    <i class="material-icons is-block">border_horizontal</i>
+                                </button>
+                        </div>
+
                     </div>
-                </details>
-        
+                </div>
+            </details>
+
         </div>
 
         <!--save/cancel-->
-        <div class="tile is-child is-no-flex">            
-                    
-            <div class="menu">    
-                <div class="columns has-text-centered" >
+        <div class="tile is-child is-no-flex">
+
+            <div class="menu">
+                <div class="columns has-text-centered">
                     <!--save-->
-                    <div class="column" (click)="saveClickHandler()">                                            
+                    <div class="column" (click)="saveClickHandler()">
                         <i class="material-icons is-block">done</i>
-                        <span> save </span>    
+                        <span> save </span>
                     </div>
                     <!--cancel-->
-                    <div class="column" (click)="cancelClickHandler()">                                            
+                    <div class="column" (click)="cancelClickHandler()">
                         <i class="material-icons is-block">cancel</i>
-                        <span> cancel </span>    
+                        <span> cancel </span>
                     </div>
-            
+
                 </div>
             </div>
         </div>

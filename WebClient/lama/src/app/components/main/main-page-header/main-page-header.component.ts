@@ -58,6 +58,7 @@ export class MainPageHeaderComponent implements OnInit {
     this.auth.doLogout()
             .then(this.auth.token = null)
             .then(() => {
+
               this.auth._user = null
               this.router.navigate(['/'])
               let cover = localStorage.getItem("favoriteCover");
@@ -72,26 +73,24 @@ export class MainPageHeaderComponent implements OnInit {
       this.shared.isSearchTriggeredAtLeastOnce = true;
       this.shared.isSearchTriggered = true;
       this.shared.foundedPhotos = p;
-    })
+    });
   }
 
   public restore() {
     this.file.receivePhoto().subscribe(p => {
       this.shared.foundedPhotos = p;
-    })
+    });
   }
 
-  public openModalClicked(event): void
-  {
+  public openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToListEvent.subscribe(data => {
-      return this.shared.photos.push(...data); });
+    componentRef.instance.addToListEvent.subscribe(data => this.shared.photos.push(...data));
     componentRef.instance.toggleModal();
   }
 
-  public onMenuClicked(event){
+  public onMenuClicked(event) {
     this.showSidebarMenu = !this.showSidebarMenu;
     this.onClick.emit(this.showSidebarMenu);
   }

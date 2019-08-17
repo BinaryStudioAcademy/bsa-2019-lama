@@ -51,8 +51,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     private shared: SharedService,
     private _favoriteService: FavoriteService,
     private zipService: ZipService,
-    private userService: UserService)
-  {
+    private userService: UserService) {
     this.favorites = new Set<number>();
   }
 
@@ -74,9 +73,9 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   initializeUserAndFavorites(user: User){
     this.currentUser = user;
-      this._favoriteService.getFavoritesIds(this.currentUser.id)
+    this._favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));
-    };
+    }
 
   public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
@@ -111,21 +110,21 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         this.photos.push(element);
       });
     }
-    if (this.shared.foundedPhotos.length != 0 && this.shared.isSearchTriggered) {
+    if (this.shared.foundedPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundedPhotos;
       this.isNothingFounded = false;
     }
-    if (this.shared.foundedPhotos.length == 0 && this.shared.isSearchTriggered) {
+    if (this.shared.foundedPhotos.length === 0 && this.shared.isSearchTriggered) {
       this.photos = [];
       this.isNothingFounded = true;
     }
     this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
     if (this.isSearchTriggered) {
-      this.selectedPhotos = []
+      this.selectedPhotos = [];
     }
     this.shared.isSearchTriggered = false;
-    this.shared.foundedPhotos = []
-    this.shared.photos = []
+    this.shared.foundedPhotos = [];
+    this.shared.photos = [];
     if (this.selectedPhotos.length > 0) {
       this.isAtLeastOnePhotoSelected = true;
     }
@@ -151,19 +150,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.photos.push(...uploadedPhotos);
   }
 
-  public photoSelected(eventArgs: PhotoRawState)
-  {
-    if (eventArgs.isSelected)
+  public photoSelected(eventArgs: PhotoRawState) {
+    if (eventArgs.isSelected) {
       this.selectedPhotos.push(eventArgs.photo);
-    else
-    {
+    } else {
       const index = this.selectedPhotos.indexOf(eventArgs.photo);
       this.selectedPhotos.splice(index, 1);
     }
   }
 
-  public photoClicked(eventArgs: PhotoRaw)
-  {
+  public photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
