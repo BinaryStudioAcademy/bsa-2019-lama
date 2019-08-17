@@ -11,6 +11,7 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
 import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { Entity } from 'src/app/models/entity';
+import { isUndefined } from 'util';
 
 @Component({
   selector: 'app-photo-modal',
@@ -157,10 +158,13 @@ export class PhotoModalComponent implements OnInit
       }
       let src = 'data:image/jpeg;base64,' + btoa(binary);
       let exifObj = load(src);
-      console.log(exifObj);
+      let GPS = exifObj["GPS"];
+      console.log(GPS);
+      console.log(isNaN(GPS));
+      
       this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
       this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
-
+      
 
       // load Places Autocomplete
       this.mapsAPILoader.load().then(() => {
