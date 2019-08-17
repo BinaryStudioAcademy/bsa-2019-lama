@@ -84,7 +84,8 @@ export class MainPageHeaderComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToListEvent.subscribe(data => this.shared.photos.push(...data));
+    componentRef.instance.addToListEvent.subscribe(data => {
+      return this.shared.photos.push(...data); });
     componentRef.instance.toggleModal();
   }
 
