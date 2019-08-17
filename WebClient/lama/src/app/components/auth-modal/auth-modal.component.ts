@@ -10,36 +10,36 @@ import { Router } from '@angular/router';
 })
 export class AuthModalComponent implements OnInit {
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
   userProfileData: string;
-  errorMessage: string = '';
+  errorMessage = '';
 
   constructor(public authService: AuthService, private router: Router) { }
 
   ngOnInit() {
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  cancel() {
+    this.Close.emit(null);
   }
 
-  public tryGoogleLogin(){
+  tryGoogleLogin() {
     this.authService.loginWithGoogle()
     .then(() => this.afterSignIn());
   }
 
-  public tryTwitterLogin(){
+  tryTwitterLogin() {
     this.authService.loginWithTwitter()
     .then(() => this.afterSignIn());
   }
 
-  public tryFacebookLogin(){
+  tryFacebookLogin() {
     this.authService.loginWithFacebook()
     .then(() => this.afterSignIn());
   }
 
-  private afterSignIn(){
+  private afterSignIn() {
     this.router.navigate(['/main']);
   }
 

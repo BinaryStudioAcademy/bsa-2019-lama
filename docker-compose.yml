@@ -31,18 +31,15 @@ services:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
       elasticsearch:url: "http://elasticsearch:9200"
       ASPNETCORE_URLS: http://+:6000
-    depends_on: 
-      - rabbitmq
 
   photoprocessor:
     image: krasnovnikita/bsa2019-lama:photo-processor
     container_name: 'photo-processor'
+    restart: on-failure
     environment:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
       Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
-    depends_on: 
-      - rabbitmq
 
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
@@ -65,5 +62,3 @@ services:
     restart: always
     ports:
       - "5601:5601"
-    depends_on:
-      - elasticsearch

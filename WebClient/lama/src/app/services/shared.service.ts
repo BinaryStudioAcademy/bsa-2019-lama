@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { PhotoRaw } from '../models/Photo/photoRaw';
 import { Photo } from '../models';
 import { User } from '../models/User/user';
+import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
-  photos: PhotoRaw[] = [];
+  photos: UploadPhotoResultDTO[] = [];
   foundedPhotos: PhotoRaw[] = [];
   avatar: Photo;
   isSearchTriggered: boolean;

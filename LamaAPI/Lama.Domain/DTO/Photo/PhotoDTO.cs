@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
+using Lama.Domain.DTO.Reaction;
 using Lama.Domain.DTO.User;
 
 namespace Lama.Domain.DTO.Photo

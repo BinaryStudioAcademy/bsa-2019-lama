@@ -30,8 +30,8 @@
     <!--photo list-->
     <div *ngFor="let item of photos">
         <main-photo [_photo]="item"
-                    (onClick)="photoClicked($event)" 
-                    (onSelect)="photoSelected($event)" 
+                    (onClick)="photoClicked($event)"
+                    (onSelect)="photoSelected($event)"
                     [_id]="favorites.has(item.id)==true?item.id:-1">
         </main-photo>
     </div>

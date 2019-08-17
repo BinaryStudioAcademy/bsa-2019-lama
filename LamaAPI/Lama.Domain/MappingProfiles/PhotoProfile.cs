@@ -11,6 +11,8 @@ namespace Lama.Domain.MappingProfiles
         {
             CreateMap<CreatePhotoDTO, Photo>().ReverseMap();
             CreateMap<PhotoDTO, Photo>().ReverseMap();
+            CreateMap<PhotoDocument, PhotoAlbumDetails>()
+                .ForMember(x=>x.ImageUrl,opt=>opt.MapFrom(x=>x.Blob64Id));
         }
     }
 }

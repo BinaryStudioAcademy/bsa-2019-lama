@@ -8,32 +8,32 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
   styleUrls: ['./edit-modal.component.sass']
 })
 export class EditModalComponent implements OnInit {
-  
+
   @Input()
   public photo: PhotoRaw;
   clickedTabsItem: string = null;
-  
+
   @Output() onDone = new EventEmitter<ImageEditedArgs>();
-  
+
   save(editedImage: ImageEditedArgs) {
     this.onDone.emit(editedImage);
   }
-  
+
   constructor() { }
 
   ngOnInit() {
-	  
+
   }
-  
+
   displayCrop() {
-	this.clickedTabsItem = "crop";
+  this.clickedTabsItem = "crop";
   }
-  
+
   displayRotate() {
-	this.clickedTabsItem = "rotate";
+  this.clickedTabsItem = "rotate";
   }
 
   closeModal() {
-    
+
   }
 }

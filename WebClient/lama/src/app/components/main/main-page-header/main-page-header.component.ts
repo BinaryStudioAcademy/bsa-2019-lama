@@ -21,22 +21,22 @@ export class MainPageHeaderComponent implements OnInit {
 
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  public avatarUrl;  
+  public avatarUrl;
   public searchCriteria: string = "";
   public isActive: boolean  = false;
-  
+
   public showSidebarMenu: boolean;
 
   // constructors
   constructor(public auth: AuthService, private router: Router,
      resolver: ComponentFactoryResolver, private shared: SharedService,
-      private http: HttpService, private file: FileService) 
+      private http: HttpService, private file: FileService)
   {
     this.resolver = resolver;
   }
 
 
-  ngOnInit() {  
+  ngOnInit() {
     let id = localStorage.getItem('userId')
     if (id != "" && id != null) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(u => {
@@ -51,15 +51,15 @@ export class MainPageHeaderComponent implements OnInit {
   ngDoCheck() {
     if (this.shared.avatar != null)
       this.avatarUrl = this.shared.avatar.imageUrl;
-    (this.searchCriteria.length < 3) ? this.isActive = false : this.isActive = true; 
+    (this.searchCriteria.length < 3) ? this.isActive = false : this.isActive = true;
   }
 
   public logOut() {
     this.auth.doLogout()
             .then(this.auth.token = null)
             .then(() => {
-              this.auth._user = null
-              this.router.navigate(['/'])
+              this.auth._user = null;
+              this.router.navigate(['/']);
               localStorage.clear();
             })
             .catch(e => {console.log("user is not signed in")});
@@ -69,29 +69,25 @@ export class MainPageHeaderComponent implements OnInit {
     this.http.findPhotos(this.searchCriteria).subscribe(p => {
       this.shared.isSearchTriggeredAtLeastOnce = true;
       this.shared.isSearchTriggered = true;
-      this.shared.foundedPhotos = p; 
-    })
+      this.shared.foundedPhotos = p;
+    });
   }
 
   public restore() {
     this.file.receivePhoto().subscribe(p => {
       this.shared.foundedPhotos = p;
-    })
+    });
   }
 
-  public openModalClicked(event): void
-  {
+  public openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToListEvent.subscribe(data => 
-    {
-      this.shared.photos.push(...data);
-    });
+    componentRef.instance.addToListEvent.subscribe(data => this.shared.photos.push(...data));
     componentRef.instance.toggleModal();
   }
 
-  public onMenuClicked(event){
+  public onMenuClicked(event) {
     this.showSidebarMenu = !this.showSidebarMenu;
     this.onClick.emit(this.showSidebarMenu);
   }
