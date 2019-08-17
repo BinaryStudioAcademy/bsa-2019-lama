@@ -18,7 +18,7 @@ export class PhotoUploadModalComponent implements OnInit {
 
   isActive: boolean;
   photos: Photo[] = [];
-  desc: string[] = []; 
+  desc: string[] = [];
   showSpinner: boolean = false;
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<UploadPhotoResultDTO[]>();
@@ -29,14 +29,16 @@ export class PhotoUploadModalComponent implements OnInit {
   }
 
   saveChanges() {
-    let userId = localStorage.getItem('userId');
-    for (let i = 0; i < this.photos.length; i++) 
-    {
-      this.photos[i] = { imageUrl: this.photos[i].imageUrl, description: this.desc[i], authorId: parseInt(userId), filename: this.photos[i].filename }
+    const userId = localStorage.getItem('userId');
+    for (let i = 0; i < this.photos.length; i++) {
+      this.photos[i] = { imageUrl: this.photos[i].imageUrl,
+                         description: this.desc[i],
+                         authorId: parseInt(userId, 10),
+                         filename: this.photos[i].filename };
     }
+
     this.fileService.sendPhoto(this.photos)
-    .subscribe(uploadedPhotos => 
-      {
+    .subscribe(uploadedPhotos => {
         this.addToListEvent.emit(uploadedPhotos);
         this.toggleModal();
       });
@@ -51,7 +53,7 @@ export class PhotoUploadModalComponent implements OnInit {
   async onFileDropped(files: File[]) {
       this.showSpinner = true;
       this.photos = []
-      for (let i=0; i<files.length; i++) 
+      for (let i=0; i<files.length; i++)
       {
         if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
           let exifObj = load(await this.toBase64(files[i]));
@@ -79,11 +81,10 @@ export class PhotoUploadModalComponent implements OnInit {
       reader.onerror = error => reject(error);
     });
   }
-  
-    
+
 
   toggleModal() {
-    this.isActive = !this.isActive; 
+    this.isActive = !this.isActive;
   }
 
 }
