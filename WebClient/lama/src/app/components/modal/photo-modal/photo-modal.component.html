@@ -114,11 +114,12 @@
                             < !--comments-->
                                 <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
                             </div>
-                            <div id="info-content" class="information">
+                            <div *ngIf="isInfoShown" id="info-content" class="information">
+                               
                                 <div class="flex-content info">
                                     <div class="titl">
                                         <h4 class="title is-4">Information </h4>
-                                        <img src="assets/icons/right-arrow.svg" alt="" (click)="CloseInfo(event)">
+                                        <img src="assets/icons/right-arrow.svg" alt="" (click)="CloseInfo()">
                                     </div>
                                     <div class="item-description">
                                         <div class="field">

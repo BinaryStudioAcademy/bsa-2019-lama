@@ -23,6 +23,7 @@ export class PhotoModalComponent implements OnInit
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
+  public isInfoShown: boolean = false;
 
   public showSharedModal: boolean = false;
   public showSharedByLinkModal: boolean = false;
@@ -145,7 +146,6 @@ export class PhotoModalComponent implements OnInit
   }
 
   // GET EXIF
-
   GetFile() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blob256Id, true);
@@ -262,9 +262,7 @@ export class PhotoModalComponent implements OnInit
 
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
-      let element = document.getElementById("info-content");
-      element.style.visibility = 'visible';
-      element.style.width = "auto";
+      this.CloseInfo();
     }
 
 }
@@ -399,10 +397,8 @@ export class PhotoModalComponent implements OnInit
   openModalForPickCoord(event) {
 
   }
-  CloseInfo(event)
+  CloseInfo()
   {
-    let element = document.getElementById("info-content");
-    element.style.visibility = 'hidden';
-    element.style.width = "0px";
+    this.isInfoShown = !this.isInfoShown;
   }
 }

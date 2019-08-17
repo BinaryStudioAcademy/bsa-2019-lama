@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
@@ -13,7 +13,7 @@ import { Favorite } from 'src/app/models/favorite';
 })
 export class MainPhotoComponent implements OnChanges {
 
-  isFavorite:boolean = false;
+  public isFavorite: boolean = false;
   // properties
   @Input ('_photo') photo: PhotoRaw;
   isSelected: boolean = false;
@@ -23,7 +23,7 @@ export class MainPhotoComponent implements OnChanges {
 
   // constructors
   constructor(private _favoriteService: FavoriteService) {
-   }
+  }
 
    ngOnChanges(){
     this.checkFavorite();
