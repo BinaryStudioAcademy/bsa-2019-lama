@@ -9,6 +9,7 @@ namespace Lama.Domain.MappingProfiles
         public LikeProfile()
         {
             CreateMap<LikeDTO, Like>().ReverseMap();
+            CreateMap<Lama.Domain.DTO.Reaction.LikeDTO, Like>().ReverseMap();
         }
     }
 }

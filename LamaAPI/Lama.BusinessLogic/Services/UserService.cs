@@ -72,7 +72,7 @@ namespace Lama.BusinessLogic.Services
             if (user != null)
             {
                 avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-                url = (await _photoService.Get(avatar.Id)).Blob256Id;
+                url = (await _photoService.Get(avatar.Id))?.Blob256Id;
             }
             var dto = _mapper.Map<UserDTO>(user);
             if (user != null)
@@ -84,7 +84,7 @@ namespace Lama.BusinessLogic.Services
         {
             var user = await Context.Users.SingleAsync(u => u.Id == id);
             var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-            var url = (await _photoService.Get(avatar.Id)).Blob256Id;
+            var url = (await _photoService.Get(avatar.Id))?.Blob256Id;
             var dto = _mapper.Map<UserDTO>(user);
             dto.PhotoUrl = url;
             return dto;
@@ -94,7 +94,7 @@ namespace Lama.BusinessLogic.Services
         {
             User user = await Context.Users.FindAsync(id);
             Photo avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-            string url = (await _photoService.Get(avatar.Id)).Blob256Id;
+            string url = (await _photoService.Get(avatar.Id))?.Blob256Id;
 
             GetUserDTO dto = _mapper.Map<GetUserDTO>(user);
             dto.Avatar = url;
