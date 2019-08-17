@@ -9,6 +9,7 @@ using System.Linq;
 using Lama.Domain.DTO;
 using AutoMapper;
 using Lama.Domain.DTO.Photo;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -51,7 +52,10 @@ namespace Lama.BusinessLogic.Services
 
                 foreach (LikeDTO like in photoDocumentDTO.Reactions)
                 {
-                    like.Photo.Likes = null;
+                    if (like.Photo != null)
+                    {
+                        like.Photo.Likes = null;
+                    }
                 }
             }
 

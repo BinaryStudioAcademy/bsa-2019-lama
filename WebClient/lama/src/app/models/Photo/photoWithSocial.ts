@@ -1,4 +1,5 @@
 import { Like } from '../like';
+import { LikeDTO } from '../Reaction/LikeDTO';
 
 
 //TODO this class should be injected in Photo class
@@ -7,6 +8,6 @@ export interface PhotoWithSocial{
   authorId?: number;
   author?: string;
   description?: string;
-  likes: Like[];
+  likes: LikeDTO[];
   comments: Comment[];
 }

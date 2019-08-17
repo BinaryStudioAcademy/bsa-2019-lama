@@ -29,7 +29,7 @@ export class AlbumService {
   {
     return this.http.get<PhotoDetailsAlbum[]>(this.baseUrl + this.routeAlbum+ '/details' + `/${photoId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
-  public getAlbums(userId:string , httpParams?: any) {
+  public getAlbums(userId:number , httpParams?: any) {
       return this.http.get<ViewAlbum[]>(this.baseUrl + this.routeAlbum + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
   }
 
@@ -53,7 +53,7 @@ export class AlbumService {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
   }
-  
+
   public updateAlbum(album: UpdateAlbum) {
       const headers = new HttpHeaders().set('content-type', 'application/json');
       return this.http.put<UpdateAlbum>(this.baseUrl + this.routeAlbum , album , { headers }).subscribe(e => console.log(e));

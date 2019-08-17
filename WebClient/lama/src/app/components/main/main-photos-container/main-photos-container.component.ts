@@ -76,7 +76,7 @@ export class MainPhotosContainerComponent implements OnInit {
 
   initializeUserAndFavorites(user: User){
     this.currentUser = user;
-      this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
+      this._favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));
     };
 
@@ -157,7 +157,7 @@ export class MainPhotosContainerComponent implements OnInit {
   {
     if (eventArgs.isSelected)
       this.selectedPhotos.push(eventArgs.photo);
-    else 
+    else
     {
       const index = this.selectedPhotos.indexOf(eventArgs.photo);
       this.selectedPhotos.splice(index, 1);

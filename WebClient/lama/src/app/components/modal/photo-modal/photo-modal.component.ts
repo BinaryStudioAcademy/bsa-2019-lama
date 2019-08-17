@@ -10,13 +10,14 @@ import { load } from 'piexifjs';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
 import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
 import { AlbumService } from 'src/app/services/album.service';
+import { Entity } from 'src/app/models/entity';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit 
+export class PhotoModalComponent implements OnInit
 {
   // properties
   @Input()
@@ -84,9 +85,15 @@ export class PhotoModalComponent implements OnInit
         // console.log(date);
       });
     });
-    let reactions = this.photo.reactions;
+    const userId = this.authService.getLoggedUserId();
+    this.userService.getUser(userId).subscribe(user => {
+      this.currentUser = user;
+      let reactions = this.photo.reactions;
 
-    this.hasUserReaction = reactions.some(x => x.user.id == parseInt(this.currentUser.id));
+      this.hasUserReaction = reactions.some(x => x.userId === this.currentUser.id);
+    });
+
+
     this.GetFile();
     this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe((e) => this.albums = e.body);
   }
@@ -120,7 +127,7 @@ export class PhotoModalComponent implements OnInit
         alert('Geocoder failed due to: ' + status);
       }
     });
-    const loggedUserId: number = parseInt(this.authService.getLoggedUserId());
+    const loggedUserId: number = this.authService.getLoggedUserId();
 
     this.userService.getUser(loggedUserId)
       .subscribe(user =>
@@ -128,7 +135,7 @@ export class PhotoModalComponent implements OnInit
           this.currentUser = user;
 
           if (this.photo.reactions != null) {
-            this.hasUserReaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
+            this.hasUserReaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
           }
           else {
             this.hasUserReaction = false;
@@ -178,12 +185,12 @@ export class PhotoModalComponent implements OnInit
           this.ngZone.run(() => {
             // get the place result
             let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-  
+
             // verify result
             if (place.geometry === undefined || place.geometry === null) {
               return;
             }
-  
+
             // set latitude, longitude and zoom
             this.latitude = place.geometry.location.lat();
             this.longitude = place.geometry.location.lng();
@@ -266,7 +273,7 @@ export class PhotoModalComponent implements OnInit
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public saveEditedImageHandler(editedImage: ImageEditedArgs): void 
+  public saveEditedImageHandler(editedImage: ImageEditedArgs): void
   {
     console.log(this.fileService.getExif(editedImage.editedImageBase64));
 
@@ -283,11 +290,11 @@ export class PhotoModalComponent implements OnInit
 
           this.goBackToImageView();
         });
-		
+
 	this.updatePhotoEvent.emit(this.photo);
   }
 
-  public goBackToImageView(): void 
+  public goBackToImageView(): void
   {
     this.isEditing = false;
   }
@@ -302,7 +309,7 @@ export class PhotoModalComponent implements OnInit
   private openEditModal(): void {
     this.showEditModal = true;
   }
-  
+
   openShareByLink() {
     this.showSharedByLinkModal = true;
   }
@@ -331,25 +338,27 @@ export class PhotoModalComponent implements OnInit
     //if (this.photo.userId === parseInt(this.currentUser.id)) return;
 
 
-    let hasreaction = this.photo.reactions.some(x => x.user.id === parseInt(this.currentUser.id));
+    let hasreaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
     const newReaction: NewLike = {
       photoId: this.photo.id,
-      userId: parseInt(this.currentUser.id)
+      userId: this.currentUser.id
     }
     if (hasreaction) {
       this.fileService.RemoveReactionPhoto(newReaction).subscribe(x =>
         {
-           this.photo.reactions = this.photo.reactions.filter(x=> x.user.id != parseInt(this.currentUser.id)); 
+           this.photo.reactions = this.photo.reactions.filter(x => x.userId !== this.currentUser.id);
            this.hasUserReaction = false;
         });
     }
     else {
       this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId =>
         {
-          this.photo.reactions.push({ 
+          this.photo.reactions.push({
             id: newLikeId,
-            user: { id: parseInt(this.currentUser.id) }, 
-            photo: { id: this.photo.id },
+            userId: this.currentUser.id,
+            photoId: this.photo.id,
+            user: {id: this.currentUser.id} as Entity,
+            photo: { id: this.photo.id } as Entity,
           });
           this.hasUserReaction = true;
         });

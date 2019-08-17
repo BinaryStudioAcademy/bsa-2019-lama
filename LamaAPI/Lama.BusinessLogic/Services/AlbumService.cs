@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Lama.BusinessLogic.Exceptions;
 using Lama.Domain.DTO;
 using Lama.Domain.DTO.Album;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -257,15 +258,17 @@ namespace Lama.BusinessLogic.Services
             foreach(PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
             {
                 photoDocumentDTO.Reactions = 
-                    _mapper.Map<Lama.Domain.DTO.LikeDTO[]>(
+                    _mapper.Map<LikeDTO[]>(
                     Context.Likes
                     .Where(l => l.PhotoId == photoDocumentDTO.Id)
                     .ToArray());
 
-                foreach (Lama.Domain.DTO.LikeDTO like in photoDocumentDTO.Reactions)
+                foreach (LikeDTO like in photoDocumentDTO.Reactions)
                 {
-                    
-                    like.Photo.Likes = null;
+                    if (like.Photo != null)
+                    {
+                        like.Photo.Likes = null;
+                    }
                 }
             }
 
