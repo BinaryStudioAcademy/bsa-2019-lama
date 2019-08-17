@@ -60,11 +60,19 @@ export class MainAlbumsContainerComponent implements OnInit {
         this.favorite.id = 0;
         this.favorite.title = "Favorite photos";
         let cover = localStorage.getItem("favoriteCover");
+        let photo:PhotoRaw = null;
         if(cover == null)
-          this.favorite.photo = this.favorite.photoAlbums[0];
-        else{ 
-          this.favorite.photo = null//this.favorite.photoAlbums;
+          photo = this.favorite.photoAlbums[0];
+        else{
+          photo = this.favorite.photoAlbums.find(f=>f.id == parseInt(cover));
+          if(photo == null){
+            localStorage.removeItem("favoriteCover");
+            photo = this.favorite.photoAlbums[0];
+          }
+          else
+            this.favorite.photo = photo;
         }
+        this.favorite.photo = photo;
         this.showFavorite = true;
       }
     });
@@ -124,7 +132,6 @@ export class MainAlbumsContainerComponent implements OnInit {
     if(albumToDelete.id == 0)
       this.showFavorite = false;
     else 
-      this.albums = this.albums.filter(a => a !== albumToDelete);
-    
+      this.albums = this.albums.filter(a => a !== albumToDelete);  
   }
 }
