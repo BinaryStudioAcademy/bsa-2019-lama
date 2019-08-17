@@ -79,8 +79,7 @@ export class MainPageHeaderComponent implements OnInit {
     })
   }
 
-  public openModalClicked(event): void
-  {
+  public openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
@@ -89,7 +88,7 @@ export class MainPageHeaderComponent implements OnInit {
     componentRef.instance.toggleModal();
   }
 
-  public onMenuClicked(event){
+  public onMenuClicked(event) {
     this.showSidebarMenu = !this.showSidebarMenu;
     this.onClick.emit(this.showSidebarMenu);
   }
