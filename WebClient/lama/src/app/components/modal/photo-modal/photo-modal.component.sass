@@ -28,10 +28,12 @@
   flex-direction: column
   justify-content: center
   align-items: center
-  min-height: 610px
+  width: auto
 
 .main-photo img
     width: auto !important
+    max-height: 610px
+    min-width: 370px
 
 agm-map 
     height: 100px
@@ -47,8 +49,8 @@ article
     padding: 5px
 
 .overlay 
-    position: absolute !important
-    bottom: 0
+    position: relative
+    bottom: 76px
     opacity: 0
     background: rgba(0, 0, 0, 0.5)
     background-image: linear-gradient(rgba(45,45,45,0.5), rgba(45,45,45,1))
@@ -57,7 +59,6 @@ article
     width: 100%
     transition: .5s ease
     font-size: 20px
-    padding: 20px
     text-align: center
 
 
