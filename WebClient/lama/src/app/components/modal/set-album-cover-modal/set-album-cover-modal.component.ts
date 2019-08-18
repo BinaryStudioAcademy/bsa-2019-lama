@@ -18,7 +18,7 @@ export class SetAlbumCoverModalComponent implements OnInit {
 
   @Input() receivedAlbum: ViewAlbum;
   @Output() Change = new EventEmitter<PhotoRaw>();
-
+  @Input("_isFavorite") isFavorite: boolean;
   @Input() isShown: boolean;
   selectedPhoto?: PhotoRaw = null;
   updatedAlbum: UpdateAlbum = {} as UpdateAlbum;
@@ -40,8 +40,13 @@ export class SetAlbumCoverModalComponent implements OnInit {
         this.updatedAlbum.coverId = this.selectedPhoto.id;
         this.updatedAlbum.id = this.receivedAlbum.id;
         this.Change.emit(this.selectedPhoto);
+        if(this.isFavorite){
+          localStorage.setItem("favoriteCover", this.receivedAlbum.photo.id.toString());
+        }
+        else{
         this.albumService.updateAlbumCover(this.updatedAlbum)
           .subscribe(updatedAlbum => this.receivedAlbum.photo.id = updatedAlbum.coverId);
+        }
     }
     this.isShown = false;
   }

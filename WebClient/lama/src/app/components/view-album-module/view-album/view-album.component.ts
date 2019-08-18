@@ -14,6 +14,7 @@ import { element } from 'protractor';
 import { ZipService } from 'src/app/services/zip.service';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { User } from 'src/app/models/User/user';
+import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 
 @Component({
   selector: 'app-view-album',
@@ -22,7 +23,6 @@ import { User } from 'src/app/models/User/user';
   providers: [FavoriteService, ZipService]
 })
 export class ViewAlbumComponent implements OnInit, DoCheck {
-
 
   @Input() album: ViewAlbum = { } as ViewAlbum;
 
@@ -55,7 +55,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId != 0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
-    } else if(this.AlbumId == 0) {     
+    } 
+    else if(this.AlbumId == 0) {     
       this.favoriteService.getFavoritesPhotos(userId)
           .subscribe(data => {
             this.album.photoAlbums = data;
@@ -90,7 +91,15 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   }
   
   ngDoCheck() {
-    this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0
+    this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
+    if(this.album.photoAlbums != undefined){
+      if(this.album.photoAlbums.length == 0){
+        if(this.album.id==0)
+          localStorage.removeItem("favoriteCover");
+        else
+          this.albumService.removeAlbumCover(this.album.id).subscribe(x => x);
+      }
+    }
   }
 
   public photoSelected(eventArgs: PhotoRawState)

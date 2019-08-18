@@ -17,8 +17,6 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
 import { ZipService } from 'src/app/services/zip.service';
-import { delay } from 'q';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
   selector: 'main-photos-container',
@@ -57,32 +55,23 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.favorites = new Set<number>();
   }
 
-  ngOnInit() {
+  async ngOnInit(){
     this.GetPhotos();
     this.selectedPhotos = []
     let userId: string = localStorage.getItem('userId');
-    if (userId == null) {
-      let email = localStorage.getItem('email');
-      if (email != null) {
-        this.userService.getUserByEmailObservation(email)
-          .subscribe(user => this.initializeUserAndFavorites(user));
-        } else{
-        console.log('Occured error! Please, try later');
-      }
+    while(userId == null){
+      await this.delay(500);      
+      userId = localStorage.getItem('userId');
     }
-    else {
-      this.userService.getUser(parseInt(userId)).subscribe(user => {
-        this.currentUser = user;
-        localStorage.setItem('userId', user.id.toString());
-      });
-      this._favoriteService.getFavoritesIds(parseInt(userId)).subscribe(data => {
-        this.favorites = new Set<number>(data);
-        console.log(data);
-      })
-    }
+    this.userService.getUser(parseInt(userId))
+      .subscribe(user => this.initializeUserAndFavorites(user));
   }
 
-  initializeUserAndFavorites(user: User) {
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms));
+}
+
+  initializeUserAndFavorites(user: User){
     this.currentUser = user;
     this._favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));

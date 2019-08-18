@@ -23,21 +23,15 @@ export class MainAlbumsContainerComponent implements OnInit {
   @Input() albums: ViewAlbum[];
   currentUser : User;
   favorite: ViewAlbum = null;
+  showFavorite: boolean = false;
 
   ArchivePhotos = [];
   ngOnInit() {
     let userId = parseInt(localStorage.getItem('userId'));
     this.httpService.getData('users/'+userId).subscribe((u) => {
-      this.currentUser = u; this.GetAlbums();
-      this._favoriteService.getFavoritesPhotos(userId).subscribe(data => {
-        if(data.length != 0){
-          this.favorite = { } as ViewAlbum;
-          this.favorite.photoAlbums = data;
-          this.favorite.id = 0;
-          this.favorite.title = "Favorite photos";
-          this.favorite.photo = this.favorite.photoAlbums[0];
-        }
-      });
+      this.currentUser = u; 
+      this.GetFavoriteAlbum(this.currentUser.id);
+      this.GetAlbums();
     });
   }
 
@@ -54,7 +48,40 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   GetAlbums() {
     let id =  this.currentUser.id;
-    this.albumService.getAlbums(id).subscribe(albums => {this.albums = albums.body;});
+    this.albumService.getAlbums(id).subscribe(albums => {
+      this.albums = albums.body;
+      this.albums.forEach(a => {
+        if(a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0)
+          a.photo = a.photoAlbums[0]; 
+        }
+      )
+    });
+  }
+
+  GetFavoriteAlbum(userId: number){
+    this._favoriteService.getFavoritesPhotos(userId).subscribe(data => {
+      if(data.length != 0){
+        this.showFavorite = true;
+        this.favorite = { } as ViewAlbum;
+        this.favorite.photoAlbums = data;
+        this.favorite.id = 0;
+        this.favorite.title = "Favorite photos";
+        let cover = localStorage.getItem("favoriteCover");
+        let photo:PhotoRaw = null;
+        if(cover == null)
+          photo = this.favorite.photoAlbums[0];
+        else{
+          photo = this.favorite.photoAlbums.find(f=>f.id == parseInt(cover));
+          if(photo == null){
+            photo = this.favorite.photoAlbums[0];
+          }
+          else
+            this.favorite.photo = photo;
+        }
+        this.favorite.photo = photo;
+        this.showFavorite = true;
+      }
+    });
   }
 
   public CreateAlbum(event) {
@@ -78,10 +105,12 @@ export class MainAlbumsContainerComponent implements OnInit {
         });
      });
   }
+
   ArchiveAlbum(event: ViewAlbum)
   {
     this.albumService.ArchiveAlbum(event.photoAlbums).subscribe( x =>  {this.ArchivePhotos = x; this.ConvertToImage(event.title)});
   }
+
   ConvertToImage(name) {
 
     var zip = new JSZip();
@@ -106,6 +135,11 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
   public deleteAlbumHandler(albumToDelete: ViewAlbum)
   {
-    this.albums = this.albums.filter(a => a !== albumToDelete);
+    if(albumToDelete.id == 0){
+      this.showFavorite = false;
+      localStorage.removeItem("favoriteCover");
+    }
+    else 
+      this.albums = this.albums.filter(a => a !== albumToDelete);  
   }
 }
