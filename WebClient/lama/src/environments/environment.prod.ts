@@ -8,8 +8,8 @@ export const environment = {
     messagingSenderId: '363275556201',
     appId: '1:363275556201:web:52ab2e1fd986b9ca'
   },
-  clientApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com',
-  lamaApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com:5000',
+  clientApiUrl:'http://localhost:8080',
+  lamaApiUrl: 'http://localhost:5000',
   photoEditing:
   {
     crop:
