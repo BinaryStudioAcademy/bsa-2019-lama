@@ -73,7 +73,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     else {
       this.userService.getUser(parseInt(userId)).subscribe(user => {
         this.currentUser = user;
-        localStorage.setItem('userId', user.id);
+        localStorage.setItem('userId', user.id.toString());
       });
       this._favoriteService.getFavoritesIds(parseInt(userId)).subscribe(data => {
         this.favorites = new Set<number>(data);
