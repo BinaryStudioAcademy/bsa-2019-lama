@@ -36,9 +36,7 @@ namespace Lama.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoverId")
-                        .IsUnique()
-                        .HasFilter("[CoverId] IS NOT NULL");
+                    b.HasIndex("CoverId");
 
                     b.HasIndex("UserId");
 
@@ -318,8 +316,8 @@ namespace Lama.DataAccess.Migrations
             modelBuilder.Entity("Lama.Domain.DbModels.Album", b =>
                 {
                     b.HasOne("Lama.Domain.DbModels.Photo", "Photo")
-                        .WithOne("Album")
-                        .HasForeignKey("Lama.Domain.DbModels.Album", "CoverId");
+                        .WithMany("Album")
+                        .HasForeignKey("CoverId");
 
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Albums")

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
+import {CreateAlbumModule} from '../create-album-module/create-album.module'
 
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
@@ -17,6 +18,7 @@ import { ShareModalComponent } from './share-modal/share-modal/share-modal.compo
 import { CommentsListComponent } from './comments-list/comments-list.component';
 import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
+import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
 
 @NgModule(
@@ -25,7 +27,12 @@ import { EditPhotoComponent } from './edit-photo/edit-photo.component';
   [
     SharedModule,
     ImageCropperModule,
-    UiModule
+    UiModule,
+    CreateAlbumModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
+      libraries: ['places']
+    })
   ],
   providers:
   [

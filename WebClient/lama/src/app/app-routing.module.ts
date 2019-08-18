@@ -8,6 +8,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
 import { DeletedPhotosComponent } from './components/removed-photos/deleted-photos/deleted-photos.component';
+import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 
 import { LoggedInGuard, AuthGuard } from './guards';
 
@@ -32,6 +33,7 @@ const routes: Routes =
           { path: 'album/:id', component: ViewAlbumComponent },
           { path: 'profile', component: ProfileComponent },
           { path: 'shared/:userdata', component: SharedPageComponent },
+          { path: 'shared/album/:userdata', component: SharedPageAlbumComponent },
           { path: 'bin', component: DeletedPhotosComponent },
         ]
       }

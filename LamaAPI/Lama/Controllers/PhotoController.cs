@@ -45,9 +45,9 @@ namespace Lama.Controllers
         #endregion
 
         [HttpGet("search/{criteria}")]
-        public async Task<IEnumerable<UploadPhotoResultDTO>> FindPhotos(string criteria)
+        public Task<IEnumerable<PhotoDocumentDTO>> FindPhotos(string criteria)
         {
-            return await _service.FindPhoto(criteria);
+            return _service.FindPhoto(criteria);
         }
 
         [HttpPut]

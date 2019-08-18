@@ -1,26 +1,37 @@
-<header>
-  <app-shared-page-header [userPhoto]= "authenticatedUser?.photoURL" [userName]="authenticatedUser?.displayName"></app-shared-page-header>
-</header>
-<body>
-    <section class="hero">
-        <div class="hero-body">
-          <p>Author</p>
-          <div class="columns is-multiline">
-            <div class="column is-narrow">
-                <div class="image is-64x64">
-                  <!--Here will be photo author avatar placed-->
-                    <img src="../../../assets/alpaca-icon-19.jpg">
-                  </div>
-            </div>
-            <div class="column  is-narrow">
-            </div>
-          </div>
+<div class="navigation">
+    <div class="image">
+        <a routerLink="/main/albums"><img src="assets/icons/back.svg" alt=""></a>
+    </div>
+    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+                <span>Options</span>
+            </button>
         </div>
-      </section>
-      <app-view-album [album]="album"></app-view-album>
-  </body>
-
-
-
-
-
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item" (click)="deleteImages()">
+                    <p>Delete</p>
+                </div>
+                <div class="dropdown-item" (click)="downloadImages()">
+                    <p>Download</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="title">
+        <h2 class="title is-2">{{album.title}}</h2>
+    </div>
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums">
+            <main-photo [_photo]="item" 
+                        (onClick)="photoClicked($event)"
+                        (onSelect)="photoSelected($event)">
+            </main-photo>
+        </div>
+    </div>
+	
+    <template #modalPhotoContainer></template>
+</div>

@@ -7,14 +7,15 @@
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
             <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
             <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
-
+            <a class="dropdown-item" (click)="toggleSetCoverModal()">Set Album cover</a>
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
         </div>
         <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
     </div>
     <div class="description has-text-centered">
-        <p>{{album.name}}</p>
+        <p>{{album.title}}</p>
     </div>
-    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
+    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal"  (onClose)="showSharedModal=false"></app-share-album>
+    <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite] = "isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
 

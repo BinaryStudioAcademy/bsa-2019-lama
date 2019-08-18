@@ -34,7 +34,7 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.Photo).WithOne(o => o.Album).HasForeignKey<Album>(fk => fk.CoverId);
+                entity.HasOne(o => o.Photo).WithMany(o => o.Album).HasForeignKey(fk => fk.CoverId);
                 entity.HasOne(o => o.User).WithMany(m => m.Albums).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.Property(e => e.Title).IsRequired();
             });

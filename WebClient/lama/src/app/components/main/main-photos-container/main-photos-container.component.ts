@@ -17,7 +17,6 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
 import { ZipService } from 'src/app/services/zip.service';
-import { delay } from 'q';
 
 @Component({
   selector: 'main-photos-container',
@@ -25,7 +24,7 @@ import { delay } from 'q';
   styleUrls: ['./main-photos-container.component.sass'],
   providers: [FavoriteService, ZipService, UserService]
 })
-export class MainPhotosContainerComponent implements OnInit {
+export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   // properties
   // showUploadModal: boolean = false;
@@ -52,33 +51,31 @@ export class MainPhotosContainerComponent implements OnInit {
     private shared: SharedService,
     private _favoriteService: FavoriteService,
     private zipService: ZipService,
-    private userService: UserService)
-  {
+    private userService: UserService) {
     this.favorites = new Set<number>();
   }
 
-  ngOnInit(){
+  async ngOnInit(){
     this.GetPhotos();
     this.selectedPhotos = []
     let userId: string = localStorage.getItem('userId');
-    if(userId == null){
-      let email = localStorage.getItem('email');
-      if(email != null)
-        this.userService.getUserByEmailObservation(email)
-          .subscribe(user => this.initializeUserAndFavorites(user));
-      else
-        console.log("Occured error! Please, try later");
-      }
-    else
-      this.userService.getUser(parseInt(userId))
-        .subscribe(user => this.initializeUserAndFavorites(user));
+    while(userId == null){
+      await this.delay(500);      
+      userId = localStorage.getItem('userId');
+    }
+    this.userService.getUser(parseInt(userId))
+      .subscribe(user => this.initializeUserAndFavorites(user));
   }
+
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms));
+}
 
   initializeUserAndFavorites(user: User){
     this.currentUser = user;
-      this._favoriteService.getFavoritesIds(parseInt(this.currentUser.id))
+    this._favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));
-    };
+    }
 
   public GetUserPhotos(UserId: number) {
     this.isNothingFounded = false;
@@ -113,21 +110,21 @@ export class MainPhotosContainerComponent implements OnInit {
         this.photos.push(element);
       });
     }
-    if (this.shared.foundedPhotos.length != 0 && this.shared.isSearchTriggered) {
+    if (this.shared.foundedPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundedPhotos;
       this.isNothingFounded = false;
     }
-    if (this.shared.foundedPhotos.length == 0 && this.shared.isSearchTriggered) {
+    if (this.shared.foundedPhotos.length === 0 && this.shared.isSearchTriggered) {
       this.photos = [];
       this.isNothingFounded = true;
     }
     this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
     if (this.isSearchTriggered) {
-      this.selectedPhotos = []
+      this.selectedPhotos = [];
     }
     this.shared.isSearchTriggered = false;
-    this.shared.foundedPhotos = []
-    this.shared.photos = []
+    this.shared.foundedPhotos = [];
+    this.shared.photos = [];
     if (this.selectedPhotos.length > 0) {
       this.isAtLeastOnePhotoSelected = true;
     }
@@ -153,19 +150,16 @@ export class MainPhotosContainerComponent implements OnInit {
       this.photos.push(...uploadedPhotos);
   }
 
-  public photoSelected(eventArgs: PhotoRawState)
-  {
-    if (eventArgs.isSelected)
+  public photoSelected(eventArgs: PhotoRawState) {
+    if (eventArgs.isSelected) {
       this.selectedPhotos.push(eventArgs.photo);
-    else 
-    {
+    } else {
       const index = this.selectedPhotos.indexOf(eventArgs.photo);
       this.selectedPhotos.splice(index, 1);
     }
   }
 
-  public photoClicked(eventArgs: PhotoRaw)
-  {
+  public photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);

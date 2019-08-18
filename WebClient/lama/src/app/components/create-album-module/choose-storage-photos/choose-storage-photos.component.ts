@@ -12,28 +12,27 @@ export class ChooseStoragePhotosComponent implements OnInit {
 
   @Input()
   public IsShow: boolean;
-  
+
   @Output()
   currentUser: User;
-  
+
   constructor(private photoService: FileService) {
     this.IsShow = true;
    }
-   
+
   @Input() photos: PhotoRaw[] = [];
   @Output() onChange = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
-    let id = parseInt(this.currentUser.id);
+    const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
     this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
   }
 
-  toggleModal()
-  {
+  toggleModal() {
     this.IsShow = false;
   }
-  public clickPerformed(eventArgs: PhotoRaw)
-  {
+
+  clickPerformed(eventArgs: PhotoRaw) {
     this.onChange.emit(eventArgs);
   }
 }

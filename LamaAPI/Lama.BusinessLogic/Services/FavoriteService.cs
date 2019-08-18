@@ -7,20 +7,25 @@ using Lama.Domain.DbModels;
 using Lama.BusinessLogic.Interfaces;
 using System.Linq;
 using Lama.Domain.DTO;
+using AutoMapper;
+using Lama.Domain.DTO.Photo;
+using Lama.Domain.DTO.Reaction;
 
 namespace Lama.BusinessLogic.Services
 {
     public class FavoriteService : BaseService<Favorite>, IFavoriteService
     {
+        private readonly IMapper mapper;
         private readonly IPhotoService _photoService;
 
-        public FavoriteService(IPhotoService photoService, ApplicationDbContext context)
+        public FavoriteService(IPhotoService photoService, ApplicationDbContext context, IMapper mapper)
             : base(context)
         {
+            this.mapper = mapper;
             _photoService = photoService;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> GetFavoritesPhotos(int userId)
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetFavoritesPhotos(int userId)
         {
 
             List<PhotoDocument> photos = new List<PhotoDocument>();
@@ -35,7 +40,28 @@ namespace Lama.BusinessLogic.Services
                 else if (!pd.IsDeleted)
                     photos.Add(pd);
             }
-            return photos;
+
+            PhotoDocumentDTO[] photoDocumentDTOs = mapper.Map<PhotoDocumentDTO[]>(photos);
+            foreach(PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            {
+                photoDocumentDTO.Reactions =
+                    mapper.Map<LikeDTO[]>(
+                    Context.Likes
+                    .Where(l => l.PhotoId == photoDocumentDTO.Id)
+                    .ToArray());
+
+                foreach (LikeDTO like in photoDocumentDTO.Reactions)
+                {
+                    if (like.Photo != null)
+                    {
+                        like.Photo.Likes = null;
+                    }
+                }
+            }
+
+
+
+            return photoDocumentDTOs;
         }
 
         public async Task<IEnumerable<int>> GetFavoritesPhotosId(int userId)

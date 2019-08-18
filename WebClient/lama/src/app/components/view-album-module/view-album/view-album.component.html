@@ -26,11 +26,12 @@
     </div>
     <div *ngIf="loading" class="items-container-centered">
         <div *ngFor="let item of album.photoAlbums">
-            <main-photo [_photo]="item" 
-                        [_id]="favorites.has(item.id)==true?item.id:-1" 
+            <main-photo [_photo]="item"
+                        [_id]="favorites.has(item.id)==true?item.id:-1"
                         (onClick)="photoClicked($event)"
                         (onSelect)="photoSelected($event)">
             </main-photo>
         </div>
-    </div>
+    </div>	
+    <template #modalPhotoContainer></template>
 </div>
