@@ -45,15 +45,15 @@ export class FileService
   {
     return load(imageBase64);
   }
-  public copyExif(imageBase64: string): string
+  public copyExif(from: string, to: string): string
   {
-    let modified = imageBase64;
+    let modified = to;
 
-    if (imageBase64.indexOf('image/jpeg') !== -1 || imageBase64.indexOf('image/jpg') !== -1) 
+    if (from.indexOf('image/jpeg') !== -1 || from.indexOf('image/jpg') !== -1) 
     {
-      const exifObj = load(imageBase64);
+      const exifObj = load(from);
       const d = dump(exifObj);
-      modified = insert(d, imageBase64);
+      modified = insert(d, to);
     }
 
     return modified;

@@ -13,7 +13,7 @@
             <!--photos-->
             <div class="items-container-centered height">
                 <div *ngFor="let item of photos">
-                    <app-choose-photo [_photo]="item" (onClick)="clickPerformed($event)"></app-choose-photo>
+                    <app-choose-photo [_photo]="item" (Click)="clickPerformed($event)"></app-choose-photo>
                 </div>
             </div>
         </div>

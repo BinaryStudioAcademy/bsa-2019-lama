@@ -16,12 +16,12 @@
             <label for="last-name">Last Name</label>
         </div>
         <div class="container email-container">
-            <input type="text" [(ngModel)]="user.email" id="email" formControlName="email">
+            <input type="text" disabled [(ngModel)]="user.email" id="email" formControlName="email">
             <label for="email">Email</label>
         </div>
         <div class="container notifications-container">
-            <label for="notifications">Send email notifications</label>
-            <input type="checkbox" id="notifications">
+            <!-- <label for="notifications">Send email notifications</label>
+            <input type="checkbox" id="notifications"> -->
         </div>
         <button class="save-button" type="submit"  [disabled]="userForm.invalid">Save</button>
     </form>
