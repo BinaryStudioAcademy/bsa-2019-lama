@@ -183,7 +183,7 @@ export class MainPhotosContainerComponent implements OnInit {
   public updatePhotoHandler(updatedPhoto: PhotoRaw): void
   {
     let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
-    this.photos[index] = updatedPhoto
+    this.photos[index] = Object.assign({}, updatedPhoto);
   }
 
   private deleteImages(): void

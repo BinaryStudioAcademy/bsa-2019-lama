@@ -142,11 +142,9 @@ export class PhotoModalComponent implements OnInit
       .subscribe(updatedPhotoDTO =>
         {
           Object.assign(this.photo, updatedPhotoDTO);
-
+          this.updatePhotoEvent.emit(this.photo);
           this.goBackToImageView();
         });
-		
-	this.updatePhotoEvent.emit(this.photo);
   }
 
   public goBackToImageView(): void 
