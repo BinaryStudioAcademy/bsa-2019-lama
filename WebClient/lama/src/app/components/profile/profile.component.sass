@@ -81,3 +81,21 @@ form
 
 .email-container input
     background-color: lightgray
+
+input.ng-touched.ng-invalid
+    border-color: red
+
+input.ng-touched.ng-invalid ~ label
+    color: red
+
+input.ng-touched.ng-valid 
+    border-color: #4a4a4a
+
+label[for="user-photo-upload"]
+    width: 128px
+    margin: auto
+
+.alert-danger
+    color: red
+    display: inline-block
+    float: right
