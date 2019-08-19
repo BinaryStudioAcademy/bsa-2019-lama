@@ -34,11 +34,10 @@ label
     padding-right: 15px
 
 
-.user-photo-container
-    border-radius: 100%
-    overflow: hidden
-    padding: 0
-    width: 15%
+.user-photo-container img
+    height: 100%
+    width: auto
+    margin: auto
 
 label[for="notifications"]
     float: none
@@ -95,7 +94,31 @@ form
 .email-container input
     background-color: lightgray
 
-.image
+input.ng-touched.ng-invalid
+    border-color: red
+
+input.ng-touched.ng-invalid ~ label
+    color: red
+
+input.ng-touched.ng-valid 
+    border-color: #4a4a4a
+
+label[for="user-photo-upload"]
+    width: 128px
+    margin: auto
+
+.alert-danger
+    color: red
+    display: inline-block
+    float: right
+
+.notification
+    position: absolute
+    bottom: 30px
+    right: 30px
+
+.image-back
   height: 60px
   width: 60px
   margin-left: 30px
+

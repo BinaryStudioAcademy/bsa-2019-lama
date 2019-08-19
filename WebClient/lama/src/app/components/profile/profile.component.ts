@@ -38,6 +38,7 @@ export class ProfileComponent implements OnInit {
   testReceivedUser: User;
   showSpinner: boolean = true;
   isPhotoLoaded: boolean = false;
+  isSaved: boolean = false;
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
@@ -59,8 +60,8 @@ export class ProfileComponent implements OnInit {
     });
 
     this.userForm = new FormGroup({
-      'firstName': new FormControl(this.user.firstName),
-      'lastName': new FormControl(this.user.lastName),
+      'firstName': new FormControl(this.user.firstName, Validators.required),
+      'lastName': new FormControl(this.user.lastName, Validators.required),
       'email': new FormControl(this.user.email)
     });
   }
@@ -93,6 +94,11 @@ export class ProfileComponent implements OnInit {
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
     localStorage.setItem('email', this.user.email)
     this.userService.updateCurrentUser({photoURL: this.photoUrl})
+	this.isSaved = true;
+  }
+  
+  closeNotification() {
+	this.isSaved = false;
   }
 
   refresh() {
