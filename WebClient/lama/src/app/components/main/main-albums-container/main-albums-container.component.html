@@ -3,26 +3,20 @@
 
     <a class="album">
         <div class="new-album" (click)="CreateAlbum($event)">
-            <a><img src="assets//icons//plus.svg" alt=""></a>
+            <a><img src="assets/plus.svg" alt=""></a>
         </div>
         <div class="description has-text-centered">
             <p>New album</p>
         </div>
     </a>
-    <div *ngIf="favorite!=null">
-        <main-album [_album]="favorite" 
-            (onClick)="albumClicked($event)" 
-            (ClickDownload)="ArchiveAlbum($event)"></main-album>
-    </div>
-    <div *ngFor="let item of albums">
-        <main-album 
-            [_album]="item" 
-            (onClick)="albumClicked($event)" 
-            (ClickDownload)="ArchiveAlbum($event)"
-            (deleteAlbumEvent)="deleteAlbumHandler($event)">
+    <div *ngIf="showFavorite">
+        <main-album [_album]="favorite" [_isFavorite]="true" (onClick)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
     </div>
-
+    <div *ngFor="let item of albums">
+        <main-album [_album]="item" [_isFavorite]="false" (onClick)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        </main-album>
+    </div>
 
     <template #CreateAlbumnContainer></template>
 

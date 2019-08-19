@@ -87,7 +87,7 @@ export class EditPhotoComponent implements OnInit
     
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageUrl,
-      editedImageBase64: this.imageService.copyExif(event.base64)
+      editedImageBase64: this.imageService.copyExif(this.imageToEditBase64, event.base64)
     });
   }
   public cancelClickHandler(): void

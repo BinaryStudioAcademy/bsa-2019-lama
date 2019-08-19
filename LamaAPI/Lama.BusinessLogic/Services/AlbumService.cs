@@ -240,6 +240,14 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
             return id;
         }
+
+        public async Task<int> RemoveAlbumCover(int id)
+        {
+            var album = await Context.Albums.FindAsync(id);
+            album.CoverId = null;
+            return await Context.SaveChangesAsync();
+        }
+
         public async Task<ReturnAlbumDTO> FindAlbum(int Id)
         {
             var result = await Context.Albums

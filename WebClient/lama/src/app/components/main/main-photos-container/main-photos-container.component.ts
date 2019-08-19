@@ -17,7 +17,6 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import * as JSZipUtils from 'jszip-utils';
 import { ZipService } from 'src/app/services/zip.service';
-import { delay } from 'q';
 
 @Component({
   selector: 'main-photos-container',
@@ -56,24 +55,23 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.favorites = new Set<number>();
   }
 
-  ngOnInit() {
+  async ngOnInit(){
     this.GetPhotos();
     this.selectedPhotos = []
     let userId: string = localStorage.getItem('userId');
-    if (userId == null) {
-      let email = localStorage.getItem('email');
-      if (email != null) {
-        this.userService.getUserByEmailObservation(email)
-          .subscribe(user => this.initializeUserAndFavorites(user));} else{
-        console.log('Occured error! Please, try later');
-      }
-    } else {
-      this.userService.getUser(parseInt(userId))
-        .subscribe(user => this.initializeUserAndFavorites(user));
-      }
+    while(userId == null){
+      await this.delay(500);      
+      userId = localStorage.getItem('userId');
+    }
+    this.userService.getUser(parseInt(userId))
+      .subscribe(user => this.initializeUserAndFavorites(user));
   }
 
-  initializeUserAndFavorites(user: User) {
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms));
+}
+
+  initializeUserAndFavorites(user: User){
     this.currentUser = user;
     this._favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));
@@ -179,7 +177,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   public updatePhotoHandler(updatedPhoto: PhotoRaw): void
   {
     let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
-    this.photos[index] = updatedPhoto;
+    this.photos[index] = Object.assign({}, updatedPhoto);
   }
 
   private deleteImages(): void

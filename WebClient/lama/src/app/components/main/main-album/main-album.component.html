@@ -2,7 +2,7 @@
     <div class="album">
 
         <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu()">
-            <img src="assets//icons//three-dots-menu.svg" alt="">
+            <img src="assets/three-dots-menu.svg" alt="">
         </div>
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
             <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
@@ -15,7 +15,6 @@
     <div class="description has-text-centered">
         <p>{{album.title}}</p>
     </div>
-    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal"  (onClose)="showSharedModal=false"></app-share-album>
-    <app-set-album-cover-modal [receivedAlbum]='album' (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
+    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
+    <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
-

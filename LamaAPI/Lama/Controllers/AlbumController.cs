@@ -57,6 +57,13 @@ namespace Lama.Controllers
         {
             return await _service.RemoveAlbum(id);
         }
+
+        [HttpDelete("cover/{id}")]
+        public async Task<int> DeleteAlbumCover(int id)
+        {
+            return await _service.RemoveAlbumCover(id);
+        }
+
         [HttpGet("details/{id}")]
         public async Task<List<AlbumPhotoDetails>> GetAlbumsPhotoDetails(int id)
         {
