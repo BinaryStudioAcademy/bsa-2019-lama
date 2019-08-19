@@ -68,10 +68,12 @@ export class MainAlbumsContainerComponent implements OnInit {
         this.favorite.photoAlbums = data;
         this.favorite.id = 0;
         this.favorite.title = "Favorite photos";
-        let cover = localStorage.getItem("favoriteCover");
+        const cover = localStorage.getItem("favoriteCover");
         let photo:PhotoRaw = null;
-        if(cover == null)
-          photo = this.favorite.photoAlbums[0];
+        let length: number = this.favorite.photoAlbums.length;
+        if(cover == null){
+          photo = this.favorite.photoAlbums[length-1];
+        }
         else{
           photo = this.favorite.photoAlbums.find(f => f.id === parseInt(cover, 10));
           if(photo == null){
