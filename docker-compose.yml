@@ -29,6 +29,7 @@ services:
       - "6000:6000"
     environment:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
+      Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
       ASPNETCORE_URLS: http://+:6000
 
