@@ -28,6 +28,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
+  coverId: number;
   loading = false;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
@@ -63,6 +64,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
           });
     }
     this.favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
+    this.coverId = parseInt(localStorage.getItem("favoriteCover"));
   }
 
   public photoClicked(eventArgs: PhotoRaw) {
@@ -123,6 +125,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
           this.favorites.delete(item.id);
         });
       });
+      if(!this.album.photoAlbums.find(p=> p.id == this.coverId))
+        localStorage.removeItem("favoriteCover");
     }
     else {
       this.selectedPhotos = [];

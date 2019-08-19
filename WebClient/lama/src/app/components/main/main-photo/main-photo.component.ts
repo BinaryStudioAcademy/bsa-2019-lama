@@ -47,6 +47,8 @@ export class MainPhotoComponent implements OnChanges {
     this.id = id;
     if(id == -1)
       this.changeFavorite();
+    if(this.photo.id === parseInt(localStorage.getItem("favoriteCover")))
+      localStorage.removeItem("favoriteCover"); 
   }
 
   // methods
@@ -62,7 +64,7 @@ export class MainPhotoComponent implements OnChanges {
   }
   public mark(){
     if(this.isFavorite){
-      this._favoriteService.deleteFavorite(this.photo.userId, this.userId).subscribe(
+      this._favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
         data => this.checkCorrectReturn(data),
         err => this.changeFavorite()
         )
