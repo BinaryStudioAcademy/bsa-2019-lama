@@ -81,7 +81,7 @@ export class ProfileComponent implements OnInit {
   }
 
   async saveUser() {
-    if (!this.userForm.dirty) {
+    if (!this.userForm.dirty && this.defaultImageUrl === this.photoUrl) {
       return;
     }
 
