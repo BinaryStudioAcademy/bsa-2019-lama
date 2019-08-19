@@ -149,12 +149,19 @@ export class PhotoModalComponent implements OnInit {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
+
+      if(this.photo.blobId.endsWith('.png')) {
+        return;
+      }
+
       var response = xhr.responseText;
       var binary = ""
       for (let i = 0; i < response.length; i++) {
         binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
       }
+      console.log(binary);
       let src = 'data:image/jpeg;base64,' + btoa(binary);
+  
       let exifObj = load(src);
       let GPS = exifObj["GPS"];
 
@@ -167,7 +174,6 @@ export class PhotoModalComponent implements OnInit {
 
           if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
-              console.log(this.longitude);
               //this.latitude = position.coords.latitude;
               //this.longitude = position.coords.longitude;
               this.zoom = 8;
@@ -255,7 +261,7 @@ export class PhotoModalComponent implements OnInit {
 
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
-      console.log(5);
+
       this.isEditing = true;
     }
 
