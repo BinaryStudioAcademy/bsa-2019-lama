@@ -121,10 +121,10 @@ export class PhotoModalComponent implements OnInit {
           this.zoom = 12;
           this.address = results[0].formatted_address;
         } else {
-          alert('No results found');
+          console.log('No results found');
         }
       } else {
-        alert('Geocoder failed due to: ' + status);
+        console.log('Geocoder failed due to: ' + status);
       }
     });
     const loggedUserId: number = this.authService.getLoggedUserId();
