@@ -10,7 +10,7 @@
 			</div>
         </div>
         <div class="columns name-container is-centered">
-			<div class="column is-one-third">
+			<div class="column is-one-fifth">
 				<input type="text" [(ngModel)]="user.firstName" id="first-name" formControlName="firstName">
 				<label for="first-name">First Name</label>
 				<div class="alert alert-danger" *ngIf="userForm.controls['firstName'].invalid && userForm.controls['firstName'].touched">
@@ -19,7 +19,7 @@
 			</div>
         </div>
         <div class="columns name-container is-centered">
-			<div class="column is-one-third">
+			<div class="column is-one-fifth">
 				<input type="text" [(ngModel)]="user.lastName" id="last-name" formControlName="lastName">
 				<label for="last-name">Last Name</label>
 				<div class="alert alert-danger" *ngIf="userForm.controls['lastName'].invalid && userForm.controls['lastName'].touched">
@@ -28,13 +28,13 @@
 			</div>
         </div>
         <div class="columns email-container is-centered">
-			<div class="column is-one-third">
+			<div class="column is-one-fifth">
 				<input type="text" disabled [(ngModel)]="user.email" id="email" formControlName="email">
 				<label for="email">Email</label>
 			</div>
         </div>
         <div class="columns notifications-container is-centered">
-			<div class="column is-one-third">
+			<div class="column is-one-fifth">
             <!-- <label for="notifications">Send email notifications</label>
             <input type="checkbox" id="notifications"> -->
 			</div>
@@ -48,4 +48,8 @@
 </div>
 <div id="error-notification"*ngIf="!isSuccesfull">
     Error! Something unexpected was happen!
+</div>
+<div *ngIf="isSaved" class="column notification is-primary is-one-third">
+  <button class="delete" (click)="closeNotification()"></button>
+  Changes saved
 </div>

@@ -31,6 +31,7 @@ export class ProfileComponent implements OnInit {
   testReceivedUser: User;
   showSpinner: boolean = true;
   isPhotoLoaded: boolean = false;
+  isSaved: boolean = false;
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
@@ -76,5 +77,10 @@ export class ProfileComponent implements OnInit {
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
     localStorage.setItem('email', this.user.email)
     this.userService.updateCurrentUser({photoURL: this.photoUrl})
+	this.isSaved = true;
+  }
+  
+  closeNotification() {
+	this.isSaved = false;
   }
 }
