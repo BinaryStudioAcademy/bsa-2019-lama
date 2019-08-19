@@ -48,7 +48,7 @@ namespace Photo.DataAccess.Implementation
             };
 
             cloudBlobContainerPhotos.SetPermissionsAsync(permissions);
-            cloudBlobContainerAvatars.SetPermissionsAsync(permissions);            
+            cloudBlobContainerAvatars.SetPermissionsAsync(permissions);
         }
 
         private void ConfigureCors(ServiceProperties serviceProperties, IList<string> allowedOrigins)
@@ -67,36 +67,35 @@ namespace Photo.DataAccess.Implementation
         // METHODS
         public async Task<string> LoadPhotoToBlob(byte[] blob, string filename)
         {
-            var metadata = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
-            string name = Guid.NewGuid().ToString();
-            if (filename != null)
-                name = filename;
-            string blobName = name;
-            string contentType;
-            try
-            {
-                contentType = metadata[7].Tags[2].Description;
-            }
-            catch (Exception)
-            {
-                contentType = "image/jpg";
-            }
+            IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            string name = (filename != null) ? filename : Guid.NewGuid().ToString();
+            string contentType = "image/jpg";
 
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
+            foreach (var directory in directories)
+            {
+                foreach (var tag in directory.Tags)
+                {
+                    if (tag.Name == "Detected MIME Type")
+                    {
+                        contentType = tag.Description;
+                    }
+                }
+            }
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(name);
             cloudBlockBlob.Properties.ContentType = contentType;
-            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);          
+            await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
 
             return cloudBlockBlob.Uri.ToString();
         }
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
         {
-            List<Byte[]> list = new List<Byte[]>(); 
+            List<Byte[]> list = new List<Byte[]>();
 
             for (int i = 0; i < values.Length; i++)
             {
                 var folderName = "images/";
                 var index = values[i].OriginalBlobId.IndexOf(folderName);
-                var text = values[i].OriginalBlobId.Substring(index+folderName.Length);
+                var text = values[i].OriginalBlobId.Substring(index + folderName.Length);
                 CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(text);
 
                 await cloudBlob.FetchAttributesAsync();
