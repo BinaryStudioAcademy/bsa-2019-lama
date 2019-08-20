@@ -20,25 +20,27 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 })
 export class MainAlbumsContainerComponent implements OnInit {
 
+  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+
   @Input() albums: ViewAlbum[];
-  currentUser : User;
+  currentUser: User;
   favorite: ViewAlbum = null;
-  showFavorite: boolean = false;
+  showFavorite = false;
 
   ArchivePhotos = [];
   ngOnInit() {
-    let userId = parseInt(localStorage.getItem('userId'));
-    this.httpService.getData('users/'+userId).subscribe((u) => {
-      this.currentUser = u; 
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    this.httpService.getData('users/' + userId).subscribe((u) => {
+      this.currentUser = u;
       this.GetFavoriteAlbum(this.currentUser.id);
       this.GetAlbums();
     });
   }
 
 
-  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
-  private entry: ViewContainerRef;
-  private resolver: ComponentFactoryResolver;
+
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private router: Router, private albumService: AlbumService,
@@ -52,7 +54,7 @@ export class MainAlbumsContainerComponent implements OnInit {
       this.albums = albums.body;
       this.albums.forEach(a => {
         if(a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0)
-          a.photo = a.photoAlbums[0]; 
+          a.photo = a.photoAlbums[0];
         }
       )
     });
@@ -66,12 +68,14 @@ export class MainAlbumsContainerComponent implements OnInit {
         this.favorite.photoAlbums = data;
         this.favorite.id = 0;
         this.favorite.title = "Favorite photos";
-        let cover = localStorage.getItem("favoriteCover");
+        const cover = localStorage.getItem("favoriteCover");
         let photo:PhotoRaw = null;
-        if(cover == null)
-          photo = this.favorite.photoAlbums[0];
+        let length: number = this.favorite.photoAlbums.length;
+        if(cover == null){
+          photo = this.favorite.photoAlbums[length-1];
+        }
         else{
-          photo = this.favorite.photoAlbums.find(f=>f.id == parseInt(cover));
+          photo = this.favorite.photoAlbums.find(f => f.id === parseInt(cover, 10));
           if(photo == null){
             photo = this.favorite.photoAlbums[0];
           }
@@ -84,7 +88,7 @@ export class MainAlbumsContainerComponent implements OnInit {
     });
   }
 
-  public CreateAlbum(event) {
+  CreateAlbum(event) {
      this.entry.clear();
      const factory = this.resolver.resolveComponentFactory(CreateAlbumModalComponent);
      const componentRef = this.entry.createComponent(factory);
@@ -139,7 +143,7 @@ export class MainAlbumsContainerComponent implements OnInit {
       this.showFavorite = false;
       localStorage.removeItem("favoriteCover");
     }
-    else 
-      this.albums = this.albums.filter(a => a !== albumToDelete);  
+    else
+      this.albums = this.albums.filter(a => a !== albumToDelete);
   }
 }

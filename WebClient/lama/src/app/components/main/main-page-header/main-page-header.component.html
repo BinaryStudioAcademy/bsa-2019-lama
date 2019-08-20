@@ -30,8 +30,8 @@
     <!--profile-->
     <div class="align-right">
         <a class="button is-primary" (click)="logOut()">Logout</a>
-        <a class="profile" routerLink="/main/profile">
-			<img [src]="avatarUrl || 'assets/default_avatar.png'" width="50px">
+        <a class="image is-64x64 profile" routerLink="/main/profile">
+			<img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded">
 		</a>
     </div>
 

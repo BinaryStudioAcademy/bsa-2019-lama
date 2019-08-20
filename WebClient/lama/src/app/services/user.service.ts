@@ -57,9 +57,7 @@ export class UserService {
     })
   }
   
-  public getUserByEmail(email: string) {
-    let user: User;
-    this.httpService.getData(`users/${email}`).subscribe((data:User) => user = data);
-    return user;
+  public getUserByEmail(email: string): Observable<User> {
+    return this.httpService.getData(`users/email/${email}`);
   }
 }

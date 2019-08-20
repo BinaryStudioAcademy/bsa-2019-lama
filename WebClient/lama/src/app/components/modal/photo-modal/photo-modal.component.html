@@ -56,6 +56,12 @@
                                                             </div>
                                                         </div>
                                                     </ng-template>
+                                                    <ng-template ngSwitchCase="remove">
+                                                        <div [appEqualId]="isEqualId()">
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>
+                                                        </div>
+                                                    </ng-template>
                                                     <ng-template ngSwitchCase="download">
                                                         <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
                                                             <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
@@ -85,7 +91,7 @@
                                 <!--set like-->
                                 <div class="likes">
                                     <a class="reaction">
-                                        <img alt="" [src]="hasUserReaction ? 'assets/icons/like.svg' : 'assets//icons/no-like.svg' " (click)="ReactionPhoto(event)">
+                                        <img alt="" [src]="hasUserReaction ? 'assets/like.svg' : 'assets/no-like.svg' " (click)="ReactionPhoto(event)">
                                     </a>
                                     <div class="count">
                                         <span>{{photo?.reactions?.length}}</span>
@@ -116,11 +122,11 @@
                                 <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
                             </div>
                             <div *ngIf="isInfoShown" id="info-content" class="information">
-                               
+
                                 <div class="flex-content info">
                                     <div class="titl">
                                         <h4 class="title is-4">Information </h4>
-                                        <img src="assets/icons/right-arrow.svg" alt="" (click)="CloseInfo()">
+                                        <img src="assets/right-arrow.svg" alt="" (click)="CloseInfo()">
                                     </div>
                                     <div class="item-description">
                                         <div class="field">
