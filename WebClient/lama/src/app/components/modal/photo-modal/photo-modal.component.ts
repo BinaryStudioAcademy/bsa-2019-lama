@@ -286,6 +286,7 @@ export class PhotoModalComponent implements OnInit {
       .subscribe(updatedPhotoDTO =>
         {
           Object.assign(this.photo, updatedPhotoDTO);
+          this.fileService.getPhoto(this.photo.blobId).subscribe(url => this.imageUrl = url);
           this.updatePhotoEvent.emit(this.photo);
           this.goBackToImageView();
         });

@@ -14,6 +14,8 @@ export class EditPhotoComponent implements OnInit
   // fields
   private imageUrl: string;
   imageToEditBase64: string;
+  @Input()
+  imageToEditBlobId: string;
   private imageService: FileService;
 
   // properties
@@ -86,7 +88,7 @@ export class EditPhotoComponent implements OnInit
     const event: ImageCroppedEvent = await this.imageEditor.crop();
     
     this.saveClickedEvent.emit({
-      originalImageUrl: this.imageUrl,
+      originalImageUrl: this.imageToEditBlobId,
       editedImageBase64: this.imageService.copyExif(this.imageToEditBase64, event.base64)
     });
   }

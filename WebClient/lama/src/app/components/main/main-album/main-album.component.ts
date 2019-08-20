@@ -3,6 +3,7 @@ import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'main-album',
@@ -23,12 +24,15 @@ export class MainAlbumComponent implements OnInit {
   isMenu = true;
   showSharedModal = false;
   showSetCoverModal = false;
+  imageUrl: string;
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(private albumService: AlbumService,
-              private favoriteService: FavoriteService) { }
+              private favoriteService: FavoriteService,
+              private fileService: FileService) { }
 
   ngOnInit() {
+    this.fileService.getPhoto(this.album.photo.blob256Id).subscribe(url => this.imageUrl = url);
   }
 
   clickPerformed(): void {

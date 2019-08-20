@@ -11,7 +11,7 @@
 
                 <!--editing view-->
                 <ng-template #editView>
-                    <app-edit-photo [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
+                    <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
                     </app-edit-photo>
                 </ng-template>
 

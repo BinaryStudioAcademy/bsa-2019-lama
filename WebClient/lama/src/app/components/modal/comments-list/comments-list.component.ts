@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommentListDto, User, CreateCommentDTO } from 'src/app/models';
-import { UserService, AuthService, CommentService } from 'src/app/services';
+import { UserService, AuthService, CommentService, FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-comments-list',
@@ -25,7 +25,8 @@ export class CommentsListComponent implements OnInit
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private fileService: FileService
   ) { }
 
   ngOnInit()
@@ -45,7 +46,12 @@ export class CommentsListComponent implements OnInit
   {
     this.commentService.getComments(this.photoId)
       .subscribe(
-        comments => this.commentList = comments,
+        comments => { 
+          this.commentList = comments;
+          this.commentList.forEach(c => {
+            this.fileService.getPhoto(c.authorAvatar64Url).subscribe(url => c.authorAvatar64Url = url);
+          })
+        },
         err => this.commentList = []);
   }
 
@@ -69,16 +75,16 @@ export class CommentsListComponent implements OnInit
           const commentToShow: CommentListDto =
           {
             commentId,
-
             authorId: commentToCreate.userId,
-            authorAvatar64Url: this.loggedUser.photoUrl,
+            authorAvatar64Id: this.loggedUser.photoUrl,
             authorFirstName: this.loggedUser.firstName,
             authorLastName: this.loggedUser.lastName,
-
             commentText: commentToCreate.text
           };
-
-          this.commentList.push(commentToShow);
+          this.fileService.getPhoto(commentToShow.authorAvatar64Id).subscribe(url => {
+            commentToShow.authorAvatar64Url = url;
+            this.commentList.push(commentToShow);
+          })
         });
   }
   public deleteCommentHandler(commentId: number): void
