@@ -11,8 +11,7 @@ import { DeletedPhotoList, PhotoToDeleteRestoreDTO } from 'src/app/models';
   templateUrl: './deleted-photos.component.html',
   styleUrls: ['./deleted-photos.component.sass']
 })
-export class DeletedPhotosComponent implements OnInit
-{
+export class DeletedPhotosComponent implements OnInit {
   // properties
   public countSelectedPhtoto: number;
   public deletedPhotos: DeletedPhotoList[];
@@ -20,25 +19,22 @@ export class DeletedPhotosComponent implements OnInit
   // fields
   constructor(private fileService: FileService) { }
 
-  public ngOnInit(): void
-  {
+  public ngOnInit(): void {
     this.countSelectedPhtoto = 0;
-
-    this.fileService.getDeletedPhotos()
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    this.fileService.getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
-      .subscribe(items => this.deletedPhotos = items);
+      .subscribe(items => {console.log(items); this.deletedPhotos = items });
   }
 
   // methods
-  public selectPhoto(photo: DeletedPhotoList): void
-  {
+  public selectPhoto(photo: DeletedPhotoList): void {
     photo.isMarked = !photo.isMarked;
 
     this.countSelectedPhtoto += photo.isMarked ? 1 : -1;
   }
 
-  public restoreSelectedPhoto(): void
-  {
+  public restoreSelectedPhoto(): void {
     const photosToRestore: PhotoToDeleteRestoreDTO[]
       = this.getSelectedItem();
 
@@ -46,8 +42,8 @@ export class DeletedPhotosComponent implements OnInit
       .subscribe(response => this.removeSelectedPhotoFromView());
 
   }
-  public deleteSelectedPhoto(): void
-  {
+
+  public deleteSelectedPhoto(): void {
     const photosToDelete: PhotoToDeleteRestoreDTO[]
       = this.getSelectedItem();
 
@@ -55,12 +51,11 @@ export class DeletedPhotosComponent implements OnInit
       .subscribe(response => this.removeSelectedPhotoFromView());
   }
 
-  private getSelectedItem(): PhotoToDeleteRestoreDTO[]
-  {
+  private getSelectedItem(): PhotoToDeleteRestoreDTO[] {
     return this.deletedPhotos.filter(p => p.isMarked);
   }
-  private removeSelectedPhotoFromView(): void
-  {
+
+  private removeSelectedPhotoFromView(): void {
     this.deletedPhotos = this.deletedPhotos.filter(p => !p.isMarked);
     this.countSelectedPhtoto = 0;
   }
