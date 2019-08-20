@@ -218,9 +218,9 @@ namespace Lama.BusinessLogic.Services
 
             return httpClient.DeleteAsync(uri);
         }
-        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            string uri = $"{url}api/photos/deleted";
+            string uri = $"{url}api/photos/deleted/{userId}";
 
             HttpResponseMessage response = await httpClient.GetAsync(uri);
 
