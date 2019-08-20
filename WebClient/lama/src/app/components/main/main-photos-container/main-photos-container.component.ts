@@ -165,7 +165,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   private deleteImages(): void {
     this.selectedPhotos.forEach(element => {
-      this.service.markPhotoAsDeleted(element.id)
+      this.fileService.markPhotoAsDeleted(element.id)
       .subscribe(res => {
         this.deletePhotoHandler(element.id);
       });
