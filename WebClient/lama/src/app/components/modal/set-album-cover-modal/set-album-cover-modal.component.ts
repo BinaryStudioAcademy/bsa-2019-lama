@@ -14,7 +14,7 @@ import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 
 export class SetAlbumCoverModalComponent implements OnInit {
 
-  @ViewChildren('albumPhoto') components: QueryList<ChooseAlbumCoverComponent>;
+  @ViewChildren(ChooseAlbumCoverComponent) components: QueryList<ChooseAlbumCoverComponent>;
 
   @Input() receivedAlbum: ViewAlbum;
   @Output() Change = new EventEmitter<PhotoRaw>();
@@ -40,11 +40,10 @@ export class SetAlbumCoverModalComponent implements OnInit {
         this.updatedAlbum.coverId = this.selectedPhoto.id;
         this.updatedAlbum.id = this.receivedAlbum.id;
         this.Change.emit(this.selectedPhoto);
-        if(this.isFavorite){
-          localStorage.setItem("favoriteCover", this.receivedAlbum.photo.id.toString());
-        }
-        else{
-        this.albumService.updateAlbumCover(this.updatedAlbum)
+        if (this.isFavorite) {
+          localStorage.setItem('favoriteCover', this.receivedAlbum.photo.id.toString());
+        } else {
+          this.albumService.updateAlbumCover(this.updatedAlbum)
           .subscribe(updatedAlbum => this.receivedAlbum.photo.id = updatedAlbum.coverId);
         }
     }

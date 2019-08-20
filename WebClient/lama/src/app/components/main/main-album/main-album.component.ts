@@ -1,10 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Album } from 'src/app/models/Album/album';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-
-import { saveAs } from "file-saver";
-import * as JSZip from 'jszip';
-import { HttpClient } from '@angular/common/http';
 import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -76,9 +71,5 @@ export class MainAlbumComponent implements OnInit {
       this.albumService.removeAlbum(this.album.id).subscribe( x => x);
     }
     this.deleteAlbumEvent.emit(this.album);
-  }
-
-  editAlbum() {
-    console.log('edit album method called');
   }
 }
