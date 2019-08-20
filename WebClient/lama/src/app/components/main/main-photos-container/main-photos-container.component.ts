@@ -1,88 +1,76 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, ElementRef, AfterViewInit, OnChanges, DoCheck, EventEmitter, Output } from '@angular/core';
-
-import { Photo } from 'src/app/models';
+import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, ViewChild, DoCheck } from '@angular/core';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { FileService } from 'src/app/services/file.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { SpinnerComponent } from '../../ui/spinner/spinner.component';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
-import { HttpService } from 'src/app/services/http.service';
 import { User } from 'src/app/models/User/user';
 import { FavoriteService } from 'src/app/services/favorite.service';
-import { AuthService, UserService } from 'src/app/services';
-import * as JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import * as JSZipUtils from 'jszip-utils';
+import { UserService } from 'src/app/services';
 import { ZipService } from 'src/app/services/zip.service';
 
 @Component({
-  selector: 'main-photos-container',
+  selector: 'app-main-photos-container',
   templateUrl: './main-photos-container.component.html',
   styleUrls: ['./main-photos-container.component.sass'],
   providers: [FavoriteService, ZipService, UserService]
 })
-export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
-  // properties
-  // showUploadModal: boolean = false;
+export class MainPhotosContainerComponent implements OnInit, DoCheck {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
   isNothingFounded: boolean;
   isSearchTriggered: boolean;
-  currentUser : User;
+  currentUser: User;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
 
-  // fields
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
-
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef })
   private modalUploadPhotoEntry: ViewContainerRef;
 
-  // constructors
   constructor(
     private resolver: ComponentFactoryResolver,
-    private service: FileService,
+    private fileService: FileService,
     private shared: SharedService,
-    private _favoriteService: FavoriteService,
+    private favoriteService: FavoriteService,
     private zipService: ZipService,
     private userService: UserService) {
     this.favorites = new Set<number>();
   }
 
-  async ngOnInit(){
-    this.GetPhotos();
-    this.selectedPhotos = []
+  async ngOnInit() {
     let userId: string = localStorage.getItem('userId');
-    while(userId == null){
-      await this.delay(500);      
+    while (userId == null) {
+      await this.delay(500);
       userId = localStorage.getItem('userId');
     }
-    this.userService.getUser(parseInt(userId))
+    this.userService.getUser(parseInt(userId, 10))
       .subscribe(user => this.initializeUserAndFavorites(user));
+    this.GetUserPhotos(parseInt(userId, 10));
+    this.selectedPhotos = [];
   }
 
   delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms));
 }
 
-  initializeUserAndFavorites(user: User){
+  initializeUserAndFavorites(user: User) {
     this.currentUser = user;
-    this._favoriteService.getFavoritesIds(this.currentUser.id)
+    this.favoriteService.getFavoritesIds(this.currentUser.id)
           .subscribe(data => this.favorites = new Set<number>(data));
     }
 
-  public GetUserPhotos(UserId: number) {
+  public GetUserPhotos(userId: number) {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.service.receivePhoto().subscribe(info => {
+    this.fileService.receiveUsersPhotos(userId).subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
     });
@@ -93,7 +81,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.service.receivePhoto().subscribe(info => {
+    this.fileService.receivePhoto().subscribe(info => {
       this.photos = info as PhotoRaw[];
       this.showSpinner = false;
       console.log(this.photos);
@@ -127,16 +115,14 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.photos = [];
     if (this.selectedPhotos.length > 0) {
       this.isAtLeastOnePhotoSelected = true;
-    }
-    else {
+    } else {
       this.isAtLeastOnePhotoSelected = false;
     }
   }
 
 
   // methods
-  public uploadFile(event)
-  {
+  public uploadFile(event) {
     this.modalUploadPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
@@ -145,8 +131,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     componentRef.instance.addToListEvent.subscribe(this.uploadPhotoHandler.bind(this));
     componentRef.instance.toggleModal();
   }
-  public uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void
-  {
+  public uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
       this.photos.push(...uploadedPhotos);
   }
 
@@ -169,19 +154,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
 
-  public deletePhotoHandler(photoToDeleteId: number): void
-  {
+  public deletePhotoHandler(photoToDeleteId: number): void {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
-  public updatePhotoHandler(updatedPhoto: PhotoRaw): void
-  {
-    let index = this.photos.findIndex(i => i.id === updatedPhoto.id);
+  public updatePhotoHandler(updatedPhoto: PhotoRaw): void {
+    const index = this.photos.findIndex(i => i.id === updatedPhoto.id);
     this.photos[index] = Object.assign({}, updatedPhoto);
   }
 
-  private deleteImages(): void
-  {
+  private deleteImages(): void {
     this.selectedPhotos.forEach(element => {
       this.service.markPhotoAsDeleted(element.id)
       .subscribe(res => {
