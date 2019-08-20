@@ -63,7 +63,8 @@ export class MainPageHeaderComponent implements OnInit {
               this.router.navigate(['/'])
               let cover = localStorage.getItem("favoriteCover");
               localStorage.clear();
-              localStorage.setItem("favoriteCover", cover);
+              if(cover != null)
+                localStorage.setItem("favoriteCover", cover);
             })
             .catch(e => {console.log("user is not signed in")});
   }

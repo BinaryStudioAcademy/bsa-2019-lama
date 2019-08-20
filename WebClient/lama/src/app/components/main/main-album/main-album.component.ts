@@ -1,10 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Album } from 'src/app/models/Album/album';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-
-import { saveAs } from "file-saver";
-import * as JSZip from 'jszip';
-import { HttpClient } from '@angular/common/http';
 import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -24,13 +19,13 @@ export class MainAlbumComponent implements OnInit {
   @Output() onClick = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
 
-  isContent:boolean = false;
-  isMenu:boolean = true;
-  showSharedModal: boolean = false;
-  showSetCoverModal: boolean = false;
+  isContent = false;
+  isMenu = true;
+  showSharedModal = false;
+  showSetCoverModal = false;
 
-  imgname = require("../../../../assets/icon-no-image.svg");
-  constructor(private _http: HttpClient, private albumService: AlbumService,
+  imgname = require('../../../../assets/icon-no-image.svg');
+  constructor(private albumService: AlbumService,
               private favoriteService: FavoriteService) { }
 
   ngOnInit() {
@@ -66,16 +61,15 @@ export class MainAlbumComponent implements OnInit {
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
-  
+
   removeAlbum() {
-    if(this.isFavorite){
-      let userId:string = localStorage.getItem("userId");
-      this.favoriteService.deleteAllFavorites(parseInt(userId)).subscribe(x => x);
-      localStorage.removeItem("favoriteCover");
-    }
-    else {
+    if (this.isFavorite) {
+      const userId = localStorage.getItem('userId');
+      this.favoriteService.deleteAllFavorites(parseInt(userId, 10)).subscribe(x => x);
+      localStorage.removeItem('favoriteCover');
+    } else {
       this.albumService.removeAlbum(this.album.id).subscribe( x => x);
     }
-      this.deleteAlbumEvent.emit(this.album);
+    this.deleteAlbumEvent.emit(this.album);
   }
 }
