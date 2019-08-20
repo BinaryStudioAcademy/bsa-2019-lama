@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System;
+using Serilog.Exceptions;
 
 namespace Lama
 {
