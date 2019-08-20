@@ -151,7 +151,7 @@ export class PhotoModalComponent implements OnInit {
     xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
 
-      if(this.photo.blobId.endsWith('.png')) {
+      if (this.photo.blobId.endsWith('.png')) {
         return;
       }
 
@@ -162,7 +162,7 @@ export class PhotoModalComponent implements OnInit {
       }
       console.log(binary);
       let src = 'data:image/jpeg;base64,' + btoa(binary);
-  
+
       let exifObj = load(src);
       let GPS = exifObj["GPS"];
 
@@ -287,12 +287,11 @@ export class PhotoModalComponent implements OnInit {
     };
 
     this.fileService.update(updatePhotoDTO)
-      .subscribe(updatedPhotoDTO =>
-        {
-          Object.assign(this.photo, updatedPhotoDTO);
-          this.updatePhotoEvent.emit(this.photo);
-          this.goBackToImageView();
-        });
+      .subscribe(updatedPhotoDTO => {
+        Object.assign(this.photo, updatedPhotoDTO);
+        this.updatePhotoEvent.emit(this.photo);
+        this.goBackToImageView();
+      });
   }
 
   public goBackToImageView(): void {
@@ -397,12 +396,12 @@ export class PhotoModalComponent implements OnInit {
   openModalForPickCoord(event) {
 
   }
-  
-  CloseInfo(){
+
+  CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  public isEqualId():boolean{
+  public isEqualId(): boolean {
     return this.photo.userId == this.userId;
   }
 }
