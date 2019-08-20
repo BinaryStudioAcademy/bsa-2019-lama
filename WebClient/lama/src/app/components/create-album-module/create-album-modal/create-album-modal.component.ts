@@ -11,6 +11,7 @@ import { isUndefined } from 'util';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -53,7 +54,8 @@ export class CreateAlbumModalComponent implements OnInit {
   @Input()
   public isShown: boolean;
 
-  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService) {
+  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService,
+              private notifier: NotifierService) {
     this.isShown = true;
     this.resolver = resolver;
   }
@@ -133,6 +135,7 @@ export class CreateAlbumModalComponent implements OnInit {
             photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
             title: createdAlbum.title
           });
+          this.notifier.notify(  'success', 'Album created' );
         });
       } else {
         this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: this.currentUser.id };
@@ -146,6 +149,7 @@ export class CreateAlbumModalComponent implements OnInit {
             photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
             title: createdAlbum.title
           });
+          this.notifier.notify(  'success', 'Album created' );
         });
       }
       this.toggleModal();

@@ -18,3 +18,4 @@
     <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
     <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
+<notifier-container></notifier-container>

@@ -1,20 +1,20 @@
 <div class="modal" [class.is-active]="isShown">
-  <div class="modal-background" (click)="toggleModal()"></div>
-  <div (click)="toggleModal()"></div>
-  <div class="head notification size">
-    <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
-    <h4 class="title is-4">Choose album cover</h4>
-  </div>
-  <div class="modal-content size">
-    <div class="notification color">
-      <div class="items-container-centered height">
-        <div *ngFor="let item of receivedAlbum.photoAlbums">
-          <app-choose-album-cover (Click)="receiveSelected($event)" [cover]="item"></app-choose-album-cover>
-        </div>
-      </div>
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div (click)="toggleModal()"></div>
+    <div class="head notification size">
+        <button (click)="toggleModal()" class="delete is-large" aria-label="close"></button>
+        <h4 class="title is-4">Choose album cover</h4>
     </div>
-  </div>
-  <div class="modal-card-foot foot size buttons is-right">
-    <a class="button is-primary" (click)="setSelectedCover()">Save Changes</a>
-  </div>
+    <div class="modal-content size">
+        <div class="notification color">
+            <div class="items-container-centered height">
+                <div *ngFor="let item of receivedAlbum.photoAlbums">
+                    <app-choose-album-cover (Click)="receiveSelected($event)" [cover]="item"></app-choose-album-cover>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-card-foot foot size buttons is-right">
+        <a class="button is-primary" (click)="setSelectedCover()">Save Changes</a>
+    </div>
 </div>

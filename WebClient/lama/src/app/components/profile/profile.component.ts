@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-profile',
@@ -14,9 +15,10 @@ import { SharedService } from 'src/app/services/shared.service';
 export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService,
-    private httpService: HttpService, 
+    private httpService: HttpService,
     private userService: UserService,
-    private sharedService: SharedService) {  }
+    private sharedService: SharedService,
+    private notifier: NotifierService) {  }
 
 
   defaultFirstName: string;
@@ -82,24 +84,22 @@ export class ProfileComponent implements OnInit {
 
   async saveUser() {
     if (!this.userForm.dirty && this.defaultImageUrl === this.photoUrl) {
+      this.notifier.notify(  'error', 'Nothing to change' );
       return;
     }
 
-    console.log(this.photoUrl);
-    this.httpService.putData(`users`, this.user).subscribe((data: User) => this.testReceivedUser = data);
-    if (this.isPhotoLoaded)
+    this.httpService.putData(`users`, this.user).subscribe((data: User) => {this.testReceivedUser = data;
+                                                                            this.notifier.notify( 'success', 'Changes Saved' ); });
+    if (this.isPhotoLoaded) {
       this.sharedService.avatar = this.user.photo;
+    }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
-    localStorage.setItem('email', this.user.email)
-    this.userService.updateCurrentUser({photoURL: this.photoUrl})
-	this.isSaved = true;
+    localStorage.setItem('email', this.user.email);
+    this.userService.updateCurrentUser({photoURL: this.photoUrl});
   }
-  
-  closeNotification() {
-	this.isSaved = false;
-  }
+
 
   refresh() {
     this.userForm.setValue(

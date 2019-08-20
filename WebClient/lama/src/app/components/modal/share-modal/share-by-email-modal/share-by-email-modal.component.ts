@@ -4,6 +4,7 @@ import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -21,13 +22,13 @@ export class ShareByEmailModalComponent implements OnInit {
   sharedLink: string = '';
   sharedEmail: string = '';
   imageUrl: string;
-  copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
   userEmails: Array<string> = [];
   sharingRoute: String = "main/shared";
   showSuccessIcon: boolean = false;
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService,
+    private notifier: NotifierService) {
 
   }
 
@@ -72,9 +73,7 @@ export class ShareByEmailModalComponent implements OnInit {
       document.execCommand('copy');
       document.body.removeChild(selBox);
       console.log(`${this.sharedLink} was copied`);
-      this.copyClicked = !this.copyClicked;
-	  
-      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
+      this.notifier.notify( 'success', 'Link is now in your clipboard' );
     }
 
     public encodePhotoData(photo: SharedPhoto): string{

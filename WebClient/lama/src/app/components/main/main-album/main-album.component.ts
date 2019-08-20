@@ -3,6 +3,7 @@ import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'main-album',
@@ -26,7 +27,8 @@ export class MainAlbumComponent implements OnInit {
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(private albumService: AlbumService,
-              private favoriteService: FavoriteService) { }
+              private favoriteService: FavoriteService,
+              private notifier: NotifierService) { }
 
   ngOnInit() {
   }
@@ -38,6 +40,7 @@ export class MainAlbumComponent implements OnInit {
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
     this.toggleSetCoverModal();
+    this.notifier.notify( 'success', 'Cover Updated' );
   }
 
   clickMenu() {

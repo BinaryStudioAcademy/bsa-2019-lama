@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharingService } from 'src/app/services/sharing.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-by-link-modal',
@@ -19,11 +20,11 @@ export class ShareByLinkModalComponent implements OnInit {
   DISAPPEARING_TIMEOUT: number = 1000; //1 second
   sharedLink: string = '';
   imageUrl: string;
-  copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
   sharingRoute: String = "main/shared";
 
-  constructor(private sharingService: SharingService) {
+  constructor(private sharingService: SharingService,
+              private notifier: NotifierService) {
 
   }
 
@@ -55,9 +56,7 @@ export class ShareByLinkModalComponent implements OnInit {
       document.execCommand('copy');
       document.body.removeChild(selBox);
       console.log(`${this.sharedLink} was copied`);
-      this.copyClicked = !this.copyClicked;
-
-      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
+      this.notifier.notify( 'success', 'Link is now in your clipboard' );
     }
 
     public encodePhotoData(photo: SharedPhoto): string{

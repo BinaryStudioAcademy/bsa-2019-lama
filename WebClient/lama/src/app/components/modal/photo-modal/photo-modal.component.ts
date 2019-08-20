@@ -12,6 +12,7 @@ import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { Entity } from 'src/app/models/entity';
 import { isUndefined } from 'util';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-photo-modal',

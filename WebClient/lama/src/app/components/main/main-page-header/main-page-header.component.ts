@@ -7,7 +7,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
 import { AngularFireAuth } from '@angular/fire/auth';
-
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'main-page-header',
@@ -30,7 +30,8 @@ export class MainPageHeaderComponent implements OnInit {
   // constructors
   constructor(public auth: AuthService, private router: Router,
      resolver: ComponentFactoryResolver, private shared: SharedService,
-      private http: HttpService, private file: FileService)
+      private http: HttpService, private file: FileService,
+      private notifier: NotifierService)
   {
     this.resolver = resolver;
   }
@@ -87,7 +88,9 @@ export class MainPageHeaderComponent implements OnInit {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoUploadModalComponent);
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToListEvent.subscribe(data => this.shared.photos.push(...data));
+    componentRef.instance.addToListEvent.subscribe(data => { this.shared.photos.push(...data);
+                                                             this.notifier.notify( 'success', 'Uploaded' ); },
+                                                              err => { this.notifier.notify( 'error', 'Error Uploading' ); });
     componentRef.instance.toggleModal();
   }
 
