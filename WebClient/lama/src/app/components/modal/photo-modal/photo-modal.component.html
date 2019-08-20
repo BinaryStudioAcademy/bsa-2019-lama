@@ -11,7 +11,7 @@
 
                 <!--editing view-->
                 <ng-template #editView>
-                    <app-edit-photo [imageToEdit]="photo.blobId" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
+                    <app-edit-photo [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
                     </app-edit-photo>
                 </ng-template>
 
@@ -63,7 +63,7 @@
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="download">
-                                                        <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
+                                                        <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
                                                             <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
                                                         </a>
                                                     </ng-template>

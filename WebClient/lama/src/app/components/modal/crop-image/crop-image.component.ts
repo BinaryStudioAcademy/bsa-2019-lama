@@ -45,8 +45,9 @@ export class CropImageComponent implements OnInit
   public cancelClickedEvent = new EventEmitter();
 
   // constructors
-  constructor(imageService: FileService)
+  constructor(imageService: FileService, fileService: FileService)
   {
+    fileService.getPhoto(this.imageUrl).subscribe(url => this.imageUrl = url);
     this.imageService = imageService;
 
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;

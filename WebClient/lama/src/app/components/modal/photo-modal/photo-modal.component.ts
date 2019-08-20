@@ -23,13 +23,13 @@ export class PhotoModalComponent implements OnInit {
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
-  public isInfoShown: boolean = false;
+  public isInfoShown = false;
   public imageUrl: string;
   public userId: number;
 
-  public showSharedModal: boolean = false;
-  public showSharedByLinkModal: boolean = false;
-  public showSharedByEmailModal: boolean = false;
+  public showSharedModal = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
 
   albums: PhotoDetailsAlbum[];
 
@@ -82,7 +82,10 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fileService.getPhoto(this.photo.blobId).subscribe(data => this.imageUrl = data);
+    this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
+      this.imageUrl = data;
+      this.GetFile();
+    });
     const calendars = bulmaCalendar.attach('[type="date"]');
     calendars.forEach(calendar => {
       calendar.on('select', date => {
@@ -96,9 +99,6 @@ export class PhotoModalComponent implements OnInit {
 
       this.hasUserReaction = reactions.some(x => x.userId === this.currentUser.id);
     });
-
-
-    this.GetFile();
     this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe((e) => this.albums = e.body);
   }
 
@@ -150,7 +150,7 @@ export class PhotoModalComponent implements OnInit {
   // GET EXIF
   GetFile() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', this.photo.blobId, true);
+    xhr.open('GET', this.imageUrl, true);
     xhr.onload = () => {
       var response = xhr.responseText;
       var binary = ""
