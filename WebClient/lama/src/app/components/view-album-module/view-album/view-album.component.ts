@@ -28,6 +28,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
+  coverId: number;
   loading = false;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
@@ -52,9 +53,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   ngOnInit() {
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.selectedPhotos = [];
-    if (this.loading === false && this.AlbumId !== 0) {
+    if (this.loading == false && this.AlbumId != 0) {
       this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
-    } else if (this.AlbumId === 0) {
+    } else if (this.AlbumId == 0) {
             this.favoriteService.getFavoritesPhotos(userId)
            .subscribe(data => {
             this.album.photoAlbums = data;
@@ -63,6 +64,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
           });
     }
     this.favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
+    this.coverId = parseInt(localStorage.getItem("favoriteCover"));
   }
 
   public photoClicked(eventArgs: PhotoRaw) {
@@ -87,13 +89,11 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
-    if (this.album.photoAlbums !== undefined) {
-      if (this.album.photoAlbums.length === 0) {
-        if (this.album.id === 0) {
-          localStorage.removeItem('favoriteCover');
-        } else {
-          this.albumService.removeAlbumCover(this.album.id).subscribe(x => x);
-        }
+    if (this.album.photoAlbums != undefined && this.album.photoAlbums.length == 0) {
+      if (this.album.id == 0) {
+        localStorage.removeItem('favoriteCover');
+      } else {
+        this.albumService.removeAlbumCover(this.album.id).subscribe(x => x);
       }
     }
   }
@@ -119,19 +119,23 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.album.photoAlbums.forEach(element => {
       ids.push(element.id);
     });
-    if (this.AlbumId === 0) {
+    if (this.AlbumId == 0) {
       this.selectedPhotos.forEach(item => {
         this.favoriteService.deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id).subscribe(() => {
-          this.favorites = new Set<number>();
+          this.favorites.delete(item.id);
         });
       });
+      if(!this.album.photoAlbums.find(p=> p.id == this.coverId))
+        localStorage.removeItem("favoriteCover");
     }
-    this.selectedPhotos = [];
-    this.albumService.updateAlbum({
-      title: this.album.title,
-      id: this.album.id,
-      photoIds: ids
-    });
+    else {
+      this.selectedPhotos = [];
+      this.albumService.updateAlbum({
+        title: this.album.title,
+        id: this.album.id,
+        photoIds: ids
+      });
+    }
   }
 
   public downloadImages() {

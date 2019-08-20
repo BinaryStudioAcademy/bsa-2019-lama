@@ -24,6 +24,7 @@ export class PhotoModalComponent implements OnInit {
   public photo: PhotoRaw;
   public isShown: boolean;
   public isInfoShown: boolean = false;
+  public userId: number;
 
   public showSharedModal: boolean = false;
   public showSharedByLinkModal: boolean = false;
@@ -86,8 +87,8 @@ export class PhotoModalComponent implements OnInit {
         // console.log(date);
       });
     });
-    const userId = this.authService.getLoggedUserId();
-    this.userService.getUser(userId).subscribe(user => {
+    this.userId = this.authService.getLoggedUserId();
+    this.userService.getUser(this.userId).subscribe(user => {
       this.currentUser = user;
       let reactions = this.photo.reactions;
 
@@ -237,7 +238,7 @@ export class PhotoModalComponent implements OnInit {
     }
 
     // remove
-    if (clickedMenuItem === this.defaultMenuItem[1]) {
+    if (clickedMenuItem === this.defaultMenuItem[1] && this.isEqualId()) {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
@@ -393,5 +394,9 @@ export class PhotoModalComponent implements OnInit {
   
   CloseInfo(){
     this.isInfoShown = !this.isInfoShown;
+  }
+
+  public isEqualId():boolean{
+    return this.photo.userId == this.userId;
   }
 }

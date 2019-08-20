@@ -20,6 +20,7 @@ export class MainPhotoComponent implements OnChanges {
   @Input ('_id') id: number = -1;
   @Output() onClick = new EventEmitter<PhotoRaw>();
   @Output() onSelect = new EventEmitter<PhotoRawState>();
+  private userId: number;
 
   // constructors
   constructor(private _favoriteService: FavoriteService) {
@@ -27,6 +28,7 @@ export class MainPhotoComponent implements OnChanges {
 
    ngOnChanges(){
     this.checkFavorite();
+    this.userId = parseInt(localStorage.getItem("userId"));
   }
 
   checkFavorite(){
@@ -45,6 +47,8 @@ export class MainPhotoComponent implements OnChanges {
     this.id = id;
     if(id == -1)
       this.changeFavorite();
+    if(this.photo.id === parseInt(localStorage.getItem("favoriteCover")))
+      localStorage.removeItem("favoriteCover"); 
   }
 
   // methods
@@ -60,13 +64,13 @@ export class MainPhotoComponent implements OnChanges {
   }
   public mark(){
     if(this.isFavorite){
-      this._favoriteService.deleteFavorite(this.photo.userId, this.photo.id).subscribe(
+      this._favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
         data => this.checkCorrectReturn(data),
         err => this.changeFavorite()
         )
       }
     else{
-      let favorite:Favorite = new Favorite(this.photo.id, this.photo.userId);
+      let favorite:Favorite = new Favorite(this.photo.id, this.userId);
       this._favoriteService.createFavorite(favorite).subscribe(
         data => this.checkCorrectReturn(data),
         err => this.changeFavorite()
