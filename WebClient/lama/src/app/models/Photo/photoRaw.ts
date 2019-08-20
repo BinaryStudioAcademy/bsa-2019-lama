@@ -4,6 +4,7 @@ import { LikeDTO } from '../Reaction/LikeDTO';
 export interface PhotoRaw
 {
     id?: number;
+    name?: string;
     blobId: string;
     blob64Id?: string;
     blob256Id?: string;

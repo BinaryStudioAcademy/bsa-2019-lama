@@ -35,6 +35,11 @@ namespace Photo.Controllers
         {
             return await photoService.Get();
         }
+        [HttpGet("images/{blobId}")]
+        public async Task<string> GetPhoto(string blobId)
+        {
+            return await photoService.GetPhoto(blobId);
+        }
 
         // GET api/photos/5
         [HttpGet("user/{id}")]

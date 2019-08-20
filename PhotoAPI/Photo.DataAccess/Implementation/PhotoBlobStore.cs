@@ -65,10 +65,13 @@ namespace Photo.DataAccess.Implementation
         }
 
         // METHODS
-        public async Task<string> LoadPhotoToBlob(byte[] blob, string filename)
+        public async Task<string> LoadPhotoToBlob(byte[] blob, string name = null)
         {
             IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
-            string name = (filename != null) ? filename : Guid.NewGuid().ToString();
+            if (name == null)
+            {
+                name = Guid.NewGuid().ToString();
+            }
             string contentType = "image/jpg";
 
             foreach (var directory in directories)
@@ -81,11 +84,10 @@ namespace Photo.DataAccess.Implementation
                     }
                 }
             }
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(name);
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference($"{name}.{Path.GetFileName(contentType)}");
             cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
-
-            return cloudBlockBlob.Uri.ToString();
+            return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
         {
@@ -106,6 +108,21 @@ namespace Photo.DataAccess.Implementation
             }
             return list;
         }
+
+        public async Task<string> GetPhoto(string blobId)
+        {
+           
+            CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobId);
+            var type = Path.GetExtension(blobId);
+            await cloudBlob.FetchAttributesAsync();
+            long fileByteLength = cloudBlob.Properties.Length;
+            Byte[] myByteArray = new Byte[fileByteLength];
+            await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
+            string base64 = Convert.ToBase64String(myByteArray);
+
+            return $"data:image/{type.Substring(1)};base64,{base64}";
+        }
+
         public async Task<string> LoadAvatarToBlob(byte[] blob)
         {
             CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");

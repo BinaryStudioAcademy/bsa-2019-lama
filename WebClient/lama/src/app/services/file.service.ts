@@ -71,6 +71,10 @@ export class FileService
   {
     return this.client.post(`${environment.lamaApiUrl}/api/photo/removereaction`, Reaction);
   }
+  getPhoto(name: string) 
+  {
+    return this.client.get<string>(`${environment.lamaApiUrl}/api/photo/${name}`);
+  }
   public receivePhoto(): Observable<PhotoRaw[]>
   {
     return this.client.get<PhotoRaw[]>(`${environment.lamaApiUrl}/api/photo`, this.httpOptions);

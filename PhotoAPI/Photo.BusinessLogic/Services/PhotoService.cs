@@ -38,6 +38,10 @@ namespace Photo.BusinessLogic.Services
         {
             return await storage.GetPhotos(values);
         }
+        public async Task<string> GetPhoto (string blobId)
+        {
+            return await storage.GetPhoto(blobId);
+        }
         // METHODS
         public Task<IEnumerable<PhotoDocument>> Get()
         {
@@ -121,22 +125,16 @@ namespace Photo.BusinessLogic.Services
             {
                 string base64 = ConvertToBase64(items[i].ImageUrl);
                 byte[] blob = Convert.FromBase64String(base64);
-                var filename = items[i].FileName;
-                var ext = Path.GetExtension(filename);
-                string file = filename.Replace(ext, "");
-
-                string blobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}");
+                string blobId = await storage.LoadPhotoToBlob(blob);
 
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
                     Id = items[i].Id,
-                    Name = filename,
-
+                    Name = items[i].FileName,
                     BlobId = blobId,
                     Blob64Id = blobId,
                     Blob256Id = blobId,
-                    OriginalBlobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}"),
-
+                    OriginalBlobId = await storage.LoadPhotoToBlob(blob),
                     UserId = items[i].AuthorId,
                     Description = items[i].Description
                 };

@@ -65,6 +65,13 @@ namespace Lama.Controllers
         {
             return await _service.GetUserPhotos(id);
         }
+        [HttpGet("images/{blobId}")]
+        public async Task<string> GetPhoto(string blobId)
+        {
+            return await _service.GetPhoto(blobId);
+        }
+
+
         #region DELETE
         // DELETE: api/photo/5
         [HttpDelete("{photoToDeleteId}")]

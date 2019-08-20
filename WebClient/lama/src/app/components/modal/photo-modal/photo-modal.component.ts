@@ -24,6 +24,7 @@ export class PhotoModalComponent implements OnInit {
   public photo: PhotoRaw;
   public isShown: boolean;
   public isInfoShown: boolean = false;
+  public imageUrl: string;
 
   public showSharedModal: boolean = false;
   public showSharedByLinkModal: boolean = false;
@@ -80,6 +81,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.fileService.getPhoto(this.photo.blobId).subscribe(data => this.imageUrl = data);
     const calendars = bulmaCalendar.attach('[type="date"]');
     calendars.forEach(calendar => {
       calendar.on('select', date => {
