@@ -41,6 +41,7 @@ export class MainPageHeaderComponent implements OnInit {
     if (id != "" && id != null) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(u => {
         this.avatarUrl = u.photoUrl;
+        this.file.getPhoto(this.avatarUrl).subscribe((url) => this.avatarUrl = url);
       })
     }
     else {
@@ -49,8 +50,12 @@ export class MainPageHeaderComponent implements OnInit {
   }
 
   ngDoCheck() {
-    if (this.shared.avatar != null)
-      this.avatarUrl = this.shared.avatar.imageUrl;
+    if (this.shared.avatar != null) {
+      this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
+        this.avatarUrl = url;
+      })
+    }
+ 
     (this.searchCriteria.length < 3) ? this.isActive = false : this.isActive = true;
   }
 

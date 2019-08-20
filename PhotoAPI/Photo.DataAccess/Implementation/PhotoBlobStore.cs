@@ -67,7 +67,7 @@ namespace Photo.DataAccess.Implementation
         // METHODS
         public async Task<string> LoadPhotoToBlob(byte[] blob, string name = null)
         {
-            IEnumerable<MetadataExtractor.Directory> directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            var directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
             if (name == null)
             {
                 name = Guid.NewGuid().ToString();

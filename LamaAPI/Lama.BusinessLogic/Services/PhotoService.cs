@@ -188,8 +188,6 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(responseContent);
-
-            return responseContent;
         }
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)

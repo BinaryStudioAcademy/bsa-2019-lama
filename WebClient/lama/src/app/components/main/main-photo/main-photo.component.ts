@@ -1,9 +1,10 @@
-import { Component, Input, EventEmitter, Output, OnChanges } from '@angular/core';
+import { Component, Input, EventEmitter, Output, OnChanges, OnInit } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { Favorite } from 'src/app/models/favorite';
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'main-photo',
@@ -11,11 +12,12 @@ import { Favorite } from 'src/app/models/favorite';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
-export class MainPhotoComponent implements OnChanges {
+export class MainPhotoComponent implements OnChanges, OnInit {
 
   public isFavorite: boolean = false;
   // properties
   @Input ('_photo') photo: PhotoRaw;
+  imageUrl: string;
   isSelected: boolean = false;
   @Input ('_id') id: number = -1;
   @Output() onClick = new EventEmitter<PhotoRaw>();
@@ -23,7 +25,11 @@ export class MainPhotoComponent implements OnChanges {
   private userId: number;
 
   // constructors
-  constructor(private _favoriteService: FavoriteService) {
+  constructor(private _favoriteService: FavoriteService, private fileService: FileService) {
+    
+  }
+  ngOnInit() {
+    this.fileService.getPhoto(this.photo.blobId).subscribe((url) => this.imageUrl = url);
   }
 
    ngOnChanges(){

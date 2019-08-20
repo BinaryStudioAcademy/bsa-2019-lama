@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { FileService } from 'src/app/services/file.service';;
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +17,8 @@ export class ProfileComponent implements OnInit {
   constructor(public authService: AuthService,
     private httpService: HttpService, 
     private userService: UserService,
-    private sharedService: SharedService) {  }
+    private sharedService: SharedService,
+    private fileService: FileService) {  }
 
 
   defaultFirstName: string;
@@ -45,7 +47,7 @@ export class ProfileComponent implements OnInit {
       this.isSuccesfull = true;
       this.user = u;
       this.showSpinner = false;
-      this.photoUrl = u.photoUrl;
+      this.fileService.getPhoto(u.photoUrl).subscribe((url) => this.photoUrl = url);
       this.sharedService.avatar = {imageUrl: u.photoUrl};
 
       console.log(this.user.lastName);
