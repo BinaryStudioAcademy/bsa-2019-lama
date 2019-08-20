@@ -38,10 +38,9 @@ export class MainPageHeaderComponent implements OnInit {
 
   ngOnInit() {
     let id = localStorage.getItem('userId')
-    if (id != "" && id != null) {
+    if (id) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(u => {
-        this.avatarUrl = u.photoUrl;
-        this.file.getPhoto(this.avatarUrl).subscribe((url) => this.avatarUrl = url);
+        this.file.getPhoto(u.photoUrl).subscribe((url) => this.avatarUrl = url);
       })
     }
     else {

@@ -5,6 +5,7 @@ import { PhotoRawState} from 'src/app/models/Photo/photoRawState';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { Favorite } from 'src/app/models/favorite';
 import { FileService } from 'src/app/services';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'main-photo',
@@ -29,7 +30,7 @@ export class MainPhotoComponent implements OnChanges, OnInit {
     
   }
   ngOnInit() {
-    this.fileService.getPhoto(this.photo.blobId).subscribe((url) => this.imageUrl = url);
+    this.fileService.getPhoto(this.photo.blob256Id).subscribe((url) => this.imageUrl = url);
   }
 
    ngOnChanges(){

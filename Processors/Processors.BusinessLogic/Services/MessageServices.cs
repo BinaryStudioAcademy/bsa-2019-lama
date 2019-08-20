@@ -86,16 +86,16 @@ namespace Processors.BusinessLogic.Services
             {
                 return new ThubnailUpdateDTO
                 {
-                    Blob64Id = await photoBlobStore.LoadPhotoToBlob(image64),
-                    Blob256Id = await photoBlobStore.LoadPhotoToBlob(image256),
+                    Blob64Id = await photoBlobStore.LoadAvatarToBlob(image64),
+                    Blob256Id = await photoBlobStore.LoadAvatarToBlob(image256),
                 };
             }
             else if (ImageType.Photo == imageType)
             {
                 return new ThubnailUpdateDTO
                 {
-                    Blob64Id = await photoBlobStore.LoadAvatarToBlob(image64),
-                    Blob256Id = await photoBlobStore.LoadAvatarToBlob(image256),
+                    Blob64Id = await photoBlobStore.LoadPhotoToBlob(image64),
+                    Blob256Id = await photoBlobStore.LoadPhotoToBlob(image256),
                 };
             }
             else throw new System.ArgumentException("Unexpected image type");
