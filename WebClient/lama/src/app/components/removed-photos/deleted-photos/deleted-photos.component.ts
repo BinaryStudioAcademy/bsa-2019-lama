@@ -24,7 +24,7 @@ export class DeletedPhotosComponent implements OnInit {
     const userId = parseInt(localStorage.getItem('userId'), 10);
     this.fileService.getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
-      .subscribe(items => {console.log(items); this.deletedPhotos = items });
+      .subscribe(items => this.deletedPhotos = items);
   }
 
   // methods
