@@ -11,12 +11,13 @@ import { FileService } from 'src/app/services/file.service';
   styleUrls: ['./main-album.component.sass']
 })
 export class MainAlbumComponent implements OnInit {
-
   @Output()
-  public deleteAlbumEvent: EventEmitter<ViewAlbum> = new EventEmitter<ViewAlbum>();
+  public deleteAlbumEvent: EventEmitter<ViewAlbum> = new EventEmitter<
+    ViewAlbum
+  >();
 
-  @Input ('_album') album: ViewAlbum;
-  @Input ('_isFavorite') isFavorite: boolean;
+  @Input('_album') album: ViewAlbum;
+  @Input('_isFavorite') isFavorite: boolean;
   @Output() onClick = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
 
@@ -27,12 +28,16 @@ export class MainAlbumComponent implements OnInit {
   imageUrl: string;
 
   imgname = require('../../../../assets/icon-no-image.svg');
-  constructor(private albumService: AlbumService,
-              private favoriteService: FavoriteService,
-              private fileService: FileService) { }
+  constructor(
+    private albumService: AlbumService,
+    private favoriteService: FavoriteService,
+    private fileService: FileService
+  ) {}
 
   ngOnInit() {
-    this.fileService.getPhoto(this.album.photo.blob256Id).subscribe(url => this.imageUrl = url);
+    this.fileService
+      .getPhoto(this.album.photo.blob256Id)
+      .subscribe(url => (this.imageUrl = url));
   }
 
   clickPerformed(): void {
@@ -41,12 +46,15 @@ export class MainAlbumComponent implements OnInit {
 
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
-    this.toggleSetCoverModal();
+    this.fileService.getPhoto(event.blob256Id).subscribe(url => {
+      this.imageUrl = url;
+      this.toggleSetCoverModal();
+    });
   }
 
   clickMenu() {
-     this.isContent = true;
-     this.isMenu = false;
+    this.isContent = true;
+    this.isMenu = false;
   }
 
   leave($event) {
@@ -69,10 +77,12 @@ export class MainAlbumComponent implements OnInit {
   removeAlbum() {
     if (this.isFavorite) {
       const userId = localStorage.getItem('userId');
-      this.favoriteService.deleteAllFavorites(parseInt(userId, 10)).subscribe(x => x);
+      this.favoriteService
+        .deleteAllFavorites(parseInt(userId, 10))
+        .subscribe(x => x);
       localStorage.removeItem('favoriteCover');
     } else {
-      this.albumService.removeAlbum(this.album.id).subscribe( x => x);
+      this.albumService.removeAlbum(this.album.id).subscribe(x => x);
     }
     this.deleteAlbumEvent.emit(this.album);
   }

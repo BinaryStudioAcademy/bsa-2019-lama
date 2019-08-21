@@ -9,7 +9,6 @@ import { User } from 'src/app/models/User/user';
   styleUrls: ['./choose-storage-photos.component.sass']
 })
 export class ChooseStoragePhotosComponent implements OnInit {
-
   @Input()
   public IsShow: boolean;
 
@@ -18,14 +17,14 @@ export class ChooseStoragePhotosComponent implements OnInit {
 
   constructor(private photoService: FileService) {
     this.IsShow = true;
-   }
+  }
 
   @Input() photos: PhotoRaw[] = [];
   @Output() onChange = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
     const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
-    this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
+    this.photoService.receiveUsersPhotos(id).subscribe(x => (this.photos = x));
   }
 
   toggleModal() {
