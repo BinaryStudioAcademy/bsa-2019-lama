@@ -7,7 +7,7 @@ import { take, map, tap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate, CanActivateChild{
+export class AuthGuard implements CanActivate, CanActivateChild {
 
 
   constructor(
@@ -17,15 +17,15 @@ export class AuthGuard implements CanActivate, CanActivateChild{
 
   public canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | boolean{
-      if(state.url.indexOf('shared') !== -1){
+    state: RouterStateSnapshot): Observable<boolean> | boolean {
+      if (state.url.indexOf('shared') !== -1) {
         return true;
       }
       return this.afAuth.authState.pipe(
         take(1),
         map(user => !!user),
         tap((loggedIn) => {
-          if(!loggedIn){
+          if (!loggedIn) {
             this.router.navigate(['landing']);
           }
         }
@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate, CanActivateChild{
   public canActivateChild(
       next: ActivatedRouteSnapshot,
       state: RouterStateSnapshot): Observable<boolean> | boolean {
-      return this.canActivate(next,state);
+      return this.canActivate(next, state);
     }
   }
 

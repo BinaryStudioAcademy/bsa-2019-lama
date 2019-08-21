@@ -18,28 +18,23 @@ import { Subject } from 'rxjs';
 })
 export class SharedPageComponent implements OnInit {
 
-  sharedPhoto: SharedPhoto = <SharedPhoto>{};
+  sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userSubject: Subject<any> = new Subject<any>();
   authenticatedUser: User;
   sharedLinkData: string;
-  updatedPhoto: PhotoRaw =<PhotoRaw>{};
+  updatedPhoto: PhotoRaw = {} as PhotoRaw;
   userData: SharedPageDataset;
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private sharingService: SharingService) {
-
+  constructor(private userService: UserService, private router: Router,
+              private route: ActivatedRoute, private sharingService: SharingService) {
    }
 
 
   ngOnInit() {
     this.decodeUserData();
     this.sendSharingData();
-
-    //TODO receive user data for shared page (e.g photo author, photo's likes, comments)
-
-
-    //No proper data in database yet, so we are not updating
     this.sharingService.updatePhotoEntityWithSharedLink(this.sharedPhoto.photoId, this.sharedLinkData).subscribe(updated => {
-      this.updatedPhoto = updated
+      this.updatedPhoto = updated;
       console.log(this.updatedPhoto.sharedLink);
 
     });
@@ -47,10 +42,10 @@ export class SharedPageComponent implements OnInit {
 
   }
 
-  private getUserData(){
+  private getUserData() {
     this.sharingService.getSharingPageUserData(this.sharedPhoto.photoId).subscribe(
-      shareData => {this.userSubject.next(shareData);},
-       error => {console.log(error)});
+      shareData => {this.userSubject.next(shareData); },
+       error => {console.log(error); });
 
     this.userSubject.subscribe(data => this.userData = data);
   }
@@ -59,9 +54,9 @@ export class SharedPageComponent implements OnInit {
     this.sharingService.sendSharedPhoto(this.sharedPhoto).subscribe(x => x);
   }
 
-  private decodeUserData(){
-    let encodedData = this.sharedLinkData = this.route.snapshot.params.userdata as string;
-    let jsonData = atob(encodedData.replace("___","/"));
+  private decodeUserData() {
+    const encodedData = this.sharedLinkData = this.route.snapshot.params.userdata as string;
+    const jsonData = atob(encodedData.replace('___', '/'));
     this.sharedPhoto = JSON.parse(jsonData);
   }
 

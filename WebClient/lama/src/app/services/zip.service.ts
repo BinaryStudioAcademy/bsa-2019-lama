@@ -11,9 +11,9 @@ export class ZipService {
   constructor() { }
 
   public urlToPromise(url) {
-    return new Promise(function(resolve, reject) {
+    return new Promise( (resolve, reject) => {
         JSZipUtils.getBinaryContent(url, (err, data) => {
-            if(err) {
+            if (err) {
                 reject(err);
             } else {
                 resolve(data);
@@ -22,15 +22,15 @@ export class ZipService {
     });
     }
 public downloadImages(photos) {
-    var zip = new JSZip();
+    const zip = new JSZip();
     photos.forEach(element => {
-      var filename = element.blobId.replace(/^.*[\\\/]/, '')
-      zip.file(filename, this.urlToPromise(element.blobId), {binary:true});
+      const filename = element.blobId.replace(/^.*[\\\/]/, '');
+      zip.file(filename, this.urlToPromise(element.blobId), { binary: true});
     });
-    zip.generateAsync({type:"blob"})
+    zip.generateAsync({type: 'blob'})
     .then((blob) => {
         // see FileSaver.js
-        saveAs(blob, "images.zip");
+        saveAs(blob, 'images.zip');
     });
   }
 }

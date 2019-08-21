@@ -44,43 +44,43 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private router: Router, private albumService: AlbumService,
-    private httpService: HttpService, private _favoriteService: FavoriteService) {
+              private httpService: HttpService, private favoriteService: FavoriteService) {
     this.resolver = resolver;
   }
 
   GetAlbums() {
-    let id =  this.currentUser.id;
+    const id =  this.currentUser.id;
     this.albumService.getAlbums(id).subscribe(albums => {
       this.albums = albums.body;
       this.albums.forEach(a => {
-        if(a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0)
+        if (a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0) {
           a.photo = a.photoAlbums[0];
         }
-      )
+        }
+      );
     });
   }
 
-  GetFavoriteAlbum(userId: number){
-    this._favoriteService.getFavoritesPhotos(userId).subscribe(data => {
-      if(data.length != 0){
+  GetFavoriteAlbum(userId: number) {
+    this.favoriteService.getFavoritesPhotos(userId).subscribe(data => {
+      if (data.length !== 0) {
         this.showFavorite = true;
         this.favorite = { } as ViewAlbum;
         this.favorite.photoAlbums = data;
         this.favorite.id = 0;
-        this.favorite.title = "Favorite photos";
-        const cover = localStorage.getItem("favoriteCover");
-        let photo:PhotoRaw = null;
-        let length: number = this.favorite.photoAlbums.length;
-        if(cover == null){
-          photo = this.favorite.photoAlbums[length-1];
-        }
-        else{
+        this.favorite.title = 'Favorite photos';
+        const cover = localStorage.getItem('favoriteCover');
+        let photo: PhotoRaw = null;
+        const length: number = this.favorite.photoAlbums.length;
+        if (cover == null) {
+          photo = this.favorite.photoAlbums[length - 1];
+        } else {
           photo = this.favorite.photoAlbums.find(f => f.id === parseInt(cover, 10));
-          if(photo == null){
+          if (photo == null) {
             photo = this.favorite.photoAlbums[0];
-          }
-          else
+          } else {
             this.favorite.photo = photo;
+          }
         }
         this.favorite.photo = photo;
         this.showFavorite = true;
@@ -93,8 +93,7 @@ export class MainAlbumsContainerComponent implements OnInit {
      const factory = this.resolver.resolveComponentFactory(CreateAlbumModalComponent);
      const componentRef = this.entry.createComponent(factory);
      componentRef.instance.currentUser = this.currentUser;
-     componentRef.instance.createdAlbumEvent.subscribe((createdAlbums: CreatedAlbumsArgs) =>
-     {
+     componentRef.instance.createdAlbumEvent.subscribe((createdAlbums: CreatedAlbumsArgs) => {
         this.albums.push({
           id: createdAlbums.id,
           name: createdAlbums.name,
@@ -110,20 +109,19 @@ export class MainAlbumsContainerComponent implements OnInit {
      });
   }
 
-  ArchiveAlbum(event: ViewAlbum)
-  {
-    this.albumService.ArchiveAlbum(event.photoAlbums).subscribe( x =>  {this.ArchivePhotos = x; this.ConvertToImage(event.title)});
+  ArchiveAlbum(event: ViewAlbum) {
+    this.albumService.ArchiveAlbum(event.photoAlbums).subscribe( x =>  {this.ArchivePhotos = x; this.ConvertToImage(event.title); });
   }
 
   ConvertToImage(name) {
 
-    var zip = new JSZip();
-    for(let i =0;i<this.ArchivePhotos.length;i++)
-    zip.file(`image${i+1}.jpg`, this.ArchivePhotos[i], {base64: true});
+    const zip = new JSZip();
+    for (let i = 0; i < this.ArchivePhotos.length; i++) {
+    zip.file(`image${i + 1}.jpg`, this.ArchivePhotos[i], {base64: true});
+    }
 
-
-    zip.generateAsync({type:"blob"})
-    .then(function(content) {
+    zip.generateAsync({type: 'blob'})
+    .then((content) => {
         saveAs(content, name);
     });
   }
@@ -137,13 +135,12 @@ export class MainAlbumsContainerComponent implements OnInit {
     };
     this.router.navigate(['/main/album', eventArgs.id], navigationExtras);
   }
-  public deleteAlbumHandler(albumToDelete: ViewAlbum)
-  {
-    if(albumToDelete.id == 0){
+  public deleteAlbumHandler(albumToDelete: ViewAlbum) {
+    if (albumToDelete.id === 0) {
       this.showFavorite = false;
-      localStorage.removeItem("favoriteCover");
-    }
-    else
+      localStorage.removeItem('favoriteCover');
+    } else {
       this.albums = this.albums.filter(a => a !== albumToDelete);
+    }
   }
 }

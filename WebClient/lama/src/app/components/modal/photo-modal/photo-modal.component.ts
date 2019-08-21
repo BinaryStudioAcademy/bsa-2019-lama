@@ -23,12 +23,12 @@ export class PhotoModalComponent implements OnInit {
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
-  public isInfoShown: boolean = false;
+  public isInfoShown = false;
   public userId: number;
 
-  public showSharedModal: boolean = false;
-  public showSharedByLinkModal: boolean = false;
-  public showSharedByEmailModal: boolean = false;
+  public showSharedModal = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
 
   albums: PhotoDetailsAlbum[];
 
@@ -69,7 +69,7 @@ export class PhotoModalComponent implements OnInit {
 
   // constructors
   constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone, private albumService: AlbumService,
-    authService: AuthService, userService: UserService) {
+              authService: AuthService, userService: UserService) {
     this.isShown = true;
     this.fileService = fileService;
     this.authService = authService;
@@ -90,7 +90,7 @@ export class PhotoModalComponent implements OnInit {
     this.userId = this.authService.getLoggedUserId();
     this.userService.getUser(this.userId).subscribe(user => {
       this.currentUser = user;
-      let reactions = this.photo.reactions;
+      const reactions = this.photo.reactions;
 
       this.hasUserReaction = reactions.some(x => x.userId === this.currentUser.id);
     });
@@ -103,7 +103,7 @@ export class PhotoModalComponent implements OnInit {
   ConvertDMSToDD(degrees: number, minutes: number, seconds: number, direction): number {
     let dd = degrees + minutes / 60 + seconds / (60 * 60);
 
-    if (direction == "S" || direction == "W") {
+    if (direction === 'S' || direction === 'W') {
       dd = dd * -1;
     } // Don't do anything for N or E
     return dd;
@@ -117,7 +117,7 @@ export class PhotoModalComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
   getAddress(latitude, longitude) {
-    this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
+    this.geoCoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
       if (status === 'OK') {
         if (results[0]) {
           this.zoom = 12;
@@ -137,8 +137,7 @@ export class PhotoModalComponent implements OnInit {
 
         if (this.photo.reactions != null) {
           this.hasUserReaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
-        }
-        else {
+        } else {
           this.hasUserReaction = false;
         }
       });
@@ -147,7 +146,7 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
 
@@ -155,33 +154,36 @@ export class PhotoModalComponent implements OnInit {
         return;
       }
 
-      var response = xhr.responseText;
-      var binary = ""
+      const response = xhr.responseText;
+      let binary = '';
       for (let i = 0; i < response.length; i++) {
-        binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
+        binary += String.fromCharCode(response.charCodeAt(i) && 0xff);
       }
       console.log(binary);
-      let src = 'data:image/jpeg;base64,' + btoa(binary);
+      const src = 'data:image/jpeg;base64,' + btoa(binary);
 
-      let exifObj = load(src);
-      let GPS = exifObj["GPS"];
+      const exifObj = load(src);
+      const GPS = exifObj[exifObj.GPS];
 
-      if (exifObj["GPS"][1] == "N") {
-        this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
-        this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
+      if (exifObj[exifObj.GPS][1] === 'N') {
+        this.latitude = this.ConvertDMSToDD(exifObj[exifObj.GPS][2][0][0],
+        exifObj[exifObj.GPS][2][1][0], exifObj[exifObj.GPS][2][2][0] / exifObj[exifObj.GPS][2][2][1], exifObj[exifObj.GPS][1]);
+
+        this.longitude = this.ConvertDMSToDD(exifObj[exifObj.GPS][4][0][0],
+         exifObj[exifObj.GPS][4][0][0], exifObj[exifObj.GPS][4][0][0] / exifObj[exifObj.GPS][4][2][1], exifObj[exifObj.GPS][3]);
 
         // load Places Autocomplete
         this.mapsAPILoader.load().then(() => {
 
           if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
-              //this.latitude = position.coords.latitude;
-              //this.longitude = position.coords.longitude;
+              // this.latitude = position.coords.latitude;
+              // this.longitude = position.coords.longitude;
               this.zoom = 8;
               this.getAddress(this.latitude, this.longitude);
             });
           }
-
+          // tslint:disable-next-line: new-parens
           this.geoCoder = new google.maps.Geocoder;
 
           /*
@@ -192,12 +194,10 @@ export class PhotoModalComponent implements OnInit {
             this.ngZone.run(() => {
               // get the place result
               let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-  
               // verify result
               if (place.geometry === undefined || place.geometry === null) {
                 return;
               }
-  
               // set latitude, longitude and zoom
               this.latitude = place.geometry.location.lat();
               this.longitude = place.geometry.location.lng();
@@ -206,7 +206,7 @@ export class PhotoModalComponent implements OnInit {
           });*/
         });
       }
-    }
+    };
     xhr.overrideMimeType('text/plain; charset=x-user-defined');
     xhr.send();
 
@@ -214,21 +214,21 @@ export class PhotoModalComponent implements OnInit {
   private initializeMenuItem() {
     this.defaultMenuItem =
       [
-        { title: "share", icon: "share" },
-        { title: "remove", icon: "clear" },
-        { title: "download", icon: "cloud_download" },
-        { title: "edit", icon: "edit" },
-        { title: "info", icon: "info" }
+        { title: 'share', icon: 'share' },
+        { title: 'remove', icon: 'clear' },
+        { title: 'download', icon: 'cloud_download' },
+        { title: 'edit', icon: 'edit' },
+        { title: 'info', icon: 'info' }
       ];
     this.editingMenuItem =
       [
-        { title: "crop", icon: "crop" },
-        { title: "rotate", icon: "rotate_left" }
+        { title: 'crop', icon: 'crop' },
+        { title: 'rotate', icon: 'rotate_left' }
       ];
     this.deletingMenuItem =
       [
-        { title: "yes", icon: "done" },
-        { title: "no", icon: "remove" }
+        { title: 'yes', icon: 'done' },
+        { title: 'no', icon: 'remove' }
       ];
   }
 
@@ -248,13 +248,11 @@ export class PhotoModalComponent implements OnInit {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
-    if (clickedMenuItem === this.deletingMenuItem[0])// yes
-    {
+    if (clickedMenuItem === this.deletingMenuItem[0]) {
       this.deleteImage();
     }
 
-    if (clickedMenuItem === this.deletingMenuItem[1])// no
-    {
+    if (clickedMenuItem === this.deletingMenuItem[1]) {
       this.shownMenuItems = this.defaultMenuItem;
     }
 
@@ -334,21 +332,20 @@ export class PhotoModalComponent implements OnInit {
     // TODO: uncomment line below
     // also maybe hide like from HTML if its your photo
 
-    //if (this.photo.userId === parseInt(this.currentUser.id)) return;
+    // if (this.photo.userId === parseInt(this.currentUser.id)) return;
 
 
-    let hasreaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
+    const hasreaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
     const newReaction: NewLike = {
       photoId: this.photo.id,
       userId: this.currentUser.id
-    }
+    };
     if (hasreaction) {
       this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => {
-        this.photo.reactions = this.photo.reactions.filter(x => x.userId !== this.currentUser.id);
+        this.photo.reactions = this.photo.reactions.filter(e => e.userId !== this.currentUser.id);
         this.hasUserReaction = false;
       });
-    }
-    else {
+    } else {
       this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId => {
         this.photo.reactions.push({
           id: newLikeId,
@@ -363,21 +360,21 @@ export class PhotoModalComponent implements OnInit {
   }
 
   forceDownload() {
-    let url = this.photo.blobId;
-    var fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "blob";
-    xhr.onload = function () {
-      var urlCreator = window.URL;
-      var imageUrl = urlCreator.createObjectURL(this.response);
-      var tag = document.createElement('a');
+    const url = this.photo.blobId;
+    const fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+      const urlCreator = window.URL;
+      const imageUrl = urlCreator.createObjectURL(this.response);
+      const tag = document.createElement('a');
       tag.href = imageUrl;
       tag.download = fileName;
       document.body.appendChild(tag);
       tag.click();
       document.body.removeChild(tag);
-    }
+    };
     xhr.send();
   }
 
@@ -402,6 +399,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   public isEqualId(): boolean {
-    return this.photo.userId == this.userId;
+    return this.photo.userId === this.userId;
   }
 }
