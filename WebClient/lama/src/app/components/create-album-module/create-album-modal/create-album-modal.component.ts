@@ -1,4 +1,13 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
 import { Photo, PhotoRaw, CreatedAlbumsArgs } from 'src/app/models';
@@ -19,7 +28,6 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./create-album-modal.component.sass']
 })
 export class CreateAlbumModalComponent implements OnInit {
-
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
 
@@ -54,14 +62,16 @@ export class CreateAlbumModalComponent implements OnInit {
   @Input()
   public isShown: boolean;
 
-  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService,
-              private notifier: NotifierService) {
+  constructor(
+    resolver: ComponentFactoryResolver,
+    private albumService: AlbumService,
+    private notifier: NotifierService
+  ) {
     this.isShown = true;
     this.resolver = resolver;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   handleDragEnter() {
     this.dragging = true;
@@ -94,14 +104,23 @@ export class CreateAlbumModalComponent implements OnInit {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
         const d = dump(exifObj);
-        const compressedFile = await imageCompression(file, environment.compressionOptions);
+        const compressedFile = await imageCompression(
+          file,
+          environment.compressionOptions
+        );
         const base64 = await this.toBase64(compressedFile);
         remove(base64);
         const modifiedObject = insert(d, base64);
         this.photos.push({ imageUrl: modifiedObject, filename: file.name });
       } else {
-        const compressedFile = await imageCompression(file, environment.compressionOptions);
-        this.photos.push({ imageUrl: await this.toBase64(compressedFile), filename: file.name });
+        const compressedFile = await imageCompression(
+          file,
+          environment.compressionOptions
+        );
+        this.photos.push({
+          imageUrl: await this.toBase64(compressedFile),
+          filename: file.name
+        });
       }
     }
 
@@ -117,40 +136,56 @@ export class CreateAlbumModalComponent implements OnInit {
     });
   }
 
-
   CreateAlbum() {
     if (this.albumName === '') {
       console.log(this.albumName);
       this.checkForm = false;
     } else {
       if (this.LoadNewImage === true) {
-        this.album = { title: this.albumName, photo: this.photos[0], authorId: this.currentUser.id, photos: this.photos };
-        this.albumService.createAlbumWithNewPhotos(this.album)
-        .subscribe((createdAlbum) => {
-          console.log(createdAlbum);
+        this.album = {
+          title: this.albumName,
+          photo: this.photos[0],
+          authorId: this.currentUser.id,
+          photos: this.photos
+        };
+        this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
+          createdAlbum => {
+            console.log(createdAlbum);
 
-          this.createdAlbumEvent.emit({
-            id: createdAlbum.id,
-            name: createdAlbum.title,
-            photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
-            title: createdAlbum.title
-          });
-          this.notifier.notify(  'success', 'Album created' );
-        });
+            this.createdAlbumEvent.emit({
+              id: createdAlbum.id,
+              name: createdAlbum.title,
+              photoUrl:
+                createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+              title: createdAlbum.title
+            });
+            this.notifier.notify('success', 'Album created');
+          },
+          error => this.notifier.notify('error', 'Error creating the album')
+        );
       } else {
-        this.albumWithExistPhotos = { title: this.albumName, photosId: this.ExistPhotosId, authorId: this.currentUser.id };
-        this.albumService.createAlbumWithExistPhotos(this.albumWithExistPhotos)
-        .subscribe((createdAlbum) => {
-          console.log(createdAlbum);
+        this.albumWithExistPhotos = {
+          title: this.albumName,
+          photosId: this.ExistPhotosId,
+          authorId: this.currentUser.id
+        };
+        this.albumService
+          .createAlbumWithExistPhotos(this.albumWithExistPhotos)
+          .subscribe(
+            createdAlbum => {
+              console.log(createdAlbum);
 
-          this.createdAlbumEvent.emit({
-            id: createdAlbum.id,
-            name: createdAlbum.title,
-            photoUrl: createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
-            title: createdAlbum.title
-          });
-          this.notifier.notify(  'success', 'Album created' );
-        });
+              this.createdAlbumEvent.emit({
+                id: createdAlbum.id,
+                name: createdAlbum.title,
+                photoUrl:
+                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+                title: createdAlbum.title
+              });
+              this.notifier.notify('success', 'Album created');
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       }
       this.toggleModal();
     }
@@ -166,7 +201,9 @@ export class CreateAlbumModalComponent implements OnInit {
     this.ExistPhotos = [];
 
     this.entry.clear();
-    const factory = this.resolver.resolveComponentFactory(ChooseStoragePhotosComponent);
+    const factory = this.resolver.resolveComponentFactory(
+      ChooseStoragePhotosComponent
+    );
     const componentRef = this.entry.createComponent(factory);
     const instance = componentRef.instance as ChooseStoragePhotosComponent;
     instance.currentUser = this.currentUser;

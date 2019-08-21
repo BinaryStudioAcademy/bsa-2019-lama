@@ -12,19 +12,10 @@ export const environment = {
     messagingSenderId: '363275556201',
     appId: '1:363275556201:web:52ab2e1fd986b9ca'
   },
-<<<<<<< HEAD
-  clientApiUrl:"http://localhost:4200",
-  lamaApiUrl: "http://localhost:5000",
-  photoEditing:
-  {
-    crop:
-    {
-=======
   clientApiUrl: 'http://localhost:4200',
   lamaApiUrl: 'https://localhost:5001',
   photoEditing: {
     crop: {
->>>>>>> dev
       cropMinWidth: 128,
       cropMinHeight: 128
     }

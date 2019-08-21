@@ -31,15 +31,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
 
   // constructors
   constructor(public auth: AuthService, private router: Router,
-<<<<<<< HEAD
-     resolver: ComponentFactoryResolver, private shared: SharedService,
-      private http: HttpService, private file: FileService,
-      private notifier: NotifierService)
-  {
-=======
               resolver: ComponentFactoryResolver, private shared: SharedService,
-              private http: HttpService, private file: FileService) {
->>>>>>> dev
+              private http: HttpService, private file: FileService, private notifier: NotifierService) {
     this.resolver = resolver;
   }
 

@@ -22,18 +22,13 @@ export class ShareByEmailModalComponent implements OnInit {
   sharedLink = '';
   sharedEmail = '';
   imageUrl: string;
-<<<<<<< HEAD
-  sharedPhoto: SharedPhoto = <SharedPhoto>{};
-=======
-  copyClicked = false;
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
->>>>>>> dev
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared';
   showSuccessIcon = false;
 
   constructor(private userService: UserService,
-    private notifier: NotifierService) {
+              private notifier: NotifierService) {
 
   }
 
@@ -61,23 +56,6 @@ export class ShareByEmailModalComponent implements OnInit {
       this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
   }
 
-<<<<<<< HEAD
-  
-  public copyShareableLink(){
-    let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = this.sharedLink;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-      console.log(`${this.sharedLink} was copied`);
-      this.notifier.notify( 'success', 'Link is now in your clipboard' );
-=======
 
   public copyShareableLink() {
     const selBox = document.createElement('textarea');
@@ -92,9 +70,7 @@ export class ShareByEmailModalComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.copyClicked = !this.copyClicked;
-    setTimeout(() => this.copyClicked = !this.copyClicked, this.DISAPPEARING_TIMEOUT);
->>>>>>> dev
+    this.notifier.notify( 'success', 'Link is now in your clipboard' );
     }
 
     public encodePhotoData(photo: SharedPhoto): string {
