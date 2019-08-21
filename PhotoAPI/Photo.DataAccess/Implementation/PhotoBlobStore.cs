@@ -72,6 +72,10 @@ namespace Photo.DataAccess.Implementation
             {
                 name = Guid.NewGuid().ToString();
             }
+            else
+            {
+                name = Path.GetFileNameWithoutExtension(name);
+            }
             string contentType = "image/jpg";
 
             foreach (var directory in directories)
