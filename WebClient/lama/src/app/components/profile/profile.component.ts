@@ -108,7 +108,7 @@ export class ProfileComponent implements OnInit {
       error => this.notifier.notify('error', 'Error saving')
     );
     if (this.isPhotoLoaded) {
-      this.sharedService.avatar = this.user.photo;
+      this.sharedService.avatar = { imageUrl: this.user.photoUrl };
     }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
