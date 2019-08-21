@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharingService } from 'src/app/services/sharing.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-by-link-modal',
@@ -10,8 +11,6 @@ import { SharingService } from 'src/app/services/sharing.service';
   styleUrls: ['./share-by-link-modal.component.sass']
 })
 export class ShareByLinkModalComponent implements OnInit {
-
-
   @Input() receivedPhoto: PhotoRaw;
 
   @Output() Close = new EventEmitter();
@@ -19,17 +18,16 @@ export class ShareByLinkModalComponent implements OnInit {
   DISAPPEARING_TIMEOUT = 1000;
   sharedLink = '';
   imageUrl: string;
-  copyClicked = false;
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   sharingRoute = 'main/shared';
 
-  constructor(private sharingService: SharingService) {
-
-  }
+  constructor(
+    private sharingService: SharingService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {
     this.createShareableLink();
-
   }
 
   public cancel() {
@@ -37,9 +35,11 @@ export class ShareByLinkModalComponent implements OnInit {
   }
 
   public createShareableLink() {
-      this.initInvariableFields();
-      const encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
+    this.initInvariableFields();
+    const encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
+    this.sharedLink = `${environment.clientApiUrl}/${
+      this.sharingRoute
+    }/${encodedPhotoData}`;
   }
 
   public copyShareableLink() {
@@ -55,24 +55,18 @@ export class ShareByLinkModalComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.copyClicked = !this.copyClicked;
-    setTimeout(() => this.copyClicked = !this.copyClicked, this.DISAPPEARING_TIMEOUT);
-    }
-
-    public encodePhotoData(photo: SharedPhoto): string {
-      const encoded = btoa(JSON.stringify(photo)).replace('/', '___');
-      console.log(encoded);
-      return encoded;
-    }
-
-    private initInvariableFields() {
-      this.sharedPhoto.photoId = this.receivedPhoto.id;
-      this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
-      this.sharedPhoto.userId = this.receivedPhoto.userId;
-    }
-
+    this.notifier.notify('success', 'Link is now in your clipboard');
   }
 
+  public encodePhotoData(photo: SharedPhoto): string {
+    const encoded = btoa(JSON.stringify(photo)).replace('/', '___');
+    console.log(encoded);
+    return encoded;
+  }
 
-
-
+  private initInvariableFields() {
+    this.sharedPhoto.photoId = this.receivedPhoto.id;
+    this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
+    this.sharedPhoto.userId = this.receivedPhoto.userId;
+  }
+}

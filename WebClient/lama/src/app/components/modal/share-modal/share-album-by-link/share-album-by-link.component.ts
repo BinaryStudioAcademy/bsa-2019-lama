@@ -5,6 +5,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { User } from 'src/app/models/User/user';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-album-by-link',
@@ -19,12 +20,11 @@ export class ShareAlbumByLinkComponent implements OnInit {
   DISAPPEARING_TIMEOUT = 1000;
   sharedLink = '';
   imageUrl: string;
-  copyClicked = false;
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   sharingRoute = 'main/shared/album';
   showSuccessIcon = false;
 
-  constructor() {
+  constructor(private notifier: NotifierService) {
 
   }
 
@@ -55,8 +55,7 @@ export class ShareAlbumByLinkComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.copyClicked = !this.copyClicked;
-    setTimeout(() => this.copyClicked = !this.copyClicked, this.DISAPPEARING_TIMEOUT);
+    this.notifier.notify('success', 'Link is now in your clipboard');
     }
 
     public encodeAlbumData(album: SharedAlbum): string {

@@ -20,7 +20,7 @@
             </div>
 
             <!--upload-->
-            <a (click)="openModalClicked()"class="button is-primary is-hidden-mobile add">
+            <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
                 <i class="material-icons">cloud_upload</i>
                 <p>Add</p>
             </a>
@@ -31,11 +31,11 @@
     <div class="align-right">
         <a class="button is-primary" (click)="logOut()">Logout</a>
         <a class="image is-64x64 profile" routerLink="/main/profile">
-			<img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded">
-		</a>
+            <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded">
+        </a>
     </div>
 
 </header>
 
 <template #photoUploadModal></template>
-
+<notifier-container></notifier-container>
