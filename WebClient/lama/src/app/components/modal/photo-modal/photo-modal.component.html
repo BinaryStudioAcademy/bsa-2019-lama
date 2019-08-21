@@ -36,26 +36,6 @@
 
                                             <div class="column" *ngFor="let item of shownMenuItems">
                                                 <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
-                                                    <ng-template ngSwitchCase="share">
-                                                        <div class="dropdown is-up">
-                                                            <div class="dropdown-trigger">
-                                                                <i class="material-icons is-block">{{ item.icon }}</i>
-                                                                <span> {{ item.title }} </span>
-                                                            </div>
-                                                            <div *ngIf="showSharedModal" class="columns share-container has-background-white is-active">
-                                                                <div class="column is-two-fifths has-text-centered">
-                                                                    <a class="button is-primary is-small" (click)="openShareByLink()">
-                                                                        By link
-                                                                    </a>
-                                                                </div>
-                                                                <div class="column is-two-fifths has-text-centered">
-                                                                    <a class="button is-primary is-small" (click)="openShareByEmail()">
-                                                                        By email
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </ng-template>
                                                     <ng-template ngSwitchCase="remove">
                                                         <div [appEqualId]="isEqualId()">
                                                             <i class="material-icons is-block">{{ item.icon }}</i>
@@ -182,8 +162,7 @@
         </div>
     </div>
 
-    <app-share-by-link-modal [receivedPhoto]='photo' *ngIf="showSharedByLinkModal" (Close)="showSharedByLinkModal=false"></app-share-by-link-modal>
-    <app-share-by-email-modal [receivedPhoto]='photo' *ngIf="showSharedByEmailModal" (Close)="showSharedByEmailModal=false"></app-share-by-email-modal>
+    <app-share-by-email-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (Close)="showSharedModal=false"></app-share-by-email-modal>
     <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal=false" (Done)="imageHandler($event)"></app-edit-modal>
 
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
