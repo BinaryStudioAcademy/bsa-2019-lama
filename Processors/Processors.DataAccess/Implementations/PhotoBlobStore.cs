@@ -84,12 +84,26 @@ namespace Processors.DataAccess.Implementation
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
+
         public async Task<string> LoadAvatarToBlob(byte[] blob)
         {
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
-            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            var directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            var name = Guid.NewGuid().ToString();
+            string contentType = "image/jpg";
+            foreach (var directory in directories)
+            {
+                foreach (var tag in directory.Tags)
+                {
+                    if (tag.Name == "Detected MIME Type")
+                    {
+                        contentType = tag.Description;
+                    }
+                }
+            }
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference($"{name}.{Path.GetFileName(contentType)}");
+            cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
-            return cloudBlockBlob.Uri.ToString();
+            return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
         
         public async Task<byte[]> GetPhoto(string fileName)

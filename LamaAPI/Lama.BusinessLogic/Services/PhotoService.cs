@@ -190,6 +190,16 @@ namespace Lama.BusinessLogic.Services
             return JsonConvert.DeserializeObject<string>(responseContent);
         }
 
+        public async Task<string> GetAvatar(string blobId)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/avatars/{blobId}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(responseContent);
+        }
+
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

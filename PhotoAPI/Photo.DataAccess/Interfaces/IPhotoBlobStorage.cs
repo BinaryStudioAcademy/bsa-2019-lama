@@ -12,5 +12,6 @@ namespace Photo.DataAccess.Interfaces
         Task DeleteFileAsync(string blobName);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<string> GetPhoto(string value);
+        Task<string> GetAvatar(string value);
     }
 }

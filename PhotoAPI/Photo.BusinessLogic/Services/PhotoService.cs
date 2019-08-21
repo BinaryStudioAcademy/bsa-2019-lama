@@ -42,6 +42,11 @@ namespace Photo.BusinessLogic.Services
         {
             return await storage.GetPhoto(blobId);
         }
+
+        public async Task<string> GetAvatar(string blobId)
+        {
+            return await storage.GetAvatar(blobId);
+        }
         // METHODS
         public Task<IEnumerable<PhotoDocument>> Get()
         {

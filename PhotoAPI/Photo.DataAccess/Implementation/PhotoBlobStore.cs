@@ -125,9 +125,22 @@ namespace Photo.DataAccess.Implementation
             return $"data:image/{type.Substring(1)};base64,{base64}";
         }
 
+        public async Task<string> GetAvatar(string blobId)
+        {
+
+            CloudBlockBlob cloudBlob = cloudBlobContainerAvatars.GetBlockBlobReference(blobId);
+            var type = Path.GetExtension(blobId);
+            await cloudBlob.FetchAttributesAsync();
+            long fileByteLength = cloudBlob.Properties.Length;
+            Byte[] myByteArray = new Byte[fileByteLength];
+            await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
+            string base64 = Convert.ToBase64String(myByteArray);
+            return $"data:image/{type.Substring(1)};base64,{base64}";
+        }
+
         public async Task<string> LoadAvatarToBlob(byte[] blob)
         {
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
+  
             var directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
             string contentType = "image/jpg";
             foreach (var directory in directories)
@@ -140,6 +153,7 @@ namespace Photo.DataAccess.Implementation
                     }
                 }
             }
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference($"{Guid.NewGuid().ToString()}{Path.GetFileName(contentType)}");
             cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";

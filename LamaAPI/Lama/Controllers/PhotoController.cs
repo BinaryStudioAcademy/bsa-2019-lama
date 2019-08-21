@@ -74,6 +74,11 @@ namespace Lama.Controllers
         {
             return await _service.GetPhoto(blobId);
         }
+        [HttpGet("avatars/{blobId}")]
+        public async Task<string> GetAvatar(string blobId)
+        {
+            return await _service.GetAvatar(blobId);
+        }
 
 
         #region DELETE

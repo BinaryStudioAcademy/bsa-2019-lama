@@ -17,6 +17,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task MarkPhotoAsDeleted(int photoId);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<string> GetPhoto(string value);
+        Task<string> GetAvatar(string value);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId);
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
