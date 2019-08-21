@@ -1,35 +1,32 @@
 <header>
-  <app-shared-page-header [userPhoto]= "authenticatedUser?.photoURL" [userName]="authenticatedUser?.displayName"></app-shared-page-header>
+  <app-shared-page-header
+    [userPhoto]="authenticatedUser?.photoURL"
+    [userName]="authenticatedUser?.displayName"
+  ></app-shared-page-header>
 </header>
 <body>
-    <section class="hero">
-        <div class="hero-body">
-          <p>Author:</p>
-          <div class="columns is-multiline">
-            <div class="column is-narrow">
-                <div class="image is-64x64">
-                  <!--Here will be photo author avatar placed-->
-                    <img src="{{userData?.user.photoUrl}}">
-                    <p>{{userData?.user.firstName}} {{userData?.user.lastName}}</p>
-                  </div>
-            </div>
-            <div class="column  is-narrow">
-            </div>
+  <section class="hero">
+    <div class="hero-body">
+      <p>Author:</p>
+      <div class="columns is-multiline">
+        <div class="column is-narrow">
+          <div class="image is-64x64">
+            <!--Here will be photo author avatar placed-->
+            <img src="{{ userAvatarUrl }}" />
+            <p>{{ userData?.user.firstName }} {{ userData?.user.lastName }}</p>
           </div>
         </div>
-      </section>
-      <div class="column is-half">
-        <div class="box" >
-          <div class="media">
-              <figure class="image">
-                  <img src="{{ sharedPhoto?.sharedImageUrl }}" alt="Image">
-              </figure>
-          </div>
-        </div>
+        <div class="column  is-narrow"></div>
       </div>
-  </body>
-
-
-
-
-
+    </div>
+  </section>
+  <div class="column is-half">
+    <div class="box">
+      <div class="media">
+        <figure class="image">
+          <img src="{{ sharedPhotoUrl }}" alt="Image" />
+        </figure>
+      </div>
+    </div>
+  </div>
+</body>
