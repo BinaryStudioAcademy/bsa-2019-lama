@@ -1,8 +1,7 @@
 import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
 
-export interface PhotoRaw
-{
+export interface PhotoRaw {
     id?: number;
     name?: string;
     blobId: string;

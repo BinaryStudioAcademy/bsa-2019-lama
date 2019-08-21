@@ -11,10 +11,10 @@ export class ShareAlbumComponent implements OnInit {
   @Input()
   receivedAlbum: ViewAlbum;
   public album: ViewAlbum;
-  public showSharedByLinkModal: boolean = false;
-  public showSharedByEmailModal: boolean = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
   constructor() { }
 
@@ -22,7 +22,7 @@ export class ShareAlbumComponent implements OnInit {
   }
 
   openShareByLink() {
-	console.log(this.receivedAlbum);
+    console.log(this.receivedAlbum);
     this.showSharedByLinkModal = true;
   }
 
@@ -30,7 +30,7 @@ export class ShareAlbumComponent implements OnInit {
     this.showSharedByEmailModal = true;
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  public cancel() {
+    this.Close.emit(null);
   }
 }

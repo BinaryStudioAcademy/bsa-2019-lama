@@ -21,39 +21,36 @@ import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
   templateUrl: './shared-page-album.component.html',
   styleUrls: ['./shared-page-album.component.sass']
 })
-export class SharedPageAlbumComponent implements OnInit {
+export class SharedPageAlbumComponent implements OnInit, DoCheck {
 
   @Input() album: ViewAlbum = { } as ViewAlbum;
 
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   AlbumId: number;
-  loading: boolean = false;
+  loading = false;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
   currentUser: User;
-  
+
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
   constructor(private route: ActivatedRoute, private router: Router,
-    private albumService: AlbumService, private zipService: ZipService, 
-	private resolver: ComponentFactoryResolver) 
-  { 
+              private albumService: AlbumService, private zipService: ZipService,
+              private resolver: ComponentFactoryResolver) {
     this.decodeUserData();
-    
   }
 
   ngOnInit() {
-    let userId: number = parseInt(localStorage.getItem("userId"));
+    const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.selectedPhotos = [];
     this.albumService.getAlbum(this.sharedAlbum.albumId).subscribe( x => {this.album = x.body; });
-	this.loading = true;
+    this.loading = true;
   }
 
-  public photoClicked(eventArgs: PhotoRaw)
-  {
+  public photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
@@ -63,24 +60,21 @@ export class SharedPageAlbumComponent implements OnInit {
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }
-  
-  public deletePhotoHandler(photoToDeleteId: number): void
-  {
+
+  public deletePhotoHandler(photoToDeleteId: number): void {
     this.album.photoAlbums = this.album.photoAlbums.filter(p => p.id !== photoToDeleteId);
   }
 
-  public updatePhotoHandler(updatedPhoto: PhotoRaw): void
-  {
+  public updatePhotoHandler(updatedPhoto: PhotoRaw): void {
     const index = this.album.photoAlbums.findIndex(i => i.id === updatedPhoto.id);
-    this.album.photoAlbums[index] = updatedPhoto
-  }
-  
-  ngDoCheck() {
-    this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0
+    this.album.photoAlbums[index] = updatedPhoto;
   }
 
-  public photoSelected(eventArgs: PhotoRawState)
-  {
+  ngDoCheck() {
+    this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
+  }
+
+  public photoSelected(eventArgs: PhotoRawState) {
     if (eventArgs.isSelected) {
       this.selectedPhotos.push(eventArgs.photo);
     } else {
@@ -91,15 +85,15 @@ export class SharedPageAlbumComponent implements OnInit {
 
   public deleteImages(): void {
     const indexes = new Array<number>();
-    this.selectedPhotos.forEach(element => {
-      indexes.push(this.album.photoAlbums.findIndex(i => i.id === element.id));
+    this.selectedPhotos.forEach(e => {
+      indexes.push(this.album.photoAlbums.findIndex(i => i.id === e.id));
     });
-    indexes.forEach(element => {
-      this.album.photoAlbums.splice(element, 1);
+    indexes.forEach(e => {
+      this.album.photoAlbums.splice(e, 1);
     });
     const ids = new Array<number>();
-    this.album.photoAlbums.forEach(element => {
-      ids.push(element.id);
+    this.album.photoAlbums.forEach(e => {
+      ids.push(e.id);
     });
     this.selectedPhotos = [];
     this.albumService.updateAlbum({
@@ -112,10 +106,10 @@ export class SharedPageAlbumComponent implements OnInit {
   public downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
   }
-  
+
   private decodeUserData() {
-    let encodedData = this.route.snapshot.params.userdata as string;
-    let jsonData = atob(encodedData.replace("___","/"));
+    const encodedData = this.route.snapshot.params.userdata as string;
+    const jsonData = atob(encodedData.replace('___', '/'));
     this.sharedAlbum = JSON.parse(jsonData);
   }
 }

@@ -5,6 +5,7 @@ import { saveAs } from 'file-saver';
 import { FileService } from './file.service';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,7 @@ export class ZipService {
       filenames.push(element.name);
       observables.push(this.fileService.getPhoto(element.blobId));
     });
-    Observable.forkJoin(observables).subscribe(data => {
+    forkJoin(observables).subscribe(data => {
       for (let i = 0; i < filenames.length; i++) {
         zip.file(filenames[i], this.urlToPromise(data[i], { binary: true }));
       }

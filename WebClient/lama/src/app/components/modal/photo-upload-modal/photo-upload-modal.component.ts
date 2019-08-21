@@ -10,6 +10,7 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'photo-upload-modal',
   templateUrl: './photo-upload-modal.component.html',
   styleUrls: ['./photo-upload-modal.component.sass']
@@ -19,7 +20,7 @@ export class PhotoUploadModalComponent implements OnInit {
   isActive: boolean;
   photos: Photo[] = [];
   desc: string[] = [];
-  showSpinner: boolean = false;
+  showSpinner = false;
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<UploadPhotoResultDTO[]>();
 
@@ -46,31 +47,29 @@ export class PhotoUploadModalComponent implements OnInit {
 
   async onFileSelected(event) {
     if (event.target.files.length > 0) {
-      let files = event.target.files;
+      const files = event.target.files;
       await this.onFileDropped(files);
     }
   }
   async onFileDropped(files: File[]) {
       this.showSpinner = true;
-      this.photos = []
-      for (let i=0; i<files.length; i++)
-      {
-        if (files[i].type == "image/jpeg" || files[i].type == "image/jpg") {
-          let exifObj = load(await this.toBase64(files[i]));
-          let d = dump(exifObj);
-          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
-          let base64 = await this.toBase64(compressedFile);
+      this.photos = [];
+      for (const file of files) {
+        if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+          const exifObj = load(await this.toBase64(file));
+          const d = dump(exifObj);
+          const compressedFile = await imageCompression(file, environment.compressionOptions);
+          const base64 = await this.toBase64(compressedFile);
           remove(base64);
-          let modifiedObject = insert(d, base64);
+          const modifiedObject = insert(d, base64);
           this.showSpinner = false;
-          this.photos.push({imageUrl: modifiedObject, filename: files[i].name})
-        }
-        else {
-          let compressedFile = await imageCompression(files[i], environment.compressionOptions);
+          this.photos.push({imageUrl: modifiedObject, filename: file.name});
+        } else {
+          const compressedFile = await imageCompression(file, environment.compressionOptions);
           this.showSpinner = false;
-          this.photos.push({imageUrl: await this.toBase64(compressedFile), filename: files[i].name})
+          this.photos.push({imageUrl: await this.toBase64(compressedFile), filename: file.name});
         }
-     };
+     }
   }
 
   public toBase64(file): Promise<string> {

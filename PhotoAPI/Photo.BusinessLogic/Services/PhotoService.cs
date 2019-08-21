@@ -174,9 +174,9 @@ namespace Photo.BusinessLogic.Services
             return elasticStorage.UpdatePartiallyAsync(photoId, updateDeleteField);
         }
 
-        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            IEnumerable<PhotoDocument> searchResult = await elasticStorage.GetDeletedPhoto();            
+            IEnumerable<PhotoDocument> searchResult = await elasticStorage.GetDeletedPhoto(userId);            
             
             return mapper.Map<DeletedPhotoDTO[]>(searchResult);
         }

@@ -21,9 +21,9 @@ export class DeletedPhotosComponent implements OnInit {
 
   public ngOnInit(): void {
     this.countSelectedPhtoto = 0;
-
+    const userId = parseInt(localStorage.getItem('userId'), 10);
     this.fileService
-      .getDeletedPhotos()
+      .getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
       .subscribe(items => {
         this.deletedPhotos = items;
@@ -49,6 +49,7 @@ export class DeletedPhotosComponent implements OnInit {
       .restoresDeletedPhotos(photosToRestore)
       .subscribe(response => this.removeSelectedPhotoFromView());
   }
+
   public deleteSelectedPhoto(): void {
     const photosToDelete: PhotoToDeleteRestoreDTO[] = this.getSelectedItem();
 

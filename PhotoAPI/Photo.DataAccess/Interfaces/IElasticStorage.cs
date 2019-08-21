@@ -19,7 +19,7 @@ namespace Photo.DataAccess.Interfaces
         Task<PhotoDocument> Get(int elasticId);
         Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task<IEnumerable<PhotoDocument>> Get();
-        Task<IEnumerable<PhotoDocument>> GetDeletedPhoto();
+        Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
     }
 }

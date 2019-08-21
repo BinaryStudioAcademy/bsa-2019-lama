@@ -86,10 +86,10 @@ namespace Lama.Controllers
 
         // GET: api/photo/deleted
         [HttpGet]
-        [Route("deleted")]
-        public Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        [Route("deleted/{userId}")]
+        public Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            return _service.GetDeletedPhotos();
+            return _service.GetDeletedPhotos(userId);
         }
 
         // POST: api/photo/delete_permanently

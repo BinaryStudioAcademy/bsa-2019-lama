@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, Input, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ImageEditedArgs } from 'src/app/models';
 import { FileService } from 'src/app/services';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
@@ -9,8 +9,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './edit-photo.component.html',
   styleUrls: ['./edit-photo.component.sass']
 })
-export class EditPhotoComponent implements OnInit 
-{  
+export class EditPhotoComponent {
   // fields
   private imageUrl: string;
   imageToEditBase64: string;
@@ -20,8 +19,7 @@ export class EditPhotoComponent implements OnInit
 
   // properties
   @Input()
-  public set imageToEdit(imageToCropUrl: string)
-  {
+  public set imageToEdit(imageToCropUrl: string) {
     this.imageUrl = imageToCropUrl;
 
     this.imageService.getImageBase64(imageToCropUrl)
@@ -36,7 +34,7 @@ export class EditPhotoComponent implements OnInit
 
   public croppedImageWidth: number;
   public croppedImageHeight: number;
-  
+
   // events
   @Output()
   public saveClickedEvent = new EventEmitter<ImageEditedArgs>();
@@ -44,56 +42,40 @@ export class EditPhotoComponent implements OnInit
   public cancelClickedEvent = new EventEmitter();
 
   // constructors
-  constructor(imageService: FileService)
-  { 
+  constructor(imageService: FileService) {
     this.imageService = imageService;
-
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
   }
 
-  ngOnInit() 
-  {
-  }
-
   // methods
-  public rotateLeftHandler(): void
-  {
+  public rotateLeftHandler() {
     this.imageEditor.rotateLeft();
   }
-  
-  public rotateRightHandler(): void
-  {
+
+  public rotateRightHandler() {
     this.imageEditor.rotateRight();
   }
 
-  public flipHorizontalHandler(): void
-  {
+  public flipHorizontalHandler() {
     this.imageEditor.flipHorizontal();
   }
-  public flipVerticalHandler(): void
-  {
+  public flipVerticalHandler() {
     this.imageEditor.flipVertical();
   }
 
-  public imageCroppedHandler(event: ImageCroppedEvent): void
-  {    
+  public imageCroppedHandler(event: ImageCroppedEvent) {
     this.croppedImageHeight = event.height;
     this.croppedImageWidth = event.width;
   }
-
-  
-  public async saveClickHandler(): Promise<void>
-  {
+  public async saveClickHandler(): Promise<void> {
     const event: ImageCroppedEvent = await this.imageEditor.crop();
-    
     this.saveClickedEvent.emit({
       originalImageUrl: this.imageToEditBlobId,
       editedImageBase64: this.imageService.copyExif(this.imageToEditBase64, event.base64)
     });
   }
-  public cancelClickHandler(): void
-  {
+  public cancelClickHandler() {
     this.cancelClickedEvent.emit();
   }
 

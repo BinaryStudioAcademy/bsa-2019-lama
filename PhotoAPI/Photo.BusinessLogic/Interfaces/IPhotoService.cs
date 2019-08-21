@@ -18,6 +18,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<string> GetPhoto(string value);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos();
+        Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId);
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);

@@ -35,16 +35,12 @@ export class PhotoModalComponent implements OnInit {
   public isInfoShown = false;
   public imageUrl: string;
   public userId: number;
-
   public showSharedModal = false;
   public showSharedByLinkModal = false;
   public showSharedByEmailModal = false;
-
   albums: PhotoDetailsAlbum[];
-
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
-
   public isEditing: boolean;
   showEditModal: boolean;
 
@@ -109,7 +105,7 @@ export class PhotoModalComponent implements OnInit {
     this.userId = this.authService.getLoggedUserId();
     this.userService.getUser(this.userId).subscribe(user => {
       this.currentUser = user;
-      let reactions = this.photo.reactions;
+      const reactions = this.photo.reactions;
 
       this.hasUserReaction = reactions.some(
         x => x.userId === this.currentUser.id
@@ -128,7 +124,7 @@ export class PhotoModalComponent implements OnInit {
   ): number {
     let dd = degrees + minutes / 60 + seconds / (60 * 60);
 
-    if (direction == 'S' || direction == 'W') {
+    if (direction === 'S' || direction === 'W') {
       dd = dd * -1;
     } // Don't do anything for N or E
     return dd;
@@ -150,15 +146,14 @@ export class PhotoModalComponent implements OnInit {
             this.zoom = 12;
             this.address = results[0].formatted_address;
           } else {
-            alert('No results found');
+            console.log('No results found');
           }
         } else {
-          alert('Geocoder failed due to: ' + status);
+          console.log('Geocoder failed due to: ' + status);
         }
       }
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
-
     this.userService.getUser(loggedUserId).subscribe(user => {
       this.currentUser = user;
 
@@ -174,44 +169,50 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', this.imageUrl, true);
     xhr.onload = () => {
-      var response = xhr.responseText;
-      var binary = '';
-      for (let i = 0; i < response.length; i++) {
-        binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
+      if (this.photo.blobId.endsWith('.png')) {
+        return;
       }
-      let src = 'data:image/jpeg;base64,' + btoa(binary);
-      let exifObj = load(src);
-      let GPS = exifObj['GPS'];
 
-      if (exifObj['GPS'][1] == 'N') {
+      const response = xhr.responseText;
+      let binary = '';
+      for (let i = 0; i < response.length; i++) {
+        binary += String.fromCharCode(response.charCodeAt(i) && 0xff);
+      }
+      console.log(binary);
+      const src = 'data:image/jpeg;base64,' + btoa(binary);
+
+      const exifObj = load(src);
+      const GPS = exifObj[exifObj.GPS];
+
+      if (exifObj[exifObj.GPS][1] === 'N') {
         this.latitude = this.ConvertDMSToDD(
-          exifObj['GPS'][2][0][0],
-          exifObj['GPS'][2][1][0],
-          exifObj['GPS'][2][2][0] / exifObj['GPS'][2][2][1],
-          exifObj['GPS'][1]
+          exifObj[exifObj.GPS][2][0][0],
+          exifObj[exifObj.GPS][2][1][0],
+          exifObj[exifObj.GPS][2][2][0] / exifObj[exifObj.GPS][2][2][1],
+          exifObj[exifObj.GPS][1]
         );
+
         this.longitude = this.ConvertDMSToDD(
-          exifObj['GPS'][4][0][0],
-          exifObj['GPS'][4][0][0],
-          exifObj['GPS'][4][0][0] / exifObj['GPS'][4][2][1],
-          exifObj['GPS'][3]
+          exifObj[exifObj.GPS][4][0][0],
+          exifObj[exifObj.GPS][4][0][0],
+          exifObj[exifObj.GPS][4][0][0] / exifObj[exifObj.GPS][4][2][1],
+          exifObj[exifObj.GPS][3]
         );
 
         // load Places Autocomplete
         this.mapsAPILoader.load().then(() => {
           if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(position => {
-              console.log(this.longitude);
-              //this.latitude = position.coords.latitude;
-              //this.longitude = position.coords.longitude;
+              // this.latitude = position.coords.latitude;
+              // this.longitude = position.coords.longitude;
               this.zoom = 8;
               this.getAddress(this.latitude, this.longitude);
             });
           }
-
+          // tslint:disable-next-line: new-parens
           this.geoCoder = new google.maps.Geocoder();
 
           /*
@@ -222,12 +223,10 @@ export class PhotoModalComponent implements OnInit {
             this.ngZone.run(() => {
               // get the place result
               let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-  
               // verify result
               if (place.geometry === undefined || place.geometry === null) {
                 return;
               }
-  
               // set latitude, longitude and zoom
               this.latitude = place.geometry.location.lat();
               this.longitude = place.geometry.location.lng();
@@ -274,12 +273,10 @@ export class PhotoModalComponent implements OnInit {
     }
 
     if (clickedMenuItem === this.deletingMenuItem[0]) {
-      // yes
       this.deleteImage();
     }
 
     if (clickedMenuItem === this.deletingMenuItem[1]) {
-      // no
       this.shownMenuItems = this.defaultMenuItem;
     }
 
@@ -287,7 +284,6 @@ export class PhotoModalComponent implements OnInit {
 
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
-      console.log(5);
       this.isEditing = true;
     }
 
@@ -358,9 +354,9 @@ export class PhotoModalComponent implements OnInit {
     // TODO: uncomment line below
     // also maybe hide like from HTML if its your photo
 
-    //if (this.photo.userId === parseInt(this.currentUser.id)) return;
+    // if (this.photo.userId === parseInt(this.currentUser.id)) return;
 
-    let hasreaction = this.photo.reactions.some(
+    const hasreaction = this.photo.reactions.some(
       x => x.userId === this.currentUser.id
     );
     const newReaction: NewLike = {
@@ -370,7 +366,7 @@ export class PhotoModalComponent implements OnInit {
     if (hasreaction) {
       this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => {
         this.photo.reactions = this.photo.reactions.filter(
-          x => x.userId !== this.currentUser.id
+          e => e.userId !== this.currentUser.id
         );
         this.hasUserReaction = false;
       });
@@ -390,13 +386,13 @@ export class PhotoModalComponent implements OnInit {
 
   forceDownload() {
     const fileName = this.photo.name;
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', this.imageUrl, true);
     xhr.responseType = 'blob';
     xhr.onload = function() {
-      var urlCreator = window.URL;
+      const urlCreator = window.URL;
       const imageUrl = urlCreator.createObjectURL(this.response);
-      let tag = document.createElement('a');
+      const tag = document.createElement('a');
       tag.href = imageUrl;
       tag.download = fileName;
       document.body.appendChild(tag);
@@ -425,6 +421,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   public isEqualId(): boolean {
-    return this.photo.userId == this.userId;
+    return this.photo.userId === this.userId;
   }
 }

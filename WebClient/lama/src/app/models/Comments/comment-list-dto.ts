@@ -1,5 +1,4 @@
-export interface CommentListDto
-{
+export interface CommentListDto {
     commentId: number;
 
     authorId: number;

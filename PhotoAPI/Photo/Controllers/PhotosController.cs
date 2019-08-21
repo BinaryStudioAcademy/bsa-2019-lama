@@ -125,11 +125,11 @@ namespace Photo.Controllers
 
         // GET: api/photos/deleted
         [HttpGet]
-        [Route("deleted")]
-        public Task<DeletedPhotoDTO[]> GetDeletedPhotos()
+        [Route("deleted/{userId}")]
+        public Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
 
-            return this.photoService.GetDeletedPhotos();
+            return this.photoService.GetDeletedPhotos(userId);
         }
 
         // POST: api/photos/delete_permanently

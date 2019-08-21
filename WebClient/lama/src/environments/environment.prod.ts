@@ -8,19 +8,17 @@ export const environment = {
     messagingSenderId: '363275556201',
     appId: '1:363275556201:web:52ab2e1fd986b9ca'
   },
-  clientApiUrl: 'http://localhost:4200',
-  lamaApiUrl: 'http://localhost:5000',
-  photoEditing:
-  {
-    crop:
-    {
+  clientApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com',
+  lamaApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com:5000',
+  photoEditing: {
+    crop: {
       cropMinWidth: 128,
       cropMinHeight: 128
     }
   },
   compressionOptions: {
     maxSizeMB: 1,
-    maxWidthOrHeight: 1920,
+    maxWidthOrHeight: 1920
   },
   production: true
 };

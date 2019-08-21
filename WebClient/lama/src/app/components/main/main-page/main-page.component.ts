@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from 'src/app/services';
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.sass']
@@ -10,22 +11,22 @@ import { AuthService } from 'src/app/services';
 
 export class MainPageComponent implements OnInit {
 
-  @HostListener('window:resize', ['$event']) onresize(event){
-    if(event.target.innerWidth < 768){
+  constructor() { }
+
+  showSidebarMenu: boolean;
+
+  @HostListener('window:resize', ['$event']) onresize(event) {
+    if (event.target.innerWidth < 768) {
       this.showSidebarMenu = false;
     }
   }
-
-
-  showSidebarMenu: boolean;
-  constructor() { }
 
 
   ngOnInit() {
 
   }
 
-  public receiveSidebarState($event){
+  public receiveSidebarState($event) {
     this.showSidebarMenu = $event;
   }
 }
