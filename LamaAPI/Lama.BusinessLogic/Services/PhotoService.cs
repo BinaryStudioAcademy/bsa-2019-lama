@@ -239,7 +239,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach (PhotoToDeleteRestoreDTO photoToDelete in photosToDelete)
             {
-				await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
+                await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
             
 			await _context.SaveAsync();
