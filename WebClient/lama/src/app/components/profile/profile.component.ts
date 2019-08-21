@@ -13,10 +13,9 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor(public authService: AuthService,
-    private httpService: HttpService, 
-    private userService: UserService,
-    private sharedService: SharedService) {  }
+  constructor(public authService: AuthService, private httpService: HttpService,
+              private userService: UserService,
+              private sharedService: SharedService) {  }
 
 
   defaultFirstName: string;
@@ -33,12 +32,12 @@ export class ProfileComponent implements OnInit {
     photo: {imageUrl: '',
     description: ''}
   };
-  isSuccesfull: boolean = true;
+  isSuccesfull = true;
   photoUrl: string;
   testReceivedUser: User;
-  showSpinner: boolean = true;
-  isPhotoLoaded: boolean = false;
-  isSaved: boolean = false;
+  showSpinner = true;
+  isPhotoLoaded = false;
+  isSaved = false;
 
   ngOnInit() {
     this.httpService.getData(`users/${localStorage.getItem('userId')}`).subscribe((u) => {
@@ -60,22 +59,22 @@ export class ProfileComponent implements OnInit {
     });
 
     this.userForm = new FormGroup({
-      'firstName': new FormControl(this.user.firstName, Validators.required),
-      'lastName': new FormControl(this.user.lastName, Validators.required),
-      'email': new FormControl(this.user.email)
+      firstName : new FormControl(this.user.firstName, Validators.required),
+      lastName: new FormControl(this.user.lastName, Validators.required),
+      email: new FormControl(this.user.email)
     });
   }
 
   readURL(event: Event): void {
     this.isPhotoLoaded = true;
-    const target = event.target as HTMLInputElement
+    const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
         const file = target.files[0];
         const reader = new FileReader();
         reader.onload = e => {
           this.photoUrl = reader.result as string;
-          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: parseInt(localStorage.getItem('userId'))}
-        }
+          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: parseInt(localStorage.getItem('userId'), 10)};
+        };
         reader.readAsDataURL(file);
     }
   }
@@ -87,18 +86,19 @@ export class ProfileComponent implements OnInit {
 
     console.log(this.photoUrl);
     this.httpService.putData(`users`, this.user).subscribe((data: User) => this.testReceivedUser = data);
-    if (this.isPhotoLoaded)
+    if (this.isPhotoLoaded) {
       this.sharedService.avatar = this.user.photo;
+    }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
-    localStorage.setItem('email', this.user.email)
-    this.userService.updateCurrentUser({photoURL: this.photoUrl})
-	this.isSaved = true;
+    localStorage.setItem('email', this.user.email);
+    this.userService.updateCurrentUser({photoURL: this.photoUrl});
+    this.isSaved = true;
   }
-  
+
   closeNotification() {
-	this.isSaved = false;
+    this.isSaved = false;
   }
 
   refresh() {

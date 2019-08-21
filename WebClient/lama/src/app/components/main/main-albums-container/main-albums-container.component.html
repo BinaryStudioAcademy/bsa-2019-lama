@@ -10,11 +10,11 @@
         </div>
     </a>
     <div *ngIf="showFavorite">
-        <main-album [_album]="favorite" [_isFavorite]="true" (onClick)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        <main-album [_album]="favorite" [_isFavorite]="true" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
     </div>
     <div *ngFor="let item of albums">
-        <main-album [_album]="item" [_isFavorite]="false" (onClick)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        <main-album [_album]="item" [_isFavorite]="false" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
     </div>
 

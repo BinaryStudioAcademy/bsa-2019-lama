@@ -1,6 +1,6 @@
 
 
 export interface Like {
-    userId:number;
+    userId: number;
 
 }

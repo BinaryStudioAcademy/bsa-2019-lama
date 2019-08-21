@@ -3,7 +3,7 @@ export class Favorite {
     photoId: number;
     userId: number;
 
-    constructor(pId: number, uId: number){
+    constructor(pId: number, uId: number) {
         this.photoId = pId;
         this.userId = uId;
     }

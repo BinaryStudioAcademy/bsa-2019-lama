@@ -20,13 +20,13 @@ const routes: Routes =
   { path: 'landing', component: MainLandingPageComponent, canActivate: [LoggedInGuard] },
 
   {
-    path: 'main', component: MainPageComponent, canActivate:[AuthGuard],
+    path: 'main', component: MainPageComponent, canActivate: [AuthGuard],
     children:
     [
       {
-        path:'',
+        path: '',
         canActivateChild: [AuthGuard],
-        children:[
+        children: [
 
           { path: 'photos', component:  MainPhotosContainerComponent },
           { path: 'albums', component: MainAlbumsContainerComponent },

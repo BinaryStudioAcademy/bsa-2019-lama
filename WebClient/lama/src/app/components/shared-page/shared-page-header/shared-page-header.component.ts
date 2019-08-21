@@ -19,10 +19,10 @@ export class SharedPageHeaderComponent implements OnInit {
       this.userName = x.displayName;
       this.userPhoto = x.photoURL;
       this.isAuthenticated = this.authService.token !== null;
-    })
+    });
   }
 
-  public logOut(){
+  public logOut() {
     this.authService.doLogout();
   }
 

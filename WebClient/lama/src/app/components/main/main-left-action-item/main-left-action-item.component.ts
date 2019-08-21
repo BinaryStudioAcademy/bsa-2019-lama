@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActionItem } from 'src/app/models/View/action-item';
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'main-left-action-item',
   templateUrl: './main-left-action-item.component.html',
   styleUrls: ['./main-left-action-item.component.sass']

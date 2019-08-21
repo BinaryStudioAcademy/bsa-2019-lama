@@ -5,23 +5,22 @@ import { Directive, Input, ElementRef, OnChanges, OnInit } from '@angular/core';
 })
 export class CheckFavoriteDirective implements OnInit, OnChanges {
 
-  @Input('appCheckFavorite') favorite: boolean = false;
+  @Input('appCheckFavorite') favorite = false;
   constructor(private elem: ElementRef) {
   }
-  ngOnInit(){
+  ngOnInit() {
     this.setStyle();
   }
 
-  ngOnChanges(){
+  ngOnChanges() {
     this.setStyle();
   }
 
-  setStyle(){
-    if(this.favorite){
-      this.elem.nativeElement.style.visibility = "visible";
-    } 
-    else{
-      this.elem.nativeElement.style.visibility = "hidden";
+  setStyle() {
+    if (this.favorite) {
+      this.elem.nativeElement.style.visibility = 'visible';
+    } else {
+      this.elem.nativeElement.style.visibility = 'hidden';
     }
   }
 

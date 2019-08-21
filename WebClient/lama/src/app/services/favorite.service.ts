@@ -9,28 +9,28 @@ import { Favorite } from '../models/favorite';
 })
 export class FavoriteService {
   private baseUrl: string = environment.lamaApiUrl + '/api/favorite/';
-  private ids: string = "ids/";
-  private photos: string = "photos/";
-  constructor(private _http: HttpClient) { 
+  private ids = 'ids/';
+  private photos = 'photos/';
+  constructor(private http: HttpClient) {
   }
 
   getFavoritesIds(userId: number): Observable<any> {
-      return this._http.get<number[]>(this.baseUrl+this.ids+userId);
+      return this.http.get<number[]>(this.baseUrl + this.ids + userId);
   }
 
   getFavoritesPhotos(userId: number): Observable<any> {
-    return this._http.get<Favorite[]>(this.baseUrl+this.photos+userId);
+    return this.http.get<Favorite[]>(this.baseUrl + this.photos + userId);
 }
 
-  createFavorite(favorite: Favorite): Observable<any>{
-    return this._http.post<Favorite>(this.baseUrl,favorite);
+  createFavorite(favorite: Favorite): Observable<any> {
+    return this.http.post<Favorite>(this.baseUrl, favorite);
   }
 
-  deleteFavorite(userId:number, photoId: number): Observable<any>{
-    return this._http.delete(this.baseUrl+userId+"/"+photoId);
+  deleteFavorite(userId: number, photoId: number): Observable<any> {
+    return this.http.delete(this.baseUrl + userId + '/' + photoId);
   }
 
-  deleteAllFavorites(userId:number): Observable<any>{
-    return this._http.delete(this.baseUrl+userId);
+  deleteAllFavorites(userId: number): Observable<any> {
+    return this.http.delete(this.baseUrl + userId);
   }
 }

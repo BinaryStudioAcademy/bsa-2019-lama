@@ -1,6 +1,6 @@
 
 
 export interface NewLike {
-    photoId:number;
-    userId:number;
+    photoId: number;
+    userId: number;
 }

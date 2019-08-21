@@ -5,26 +5,25 @@ import { Directive, Input, ElementRef, OnChanges, OnInit } from '@angular/core';
 })
 export class FavoriteDirective implements OnInit, OnChanges {
 
-  @Input('appFavorite') favorite: boolean = false;
+  @Input('appFavorite') favorite = false;
   constructor(private elem: ElementRef) {
   }
 
-  ngOnInit(){
+  ngOnInit() {
     this.setStyle();
   }
 
-  ngOnChanges(){
-   this.setStyle();   
+  ngOnChanges() {
+   this.setStyle();
   }
 
-  setStyle(){
-    if(this.favorite){
-      this.elem.nativeElement.innerText = "star";
-      this.elem.nativeElement.style.color = "yellow";
-    } 
-    else{
-      this.elem.nativeElement.innerText = "star_border";
-      this.elem.nativeElement.style.color = "white";
+  setStyle() {
+    if (this.favorite) {
+      this.elem.nativeElement.innerText = 'star';
+      this.elem.nativeElement.style.color = 'yellow';
+    } else {
+      this.elem.nativeElement.innerText = 'star_border';
+      this.elem.nativeElement.style.color = 'white';
   }
   }
 }

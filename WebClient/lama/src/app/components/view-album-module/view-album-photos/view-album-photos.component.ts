@@ -10,16 +10,15 @@ import { PhotoRaw } from 'src/app/models';
 export class ViewAlbumPhotosComponent implements OnInit {
 
   @Input ('_photo') photo: PhotoRaw;
-  @Output() onClick = new EventEmitter<PhotoRaw>();
+  @Output() Click = new EventEmitter<PhotoRaw>();
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  public clickPerformed(): void
-  {
-    this.onClick.emit(this.photo);
+  public clickPerformed(): void {
+    this.Click.emit(this.photo);
   }
 
 }

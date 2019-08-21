@@ -5,7 +5,7 @@ import { Photo } from './Photo/photo';
 import { PhotoWithSocial } from './Photo/photoWithSocial';
 
 
-export interface SharedPageDataset{
+export interface SharedPageDataset {
   user: User;
   photo: PhotoWithSocial;
 }

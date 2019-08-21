@@ -7,8 +7,7 @@ import { UserService, AuthService, CommentService } from 'src/app/services';
   templateUrl: './comments-list.component.html',
   styleUrls: ['./comments-list.component.sass']
 })
-export class CommentsListComponent implements OnInit
-{
+export class CommentsListComponent implements OnInit {
   // properties
   @Input()
   public photoId: number;
@@ -28,12 +27,10 @@ export class CommentsListComponent implements OnInit
     private commentService: CommentService
   ) { }
 
-  ngOnInit()
-  {
+  ngOnInit() {
     const userId = this.authService.getLoggedUserId();
 
-    if (userId)
-    {
+    if (userId) {
       this.userService.getUser(userId)
         .subscribe(user => this.loggedUser = user);
     }
@@ -41,8 +38,7 @@ export class CommentsListComponent implements OnInit
     this.getComments();
   }
 
-  private getComments()
-  {
+  private getComments() {
     this.commentService.getComments(this.photoId)
       .subscribe(
         comments => this.commentList = comments,
@@ -50,24 +46,20 @@ export class CommentsListComponent implements OnInit
   }
 
   // methods
-  public createCommentHandler(): void
-  {
-    if (!this.newCommentText.length) return;
+  public createCommentHandler() {
+    if (!this.newCommentText.length) { return; }
 
-    const commentToCreate: CreateCommentDTO =
-    {
+    const commentToCreate: CreateCommentDTO = {
       photoId: this.photoId,
       userId: this.loggedUser.id,
       text: this.newCommentText
     };
 
     this.commentService.create(commentToCreate)
-      .subscribe(commentId =>
-        {
+      .subscribe(commentId => {
           this.newCommentText = '';
 
-          const commentToShow: CommentListDto =
-          {
+          const commentToShow: CommentListDto = {
             commentId,
 
             authorId: commentToCreate.userId,
@@ -81,19 +73,17 @@ export class CommentsListComponent implements OnInit
           this.commentList.push(commentToShow);
         });
   }
-  public deleteCommentHandler(commentId: number): void
-  {
+  public deleteCommentHandler(commentId: number): void {
     this.commentService.delete(commentId)
       .subscribe(r => this.commentList = this.commentList.filter(c => c.commentId !== commentId));
   }
-  public isDeleteBtnShown(comment: CommentListDto): boolean
-  {
+  public isDeleteBtnShown(comment: CommentListDto): boolean {
     // you can delete all your comments
     // or all comments on your photo
     return this.loggedUser &&
             comment.commentId &&
             (comment.authorId === this.loggedUser.id ||
-            this.photoAuthorId === this.loggedUser.id)
+            this.photoAuthorId === this.loggedUser.id);
   }
 
 }

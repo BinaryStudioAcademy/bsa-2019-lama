@@ -5,31 +5,26 @@ import { environment } from 'src/environments/environment';
 import { CommentListDto, CreateCommentDTO } from '../models';
 
 @Injectable()
-export class CommentService
-{
+export class CommentService {
     // fields
     private httpClient: HttpClient;
 
     // constructors
-    constructor(httpClient: HttpClient)
-    {
+    constructor(httpClient: HttpClient) {
         this.httpClient = httpClient;
     }
 
     // methods
-    public getComments(photoId: number): Observable<CommentListDto[]>
-    {
+    public getComments(photoId: number): Observable<CommentListDto[]> {
         return this.httpClient.get<CommentListDto[]>(`${environment.lamaApiUrl}/api/comments/${photoId}`);
     }
 
-    public create(createCommentDTO: CreateCommentDTO): Observable<number>
-    {
+    public create(createCommentDTO: CreateCommentDTO): Observable<number> {
         // return commentId
         return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/comments/`, createCommentDTO);
     }
 
-    public delete(commentId: number): Observable<any>
-    {
+    public delete(commentId: number): Observable<any> {
         return this.httpClient.delete(`${environment.lamaApiUrl}/api/comments/${commentId}`);
     }
 }

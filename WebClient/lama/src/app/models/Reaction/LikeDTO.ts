@@ -1,7 +1,6 @@
 import { Entity } from '../entity';
 
-export interface LikeDTO
-{
+export interface LikeDTO {
     id: number;
     photoId: number;
     userId: number;

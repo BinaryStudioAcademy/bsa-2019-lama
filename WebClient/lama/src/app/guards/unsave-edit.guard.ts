@@ -7,9 +7,7 @@ import { UnsaveEditDeactivate } from '../interfaces/unsave-edit-deactivate';
   providedIn: 'root'
 })
 export class UnsaveEditGuard implements CanDeactivate<UnsaveEditDeactivate> {
-  
   canDeactivate(component: UnsaveEditDeactivate) {
     return component.canDeactivate ? component.canDeactivate() : true;
   }
-  
 }

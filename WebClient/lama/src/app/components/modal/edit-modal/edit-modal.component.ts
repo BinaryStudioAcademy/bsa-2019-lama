@@ -13,10 +13,10 @@ export class EditModalComponent implements OnInit {
   public photo: PhotoRaw;
   clickedTabsItem: string = null;
 
-  @Output() onDone = new EventEmitter<ImageEditedArgs>();
+  @Output() Done = new EventEmitter<ImageEditedArgs>();
 
   save(editedImage: ImageEditedArgs) {
-    this.onDone.emit(editedImage);
+    this.Done.emit(editedImage);
   }
 
   constructor() { }
@@ -26,11 +26,11 @@ export class EditModalComponent implements OnInit {
   }
 
   displayCrop() {
-  this.clickedTabsItem = "crop";
+  this.clickedTabsItem = 'crop';
   }
 
   displayRotate() {
-  this.clickedTabsItem = "rotate";
+  this.clickedTabsItem = 'rotate';
   }
 
   closeModal() {

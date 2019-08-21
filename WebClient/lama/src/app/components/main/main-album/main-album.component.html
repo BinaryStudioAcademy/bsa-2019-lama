@@ -15,6 +15,6 @@
     <div class="description has-text-centered">
         <p>{{album.title}}</p>
     </div>
-    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (onClose)="showSharedModal=false"></app-share-album>
-    <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (onClose)="showSetCoverModal=false"></app-set-album-cover-modal>
+    <app-share-album [receivedAlbum]='album' *ngIf="showSharedModal" (Close)="showSharedModal=false"></app-share-album>
+    <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (Close)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
