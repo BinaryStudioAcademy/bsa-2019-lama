@@ -59,6 +59,7 @@ export class ProfileComponent implements OnInit {
         },
         err => {
           this.notifier.notify('error', 'Error loading');
+          console.log(err);
           this.showSpinner = false;
           this.isSuccesfull = false;
         }
@@ -110,6 +111,11 @@ export class ProfileComponent implements OnInit {
     localStorage.setItem('photoUrl', `${this.user.photoUrl}`);
     localStorage.setItem('email', this.user.email);
     this.userService.updateCurrentUser({ photoURL: this.photoUrl });
+    this.isSaved = true;
+  }
+
+  closeNotification() {
+    this.isSaved = false;
   }
 
   refresh() {
@@ -119,5 +125,10 @@ export class ProfileComponent implements OnInit {
       email: this.defaultEmail
     });
     this.photoUrl = this.defaultImageUrl;
+  }
+
+  removeProfilePhoto() {
+    this.photoUrl = null;
+    this.user.photo = null;
   }
 }

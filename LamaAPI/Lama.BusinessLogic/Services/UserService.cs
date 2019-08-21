@@ -51,7 +51,11 @@ namespace Lama.BusinessLogic.Services
         public async Task<int> UpdateUser(UserDTO user)
         {
             var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Id== user.Id);
-            if (user.Photo.ImageUrl != null)
+            if (newUser.AvatarId != null && user.Photo == null)
+            {
+                newUser.AvatarId = null;
+            }
+            else if (user.Photo?.ImageUrl != null)
             {
                 var newAvatar = await _photoService.CreateAvatar(user.Photo);
                 newUser.AvatarId = newAvatar.Id;
@@ -84,7 +88,11 @@ namespace Lama.BusinessLogic.Services
         {
             var user = await Context.Users.SingleAsync(u => u.Id == id);
             var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-            var url = (await _photoService.Get(avatar.Id))?.Blob256Id;
+            string url = null;
+            if (avatar != null)
+            {
+                url = (await _photoService.Get(avatar.Id))?.Blob256Id;
+            }
             var dto = _mapper.Map<UserDTO>(user);
             dto.PhotoUrl = url;
             return dto;

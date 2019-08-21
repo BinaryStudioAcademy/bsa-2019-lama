@@ -72,7 +72,7 @@ input[type="file"]
 .user-photo-container label
     visibility: hidden
     position: absolute
-    bottom: -5%
+    bottom: -10%
     left: 0
     right: 0
     padding: 10px
@@ -103,18 +103,26 @@ input.ng-touched.ng-valid
 label[for="user-photo-upload"]
     width: 128px
     margin: auto
+    border-radius: 0 0 100% 100%
 
 .image-back
   height: 60px
   width: 60px
   margin-left: 30px
 
-.notifier__notification--warning 
-    background-color: black
-    color: #FFF
 
-.notifier__container-list 
-    margin-top: 0
-    margin-bottom: 0
-    padding-left: 10
-    list-style-type: none
+.user-photo-container button
+    position: absolute
+    top: -5%
+    right: 0
+    opacity: 0.5
+    border: none
+    border-radius: 100%
+    background-color: #0a0a0a
+    color: #fff
+    visibility: hidden
+    transition: transform 0.25s ease
+
+.user-photo-container:hover button
+    visibility: visible
+    transform: translateY(50%)
