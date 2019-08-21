@@ -52,7 +52,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       this.http
         .getData(`users/${localStorage.getItem('userId')}`)
         .subscribe(u => {
-          this.avatarUrl = u.photoUrl;
+          this.file
+            .getPhoto(u.photoUrl)
+            .subscribe(url => (this.avatarUrl = url));
         });
     } else {
       this.avatarUrl = this.auth.user.photo.imageUrl;
