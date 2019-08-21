@@ -252,6 +252,7 @@ namespace Lama.BusinessLogic.Services
                 await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
             
+            await _context.SaveAsync();
         }
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)

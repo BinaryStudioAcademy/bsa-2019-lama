@@ -123,4 +123,9 @@ export class ProfileComponent implements OnInit {
     });
     this.photoUrl = this.defaultImageUrl;
   }
+
+  removeProfilePhoto() {
+    this.photoUrl = null;
+    this.user.photo = null;
+  }
 }
