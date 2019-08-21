@@ -27,11 +27,13 @@ export class DeletedPhotosComponent implements OnInit {
       .pipe(map(dto => dto as DeletedPhotoList[]))
       .subscribe(items => {
         this.deletedPhotos = items;
-        this.deletedPhotos.forEach(item => {
-          this.fileService
-            .getPhoto(item.blob256Id)
-            .subscribe(url => (item.imageUrl = url));
-        });
+        if (this.deletedPhotos) {
+          this.deletedPhotos.forEach(item => {
+            this.fileService
+              .getPhoto(item.blob256Id)
+              .subscribe(url => (item.imageUrl = url));
+          });
+        }
       });
   }
 
