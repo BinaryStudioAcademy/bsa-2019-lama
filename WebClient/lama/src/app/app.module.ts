@@ -34,6 +34,8 @@ import { CheckFavoriteDirective } from './directives/check-favorite.directive';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
+import {NotificationModule} from './notification/notification.module';
+
 
 @NgModule({
   declarations:
@@ -75,7 +77,8 @@ import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choos
     HttpClientModule,
     FormsModule,
     CreateAlbumModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NotificationModule
   ],
   providers:
   [
@@ -88,4 +91,5 @@ import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choos
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

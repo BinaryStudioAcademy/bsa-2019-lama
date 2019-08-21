@@ -1,11 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommentListDto, User, CreateCommentDTO } from 'src/app/models';
-import {
-  UserService,
-  AuthService,
-  CommentService,
-  FileService
-} from 'src/app/services';
+import { UserService, AuthService, CommentService } from 'src/app/services';
+import { NotifierService } from 'angular-notifier';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-comments-list',
@@ -30,7 +27,8 @@ export class CommentsListComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private commentService: CommentService,
-    private fileService: FileService
+    private fileService: FileService,
+    private notifier: NotifierService
   ) {}
 
   ngOnInit() {
@@ -39,7 +37,10 @@ export class CommentsListComponent implements OnInit {
     if (userId) {
       this.userService
         .getUser(userId)
-        .subscribe(user => (this.loggedUser = user));
+        .subscribe(
+          user => (this.loggedUser = user),
+          error => this.notifier.notify('error', 'Error saving')
+        );
     }
 
     this.getComments();
@@ -55,47 +56,56 @@ export class CommentsListComponent implements OnInit {
             .subscribe(url => (c.authorAvatar64Url = url));
         });
       },
-      err => (this.commentList = [])
+      err => {
+        this.commentList = [];
+        this.notifier.notify('error', 'Error saving');
+      }
     );
   }
 
   // methods
-  public createCommentHandler(): void {
+  createCommentHandler() {
     if (!this.newCommentText.length) {
       return;
     }
+
     const commentToCreate: CreateCommentDTO = {
       photoId: this.photoId,
       userId: this.loggedUser.id,
       text: this.newCommentText
     };
-    this.commentService.create(commentToCreate).subscribe(commentId => {
-      this.newCommentText = '';
+    this.commentService.create(commentToCreate).subscribe(
+      commentId => {
+        this.newCommentText = '';
 
-      const commentToShow: CommentListDto = {
-        commentId,
-        authorId: commentToCreate.userId,
-        authorAvatar64Id: this.loggedUser.photoUrl,
-        authorFirstName: this.loggedUser.firstName,
-        authorLastName: this.loggedUser.lastName,
-        commentText: commentToCreate.text
-      };
-      this.fileService
-        .getPhoto(commentToShow.authorAvatar64Id)
-        .subscribe(url => {
-          commentToShow.authorAvatar64Url = url;
-          this.commentList.push(commentToShow);
-        });
-    });
+        const commentToShow: CommentListDto = {
+          commentId,
+          authorId: commentToCreate.userId,
+          authorAvatar64Id: this.loggedUser.photoUrl,
+          authorFirstName: this.loggedUser.firstName,
+          authorLastName: this.loggedUser.lastName,
+          commentText: commentToCreate.text
+        };
+        this.fileService
+          .getPhoto(commentToShow.authorAvatar64Id)
+          .subscribe(url => {
+            commentToShow.authorAvatar64Url = url;
+            this.commentList.push(commentToShow);
+          });
+      },
+      error => this.notifier.notify('error', 'Error creating comments')
+    );
   }
   public deleteCommentHandler(commentId: number): void {
     this.commentService
       .delete(commentId)
       .subscribe(
-        r =>
+        r => (
           (this.commentList = this.commentList.filter(
             c => c.commentId !== commentId
-          ))
+          )),
+          error => this.notifier.notify('error', 'Error deleting comments')
+        )
       );
   }
   public isDeleteBtnShown(comment: CommentListDto): boolean {

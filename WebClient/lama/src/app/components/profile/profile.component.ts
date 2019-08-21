@@ -6,6 +6,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { FileService } from 'src/app/services';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-profile',
@@ -18,6 +19,7 @@ export class ProfileComponent implements OnInit {
     private httpService: HttpService,
     private userService: UserService,
     private sharedService: SharedService,
+    private notifier: NotifierService,
     private fileService: FileService
   ) {}
 
@@ -60,6 +62,7 @@ export class ProfileComponent implements OnInit {
           this.defaultImageUrl = this.user.photoUrl;
         },
         err => {
+          this.notifier.notify('error', 'Error loading');
           console.log(err);
           this.showSpinner = false;
           this.isSuccesfull = false;
@@ -93,13 +96,17 @@ export class ProfileComponent implements OnInit {
 
   async saveUser() {
     if (!this.userForm.dirty && this.defaultImageUrl === this.photoUrl) {
+      this.notifier.notify('error', 'Nothing to change');
       return;
     }
 
-    console.log(this.photoUrl);
-    this.httpService
-      .putData(`users`, this.user)
-      .subscribe((data: User) => (this.testReceivedUser = data));
+    this.httpService.putData(`users`, this.user).subscribe(
+      (data: User) => {
+        this.testReceivedUser = data;
+        this.notifier.notify('success', 'Changes Saved');
+      },
+      error => this.notifier.notify('error', 'Error saving')
+    );
     if (this.isPhotoLoaded) {
       this.sharedService.avatar = this.user.photo;
     }

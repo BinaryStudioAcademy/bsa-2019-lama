@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { FileService } from 'src/app/services';
 
 import { DeletedPhotoList, PhotoToDeleteRestoreDTO } from 'src/app/models';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-deleted-photos',
@@ -17,7 +18,10 @@ export class DeletedPhotosComponent implements OnInit {
   public deletedPhotos: DeletedPhotoList[];
 
   // fields
-  constructor(private fileService: FileService) {}
+  constructor(
+    private fileService: FileService,
+    private notifier: NotifierService
+  ) {}
 
   public ngOnInit(): void {
     this.countSelectedPhtoto = 0;
@@ -25,16 +29,19 @@ export class DeletedPhotosComponent implements OnInit {
     this.fileService
       .getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
-      .subscribe(items => {
-        this.deletedPhotos = items;
-        if (this.deletedPhotos) {
-          this.deletedPhotos.forEach(item => {
-            this.fileService
-              .getPhoto(item.blob256Id)
-              .subscribe(url => (item.imageUrl = url));
-          });
-        }
-      });
+      .subscribe(
+        items => {
+          this.deletedPhotos = items;
+          if (this.deletedPhotos) {
+            this.deletedPhotos.forEach(item => {
+              this.fileService
+                .getPhoto(item.blob256Id)
+                .subscribe(url => (item.imageUrl = url));
+            });
+          }
+        },
+        error => this.notifier.notify('error', 'Error loading deleting photos')
+      );
   }
 
   // methods
@@ -49,7 +56,10 @@ export class DeletedPhotosComponent implements OnInit {
 
     this.fileService
       .restoresDeletedPhotos(photosToRestore)
-      .subscribe(response => this.removeSelectedPhotoFromView());
+      .subscribe(
+        response => this.removeSelectedPhotoFromView(),
+        error => this.notifier.notify('error', 'Error restoring photo')
+      );
   }
 
   public deleteSelectedPhoto(): void {
@@ -57,7 +67,10 @@ export class DeletedPhotosComponent implements OnInit {
 
     this.fileService
       .deletePhotosPermanently(photosToDelete)
-      .subscribe(response => this.removeSelectedPhotoFromView());
+      .subscribe(
+        response => this.removeSelectedPhotoFromView(),
+        error => this.notifier.notify('error', 'Error deleting photo')
+      );
   }
 
   private getSelectedItem(): PhotoToDeleteRestoreDTO[] {

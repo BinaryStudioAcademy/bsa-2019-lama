@@ -21,6 +21,7 @@ import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { Entity } from 'src/app/models/entity';
 import { isUndefined } from 'util';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-photo-modal',
@@ -80,7 +81,8 @@ export class PhotoModalComponent implements OnInit {
     private ngZone: NgZone,
     private albumService: AlbumService,
     authService: AuthService,
-    userService: UserService
+    userService: UserService,
+    private notifier: NotifierService
   ) {
     this.isShown = true;
     this.fileService = fileService;
@@ -105,17 +107,23 @@ export class PhotoModalComponent implements OnInit {
       });
     });
     this.userId = this.authService.getLoggedUserId();
-    this.userService.getUser(this.userId).subscribe(user => {
-      this.currentUser = user;
-      const reactions = this.photo.reactions;
+    this.userService.getUser(this.userId).subscribe(
+      user => {
+        this.currentUser = user;
+        const reactions = this.photo.reactions;
 
-      this.hasUserReaction = reactions.some(
-        x => x.userId === this.currentUser.id
-      );
-    });
+        this.hasUserReaction = reactions.some(
+          x => x.userId === this.currentUser.id
+        );
+      },
+      error => this.notifier.notify('error', 'Error getting user')
+    );
     this.albumService
       .GetPhotoDetailsAlbums(this.photo.id)
-      .subscribe(e => (this.albums = e.body));
+      .subscribe(
+        e => (this.albums = e.body),
+        error => this.notifier.notify('error', 'Error loading albums')
+      );
   }
 
   ConvertDMSToDD(
@@ -156,17 +164,20 @@ export class PhotoModalComponent implements OnInit {
       }
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
-    this.userService.getUser(loggedUserId).subscribe(user => {
-      this.currentUser = user;
+    this.userService.getUser(loggedUserId).subscribe(
+      user => {
+        this.currentUser = user;
 
-      if (this.photo.reactions != null) {
-        this.hasUserReaction = this.photo.reactions.some(
-          x => x.userId === this.currentUser.id
-        );
-      } else {
-        this.hasUserReaction = false;
-      }
-    });
+        if (this.photo.reactions != null) {
+          this.hasUserReaction = this.photo.reactions.some(
+            x => x.userId === this.currentUser.id
+          );
+        } else {
+          this.hasUserReaction = false;
+        }
+      },
+      error => this.notifier.notify('error', 'Error getting user')
+    );
   }
 
   // GET EXIF
@@ -297,14 +308,17 @@ export class PhotoModalComponent implements OnInit {
       imageBase64: editedImage.editedImageBase64
     };
 
-    this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
-      Object.assign(this.photo, updatedPhotoDTO);
-      this.fileService
-        .getPhoto(this.photo.blobId)
-        .subscribe(url => (this.imageUrl = url));
-      this.updatePhotoEvent.emit(this.photo);
-      this.goBackToImageView();
-    });
+    this.fileService.update(updatePhotoDTO).subscribe(
+      updatedPhotoDTO => {
+        Object.assign(this.photo, updatedPhotoDTO);
+        this.fileService
+          .getPhoto(this.photo.blobId)
+          .subscribe(url => (this.imageUrl = url));
+        this.updatePhotoEvent.emit(this.photo);
+        this.goBackToImageView();
+      },
+      error => this.notifier.notify('error', 'Error updating photo')
+    );
   }
 
   public goBackToImageView(): void {
@@ -331,11 +345,14 @@ export class PhotoModalComponent implements OnInit {
   }
 
   private deleteImage(): void {
-    this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(res => {
-      this.closeModal();
+    this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
+      res => {
+        this.closeModal();
 
-      this.deletePhotoEvenet.emit(this.photo.id);
-    });
+        this.deletePhotoEvenet.emit(this.photo.id);
+      },
+      error => this.notifier.notify('error', 'Error deleting image')
+    );
   }
   public ReactionPhoto() {
     // TODO: you can not like your own photos
@@ -355,23 +372,29 @@ export class PhotoModalComponent implements OnInit {
       userId: this.currentUser.id
     };
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => {
-        this.photo.reactions = this.photo.reactions.filter(
-          e => e.userId !== this.currentUser.id
-        );
-        this.hasUserReaction = false;
-      });
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(
+        x => {
+          this.photo.reactions = this.photo.reactions.filter(
+            e => e.userId !== this.currentUser.id
+          );
+          this.hasUserReaction = false;
+        },
+        error => this.notifier.notify('error', 'Error removing reaction')
+      );
     } else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId => {
-        this.photo.reactions.push({
-          id: newLikeId,
-          userId: this.currentUser.id,
-          photoId: this.photo.id,
-          user: { id: this.currentUser.id } as Entity,
-          photo: { id: this.photo.id } as Entity
-        });
-        this.hasUserReaction = true;
-      });
+      this.fileService.ReactionPhoto(newReaction).subscribe(
+        newLikeId => {
+          this.photo.reactions.push({
+            id: newLikeId,
+            userId: this.currentUser.id,
+            photoId: this.photo.id,
+            user: { id: this.currentUser.id } as Entity,
+            photo: { id: this.photo.id } as Entity
+          });
+          this.hasUserReaction = true;
+        },
+        error => this.notifier.notify('error', 'Error creating reaction')
+      );
     }
   }
 

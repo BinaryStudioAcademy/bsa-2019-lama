@@ -4,6 +4,7 @@ import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { FileService } from 'src/app/services/file.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -32,7 +33,8 @@ export class MainAlbumComponent implements OnInit {
   constructor(
     private albumService: AlbumService,
     private favoriteService: FavoriteService,
-    private fileService: FileService
+    private fileService: FileService,
+    private notifier: NotifierService
   ) {}
 
   ngOnInit() {
@@ -50,6 +52,7 @@ export class MainAlbumComponent implements OnInit {
     this.fileService.getPhoto(event.blob256Id).subscribe(url => {
       this.imageUrl = url;
       this.toggleSetCoverModal();
+      this.notifier.notify('success', 'Cover Updated');
     });
   }
 
@@ -80,10 +83,18 @@ export class MainAlbumComponent implements OnInit {
       const userId = localStorage.getItem('userId');
       this.favoriteService
         .deleteAllFavorites(parseInt(userId, 10))
-        .subscribe(x => x);
+        .subscribe(
+          x => this.notifier.notify('success', 'Album Deleted'),
+          error => this.notifier.notify('error', 'Error deleting album')
+        );
       localStorage.removeItem('favoriteCover');
     } else {
-      this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+      this.albumService
+        .removeAlbum(this.album.id)
+        .subscribe(
+          x => this.notifier.notify('success', 'Album Deleted'),
+          error => this.notifier.notify('error', 'Error deleting album')
+        );
     }
     this.deleteAlbumEvent.emit(this.album);
   }

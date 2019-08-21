@@ -1,13 +1,28 @@
-<div [style.transform]="isSelected ? 'scale(0.9)' : 'scale(1)'"class="photo" (click)="clickPerformed()">
-    <img src="{{ imageUrl }}">
-    <div class="overlay" [style.opacity]="isSelected ? '1' : ''">
-        <div class="top">
-           <a (click)="$event.stopPropagation()" (click)="selectItem()"><i [ngStyle]="{'color': isSelected ? 'lightblue' : 'white'}" class="material-icons">check_circle_outline</i></a>
-        </div>
-        <div class="bottom">
-            <a (click)="$event.stopPropagation()" (click)="mark()"><i class="material-icons" [appFavorite]="isFavorite">star_border</i></a>
-            <a><p>{{photo.description}}</p></a>
-            <a><i class="material-icons">comment</i></a>
-        </div>
+<div
+  [style.transform]="isSelected ? 'scale(0.9)' : 'scale(1)'"
+  class="photo"
+  (click)="clickPerformed()"
+>
+  <img src="{{ imageUrl }}" />
+  <div class="overlay" [style.opacity]="isSelected ? '1' : ''">
+    <div class="top">
+      <a (click)="$event.stopPropagation()" (click)="selectItem()"
+        ><i
+          [ngStyle]="{ color: isSelected ? 'lightblue' : 'white' }"
+          class="material-icons"
+          >check_circle_outline</i
+        ></a
+      >
     </div>
+    <div class="bottom">
+      <a (click)="$event.stopPropagation()" (click)="mark()"
+        ><i class="material-icons" [appFavorite]="isFavorite">star_border</i></a
+      >
+      <a>
+        <p>{{ photo.description }}</p>
+      </a>
+      <a><i class="material-icons">comment</i></a>
+    </div>
+  </div>
 </div>
+<notifier-container></notifier-container>

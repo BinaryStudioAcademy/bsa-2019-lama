@@ -17,6 +17,7 @@ import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -34,7 +35,10 @@ export class PhotoUploadModalComponent implements OnInit {
     UploadPhotoResultDTO[]
   >();
 
-  constructor(private fileService: FileService) {}
+  constructor(
+    private fileService: FileService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {}
 
@@ -49,10 +53,13 @@ export class PhotoUploadModalComponent implements OnInit {
       };
     }
 
-    this.fileService.sendPhoto(this.photos).subscribe(uploadedPhotos => {
-      this.addToListEvent.emit(uploadedPhotos);
-      this.toggleModal();
-    });
+    this.fileService.sendPhoto(this.photos).subscribe(
+      uploadedPhotos => {
+        this.addToListEvent.emit(uploadedPhotos);
+        this.toggleModal();
+      },
+      error => this.notifier.notify('error', 'Error sending photos')
+    );
   }
 
   async onFileSelected(event) {

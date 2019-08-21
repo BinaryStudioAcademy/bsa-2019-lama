@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo, PhotoRaw } from 'src/app/models';
 import { FileService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-choose-storage-photos',
@@ -15,7 +16,10 @@ export class ChooseStoragePhotosComponent implements OnInit {
   @Output()
   currentUser: User;
 
-  constructor(private photoService: FileService) {
+  constructor(
+    private photoService: FileService,
+    private notifier: NotifierService
+  ) {
     this.IsShow = true;
   }
 
@@ -24,7 +28,12 @@ export class ChooseStoragePhotosComponent implements OnInit {
 
   ngOnInit() {
     const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
-    this.photoService.receiveUsersPhotos(id).subscribe(x => (this.photos = x));
+    this.photoService
+      .receiveUsersPhotos(id)
+      .subscribe(
+        x => (this.photos = x),
+        error => this.notifier.notify('error', 'Error downloading')
+      );
   }
 
   toggleModal() {

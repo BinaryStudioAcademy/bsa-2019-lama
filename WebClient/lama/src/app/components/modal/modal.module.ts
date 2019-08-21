@@ -20,6 +20,7 @@ import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
 import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
+import {NotificationModule} from '../../notification/notification.module';
 
 @NgModule(
 {
@@ -28,6 +29,7 @@ import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
     SharedModule,
     ImageCropperModule,
     UiModule,
+    NotificationModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',

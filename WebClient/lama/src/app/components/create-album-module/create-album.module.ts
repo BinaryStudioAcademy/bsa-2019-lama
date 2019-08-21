@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CreateAlbumModalComponent } from './create-album-modal/create-album-modal.component';
 import { ChooseStoragePhotosComponent } from './choose-storage-photos/choose-storage-photos.component';
 import {  ChoosePhotoComponent } from './choose-photo/choose-photo.component';
-
+import {NotificationModule} from '../../notification/notification.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,8 @@ import {  ChoosePhotoComponent } from './choose-photo/choose-photo.component';
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NotificationModule
   ],
   exports: [
 

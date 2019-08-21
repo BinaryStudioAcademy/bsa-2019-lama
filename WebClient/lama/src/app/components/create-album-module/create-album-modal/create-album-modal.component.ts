@@ -20,7 +20,8 @@ import { isUndefined } from 'util';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
-import { FileService } from 'src/app/services';
+import { NotifierService } from 'angular-notifier';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -66,7 +67,8 @@ export class CreateAlbumModalComponent implements OnInit {
   constructor(
     resolver: ComponentFactoryResolver,
     private albumService: AlbumService,
-    private fileService: FileService
+    private fileService: FileService,
+    private notifier: NotifierService
   ) {
     this.isShown = true;
     this.resolver = resolver;
@@ -149,9 +151,8 @@ export class CreateAlbumModalComponent implements OnInit {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService
-          .createAlbumWithNewPhotos(this.album)
-          .subscribe(createdAlbum => {
+        this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
+          createdAlbum => {
             console.log(createdAlbum);
 
             this.createdAlbumEvent.emit({
@@ -161,7 +162,10 @@ export class CreateAlbumModalComponent implements OnInit {
                 createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
               title: createdAlbum.title
             });
-          });
+            this.notifier.notify('success', 'Album created');
+          },
+          error => this.notifier.notify('error', 'Error creating the album')
+        );
       } else {
         this.albumWithExistPhotos = {
           title: this.albumName,
@@ -170,16 +174,21 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
-          .subscribe(createdAlbum => {
-            console.log(createdAlbum);
-            this.createdAlbumEvent.emit({
-              id: createdAlbum.id,
-              name: createdAlbum.title,
-              photoUrl:
-                createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
-              title: createdAlbum.title
-            });
-          });
+          .subscribe(
+            createdAlbum => {
+              console.log(createdAlbum);
+
+              this.createdAlbumEvent.emit({
+                id: createdAlbum.id,
+                name: createdAlbum.title,
+                photoUrl:
+                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+                title: createdAlbum.title
+              });
+              this.notifier.notify('success', 'Album created');
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       }
       this.toggleModal();
     }
@@ -201,7 +210,10 @@ export class CreateAlbumModalComponent implements OnInit {
     const componentRef = this.entry.createComponent(factory);
     const instance = componentRef.instance as ChooseStoragePhotosComponent;
     instance.currentUser = this.currentUser;
-    instance.Change.subscribe((event: PhotoRaw) => this.onChange(event));
+    instance.Change.subscribe(
+      (event: PhotoRaw) => this.onChange(event),
+      error => this.notifier.notify('error', 'Error downloading')
+    );
   }
   onChange(photo: PhotoRaw) {
     if (this.LoadNewImage === true) {

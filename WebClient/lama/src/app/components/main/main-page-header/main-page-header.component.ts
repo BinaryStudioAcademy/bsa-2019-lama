@@ -16,6 +16,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -41,7 +42,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     resolver: ComponentFactoryResolver,
     private shared: SharedService,
     private http: HttpService,
-    private file: FileService
+    private file: FileService,
+    private notifier: NotifierService
   ) {
     this.resolver = resolver;
   }
@@ -49,13 +51,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   ngOnInit() {
     const id = localStorage.getItem('userId');
     if (id) {
-      this.http
-        .getData(`users/${localStorage.getItem('userId')}`)
-        .subscribe(u => {
+      this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
+        u => {
           this.file
             .getPhoto(u.photoUrl)
             .subscribe(url => (this.avatarUrl = url));
-        });
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
     } else {
       this.avatarUrl = this.auth.user.photo.imageUrl;
     }
@@ -67,7 +70,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
         this.avatarUrl = url;
       });
     }
-
     this.searchCriteria.length < 3
       ? (this.isActive = false)
       : (this.isActive = true);
@@ -92,17 +94,23 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   public find() {
-    this.http.findPhotos(this.searchCriteria).subscribe(p => {
-      this.shared.isSearchTriggeredAtLeastOnce = true;
-      this.shared.isSearchTriggered = true;
-      this.shared.foundedPhotos = p;
-    });
+    this.http.findPhotos(this.searchCriteria).subscribe(
+      p => {
+        this.shared.isSearchTriggeredAtLeastOnce = true;
+        this.shared.isSearchTriggered = true;
+        this.shared.foundedPhotos = p;
+      },
+      error => this.notifier.notify('error', 'Error find photos')
+    );
   }
 
   public restore() {
-    this.file.receivePhoto().subscribe(p => {
-      this.shared.foundedPhotos = p;
-    });
+    this.file.receivePhoto().subscribe(
+      p => {
+        this.shared.foundedPhotos = p;
+      },
+      error => this.notifier.notify('error', 'Error restoring')
+    );
   }
 
   public openModalClicked() {
@@ -111,8 +119,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       PhotoUploadModalComponent
     );
     const componentRef = this.entry.createComponent(factory);
-    componentRef.instance.addToListEvent.subscribe(data =>
-      this.shared.photos.push(...data)
+    componentRef.instance.addToListEvent.subscribe(
+      data => {
+        this.shared.photos.push(...data);
+        this.notifier.notify('success', 'Uploaded');
+      },
+      err => {
+        this.notifier.notify('error', 'Error Uploading');
+      }
     );
     componentRef.instance.toggleModal();
   }
