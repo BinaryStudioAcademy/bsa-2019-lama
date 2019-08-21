@@ -14,6 +14,7 @@ export const environment = {
   },
   clientApiUrl: 'http://localhost:4200',
   lamaApiUrl: 'http://localhost:5000',
+  googleApiKey: 'AIzaSyDS2xm6IbqIv6HhO4oYfVtiIgZCVdWcDLE',
   photoEditing: {
     crop: {
       cropMinWidth: 128,

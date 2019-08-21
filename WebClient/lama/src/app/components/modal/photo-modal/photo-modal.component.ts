@@ -175,7 +175,6 @@ export class PhotoModalComponent implements OnInit {
       return;
     }
     const src = this.imageUrl;
-
     const exifObj = load(src);
     const GPS = exifObj[exifObj.GPS];
     try {
