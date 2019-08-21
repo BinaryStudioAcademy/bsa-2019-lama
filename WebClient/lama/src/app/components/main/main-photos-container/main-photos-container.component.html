@@ -29,7 +29,11 @@
     <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
     <!--photo list-->
     <div *ngFor="let item of photos">
+<<<<<<< HEAD
         <main-photo [_photo]="item" (onClick)="photoClicked($event)" (onSelect)="photoSelected($event)" [_id]="favorites.has(item.id)==true?item.id:-1">
+=======
+        <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)" [_id]="favorites.has(item.id)==true?item.id:-1">
+>>>>>>> dev
         </main-photo>
     </div>
 

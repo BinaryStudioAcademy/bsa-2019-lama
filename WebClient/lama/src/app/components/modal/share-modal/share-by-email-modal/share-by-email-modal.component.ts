@@ -16,16 +16,21 @@ export class ShareByEmailModalComponent implements OnInit {
 
   @Input() receivedPhoto: PhotoRaw;
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
-  DISAPPEARING_TIMEOUT: number = 1000;
-  sharedLink: string = '';
-  sharedEmail: string = '';
+  DISAPPEARING_TIMEOUT = 1000;
+  sharedLink = '';
+  sharedEmail = '';
   imageUrl: string;
+<<<<<<< HEAD
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
+=======
+  copyClicked = false;
+  sharedPhoto: SharedPhoto = {} as SharedPhoto;
+>>>>>>> dev
   userEmails: Array<string> = [];
-  sharingRoute: String = "main/shared";
-  showSuccessIcon: boolean = false;
+  sharingRoute = 'main/shared';
+  showSuccessIcon = false;
 
   constructor(private userService: UserService,
     private notifier: NotifierService) {
@@ -35,30 +40,28 @@ export class ShareByEmailModalComponent implements OnInit {
   ngOnInit() {
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  public cancel() {
+    this.Close.emit(null);
   }
 
-  public AddEmail(){
+  public AddEmail() {
     this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-	  if(user.email)
-      {
-		this.userEmails.push(user.email);
-		this.showSuccessIcon = true;
+      if (user.email) {
+    this.userEmails.push(user.email);
+    this.showSuccessIcon = true;
+      } else {
+        this.showSuccessIcon = false;
       }
-      else
-      {
-		this.showSuccessIcon = false;
-      }
-	});
+    });
   }
-  
-	public createShareableLink(){
+
+  public createShareableLink() {
       this.initInvariableFields();
-      let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
+      const encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
       this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
   }
 
+<<<<<<< HEAD
   
   public copyShareableLink(){
     let selBox = document.createElement('textarea');
@@ -74,23 +77,40 @@ export class ShareByEmailModalComponent implements OnInit {
       document.body.removeChild(selBox);
       console.log(`${this.sharedLink} was copied`);
       this.notifier.notify( 'success', 'Link is now in your clipboard' );
+=======
+
+  public copyShareableLink() {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.sharedLink;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+    console.log(`${this.sharedLink} was copied`);
+    this.copyClicked = !this.copyClicked;
+    setTimeout(() => this.copyClicked = !this.copyClicked, this.DISAPPEARING_TIMEOUT);
+>>>>>>> dev
     }
 
-    public encodePhotoData(photo: SharedPhoto): string{
-      let encoded = btoa(JSON.stringify(photo)).replace("/","___");
-      encoded += btoa(JSON.stringify(this.userEmails)).replace("/","___");
+    public encodePhotoData(photo: SharedPhoto): string {
+      let encoded = btoa(JSON.stringify(photo)).replace('/', '___');
+      encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
       console.log(encoded);
       return encoded;
     }
 
-    private initInvariableFields(){
+    private initInvariableFields() {
       this.sharedPhoto.photoId = this.receivedPhoto.id;
       this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
       this.sharedPhoto.userId = this.receivedPhoto.userId;
     }
-	
-	public GenerateClick() {
-		this.createShareableLink();
-	}
 
+    public GenerateClick() {
+    this.createShareableLink();
   }
+}

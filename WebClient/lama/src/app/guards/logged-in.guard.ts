@@ -8,12 +8,12 @@ import { AuthService } from '../services';
 })
 export class LoggedInGuard implements CanActivate  {
 
-  constructor(private auth: AuthService, private router: Router){
+  constructor(private auth: AuthService, private router: Router) {
 
   }
-
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-    if(this.auth.token !== null){
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+  boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+    if (this.auth.token !== null) {
       this.router.navigate(['main']);
     }
     return this.auth.token === null;

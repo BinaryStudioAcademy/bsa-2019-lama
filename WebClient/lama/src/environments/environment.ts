@@ -4,27 +4,34 @@
 
 export const environment = {
   firebase: {
-    apiKey: "AIzaSyBORG9q0PWmWU7IZdO8sp1uv-unJSFdps0",
-    authDomain: "lama-auth.firebaseapp.com",
-    databaseURL: "https://lama-auth.firebaseio.com",
-    projectId: "lama-auth",
-    storageBucket: "",
-    messagingSenderId: "363275556201",
-    appId: "1:363275556201:web:52ab2e1fd986b9ca"
+    apiKey: 'AIzaSyBORG9q0PWmWU7IZdO8sp1uv-unJSFdps0',
+    authDomain: 'lama-auth.firebaseapp.com',
+    databaseURL: 'https://lama-auth.firebaseio.com',
+    projectId: 'lama-auth',
+    storageBucket: '',
+    messagingSenderId: '363275556201',
+    appId: '1:363275556201:web:52ab2e1fd986b9ca'
   },
+<<<<<<< HEAD
   clientApiUrl:"http://localhost:4200",
   lamaApiUrl: "http://localhost:5000",
   photoEditing:
   {
     crop:
     {
+=======
+  clientApiUrl: 'http://localhost:4200',
+  lamaApiUrl: 'https://localhost:5001',
+  photoEditing: {
+    crop: {
+>>>>>>> dev
       cropMinWidth: 128,
       cropMinHeight: 128
     }
   },
   compressionOptions: {
     maxSizeMB: 1,
-    maxWidthOrHeight: 1920,
+    maxWidthOrHeight: 1920
   },
   production: false
 };

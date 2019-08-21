@@ -15,23 +15,24 @@ import { SharedService } from './shared.service';
 export class AuthService {
 
   token: string;
-  _user: UserCreate;
+  user: UserCreate;
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
-  }
-  isUserExisted: boolean = true;
+  };
+  isUserExisted = true;
 
-  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
+  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient, private userService: UserService,
+              private shared: SharedService) {
         this.afAuth.idToken.subscribe(token => {
           this.token =  token;
-          localStorage.setItem('idKey',this.token)});
+          localStorage.setItem('idKey', this.token); });
         this.userService.getCurrentUserFirebase().then(() => this.isUserExisted = true)
-        .catch(() => this.isUserExisted = false)
+        .catch(() => this.isUserExisted = false);
    }
 
-   public loginWithFacebook(){
+   public loginWithFacebook() {
     return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.FacebookAuthProvider();
+      const provider = new firebase.auth.FacebookAuthProvider();
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
@@ -40,13 +41,13 @@ export class AuthService {
       }, err => {
         console.log(err);
         reject(err);
-      })
+      });
     });
    }
 
-   public loginWithGoogle(){
+   public loginWithGoogle() {
     return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.GoogleAuthProvider();
+      const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
       this.afAuth.auth
@@ -54,13 +55,13 @@ export class AuthService {
       .then(res => {
         this.saveCreadeatins(res.user);
         resolve(res);
-      })
+      });
     });
    }
 
-   public loginWithTwitter(){
+   public loginWithTwitter() {
     return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.TwitterAuthProvider();
+      const provider = new firebase.auth.TwitterAuthProvider();
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
@@ -69,78 +70,74 @@ export class AuthService {
       }, err => {
         console.log(err);
         reject(err);
-      })
-    })
+      });
+    });
   }
 
 
-  public doLogout(){
+  public doLogout() {
     return new Promise((resolve, reject) => {
-      if(firebase.auth().currentUser){
+      if (firebase.auth().currentUser) {
         this.afAuth.auth.signOut();
         resolve();
-      }
-      else{
+      } else {
         reject();
       }
     });
   }
 
-  public getLoggedUserId()
-  {
-    return Number(localStorage.getItem("userId"));
+  public getLoggedUserId() {
+    return Number(localStorage.getItem('userId'));
   }
 
   public getToken() {
-    return localStorage.getItem("idKey");
+    return localStorage.getItem('idKey');
   }
 
   public async saveCreadeatins(user: firebase.User) {
 
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
-    let names = user.displayName.split(' ');
-    let firstName;
-    let lastName;
-    if (names.length != 2) {
-      firstName = user.displayName;
-      lastName = ""
+    const names = user.displayName.split(' ');
+    let fN;
+    let lN;
+    if (names.length !== 2) {
+      fN = user.displayName;
+      lN = '';
+    } else {
+      fN = names[0];
+      lN = names[1];
     }
-    else {
-      firstName = names[0];
-      lastName = names[1];
-    }
-    this._user = {
-      firstName: firstName,
-      lastName: lastName,
+    this.user = {
+      firstName: fN,
+      lastName: lN,
       email: user.email,
       photo: {imageUrl: user.photoURL}
-    }
-    this.toDataUrl(user.photoURL, (img) =>
-    {
-        localStorage.setItem('firstName', firstName);
-        localStorage.setItem('lastName', lastName);
-        this._user = {
-          firstName: firstName,
-          lastName: lastName,
+    };
+    this.toDataUrl(user.photoURL, (img) => {
+        localStorage.setItem('firstName', fN);
+        localStorage.setItem('lastName', lN);
+        this.user = {
+          firstName: fN,
+          lastName: lN,
           email: user.email,
           photo: { imageUrl: img}
-        }
+        };
 
-        this.registerUser(this._user).subscribe(id => {
+        this.registerUser(this.user).subscribe(id => {
           console.log(id);
           localStorage.setItem('userId', id.toString());
         });
-    })
+    });
   }
 
   public toDataUrl(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        var reader = new FileReader();
-        reader.onloadend = function() {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
             callback(reader.result);
-        }
+        };
         reader.readAsDataURL(xhr.response);
     };
     xhr.open('GET', url);

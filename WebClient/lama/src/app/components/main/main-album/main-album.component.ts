@@ -6,6 +6,7 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'main-album',
   templateUrl: './main-album.component.html',
   styleUrls: ['./main-album.component.sass']
@@ -17,7 +18,7 @@ export class MainAlbumComponent implements OnInit {
 
   @Input ('_album') album: ViewAlbum;
   @Input ('_isFavorite') isFavorite: boolean;
-  @Output() onClick = new EventEmitter<ViewAlbum>();
+  @Output() Click = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
 
   isContent = false;
@@ -34,7 +35,7 @@ export class MainAlbumComponent implements OnInit {
   }
 
   clickPerformed(): void {
-    this.onClick.emit(this.album);
+    this.Click.emit(this.album);
   }
 
   receiveUpdatedCover(event: PhotoRaw) {

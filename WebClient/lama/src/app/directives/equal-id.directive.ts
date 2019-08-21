@@ -5,13 +5,14 @@ import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 })
 export class EqualIdDirective implements OnInit {
 
-  @Input() appEqualId: boolean = false;
+  @Input() appEqualId = false;
   constructor(private elem: ElementRef) { }
 
-  ngOnInit(){
-    if(this.appEqualId)
-      this.elem.nativeElement.style.color = "inherit";
-    else 
-      this.elem.nativeElement.style.color = "grey";
+  ngOnInit() {
+    if (this.appEqualId) {
+      this.elem.nativeElement.style.color = 'inherit';
+    } else {
+      this.elem.nativeElement.style.color = 'grey';
+    }
   }
 }

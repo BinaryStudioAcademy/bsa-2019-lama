@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
-import {CreateAlbumModule} from '../create-album-module/create-album.module'
-
+import {CreateAlbumModule} from '../create-album-module/create-album.module';
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
 import { SharedModule } from '../shared.module';

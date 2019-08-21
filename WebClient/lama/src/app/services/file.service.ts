@@ -79,8 +79,8 @@ export class FileService {
     return this.client.delete(`${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`);
   }
 
-  public getDeletedPhotos(): Observable<DeletedPhotoDTO[]> {
-    return this.client.get(`${environment.lamaApiUrl}/api/photo/deleted`)
+  public getDeletedPhotos(userId: number): Observable<DeletedPhotoDTO[]> {
+    return this.client.get(`${environment.lamaApiUrl}/api/photo/deleted/${userId}`)
       .pipe(map(res => res as DeletedPhotoDTO[]));
   }
 
