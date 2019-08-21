@@ -25,7 +25,8 @@
 
                             <div class="is-relative main-photo">
                                 <!--image-->
-                                <div class="photo">
+                                <spinner *ngIf="isShowSpinner"></spinner>
+                                <div class="photo" *ngIf="!isShowSpinner">
                                     <img src="{{ imageUrl }}" alt="Image">
 
                                     <!--overlay-->

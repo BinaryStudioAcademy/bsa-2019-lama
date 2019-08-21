@@ -39,6 +39,7 @@ export class PhotoModalComponent implements OnInit {
   public showSharedByLinkModal = false;
   public showSharedByEmailModal = false;
   albums: PhotoDetailsAlbum[];
+  isShowSpinner = true;
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
   public isEditing: boolean;
@@ -95,6 +96,7 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.GetFile();
+      this.isShowSpinner = false;
     });
     const calendars = bulmaCalendar.attach('[type="date"]');
     calendars.forEach(calendar => {
