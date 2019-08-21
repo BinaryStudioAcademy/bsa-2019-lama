@@ -11,6 +11,7 @@ import { isUndefined } from 'util';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -26,6 +27,7 @@ export class CreateAlbumModalComponent implements OnInit {
 
   photos: Photo[] = [];
   album: NewAlbum;
+  imageUrl: string;
 
   albumWithExistPhotos: NewAlbumWithExistPhotos;
   ExistPhotosId: number[] = [];
@@ -53,7 +55,7 @@ export class CreateAlbumModalComponent implements OnInit {
   @Input()
   public isShown: boolean;
 
-  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService) {
+  constructor(resolver: ComponentFactoryResolver, private albumService: AlbumService, private fileService: FileService) {
     this.isShown = true;
     this.resolver = resolver;
   }
