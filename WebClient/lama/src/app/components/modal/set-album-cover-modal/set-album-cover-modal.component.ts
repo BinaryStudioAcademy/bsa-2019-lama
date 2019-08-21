@@ -18,7 +18,7 @@ export class SetAlbumCoverModalComponent implements OnInit {
 
   @Input() receivedAlbum: ViewAlbum;
   @Output() Change = new EventEmitter<PhotoRaw>();
-  @Input("_isFavorite") isFavorite: boolean;
+  @Input('_isFavorite') isFavorite: boolean;
   @Input() isShown: boolean;
   selectedPhoto?: PhotoRaw = null;
   updatedAlbum: UpdateAlbum = {} as UpdateAlbum;

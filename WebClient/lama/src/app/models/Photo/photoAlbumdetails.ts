@@ -1,6 +1,5 @@
 
 
-export interface PhotoAlbumDetails
-{
+export interface PhotoAlbumDetails {
     imageUrl: string;
 }

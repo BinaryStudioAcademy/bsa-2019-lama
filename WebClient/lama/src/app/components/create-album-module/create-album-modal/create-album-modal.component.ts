@@ -166,7 +166,7 @@ export class CreateAlbumModalComponent implements OnInit {
     const componentRef = this.entry.createComponent(factory);
     const instance = componentRef.instance as ChooseStoragePhotosComponent;
     instance.currentUser = this.currentUser;
-    instance.onChange.subscribe((event: PhotoRaw) => this.onChange(event));
+    instance.Change.subscribe((event: PhotoRaw) => this.onChange(event));
   }
   onChange(photo: PhotoRaw) {
     if (this.LoadNewImage === true) {

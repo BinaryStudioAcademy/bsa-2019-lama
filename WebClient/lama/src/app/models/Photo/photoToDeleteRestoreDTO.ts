@@ -1,6 +1,5 @@
 // use this to send to server
 // which photo should be delted or restored
-export interface PhotoToDeleteRestoreDTO
-{
+export interface PhotoToDeleteRestoreDTO {
     id: number;
 }

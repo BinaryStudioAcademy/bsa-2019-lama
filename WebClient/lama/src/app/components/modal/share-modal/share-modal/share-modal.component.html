@@ -1,23 +1,21 @@
 <div class="modal is-active">
-  <div class="modal-background" (click)="cancel()"></div>
+    <div class="modal-background" (click)="cancel()"></div>
     <div class="modal-card">
-      <div class="modal-card-body">
-        <div class="columns">
-          <div class="column is-half has-text-centered">
-            <a class="button is-primary" (click)="openShareByLink()">
+        <div class="modal-card-body">
+            <div class="columns">
+                <div class="column is-half has-text-centered">
+                    <a class="button is-primary" (click)="openShareByLink()">
               By link
             </a>
-          </div>
-          <div class="column is-half has-text-centered">
-            <a class="button is-primary" (click)="openShareByEmail()">
+                </div>
+                <div class="column is-half has-text-centered">
+                    <a class="button is-primary" (click)="openShareByEmail()">
               By email
             </a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <app-share-by-link-modal [receivedPhoto]='receivedPhoto' *ngIf="showSharedByLinkModal" (onClose)="showSharedByLinkModal=false"></app-share-by-link-modal>
-  <app-share-by-email-modal  [receivedPhoto]='receivedPhoto' *ngIf="showSharedByEmailModal" (onClose)="showSharedByEmailModal=false"></app-share-by-email-modal>
+    <app-share-by-link-modal [receivedPhoto]='receivedPhoto' *ngIf="showSharedByLinkModal" (Close)="showSharedByLinkModal=false"></app-share-by-link-modal>
+    <app-share-by-email-modal [receivedPhoto]='receivedPhoto' *ngIf="showSharedByEmailModal" (Close)="showSharedByEmailModal=false"></app-share-by-email-modal>
 </div>
-  
-  

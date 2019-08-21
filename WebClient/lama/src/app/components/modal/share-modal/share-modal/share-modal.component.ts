@@ -7,14 +7,14 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
   styleUrls: ['./share-modal.component.sass']
 })
 export class ShareModalComponent implements OnInit {
-  
+
   @Input()
   receivedPhoto: PhotoRaw;
   public photo: PhotoRaw;
-  public showSharedByLinkModal: boolean = false;
-  public showSharedByEmailModal: boolean = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
   constructor() { }
 
@@ -29,7 +29,7 @@ export class ShareModalComponent implements OnInit {
     this.showSharedByEmailModal = true;
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  public cancel() {
+    this.Close.emit(null);
   }
 }

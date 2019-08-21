@@ -21,7 +21,7 @@ export class ChooseStoragePhotosComponent implements OnInit {
    }
 
   @Input() photos: PhotoRaw[] = [];
-  @Output() onChange = new EventEmitter<PhotoRaw>();
+  @Output() Change = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
     const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
@@ -33,6 +33,6 @@ export class ChooseStoragePhotosComponent implements OnInit {
   }
 
   clickPerformed(eventArgs: PhotoRaw) {
-    this.onChange.emit(eventArgs);
+    this.Change.emit(eventArgs);
   }
 }

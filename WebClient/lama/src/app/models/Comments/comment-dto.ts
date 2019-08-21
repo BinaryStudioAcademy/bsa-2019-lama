@@ -1,4 +1,4 @@
-export interface CommentDTO{
+export interface CommentDTO {
   id: number;
   text: string;
   photoId: number;

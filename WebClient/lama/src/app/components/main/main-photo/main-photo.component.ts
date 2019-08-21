@@ -6,6 +6,7 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import { Favorite } from 'src/app/models/favorite';
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'main-photo',
   templateUrl: './main-photo.component.html',
   styleUrls: ['./main-photo.component.sass'],
@@ -13,65 +14,65 @@ import { Favorite } from 'src/app/models/favorite';
 })
 export class MainPhotoComponent implements OnChanges {
 
-  public isFavorite: boolean = false;
+  public isFavorite = false;
   // properties
   @Input ('_photo') photo: PhotoRaw;
-  isSelected: boolean = false;
-  @Input ('_id') id: number = -1;
-  @Output() onClick = new EventEmitter<PhotoRaw>();
-  @Output() onSelect = new EventEmitter<PhotoRawState>();
+  isSelected = false;
+  @Input ('_id') id = -1;
+  @Output() Click = new EventEmitter<PhotoRaw>();
+  @Output() Select = new EventEmitter<PhotoRawState>();
   private userId: number;
 
   // constructors
-  constructor(private _favoriteService: FavoriteService) {
+  constructor(private favoriteService: FavoriteService) {
   }
 
-   ngOnChanges(){
+   ngOnChanges() {
     this.checkFavorite();
-    this.userId = parseInt(localStorage.getItem("userId"));
+    this.userId = parseInt(localStorage.getItem('userId'), 10);
   }
 
-  checkFavorite(){
-    if(this.id==-1)
+  checkFavorite() {
+    if (this.id === -1) {
       this.isFavorite = false;
-    else 
+    } else {
       this.isFavorite = true;
+    }
   }
 
-  changeFavorite(){
+  changeFavorite() {
     this.isFavorite = !this.isFavorite;
   }
 
-  checkCorrectReturn(id:number){
+  checkCorrectReturn(id: number) {
     this.changeFavorite();
     this.id = id;
-    if(id == -1)
+    if (id === -1) {
       this.changeFavorite();
-    if(this.photo.id === parseInt(localStorage.getItem("favoriteCover")))
-      localStorage.removeItem("favoriteCover"); 
+    }
+    if (this.photo.id === parseInt(localStorage.getItem('favoriteCover'), 10)) {
+      localStorage.removeItem('favoriteCover');
+    }
   }
 
   // methods
-  public clickPerformed(): void
-  {
-    this.onClick.emit(this.photo);
+  public clickPerformed() {
+    this.Click.emit(this.photo);
   }
 
-  public selectItem(): void 
-  {
+  public selectItem() {
     this.isSelected = !this.isSelected;
-    this.onSelect.emit({photo: this.photo, isSelected: this.isSelected});
+    this.Select.emit({photo: this.photo, isSelected: this.isSelected});
   }
-  public mark(){
-    if(this.isFavorite){
-      this._favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
+  public mark() {
+    if (this.isFavorite) {
+      this.favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
         data => this.checkCorrectReturn(data),
         err => this.changeFavorite()
-        )
-      }
-    else{
-      let favorite:Favorite = new Favorite(this.photo.id, this.userId);
-      this._favoriteService.createFavorite(favorite).subscribe(
+        );
+      } else {
+      const favorite: Favorite = new Favorite(this.photo.id, this.userId);
+      this.favoriteService.createFavorite(favorite).subscribe(
         data => this.checkCorrectReturn(data),
         err => this.changeFavorite()
       );
