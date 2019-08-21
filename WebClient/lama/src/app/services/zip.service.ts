@@ -34,7 +34,7 @@ export class ZipService {
     });
     forkJoin(observables).subscribe(data => {
       for (let i = 0; i < filenames.length; i++) {
-        zip.file(filenames[i], this.urlToPromise(data[i], { binary: true }));
+        zip.file(filenames[i], this.urlToPromise(data[i]), { binary: true });
       }
       zip.generateAsync({ type: 'blob' }).then(blob => {
         saveAs(blob, 'images.zip');
