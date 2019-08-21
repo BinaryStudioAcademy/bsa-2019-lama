@@ -95,8 +95,8 @@ export class PhotoModalComponent implements OnInit {
   ngOnInit() {
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
-      this.GetFile();
       this.isShowSpinner = false;
+      this.GetFile();
     });
     const calendars = bulmaCalendar.attach('[type="date"]');
     calendars.forEach(calendar => {
@@ -171,24 +171,14 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', this.imageUrl, true);
-    xhr.onload = () => {
-      if (this.photo.blobId.endsWith('.png')) {
-        return;
-      }
+    if (this.photo.name.endsWith('.png')) {
+      return;
+    }
+    const src = this.imageUrl;
 
-      const response = xhr.responseText;
-      let binary = '';
-      for (let i = 0; i < response.length; i++) {
-        binary += String.fromCharCode(response.charCodeAt(i) && 0xff);
-      }
-      console.log(binary);
-      const src = 'data:image/jpeg;base64,' + btoa(binary);
-
-      const exifObj = load(src);
-      const GPS = exifObj[exifObj.GPS];
-
+    const exifObj = load(src);
+    const GPS = exifObj[exifObj.GPS];
+    try {
       if (exifObj[exifObj.GPS][1] === 'N') {
         this.latitude = this.ConvertDMSToDD(
           exifObj[exifObj.GPS][2][0][0],
@@ -237,9 +227,9 @@ export class PhotoModalComponent implements OnInit {
           });*/
         });
       }
-    };
-    xhr.overrideMimeType('text/plain; charset=x-user-defined');
-    xhr.send();
+    } catch (e) {
+      console.log(e);
+    }
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
