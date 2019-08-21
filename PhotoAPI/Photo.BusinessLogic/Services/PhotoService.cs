@@ -85,6 +85,7 @@ namespace Photo.BusinessLogic.Services
             messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id); 
             return updatedPhoto;
         }
+
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);
