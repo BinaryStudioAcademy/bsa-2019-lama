@@ -146,7 +146,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.isSearchTriggered = false;
     this.shared.foundedPhotos = [];
     this.shared.photos = [];
-    if (this.selectedPhotos.length > 0) {
+    if (this.selectedPhotos && this.selectedPhotos.length > 0) {
       this.isAtLeastOnePhotoSelected = true;
     } else {
       this.isAtLeastOnePhotoSelected = false;
