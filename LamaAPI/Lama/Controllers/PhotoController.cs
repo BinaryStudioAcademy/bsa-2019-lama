@@ -61,8 +61,7 @@ namespace Lama.Controllers
         [HttpGet]
         public async Task<IEnumerable<PhotoDocumentDTO>> LoadPhotos()
         {
-            var photos = await _service.GetAll();
-            return photos;
+            return await _service.GetAll();
         }
 
         [HttpGet("user/{id}")]
