@@ -43,9 +43,6 @@ export class MainPageHeaderComponent implements OnInit {
         this.avatarUrl = u.photoUrl;
       })
     }
-    else {
-      this.avatarUrl = this.auth._user.photo.imageUrl
-    }
   }
 
   ngDoCheck() {

@@ -74,7 +74,7 @@ export class ProfileComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = e => {
           this.photoUrl = reader.result as string;
-          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: parseInt(localStorage.getItem('userId'))}
+          this.user.photo = {imageUrl: this.photoUrl, description: '', authorId: this.user.id}
         }
         reader.readAsDataURL(file);
     }
@@ -110,5 +110,10 @@ export class ProfileComponent implements OnInit {
       }
     );
     this.photoUrl = this.defaultImageUrl;
+  }
+  
+  removeProfilePhoto() {
+	this.photoUrl = null;
+	this.user.photo = null;
   }
 }
