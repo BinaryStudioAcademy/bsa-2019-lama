@@ -16,12 +16,10 @@
 
     <!--photos list-->
     <div *ngFor="let photo of deletedPhotos">
-        <div class="photo" 
-            [class.marked]="photo.isMarked"
-            (click)="selectPhoto(photo)">
-            
+        <div class="photo" [class.marked]="photo.isMarked" (click)="selectPhoto(photo)">
+
             <img src="{{ photo.blob256Id }}">
-        </div>            
+        </div>
     </div>
 
     <!--no image-->
@@ -29,4 +27,5 @@
         <h3 class="title">empty</h3>
     </div>
 
-</div> 
+</div>
+<notifier-container></notifier-container>

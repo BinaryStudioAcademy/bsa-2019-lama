@@ -5,25 +5,12 @@ import { UiModule } from '../ui/ui.module';
 
 import { DeletedPhotosComponent } from './deleted-photos/deleted-photos.component';
 import { FileService } from 'src/app/services';
+import { NotificationModule } from '../../notification/notification.module';
 
-
-@NgModule(
-{
-  imports:
-  [
-    SharedModule, UiModule
-  ],
-  providers:
-  [
-    FileService
-  ],
-  declarations:
-  [
-    DeletedPhotosComponent
-  ],
-  exports:
-  [
-    DeletedPhotosComponent
-  ]
+@NgModule({
+  imports: [SharedModule, UiModule, NotificationModule],
+  providers: [FileService],
+  declarations: [DeletedPhotosComponent],
+  exports: [DeletedPhotosComponent]
 })
-export class RemovedPhotosModule { }
+export class RemovedPhotosModule {}

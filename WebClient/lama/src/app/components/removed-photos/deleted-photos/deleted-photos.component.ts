@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { FileService } from 'src/app/services';
 
 import { DeletedPhotoList, PhotoToDeleteRestoreDTO } from 'src/app/models';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-deleted-photos',
@@ -17,14 +18,21 @@ export class DeletedPhotosComponent implements OnInit {
   public deletedPhotos: DeletedPhotoList[];
 
   // fields
-  constructor(private fileService: FileService) { }
+  constructor(
+    private fileService: FileService,
+    private notifier: NotifierService
+  ) {}
 
   public ngOnInit(): void {
     this.countSelectedPhtoto = 0;
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.fileService.getDeletedPhotos(userId)
+    this.fileService
+      .getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
-      .subscribe(items => this.deletedPhotos = items);
+      .subscribe(
+        items => (this.deletedPhotos = items),
+        error => this.notifier.notify('error', 'Error loading deleting photos')
+      );
   }
 
   // methods
@@ -35,20 +43,25 @@ export class DeletedPhotosComponent implements OnInit {
   }
 
   public restoreSelectedPhoto(): void {
-    const photosToRestore: PhotoToDeleteRestoreDTO[]
-      = this.getSelectedItem();
+    const photosToRestore: PhotoToDeleteRestoreDTO[] = this.getSelectedItem();
 
-    this.fileService.restoresDeletedPhotos(photosToRestore)
-      .subscribe(response => this.removeSelectedPhotoFromView());
-
+    this.fileService
+      .restoresDeletedPhotos(photosToRestore)
+      .subscribe(
+        response => this.removeSelectedPhotoFromView(),
+        error => this.notifier.notify('error', 'Error restoring photo')
+      );
   }
 
   public deleteSelectedPhoto(): void {
-    const photosToDelete: PhotoToDeleteRestoreDTO[]
-      = this.getSelectedItem();
+    const photosToDelete: PhotoToDeleteRestoreDTO[] = this.getSelectedItem();
 
-    this.fileService.deletePhotosPermanently(photosToDelete)
-      .subscribe(response => this.removeSelectedPhotoFromView());
+    this.fileService
+      .deletePhotosPermanently(photosToDelete)
+      .subscribe(
+        response => this.removeSelectedPhotoFromView(),
+        error => this.notifier.notify('error', 'Error deleting photo')
+      );
   }
 
   private getSelectedItem(): PhotoToDeleteRestoreDTO[] {

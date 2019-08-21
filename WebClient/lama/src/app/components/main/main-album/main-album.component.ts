@@ -73,10 +73,18 @@ export class MainAlbumComponent implements OnInit {
       const userId = localStorage.getItem('userId');
       this.favoriteService
         .deleteAllFavorites(parseInt(userId, 10))
-        .subscribe(x => x);
+        .subscribe(
+          x => this.notifier.notify('success', 'Album Deleted'),
+          error => this.notifier.notify('error', 'Error deleting album')
+        );
       localStorage.removeItem('favoriteCover');
     } else {
-      this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+      this.albumService
+        .removeAlbum(this.album.id)
+        .subscribe(
+          x => this.notifier.notify('success', 'Album Deleted'),
+          error => this.notifier.notify('error', 'Error deleting album')
+        );
     }
     this.deleteAlbumEvent.emit(this.album);
   }

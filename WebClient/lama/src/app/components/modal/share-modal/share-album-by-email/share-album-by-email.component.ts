@@ -15,7 +15,6 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./share-album-by-email.component.sass']
 })
 export class ShareAlbumByEmailComponent implements OnInit {
-
   @Input() receivedAlbum: ViewAlbum;
 
   @Output() Close = new EventEmitter();
@@ -29,35 +28,38 @@ export class ShareAlbumByEmailComponent implements OnInit {
   sharingRoute = 'main/shared/album';
   showSuccessIcon = false;
 
-  constructor(private userService: UserService,
-              private notifier: NotifierService) {
+  constructor(
+    private userService: UserService,
+    private notifier: NotifierService
+  ) {}
 
-  }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public cancel() {
     this.Close.emit(null);
   }
 
   public AddEmail() {
-    this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-      if (user.email) {
-        this.userEmails.push(user.email);
-        this.showSuccessIcon = true;
-      } else {
-        this.showSuccessIcon = false;
-      }
-  });
+    this.userService.getUserByEmail(this.sharedEmail).subscribe(
+      user => {
+        if (user.email) {
+          this.userEmails.push(user.email);
+          this.showSuccessIcon = true;
+        } else {
+          this.showSuccessIcon = false;
+        }
+      },
+      error => this.notifier.notify('error', 'Error getting email')
+    );
   }
 
   public createShareableLink() {
-      this.initInvariableFields();
-      const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
-      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
+    this.initInvariableFields();
+    const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
+    this.sharedLink = `${environment.clientApiUrl}/${
+      this.sharingRoute
+    }/${encodedAlbumData}`;
   }
-
 
   public copyShareableLink() {
     const selBox = document.createElement('textarea');
@@ -72,22 +74,21 @@ export class ShareAlbumByEmailComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.notifier.notify( 'success', 'Link is now in your clipboard' );
-    }
+    this.notifier.notify('success', 'Link is now in your clipboard');
+  }
 
-    public encodeAlbumData(album: SharedAlbum): string {
-      let encoded = btoa(JSON.stringify(album)).replace('/', '___');
-      encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
-      console.log(encoded);
-      return encoded;
-    }
+  public encodeAlbumData(album: SharedAlbum): string {
+    let encoded = btoa(JSON.stringify(album)).replace('/', '___');
+    encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
+    console.log(encoded);
+    return encoded;
+  }
 
-    private initInvariableFields() {
-      this.sharedAlbum.albumId = this.receivedAlbum.id;
-      this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
-    }
-    public GenerateClick() {
-      this.createShareableLink();
-    }
-
+  private initInvariableFields() {
+    this.sharedAlbum.albumId = this.receivedAlbum.id;
+    this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+  }
+  public GenerateClick() {
+    this.createShareableLink();
+  }
 }

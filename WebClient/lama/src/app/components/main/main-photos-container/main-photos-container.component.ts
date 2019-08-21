@@ -18,6 +18,7 @@ import { User } from 'src/app/models/User/user';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { UserService } from 'src/app/services';
 import { ZipService } from 'src/app/services/zip.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-main-photos-container',
@@ -46,7 +47,8 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     private shared: SharedService,
     private favoriteService: FavoriteService,
     private zipService: ZipService,
-    private userService: UserService
+    private userService: UserService,
+    private notifier: NotifierService
   ) {
     this.favorites = new Set<number>();
   }
@@ -59,7 +61,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     }
     this.userService
       .getUser(parseInt(userId, 10))
-      .subscribe(user => this.initializeUserAndFavorites(user));
+      .subscribe(
+        user => this.initializeUserAndFavorites(user),
+        error => this.notifier.notify('error', 'Error getting user')
+      );
     this.GetUserPhotos(parseInt(userId, 10));
     this.selectedPhotos = [];
   }
@@ -72,7 +77,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.currentUser = user;
     this.favoriteService
       .getFavoritesIds(this.currentUser.id)
-      .subscribe(data => (this.favorites = new Set<number>(data)));
+      .subscribe(
+        data => (
+          (this.favorites = new Set<number>(data)),
+          error => this.notifier.notify('error', 'Error getting favourite')
+        )
+      );
   }
 
   public GetUserPhotos(userId: number) {
@@ -80,10 +90,13 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.fileService.receiveUsersPhotos(userId).subscribe(info => {
-      this.photos = info as PhotoRaw[];
-      this.showSpinner = false;
-    });
+    this.fileService.receiveUsersPhotos(userId).subscribe(
+      info => {
+        this.photos = info as PhotoRaw[];
+        this.showSpinner = false;
+      },
+      error => this.notifier.notify('error', 'Error getting photos')
+    );
   }
 
   GetPhotos() {
@@ -98,6 +111,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         console.log(this.photos);
       },
       err => {
+        this.notifier.notify('error', 'Error getting photos');
         console.log(err);
         this.showSpinner = false;
         this.isNothingFounded = true;
@@ -191,9 +205,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   private deleteImages(): void {
     this.selectedPhotos.forEach(element => {
-      this.fileService.markPhotoAsDeleted(element.id).subscribe(res => {
-        this.deletePhotoHandler(element.id);
-      });
+      this.fileService.markPhotoAsDeleted(element.id).subscribe(
+        res => {
+          this.deletePhotoHandler(element.id);
+        },
+        error => this.notifier.notify('error', 'Error deleting images')
+      );
     });
   }
 
