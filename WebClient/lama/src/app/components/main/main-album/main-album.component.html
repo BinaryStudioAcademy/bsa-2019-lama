@@ -5,10 +5,10 @@
             <img src="assets/three-dots-menu.svg" alt="">
         </div>
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
-            <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
             <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
             <a class="dropdown-item" (click)="toggleSetCoverModal()">Set Album cover</a>
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
+            <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
         </div>
         <img src="{{ album.photo?.blob256Id || album.photo?.blobId || imgname}}" (click)="clickPerformed()">
     </div>

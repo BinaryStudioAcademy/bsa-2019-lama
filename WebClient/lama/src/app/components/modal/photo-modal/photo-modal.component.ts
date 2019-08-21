@@ -24,6 +24,7 @@ export class PhotoModalComponent implements OnInit {
   public photo: PhotoRaw;
   public isShown: boolean;
   public isInfoShown: boolean = false;
+  public userId: number;
 
   public showSharedModal: boolean = false;
   public showSharedByLinkModal: boolean = false;
@@ -86,8 +87,8 @@ export class PhotoModalComponent implements OnInit {
         // console.log(date);
       });
     });
-    const userId = this.authService.getLoggedUserId();
-    this.userService.getUser(userId).subscribe(user => {
+    this.userId = this.authService.getLoggedUserId();
+    this.userService.getUser(this.userId).subscribe(user => {
       this.currentUser = user;
       let reactions = this.photo.reactions;
 
@@ -122,10 +123,10 @@ export class PhotoModalComponent implements OnInit {
           this.zoom = 12;
           this.address = results[0].formatted_address;
         } else {
-          alert('No results found');
+          console.log('No results found');
         }
       } else {
-        alert('Geocoder failed due to: ' + status);
+        console.log('Geocoder failed due to: ' + status);
       }
     });
     const loggedUserId: number = this.authService.getLoggedUserId();
@@ -149,12 +150,19 @@ export class PhotoModalComponent implements OnInit {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
+
+      if (this.photo.blobId.endsWith('.png')) {
+        return;
+      }
+
       var response = xhr.responseText;
       var binary = ""
       for (let i = 0; i < response.length; i++) {
         binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
       }
+      console.log(binary);
       let src = 'data:image/jpeg;base64,' + btoa(binary);
+
       let exifObj = load(src);
       let GPS = exifObj["GPS"];
 
@@ -167,7 +175,6 @@ export class PhotoModalComponent implements OnInit {
 
           if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
-              console.log(this.longitude);
               //this.latitude = position.coords.latitude;
               //this.longitude = position.coords.longitude;
               this.zoom = 8;
@@ -237,7 +244,7 @@ export class PhotoModalComponent implements OnInit {
     }
 
     // remove
-    if (clickedMenuItem === this.defaultMenuItem[1]) {
+    if (clickedMenuItem === this.defaultMenuItem[1] && this.isEqualId()) {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
@@ -255,7 +262,7 @@ export class PhotoModalComponent implements OnInit {
 
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
-      console.log(5);
+
       this.isEditing = true;
     }
 
@@ -280,12 +287,11 @@ export class PhotoModalComponent implements OnInit {
     };
 
     this.fileService.update(updatePhotoDTO)
-      .subscribe(updatedPhotoDTO =>
-        {
-          Object.assign(this.photo, updatedPhotoDTO);
-          this.updatePhotoEvent.emit(this.photo);
-          this.goBackToImageView();
-        });
+      .subscribe(updatedPhotoDTO => {
+        Object.assign(this.photo, updatedPhotoDTO);
+        this.updatePhotoEvent.emit(this.photo);
+        this.goBackToImageView();
+      });
   }
 
   public goBackToImageView(): void {
@@ -390,8 +396,12 @@ export class PhotoModalComponent implements OnInit {
   openModalForPickCoord(event) {
 
   }
-  
-  CloseInfo(){
+
+  CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
+  }
+
+  public isEqualId(): boolean {
+    return this.photo.userId == this.userId;
   }
 }

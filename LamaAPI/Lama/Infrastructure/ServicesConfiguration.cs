@@ -28,7 +28,7 @@ namespace Lama.Infrastructure
         }
         public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("ConnectionLocal");
+            string connectionString = configuration["ConnectionStrings:ConnectionLocal"];
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString), ServiceLifetime.Scoped);

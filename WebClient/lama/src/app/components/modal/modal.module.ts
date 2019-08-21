@@ -20,6 +20,7 @@ import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
+import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
 
 @NgModule(
 {
@@ -45,7 +46,8 @@ import { EditPhotoComponent } from './edit-photo/edit-photo.component';
     ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
     ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
     CommentsListComponent,
-    EditPhotoComponent
+    EditPhotoComponent,
+    EqualIdDirective
   ],
   exports:
   [

@@ -20,6 +20,7 @@ services:
     environment:
       ConnectionStrings:ConnectionLocal: ${LamaDBConnectionString}
       PhotoApiUrl: "http://photoapi:6000/"
+      ElasticConfiguration:Uri: "http://elasticsearch:9200"
       ASPNETCORE_URLS: http://+:5000
 
   photoapi:

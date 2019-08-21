@@ -7,12 +7,13 @@ COPY Processors/ source/
 COPY Shared/ Shared/
 WORKDIR source
 RUN dotnet publish -c Release -o output
+
+FROM base AS final
 RUN apt-get update \
     && apt-get install -y --allow-unauthenticated \
         libc6-dev \
         libgdiplus \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/*
-FROM base AS final
 COPY --from=build /src/source/PhotoProcessor/output .
 ENTRYPOINT ["dotnet", "PhotoProcessor.dll"]

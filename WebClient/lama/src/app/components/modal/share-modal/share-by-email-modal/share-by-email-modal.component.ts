@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
-import { HttpService } from 'src/app/services/http.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -23,11 +23,11 @@ export class ShareByEmailModalComponent implements OnInit {
   imageUrl: string;
   copyClicked: boolean = false;
   sharedPhoto: SharedPhoto = <SharedPhoto>{};
-  userEmails: Array<string>;
+  userEmails: Array<string> = [];
   sharingRoute: String = "main/shared";
   showSuccessIcon: boolean = false;
 
-  constructor(private httpService: HttpService) {
+  constructor(private userService: UserService) {
 
   }
 
@@ -39,17 +39,17 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public AddEmail(){
-	let user: User;
-	this.httpService.getData(`users/${this.sharedEmail}`).subscribe((data:User) => user = data);
-    if(user.email)
-    {
+    this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
+	  if(user.email)
+      {
 		this.userEmails.push(user.email);
 		this.showSuccessIcon = true;
-    }
-    else
-    {
+      }
+      else
+      {
 		this.showSuccessIcon = false;
-    }
+      }
+	});
   }
   
 	public createShareableLink(){

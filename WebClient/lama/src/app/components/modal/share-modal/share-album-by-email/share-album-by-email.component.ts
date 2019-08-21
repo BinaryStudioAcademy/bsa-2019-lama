@@ -25,7 +25,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   imageUrl: string;
   copyClicked: boolean = false;
   sharedAlbum: SharedAlbum = <SharedAlbum>{};
-  userEmails: Array<string>;
+  userEmails: Array<string> = [];
   sharingRoute: String = "main/shared/album";
   showSuccessIcon: boolean = false;
 
@@ -41,17 +41,17 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
 
   public AddEmail(){
-    let user: User = this.userService.getUserByEmail(this.sharedEmail);
-    
-    if(user.email)
-    {
+    this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
+	  if(user.email)
+      {
 		this.userEmails.push(user.email);
 		this.showSuccessIcon = true;
-    }
-    else
-    {
+      }
+      else
+      {
 		this.showSuccessIcon = false;
-    }
+      }
+	});
   }
   
 	public createShareableLink(){
