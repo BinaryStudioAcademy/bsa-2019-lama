@@ -91,7 +91,7 @@ export class ProfileComponent implements OnInit {
     if (!this.userForm.dirty && this.defaultImageUrl === this.photoUrl) {
       return;
     }
-
+    this.defaultImageUrl = this.photoUrl;
     console.log(this.photoUrl);
     this.httpService
       .putData(`users`, this.user)
@@ -123,5 +123,6 @@ export class ProfileComponent implements OnInit {
   removeProfilePhoto() {
     this.photoUrl = null;
     this.user.photo = null;
+    this.sharedService.avatar.imageUrl = null;
   }
 }
