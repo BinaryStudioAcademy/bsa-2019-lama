@@ -155,6 +155,21 @@ namespace Lama.BusinessLogic.Services
 
         }
 
+        public async Task<UpdatedPhotoResultDTO> ResetPhoto(UpdatePhotoDTO updatePhotoDTO)
+        {
+
+            string uri = $"{url}api/photos/reset";
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+
+            string bodyJson = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
+
+        }
+
         #region GET
         public async Task<IEnumerable<PhotoDocumentDTO>> GetAll()
         {

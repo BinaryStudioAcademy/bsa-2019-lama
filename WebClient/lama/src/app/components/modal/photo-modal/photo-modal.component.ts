@@ -322,6 +322,28 @@ export class PhotoModalComponent implements OnInit {
     );
   }
 
+  resetImageHandler(): void {
+    console.log('reset');
+    const updatePhotoDTO: UpdatePhotoDTO = {
+      id: this.photo.id,
+      blobId: this.imageUrl,
+      imageBase64: ''
+    };
+
+    this.fileService.resetToDefault(updatePhotoDTO).subscribe(
+      updatedPhotoDTO => {
+        Object.assign(this.photo, updatedPhotoDTO);
+        this.fileService
+          .getPhoto(this.photo.blobId)
+          .subscribe(url => (this.imageUrl = url));
+        this.updatePhotoEvent.emit(this.photo);
+        this.goBackToImageView();
+        this.notifier.notify('success', 'Photo reseted');
+      },
+      error => this.notifier.notify('error', 'Error reseting photo')
+    );
+  }
+
   public goBackToImageView(): void {
     this.isEditing = false;
   }

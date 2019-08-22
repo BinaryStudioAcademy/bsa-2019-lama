@@ -11,7 +11,7 @@
 
                 <!--editing view-->
                 <ng-template #editView>
-                    <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
+                    <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (resetClickedEvent)="resetImageHandler()" (cancelClickedEvent)="goBackToImageView()">
                     </app-edit-photo>
                 </ng-template>
 
@@ -38,9 +38,9 @@
                                             <div class="column" *ngFor="let item of shownMenuItems">
                                                 <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
                                                     <ng-template ngSwitchCase="remove">
-                                                        <div [appEqualId]="isEqualId()">
-                                                            <i class="material-icons is-block">{{ item.icon }}</i>
-                                                            <span> {{ item.title }} </span>
+                                                        <div [appIsBlocked]="!isEqualId()">
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="download">

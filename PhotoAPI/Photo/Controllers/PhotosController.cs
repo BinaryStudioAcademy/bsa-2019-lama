@@ -120,6 +120,12 @@ namespace Photo.Controllers
             return this.photoService.UpdateImage(value);
         }
 
+        [HttpPut("reset")]
+        public Task<UpdatedPhotoResultDTO> ResetPhoto([FromBody] UpdatePhotoDTO value)
+        {
+            return this.photoService.ResetImage(value);
+        }
+
 
         #region DELETE
         // DELETE: api/photos/5
