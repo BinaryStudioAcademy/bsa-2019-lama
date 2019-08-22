@@ -22,7 +22,7 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
-export class MainPhotoComponent implements OnChanges, OnInit {
+export class MainPhotoComponent implements OnInit, OnChanges {
   @Input('_id') id = -1;
   @Input('_photo') photo: PhotoRaw;
   @Output() Click = new EventEmitter<PhotoRaw>();
