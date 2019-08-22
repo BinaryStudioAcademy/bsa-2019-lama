@@ -39,6 +39,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(int id, string criteria)
         {
+        
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = await httpClient.GetAsync($"{url}api/photos/search/{id}/{criteria}");
@@ -63,6 +64,13 @@ namespace Lama.BusinessLogic.Services
                     }
                 }
             }
+            await _context.GetRepository<SearchHistory>().InsertAsync(new SearchHistory
+            {
+                Text = criteria,
+                UserId = id,
+                SearchDate = DateTime.Now
+            });
+            await _context.SaveAsync();
 
             return photoDocumentDTOs;
         }
