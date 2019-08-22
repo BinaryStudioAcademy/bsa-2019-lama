@@ -133,7 +133,8 @@ namespace Photo.BusinessLogic.Services
                     Blob256Id = blobId,
                     OriginalBlobId = await storage.LoadPhotoToBlob(blob),
                     UserId = item.AuthorId,
-                    Description = item.Description
+                    Description = item.Description,
+                    Location = item.Location
                 };
 
                 await Create(photoDocumentToCreate);

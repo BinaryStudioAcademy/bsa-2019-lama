@@ -118,6 +118,10 @@ namespace Photo.DataAccess.Implementation
                                  .Wildcard(w => w
                                      .Field(f => f.Name)
                                      .Value($"*{criteria}*")
+                                 ), s => s
+                                 .Wildcard(w => w
+                                    .Field(f => f.Location)
+                                    .Value($"*{criteria}*")
                                  )
                               )
                           )
