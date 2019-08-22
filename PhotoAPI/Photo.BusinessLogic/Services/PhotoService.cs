@@ -9,6 +9,8 @@ using Photo.Domain.DataTransferObjects;
 
 using AutoMapper;
 using System.IO;
+using System.Threading;
+using Nest;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -100,9 +102,9 @@ namespace Photo.BusinessLogic.Services
         }
 
 
-        public Task Create(PhotoDocument item)
+        public async Task<CreateResponse> Create(PhotoDocument item)
         {
-            return elasticStorage.CreateAsync(item);
+            return await elasticStorage.CreateAsync(item);
         }
 
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
@@ -117,7 +119,7 @@ namespace Photo.BusinessLogic.Services
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] items)
-        {    
+        {
             var createdPhotos = new List<CreatePhotoResultDTO>();
             foreach(var item in items)
             {
@@ -137,7 +139,6 @@ namespace Photo.BusinessLogic.Services
                 };
 
                 await Create(photoDocumentToCreate);
-
                 createdPhotos.Add(mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
                 messageService.SendPhotoToThumbnailProcessor(photoDocumentToCreate.Id);
             }
