@@ -38,9 +38,11 @@ export class MainAlbumComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.fileService
-      .getPhoto(this.album.photo.blob256Id)
-      .subscribe(url => (this.imageUrl = url));
+    if (this.album.photo !== null) {
+      this.fileService
+        .getPhoto(this.album.photo.blob256Id)
+        .subscribe(url => (this.imageUrl = url));
+    }
   }
 
   clickPerformed(): void {
