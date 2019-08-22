@@ -41,17 +41,19 @@ export class ShareByEmailModalComponent implements OnInit {
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
       this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-        if (user.email) {
+        if (user) {
           this.userEmails.push(user.email);
           this.wrongInput = false;
           this.clearInput();
         } else {
           this.wrongInput = true;
+          this.notifier.notify('error', 'Error getting email');
         }
       },
       error => this.notifier.notify('error', 'Error getting email'));
     } else {
       this.wrongInput = true;
+      this.notifier.notify('error', 'Error input');
     }
   }
 
