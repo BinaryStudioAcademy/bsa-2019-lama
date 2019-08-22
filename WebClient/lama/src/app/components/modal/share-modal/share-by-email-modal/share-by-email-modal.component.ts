@@ -23,7 +23,9 @@ export class ShareByEmailModalComponent implements OnInit {
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared';
-  showSuccessIcon = false;
+  wrongInput = false;
+  showAvailable = false;
+  availableAll = true;
 
   constructor(
     private userService: UserService,
@@ -37,17 +39,20 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public AddEmail() {
-    this.userService.getUserByEmail(this.sharedEmail).subscribe(
-      user => {
+    if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
+      this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
         if (user.email) {
           this.userEmails.push(user.email);
-          this.showSuccessIcon = true;
+          this.wrongInput = false;
+          this.clearInput();
         } else {
-          this.showSuccessIcon = false;
+          this.wrongInput = true;
         }
       },
-      error => this.notifier.notify('error', 'Error getting email')
-    );
+      error => this.notifier.notify('error', 'Error getting email'));
+    } else {
+      this.wrongInput = true;
+    }
   }
 
   public createShareableLink() {
@@ -88,6 +93,26 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public GenerateClick() {
+    if (this.userEmails.length) {
+      this.availableAll = false;
+    }
+    this.showAvailable = true;
     this.createShareableLink();
+  }
+
+  clearInput() {
+    this.sharedEmail = '';
+  }
+
+  isEmail(search: string) {
+    let serchfind: boolean;
+    const regexp = new RegExp(
+      // tslint:disable-next-line: max-line-length
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
+    serchfind = regexp.test(search);
+
+    return serchfind;
   }
 }

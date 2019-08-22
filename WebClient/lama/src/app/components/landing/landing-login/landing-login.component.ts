@@ -13,7 +13,7 @@ import { NotifierService } from 'angular-notifier';
 export class LandingLoginComponent implements OnInit {
   showAuthModal = false;
   private user: any;
-
+  
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -30,7 +30,7 @@ export class LandingLoginComponent implements OnInit {
 
   public openAuthWindow() {
     if (this.user) {
-      this.authService.saveCreadeatins(this.user);
+      this.authService.saveCredentials(this.user);
       this.router.navigate(['/main']);
     }
     this.showAuthModal = true;

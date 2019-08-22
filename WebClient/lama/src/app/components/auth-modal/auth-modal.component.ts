@@ -29,13 +29,8 @@ export class AuthModalComponent implements OnInit {
     .then(() => this.afterSignIn());
   }
 
-  tryTwitterLogin() {
-    this.authService.loginWithTwitter()
-    .then(() => this.afterSignIn());
-  }
-
   tryFacebookLogin() {
-    this.authService.loginWithFacebook()
+    this.authService.loginWithFacebookLinked()
     .then(() => this.afterSignIn());
   }
 

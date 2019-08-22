@@ -48,8 +48,7 @@ export class MainAlbumsContainerComponent implements OnInit {
       error => this.notifier.notify('error', 'Error loading user')
     );
   }
-
-  // constructors
+  
   constructor(
     resolver: ComponentFactoryResolver,
     private router: Router,
