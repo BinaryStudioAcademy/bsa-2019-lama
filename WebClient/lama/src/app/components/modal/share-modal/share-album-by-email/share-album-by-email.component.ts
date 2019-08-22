@@ -26,7 +26,9 @@ export class ShareAlbumByEmailComponent implements OnInit {
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared/album';
-  showSuccessIcon = false;
+  wrongInput = false;
+  availableAll = true;
+  showAvailable = false;
 
   constructor(
     private userService: UserService,
@@ -40,17 +42,22 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
 
   public AddEmail() {
-    this.userService.getUserByEmail(this.sharedEmail).subscribe(
-      user => {
-        if (user.email) {
-          this.userEmails.push(user.email);
-          this.showSuccessIcon = true;
-        } else {
-          this.showSuccessIcon = false;
-        }
-      },
-      error => this.notifier.notify('error', 'Error getting email')
-    );
+    if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
+      this.userService.getUserByEmail(this.sharedEmail).subscribe(
+        user => {
+          if (user.email) {
+            this.userEmails.push(user.email);
+            this.wrongInput = false;
+            this.clearInput();
+          } else {
+            this.wrongInput = true;
+          }
+        },
+        error => this.notifier.notify('error', 'Error getting email')
+      );
+    } else {
+      this.wrongInput = true;
+    }
   }
 
   public createShareableLink() {
@@ -90,5 +97,26 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
   public GenerateClick() {
     this.createShareableLink();
+    if (this.userEmails.length) {
+      this.availableAll = false;
+    }
+    this.showAvailable = true;
+    this.createShareableLink();
+  }
+
+  clearInput() {
+    this.sharedEmail = '';
+  }
+
+  isEmail(search: string) {
+    let serchfind: boolean;
+    const regexp = new RegExp(
+      // tslint:disable-next-line: max-line-length
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
+    serchfind = regexp.test(search);
+
+    return serchfind;
   }
 }
