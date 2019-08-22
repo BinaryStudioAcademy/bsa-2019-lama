@@ -32,21 +32,6 @@ export class AuthService {
         .catch(() => this.isUserExisted = false);
    }
 
-   loginWithFacebook() {
-    return new Promise<any>((toResolve, toReject) => {
-      const provider = new firebase.auth.FacebookAuthProvider();
-      this.afAuth.auth
-      .signInWithPopup(provider)
-      .then(res => {
-        this.saveCredentials(res.user);
-        toResolve(res);
-      }, err => {
-        console.log(err);
-        toReject(err);
-      });
-    });
-  }
-
   async loginWithFacebookLinked() {
      let existingEmail = null;
      let pendingCredential = null;
