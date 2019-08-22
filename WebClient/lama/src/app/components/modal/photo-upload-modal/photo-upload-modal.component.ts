@@ -104,14 +104,22 @@ export class PhotoUploadModalComponent implements OnInit {
         remove(base64);
         const modifiedObject = insert(d, base64);
         this.showSpinner = false;
-        getLocation(latitude, longitude, this.geoCoder).then(location => {
-          this.address = location;
+        if (latitude && longitude) {
+          getLocation(latitude, longitude, this.geoCoder).then(location => {
+            this.address = location;
+            this.photos.push({
+              imageUrl: modifiedObject,
+              filename: file.name,
+              location: this.address
+            });
+          });
+        } else {
           this.photos.push({
             imageUrl: modifiedObject,
             filename: file.name,
             location: this.address
           });
-        });
+        }
       } else {
         const compressedFile = await imageCompression(
           file,
