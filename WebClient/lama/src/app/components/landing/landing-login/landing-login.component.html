@@ -9,7 +9,7 @@
         for all your memories.
     </div>
     <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
-    <app-auth-modal *ngIf="showAuthModal" (onClose)="showAuthModal=false"></app-auth-modal>
+    <app-auth-modal *ngIf="showAuthModal" (Close)="showAuthModal=false"></app-auth-modal>
     </div>
     <img src="../../../assets/many-photos.jpg">
 

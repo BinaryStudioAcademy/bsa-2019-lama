@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from '../models/User/user';
 import {environment} from '../../environments/environment';
-import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
-import { SharedService } from './shared.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,132 +13,151 @@ import { SharedService } from './shared.service';
 export class AuthService {
 
   token: string;
-  _user: UserCreate;
+  user: UserCreate;
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
-  }
-  isUserExisted: boolean = true;
+  };
+  isUserExisted = true;
 
-  constructor(public afAuth: AngularFireAuth, private httpClient: HttpClient,private userService: UserService, private shared: SharedService) {
+  constructor(public afAuth: AngularFireAuth,
+              private httpClient: HttpClient,
+              private userService: UserService) {
         this.afAuth.idToken.subscribe(token => {
           this.token =  token;
-          localStorage.setItem('idKey',this.token)});
+          localStorage.setItem('idKey', this.token); });
         this.userService.getCurrentUserFirebase().then(() => this.isUserExisted = true)
-        .catch(() => this.isUserExisted = false)
+        .catch(() => this.isUserExisted = false);
    }
 
-   public loginWithFacebook(){
-    return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.FacebookAuthProvider();
+   loginWithFacebook() {
+    return new Promise<any>((toResolve, toReject) => {
+      const provider = new firebase.auth.FacebookAuthProvider();
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
-        this.saveCreadeatins(res.user);
-        resolve(res);
+        this.saveCredentials(res.user);
+        toResolve(res);
       }, err => {
         console.log(err);
-        reject(err);
-      })
+        toReject(err);
+      });
     });
    }
 
-   public loginWithGoogle(){
-    return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.GoogleAuthProvider();
+   loginWithFacebookLinked() {
+     let existingEmail = null;
+     let pendingCredential = null;
+     const facebookProvider = new firebase.auth.FacebookAuthProvider();
+     return this.afAuth.auth.signInWithPopup(facebookProvider)
+      .then(result => {
+        if (result.user.email === null) {
+          this.afAuth.auth.signOut().then(() => {
+            console.log(`${result.user.email}`);
+          });
+        } else {
+          console.log(`${result.user.email}`);
+          this.saveCredentials(result.user);
+        }
+      })
+      .catch(error => {
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          existingEmail = error.email;
+          pendingCredential = error.credential;
+          return firebase.auth().fetchSignInMethodsForEmail(error.email)
+            .then(providers => {
+              if (providers.indexOf(firebase.auth.GoogleAuthProvider.PROVIDER_ID) !== -1) {
+                const googleProvider = new firebase.auth.GoogleAuthProvider();
+                googleProvider.setCustomParameters({login_hint: existingEmail});
+                return firebase.auth().signInWithPopup(googleProvider).then(result => {
+                  return result.user;
+                });
+              }
+            })
+            .then((user) => {
+              return user.linkWithCredential(pendingCredential);
+            });
+        }
+        throw error;
+      });
+   }
+
+   loginWithGoogle() {
+    return new Promise<any>((toResolve, toReject) => {
+      const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
-        this.saveCreadeatins(res.user);
-        resolve(res);
-      })
+        this.saveCredentials(res.user);
+        toResolve(res);
+      });
     });
    }
 
-   public loginWithTwitter(){
-    return new Promise<any>((resolve, reject) => {
-      let provider = new firebase.auth.TwitterAuthProvider();
-      this.afAuth.auth
-      .signInWithPopup(provider)
-      .then(res => {
-        this.saveCreadeatins(res.user);
-        resolve(res);
-      }, err => {
-        console.log(err);
-        reject(err);
-      })
-    })
-  }
-
-
-  public doLogout(){
-    return new Promise((resolve, reject) => {
-      if(firebase.auth().currentUser){
+  doLogout() {
+    return new Promise((toResolve, toReject) => {
+      if (firebase.auth().currentUser) {
         this.afAuth.auth.signOut();
-        resolve();
-      }
-      else{
-        reject();
+        toResolve();
+      } else {
+        toReject();
       }
     });
   }
 
-  public getLoggedUserId()
-  {
-    return Number(localStorage.getItem("userId"));
+  getLoggedUserId() {
+    return Number(localStorage.getItem('userId'));
   }
 
-  public getToken() {
-    return localStorage.getItem("idKey");
+  getToken() {
+    return localStorage.getItem('idKey');
   }
 
-  public async saveCreadeatins(user: firebase.User) {
+  async saveCredentials(user: firebase.User) {
 
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
-    let names = user.displayName.split(' ');
+    const names = user.displayName.split(' ');
     let firstName;
     let lastName;
-    if (names.length != 2) {
+    if (names.length !== 2) {
       firstName = user.displayName;
-      lastName = ""
-    }
-    else {
+      lastName = '';
+    } else {
       firstName = names[0];
       lastName = names[1];
     }
-    this._user = {
-      firstName: firstName,
-      lastName: lastName,
+    this.user = {
+      firstName,
+      lastName,
       email: user.email,
       photo: {imageUrl: user.photoURL}
-    }
-    this.toDataUrl(user.photoURL, (img) =>
-    {
+    };
+    this.toDataUrl(user.photoURL, (img) => {
         localStorage.setItem('firstName', firstName);
         localStorage.setItem('lastName', lastName);
-        this._user = {
-          firstName: firstName,
-          lastName: lastName,
+        this.user = {
+          firstName,
+          lastName,
           email: user.email,
           photo: { imageUrl: img}
-        }
+        };
 
-        this.registerUser(this._user).subscribe(id => {
+        this.registerUser(this.user).subscribe(id => {
           console.log(id);
           localStorage.setItem('userId', id.toString());
         });
-    })
+    });
   }
 
-  public toDataUrl(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        var reader = new FileReader();
-        reader.onloadend = function() {
+  toDataUrl(url, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
             callback(reader.result);
-        }
+        };
         reader.readAsDataURL(xhr.response);
     };
     xhr.open('GET', url);
@@ -148,9 +165,7 @@ export class AuthService {
     xhr.send();
   }
 
-
-  public registerUser(user: UserCreate): Observable<any> {
+  registerUser(user: UserCreate) {
     return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
   }
-
 }

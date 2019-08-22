@@ -26,7 +26,7 @@
     </div>
     <div *ngIf="loading" class="items-container-centered">
         <div *ngFor="let item of album.photoAlbums">
-            <main-photo [_photo]="item" (onClick)="photoClicked($event)" (onSelect)="photoSelected($event)">
+            <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)">
             </main-photo>
         </div>
     </div>

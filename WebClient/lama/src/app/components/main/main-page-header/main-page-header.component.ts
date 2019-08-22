@@ -44,7 +44,7 @@ export class MainPageHeaderComponent implements OnInit {
       })
     }
     else {
-      this.avatarUrl = this.auth._user.photo.imageUrl
+      this.avatarUrl = this.auth.user.photo.imageUrl
     }
   }
 
@@ -59,7 +59,7 @@ export class MainPageHeaderComponent implements OnInit {
             .then(this.auth.token = null)
             .then(() => {
 
-              this.auth._user = null
+              this.auth.user = null
               this.router.navigate(['/'])
               let cover = localStorage.getItem("favoriteCover");
               localStorage.clear();

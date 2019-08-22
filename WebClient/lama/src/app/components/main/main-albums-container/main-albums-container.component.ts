@@ -44,43 +44,42 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   // constructors
   constructor(resolver: ComponentFactoryResolver, private router: Router, private albumService: AlbumService,
-    private httpService: HttpService, private _favoriteService: FavoriteService) {
+              private httpService: HttpService, private favoriteService: FavoriteService) {
     this.resolver = resolver;
   }
 
   GetAlbums() {
-    let id =  this.currentUser.id;
+    const id =  this.currentUser.id;
     this.albumService.getAlbums(id).subscribe(albums => {
       this.albums = albums.body;
       this.albums.forEach(a => {
-        if(a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0)
+        if (a.photo == null && a.photoAlbums != null && a.photoAlbums.length > 0) {
           a.photo = a.photoAlbums[0];
-        }
-      )
+          }
+        });
     });
   }
 
   GetFavoriteAlbum(userId: number){
-    this._favoriteService.getFavoritesPhotos(userId).subscribe(data => {
-      if(data.length != 0){
+    this.favoriteService.getFavoritesPhotos(userId).subscribe(data => {
+      if (data.length !== 0) {
         this.showFavorite = true;
         this.favorite = { } as ViewAlbum;
         this.favorite.photoAlbums = data;
         this.favorite.id = 0;
-        this.favorite.title = "Favorite photos";
-        const cover = localStorage.getItem("favoriteCover");
-        let photo:PhotoRaw = null;
-        let length: number = this.favorite.photoAlbums.length;
-        if(cover == null){
-          photo = this.favorite.photoAlbums[length-1];
-        }
-        else{
+        this.favorite.title = 'Favorite photos';
+        const cover = localStorage.getItem('favoriteCover');
+        let photo = null;
+        const length = this.favorite.photoAlbums.length;
+        if (cover == null) {
+          photo = this.favorite.photoAlbums[length - 1];
+        } else {
           photo = this.favorite.photoAlbums.find(f => f.id === parseInt(cover, 10));
-          if(photo == null){
+          if (photo == null) {
             photo = this.favorite.photoAlbums[0];
-          }
-          else
+          } else {
             this.favorite.photo = photo;
+          }
         }
         this.favorite.photo = photo;
         this.showFavorite = true;
@@ -110,8 +109,7 @@ export class MainAlbumsContainerComponent implements OnInit {
      });
   }
 
-  ArchiveAlbum(event: ViewAlbum)
-  {
+  ArchiveAlbum(event: ViewAlbum) {
     this.albumService.ArchiveAlbum(event.photoAlbums).subscribe( x =>  {this.ArchivePhotos = x; this.ConvertToImage(event.title)});
   }
 
