@@ -68,6 +68,20 @@ namespace Lama.BusinessLogic.Services
             return albumToUpdate.CoverId;
         }
         
+        public async Task<int> CreateEmptyAlbum(NewAlbumDTO albumDto)
+        {
+            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == albumDto.AuthorId);
+
+            Album TempAlbum = new Album()
+            {
+                Title = albumDto.Title,
+                User = user
+            };
+            await Context.Albums.AddAsync(TempAlbum);
+            await Context.SaveChangesAsync();
+
+            return TempAlbum.Id;
+        }
         public async Task<int> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
