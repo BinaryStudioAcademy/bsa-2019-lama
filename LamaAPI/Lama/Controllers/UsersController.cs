@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Lama.Domain.DbModels;
-using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
-using Microsoft.AspNetCore.Http;
 using Lama.Domain.DTO.User;
-using Lama.Domain.BlobModels;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Lama.Controllers
@@ -44,7 +33,6 @@ namespace Lama.Controllers
              return await _service.UpdateUser(user);
         }
 
-
         [HttpGet("{id}")]
         public async Task<UserDTO> Get(int id)
         {
@@ -56,6 +44,5 @@ namespace Lama.Controllers
         {
             return await _service.GetByEmail(email);
         }
-        
     }
 }
