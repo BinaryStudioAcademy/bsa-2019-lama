@@ -100,7 +100,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
   }
 
-  public photoClicked(eventArgs: PhotoRaw) {
+  photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
@@ -115,13 +115,13 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     );
   }
 
-  public deletePhotoHandler(photoToDeleteId: number) {
+  deletePhotoHandler(photoToDeleteId: number) {
     this.album.photoAlbums = this.album.photoAlbums.filter(
       p => p.id !== photoToDeleteId
     );
   }
 
-  public updatePhotoHandler(updatedPhoto: PhotoRaw) {
+  updatePhotoHandler(updatedPhoto: PhotoRaw) {
     const index = this.album.photoAlbums.findIndex(
       i => i.id === updatedPhoto.id
     );
@@ -156,7 +156,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     }
   }
 
-  public deleteImages(): void {
+  deleteImages(): void {
     const indexes = new Array<number>();
     this.selectedPhotos.forEach(e => {
       indexes.push(this.album.photoAlbums.findIndex(i => i.id === e.id));
@@ -192,7 +192,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     }
   }
 
-  public downloadImages() {
+  downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
   }
 }
