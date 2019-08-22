@@ -18,6 +18,11 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude
+} from 'src/app/components/export-functions/exif';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -77,24 +82,6 @@ export class PhotoUploadModalComponent implements OnInit {
     }
   }
 
-  getAddress(latitude, longitude) {
-    this.geoCoder.geocode(
-      { location: { lat: latitude, lng: longitude }, region: 'us' },
-      (results, status) => {
-        if (status === 'OK') {
-          if (results[0]) {
-            console.log(results[0].formatted_address);
-            this.address = results[0].formatted_address;
-          } else {
-            console.log('No results found');
-          }
-        } else {
-          console.log('Geocoder failed due to: ' + status);
-        }
-      }
-    );
-  }
-
   async onFileDropped(files: File[]) {
     this.showSpinner = true;
     this.photos = [];
@@ -104,23 +91,10 @@ export class PhotoUploadModalComponent implements OnInit {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
         const field = 'GPS';
-        if (exifObj[field][1] === 'N') {
-          latitude = this.ConvertDMSToDD(
-            exifObj[field][2][0][0],
-            exifObj[field][2][1][0],
-            exifObj[field][2][2][0] / exifObj[field][2][2][1],
-            exifObj[field][1]
-          );
-          longitude = this.ConvertDMSToDD(
-            exifObj[field][4][0][0],
-            exifObj[field][4][0][0],
-            exifObj[field][4][0][0] / exifObj[field][4][2][1],
-            exifObj[field][3]
-          );
-        }
+        latitude = getLatitude(exifObj);
+        longitude = getLongitude(exifObj);
         console.log(latitude);
         console.log(longitude);
-        this.getAddress(latitude, longitude);
         const d = dump(exifObj);
         const compressedFile = await imageCompression(
           file,
@@ -130,10 +104,13 @@ export class PhotoUploadModalComponent implements OnInit {
         remove(base64);
         const modifiedObject = insert(d, base64);
         this.showSpinner = false;
-        this.photos.push({
-          imageUrl: modifiedObject,
-          filename: file.name,
-          location: this.address
+        getLocation(latitude, longitude, this.geoCoder).then(location => {
+          this.address = location;
+          this.photos.push({
+            imageUrl: modifiedObject,
+            filename: file.name,
+            location: this.address
+          });
         });
       } else {
         const compressedFile = await imageCompression(
@@ -148,20 +125,6 @@ export class PhotoUploadModalComponent implements OnInit {
         });
       }
     }
-  }
-
-  ConvertDMSToDD(
-    degrees: number,
-    minutes: number,
-    seconds: number,
-    direction
-  ): number {
-    let dd = degrees + minutes / 60 + seconds / (60 * 60);
-
-    if (direction === 'S' || direction === 'W') {
-      dd = dd * -1;
-    } // Don't do anything for N or E
-    return dd;
   }
 
   public toBase64(file): Promise<string> {
