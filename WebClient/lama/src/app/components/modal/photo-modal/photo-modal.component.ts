@@ -316,6 +316,7 @@ export class PhotoModalComponent implements OnInit {
           .subscribe(url => (this.imageUrl = url));
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
+        this.notifier.notify('success', 'Photo updated');
       },
       error => this.notifier.notify('error', 'Error updating photo')
     );
@@ -348,8 +349,8 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
-
         this.deletePhotoEvenet.emit(this.photo.id);
+        this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')
     );
