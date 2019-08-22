@@ -65,10 +65,15 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   ngDoCheck() {
-    if (this.shared.avatar != null) {
-      this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
-        this.avatarUrl = url;
-      });
+    if (this.shared.avatar && this.shared.avatar.imageUrl) {
+      if (this.shared.avatar.imageUrl.indexOf('base64') === -1) {
+        this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
+          this.avatarUrl = url;
+        });
+      } else {
+        this.avatarUrl = this.shared.avatar.imageUrl;
+      }
+      this.shared.avatar = null;
     }
     this.searchCriteria.length < 3
       ? (this.isActive = false)
