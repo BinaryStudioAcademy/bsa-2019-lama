@@ -35,6 +35,12 @@ namespace Lama.Controllers
             int createdAlbumId = await _service.CreateAlbumWithExistPhotos(album);
             return await _service.FindAlbum(createdAlbumId);
         }
+        [HttpPost("CreateEmptyAlbum")]
+        public async Task<ReturnAlbumDTO> CreateEmptyAlbum([FromBody] NewAlbumDTO album)
+        {
+            int createdAlbumId = await _service.CreateEmptyAlbum(album);
+            return await _service.FindAlbum(createdAlbumId);
+        }
         [HttpPost("ArchivePhotos")]
         public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
         {

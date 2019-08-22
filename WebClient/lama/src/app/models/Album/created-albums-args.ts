@@ -1,6 +1,6 @@
 export interface CreatedAlbumsArgs {
-    id: number;
-    name: string;
-    title: string;
-    photoUrl: string;
+  id: number;
+  name: string;
+  title: string;
+  photoUrl?: string;
 }

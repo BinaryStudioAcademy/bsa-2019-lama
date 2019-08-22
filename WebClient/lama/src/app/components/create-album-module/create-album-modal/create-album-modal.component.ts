@@ -141,10 +141,28 @@ export class CreateAlbumModalComponent implements OnInit {
 
   CreateAlbum() {
     if (this.albumName === '') {
-      console.log(this.albumName);
       this.checkForm = false;
     } else {
-      if (this.LoadNewImage === true) {
+      if (this.photos.length === 0) {
+        this.album = {
+          title: this.albumName,
+          photo: this.photos[0],
+          authorId: this.currentUser.id,
+          photos: this.photos
+        };
+        this.albumService.createEmptyAlbum(this.album).subscribe(
+          createdAlbum => {
+            this.createdAlbumEvent.emit({
+              id: createdAlbum.id,
+              name: createdAlbum.title,
+              photoUrl: null,
+              title: createdAlbum.title
+            });
+            this.notifier.notify('success', 'Empty Album created');
+          },
+          error => this.notifier.notify('error', 'Error creating the album')
+        );
+      } else if (this.LoadNewImage === true) {
         this.album = {
           title: this.albumName,
           photo: this.photos[0],
