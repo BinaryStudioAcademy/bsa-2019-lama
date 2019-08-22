@@ -36,7 +36,17 @@ namespace Lama.BusinessLogic.Services
         {
             this.httpClient.Dispose();
         }
-
+        public async Task<IEnumerable<string>> GetHistory(int userId)
+        {
+            var history = await _context.GetRepository<SearchHistory>().GetAsync(h => h.UserId == userId);
+            return history.Reverse()
+                .GroupBy(h => h.Text)
+                .Reverse()
+                .Select(h => h.Take(5)
+                    .First())
+                .ToList()
+                .Select(h => h.Text);
+        }
         public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(int id, string criteria)
         {
         

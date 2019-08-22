@@ -15,6 +15,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> Get(int id);
+        Task<IEnumerable<string>> GetHistory(int userId);
         Task<string> GetPhoto(string blobId);
         Task<string> GetAvatar(string blobId);
         Task MarkPhotoAsDeleted(int photosToDeleteId);
