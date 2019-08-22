@@ -34,17 +34,15 @@ export class PhotoModalComponent implements OnInit {
   public photo: PhotoRaw;
   public isShown: boolean;
   public isInfoShown = false;
+  public imageUrl: string;
   public userId: number;
-
   public showSharedModal = false;
   public showSharedByLinkModal = false;
   public showSharedByEmailModal = false;
-
   albums: PhotoDetailsAlbum[];
-
+  isShowSpinner = true;
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
-
   public isEditing: boolean;
   showEditModal: boolean;
 
@@ -97,6 +95,11 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
+      this.imageUrl = data;
+      this.isShowSpinner = false;
+      this.GetFile();
+    });
     const calendars = bulmaCalendar.attach('[type="date"]');
     calendars.forEach(calendar => {
       calendar.on('select', date => {
@@ -115,8 +118,6 @@ export class PhotoModalComponent implements OnInit {
       },
       error => this.notifier.notify('error', 'Error getting user')
     );
-
-    this.GetFile();
     this.albumService
       .GetPhotoDetailsAlbums(this.photo.id)
       .subscribe(
@@ -163,7 +164,6 @@ export class PhotoModalComponent implements OnInit {
       }
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
-
     this.userService.getUser(loggedUserId).subscribe(
       user => {
         this.currentUser = user;
@@ -182,53 +182,45 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', this.photo.blobId, true);
-    xhr.onload = () => {
-      if (this.photo.blobId.endsWith('.png')) {
-        return;
-      }
+    if (this.photo.name.endsWith('.png')) {
+      return;
+    }
+    const src = this.imageUrl;
+    const exifObj = load(src);
+    console.log(exifObj);
+    const field = 'GPS';
+    const GPS = exifObj[field];
+    console.log(GPS);
 
-      const response = xhr.responseText;
-      let binary = '';
-      for (let i = 0; i < response.length; i++) {
-        binary += String.fromCharCode(response.charCodeAt(i) && 0xff);
-      }
-      console.log(binary);
-      const src = 'data:image/jpeg;base64,' + btoa(binary);
+    if (exifObj[field][1] === 'N') {
+      this.latitude = this.ConvertDMSToDD(
+        exifObj[field][2][0][0],
+        exifObj[field][2][1][0],
+        exifObj[field][2][2][0] / exifObj[field][2][2][1],
+        exifObj[field][1]
+      );
 
-      const exifObj = load(src);
-      const GPS = exifObj[exifObj.GPS];
+      this.longitude = this.ConvertDMSToDD(
+        exifObj[field][4][0][0],
+        exifObj[field][4][0][0],
+        exifObj[field][4][0][0] / exifObj[field][4][2][1],
+        exifObj[field][3]
+      );
 
-      if (exifObj[exifObj.GPS][1] === 'N') {
-        this.latitude = this.ConvertDMSToDD(
-          exifObj[exifObj.GPS][2][0][0],
-          exifObj[exifObj.GPS][2][1][0],
-          exifObj[exifObj.GPS][2][2][0] / exifObj[exifObj.GPS][2][2][1],
-          exifObj[exifObj.GPS][1]
-        );
+      // load Places Autocomplete
+      this.mapsAPILoader.load().then(() => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(position => {
+            // this.latitude = position.coords.latitude;
+            // this.longitude = position.coords.longitude;
+            this.zoom = 8;
+            this.getAddress(this.latitude, this.longitude);
+          });
+        }
+        // tslint:disable-next-line: new-parens
+        this.geoCoder = new google.maps.Geocoder();
 
-        this.longitude = this.ConvertDMSToDD(
-          exifObj[exifObj.GPS][4][0][0],
-          exifObj[exifObj.GPS][4][0][0],
-          exifObj[exifObj.GPS][4][0][0] / exifObj[exifObj.GPS][4][2][1],
-          exifObj[exifObj.GPS][3]
-        );
-
-        // load Places Autocomplete
-        this.mapsAPILoader.load().then(() => {
-          if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
-              // this.latitude = position.coords.latitude;
-              // this.longitude = position.coords.longitude;
-              this.zoom = 8;
-              this.getAddress(this.latitude, this.longitude);
-            });
-          }
-          // tslint:disable-next-line: new-parens
-          this.geoCoder = new google.maps.Geocoder();
-
-          /*
+        /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -246,11 +238,8 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-        });
-      }
-    };
-    xhr.overrideMimeType('text/plain; charset=x-user-defined');
-    xhr.send();
+      });
+    }
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -322,6 +311,9 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.update(updatePhotoDTO).subscribe(
       updatedPhotoDTO => {
         Object.assign(this.photo, updatedPhotoDTO);
+        this.fileService
+          .getPhoto(this.photo.blobId)
+          .subscribe(url => (this.imageUrl = url));
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
       },
@@ -407,10 +399,9 @@ export class PhotoModalComponent implements OnInit {
   }
 
   forceDownload() {
-    const url = this.photo.blobId;
-    const fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
+    const fileName = this.photo.name;
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('GET', this.imageUrl, true);
     xhr.responseType = 'blob';
     xhr.onload = function() {
       const urlCreator = window.URL;

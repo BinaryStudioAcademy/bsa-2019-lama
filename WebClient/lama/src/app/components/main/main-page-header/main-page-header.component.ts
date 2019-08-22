@@ -50,10 +50,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
 
   ngOnInit() {
     const id = localStorage.getItem('userId');
-    if (id !== '' && id != null) {
+    if (id) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
         u => {
-          this.avatarUrl = u.photoUrl;
+          this.file
+            .getPhoto(u.photoUrl)
+            .subscribe(url => (this.avatarUrl = url));
         },
         error => this.notifier.notify('error', 'Error loading user')
       );
@@ -64,7 +66,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
 
   ngDoCheck() {
     if (this.shared.avatar != null) {
-      this.avatarUrl = this.shared.avatar.imageUrl;
+      this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
+        this.avatarUrl = url;
+      });
     }
     this.searchCriteria.length < 3
       ? (this.isActive = false)

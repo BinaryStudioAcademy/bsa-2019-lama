@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Storage;
+﻿using MetadataExtractor;
+using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Shared.Protocol;
 
@@ -6,6 +7,7 @@ using Processors.Domain.Settings;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Processors.DataAccess.Implementation
@@ -64,20 +66,44 @@ namespace Processors.DataAccess.Implementation
         // METHODS
         public async Task<string> LoadPhotoToBlob(byte[] blob)
         {
-            string blobName = Guid.NewGuid().ToString() + ".jpg";
-
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobName);
-            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            var directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            var name = Guid.NewGuid().ToString();
+            string contentType = "image/jpg";
+            foreach (var directory in directories)
+            {
+                foreach (var tag in directory.Tags)
+                {
+                    if (tag.Name == "Detected MIME Type")
+                    {
+                        contentType = tag.Description;
+                    }
+                }
+            }
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerPhotos.GetBlockBlobReference($"{name}.{Path.GetFileName(contentType)}");
+            cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
-
-            return cloudBlockBlob.Uri.ToString();
+            return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
+
         public async Task<string> LoadAvatarToBlob(byte[] blob)
         {
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference(Guid.NewGuid().ToString() + ".jpg");
-            cloudBlockBlob.Properties.ContentType = "image/jpg";
+            var directories = ImageMetadataReader.ReadMetadata(new MemoryStream(blob));
+            var name = Guid.NewGuid().ToString();
+            string contentType = "image/jpg";
+            foreach (var directory in directories)
+            {
+                foreach (var tag in directory.Tags)
+                {
+                    if (tag.Name == "Detected MIME Type")
+                    {
+                        contentType = tag.Description;
+                    }
+                }
+            }
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference($"{name}.{Path.GetFileName(contentType)}");
+            cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
-            return cloudBlockBlob.Uri.ToString();
+            return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
         
         public async Task<byte[]> GetPhoto(string fileName)

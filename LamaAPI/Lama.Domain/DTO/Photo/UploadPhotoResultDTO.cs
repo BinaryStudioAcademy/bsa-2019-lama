@@ -3,6 +3,7 @@
     public class UploadPhotoResultDTO
     {
         public long Id { get; set; }
+        public string Name { get; set; }
         public string BlobId { get; set; }
         public string Blob64Id { get; set; }
         public string Blob256Id { get; set; }

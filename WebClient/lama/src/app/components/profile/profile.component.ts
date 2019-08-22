@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
@@ -18,7 +19,8 @@ export class ProfileComponent implements OnInit {
     private httpService: HttpService,
     private userService: UserService,
     private sharedService: SharedService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private fileService: FileService
   ) {}
 
   defaultFirstName: string;
@@ -48,7 +50,9 @@ export class ProfileComponent implements OnInit {
           this.isSuccesfull = true;
           this.user = u;
           this.showSpinner = false;
-          this.photoUrl = u.photoUrl;
+          this.fileService
+            .getPhoto(u.photoUrl)
+            .subscribe(url => (this.photoUrl = url));
           this.sharedService.avatar = { imageUrl: u.photoUrl };
 
           console.log(this.user.lastName);
@@ -104,7 +108,7 @@ export class ProfileComponent implements OnInit {
       error => this.notifier.notify('error', 'Error saving')
     );
     if (this.isPhotoLoaded) {
-      this.sharedService.avatar = this.user.photo;
+      this.sharedService.avatar = { imageUrl: this.user.photoUrl };
     }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);

@@ -38,6 +38,15 @@ namespace Photo.BusinessLogic.Services
         {
             return await storage.GetPhotos(values);
         }
+        public async Task<string> GetPhoto (string blobId)
+        {
+            return await storage.GetPhoto(blobId);
+        }
+
+        public async Task<string> GetAvatar(string blobId)
+        {
+            return await storage.GetAvatar(blobId);
+        }
         // METHODS
         public Task<IEnumerable<PhotoDocument>> Get()
         {
@@ -69,28 +78,22 @@ namespace Photo.BusinessLogic.Services
             string file = filename.Replace(ext, "");
             string base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
             byte[] newImageBlob = Convert.FromBase64String(base64);
-
             await DeleteOldBlobsAsync(elasticId: updatePhotoDTO.Id);
-
             string blobId = await storage.LoadPhotoToBlob(newImageBlob, $"{filename}");
-
             UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
             {
                 BlobId = blobId,
                 Blob64Id = blobId,
                 Blob256Id = blobId
             };
-
             await elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-
-            messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
-            
+            messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id); 
             return updatedPhoto;
         }
+
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);
-
             await storage.DeleteFileAsync(photoDocument.BlobId);
             await storage.DeleteFileAsync(photoDocument.Blob64Id);
             await storage.DeleteFileAsync(photoDocument.Blob256Id);
@@ -115,36 +118,27 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] items)
         {    
-            CreatePhotoResultDTO[] createdPhotos = new CreatePhotoResultDTO[items.Length];
-
-            for (int i = 0; i < items.Length; ++i)
+            var createdPhotos = new List<CreatePhotoResultDTO>();
+            foreach(var item in items)
             {
-                string base64 = ConvertToBase64(items[i].ImageUrl);
+                string base64 = ConvertToBase64(item.ImageUrl);
                 byte[] blob = Convert.FromBase64String(base64);
-                var filename = items[i].FileName;
-                var ext = Path.GetExtension(filename);
-                string file = filename.Replace(ext, "");
-
-                string blobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}");
-
+                string blobId = await storage.LoadPhotoToBlob(blob);
                 PhotoDocument photoDocumentToCreate = new PhotoDocument
                 {
-                    Id = items[i].Id,
-                    Name = filename,
-
+                    Id = item.Id,
+                    Name = item.FileName,
                     BlobId = blobId,
                     Blob64Id = blobId,
                     Blob256Id = blobId,
-                    OriginalBlobId = await storage.LoadPhotoToBlob(blob, $"{file}{ext}"),
-
-                    UserId = items[i].AuthorId,
-                    Description = items[i].Description
+                    OriginalBlobId = await storage.LoadPhotoToBlob(blob),
+                    UserId = item.AuthorId,
+                    Description = item.Description
                 };
 
                 await Create(photoDocumentToCreate);
 
-                createdPhotos[i] = mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate);
-                
+                createdPhotos.Add(mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
                 messageService.SendPhotoToThumbnailProcessor(photoDocumentToCreate.Id);
             }
             return createdPhotos;
@@ -153,27 +147,20 @@ namespace Photo.BusinessLogic.Services
         public async Task<int> CreateAvatar(CreatePhotoDTO item)
         {
             string base64 = ConvertToBase64(item.ImageUrl);
-
             byte[] blob = Convert.FromBase64String(base64);
-
             string blobId = await storage.LoadAvatarToBlob(blob);
-
             await Create(new PhotoDocument
             {
                 Id = item.Id,
                 Name = Guid.NewGuid().ToString(),
-
                 BlobId = blobId,
                 Blob64Id = blobId,
                 Blob256Id = blobId,
-
                 OriginalBlobId = await storage.LoadAvatarToBlob(blob),
                 UserId = item.AuthorId,
                 Description = item.Description
             });
-
             messageService.SendAvatarToThumbnailProcessor(item.Id);
-
             return item.Id;
         }
         private string ConvertToBase64(string imageUrl)

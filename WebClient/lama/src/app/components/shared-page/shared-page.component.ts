@@ -7,6 +7,7 @@ import { SharedPageDataset } from 'src/app/models/sharedPageDataset';
 import { User } from 'firebase';
 import { UserService } from 'src/app/services/user.service';
 import { Subject } from 'rxjs';
+import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
@@ -21,10 +22,13 @@ export class SharedPageComponent implements OnInit {
   sharedLinkData: string;
   updatedPhoto: PhotoRaw = {} as PhotoRaw;
   userData: SharedPageDataset;
+  sharedPhotoUrl: string;
+  userAvatarUrl: string;
 
   constructor(
     private route: ActivatedRoute,
     private sharingService: SharingService,
+    private fileService: FileService,
     private notifier: NotifierService
   ) {}
 
@@ -39,6 +43,9 @@ export class SharedPageComponent implements OnInit {
       .subscribe(
         updated => {
           this.updatedPhoto = updated;
+          this.fileService
+            .getPhoto(this.sharedPhoto.sharedImageUrl)
+            .subscribe(url => (this.sharedPhotoUrl = url));
           console.log(this.updatedPhoto.sharedLink);
         },
         error =>
@@ -63,7 +70,12 @@ export class SharedPageComponent implements OnInit {
       );
 
     this.userSubject.subscribe(
-      data => (this.userData = data),
+      data => {
+        this.userData = data;
+        this.fileService
+          .getPhoto(this.userData.user.photoUrl)
+          .subscribe(url => (this.userAvatarUrl = url));
+      },
       error => this.notifier.notify('error', 'Error user subject')
     );
   }

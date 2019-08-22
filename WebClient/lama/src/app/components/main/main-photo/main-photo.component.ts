@@ -3,13 +3,16 @@ import {
   Input,
   EventEmitter,
   Output,
-  OnChanges
+  OnChanges,
+  OnInit
 } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { Favorite } from 'src/app/models/favorite';
+import { FileService } from 'src/app/services';
+import { environment } from 'src/environments/environment';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
@@ -19,19 +22,27 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
+
 export class MainPhotoComponent implements OnChanges {
-  @Input('_photo') photo: PhotoRaw;
   @Input('_id') id = -1;
+  @Input('_photo') photo: PhotoRaw;
   @Output() Click = new EventEmitter<PhotoRaw>();
   @Output() Select = new EventEmitter<PhotoRawState>();
   private userId: number;
+  imageUrl: string;
   isFavorite = false;
   isSelected = false;
 
   constructor(
     private favoriteService: FavoriteService,
+    private fileService: FileService,
     private notifier: NotifierService
   ) {}
+  ngOnInit() {
+    this.fileService
+      .getPhoto(this.photo.blob256Id)
+      .subscribe(url => (this.imageUrl = url));
+  }
 
   ngOnChanges() {
     this.checkFavorite();
