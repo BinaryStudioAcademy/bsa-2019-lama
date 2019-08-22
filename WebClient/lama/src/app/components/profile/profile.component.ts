@@ -5,6 +5,8 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpService } from 'src/app/services/http.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { FileService } from 'src/app/services';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +18,9 @@ export class ProfileComponent implements OnInit {
     public authService: AuthService,
     private httpService: HttpService,
     private userService: UserService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private notifier: NotifierService,
+    private fileService: FileService
   ) {}
 
   defaultFirstName: string;
@@ -46,7 +50,9 @@ export class ProfileComponent implements OnInit {
           this.isSuccesfull = true;
           this.user = u;
           this.showSpinner = false;
-          this.photoUrl = u.photoUrl;
+          this.fileService
+            .getPhoto(u.photoUrl)
+            .subscribe(url => (this.photoUrl = url));
           this.sharedService.avatar = { imageUrl: u.photoUrl };
 
           console.log(this.user.lastName);
@@ -56,6 +62,7 @@ export class ProfileComponent implements OnInit {
           this.defaultImageUrl = this.user.photoUrl;
         },
         err => {
+          this.notifier.notify('error', 'Error loading');
           console.log(err);
           this.showSpinner = false;
           this.isSuccesfull = false;
@@ -89,15 +96,20 @@ export class ProfileComponent implements OnInit {
 
   async saveUser() {
     if (!this.userForm.dirty && this.defaultImageUrl === this.photoUrl) {
+      this.notifier.notify('error', 'Nothing to change');
       return;
     }
+
     this.defaultImageUrl = this.photoUrl;
-    console.log(this.photoUrl);
-    this.httpService
-      .putData(`users`, this.user)
-      .subscribe((data: User) => (this.testReceivedUser = data));
+    this.httpService.putData(`users`, this.user).subscribe(
+      (data: User) => {
+        this.testReceivedUser = data;
+        this.notifier.notify('success', 'Changes Saved');
+      },
+      error => this.notifier.notify('error', 'Error saving')
+    );
     if (this.isPhotoLoaded) {
-      this.sharedService.avatar = this.user.photo;
+      this.sharedService.avatar = { imageUrl: this.user.photoUrl };
     }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);

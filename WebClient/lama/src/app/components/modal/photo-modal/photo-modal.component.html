@@ -11,7 +11,7 @@
 
                 <!--editing view-->
                 <ng-template #editView>
-                    <app-edit-photo [imageToEdit]="photo.blobId" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
+                    <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (cancelClickedEvent)="goBackToImageView()">
                     </app-edit-photo>
                 </ng-template>
 
@@ -25,8 +25,9 @@
 
                             <div class="is-relative main-photo">
                                 <!--image-->
-                                <div class="photo">
-                                    <img src="{{ photo.blobId }}" alt="Image">
+                                <spinner *ngIf="isShowSpinner"></spinner>
+                                <div class="photo" *ngIf="!isShowSpinner">
+                                    <img src="{{ imageUrl }}" alt="Image">
 
                                     <!--overlay-->
                                     <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
@@ -43,7 +44,7 @@
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="download">
-                                                        <a download attr.data-href="{{ photo.blobId }}" (click)="forceDownload()">
+                                                        <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
                                                             <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
                                                         </a>
                                                     </ng-template>
@@ -167,3 +168,4 @@
 
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>
+<notifier-container></notifier-container>

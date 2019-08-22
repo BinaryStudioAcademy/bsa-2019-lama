@@ -60,20 +60,14 @@
           <a class="button is-primary" (click)="GenerateClick()">
             Generate shared link
           </a>
-        </div>
-        <div class="column is-half has-text-centered">
-          <a class="button is-primary" (click)="cancel()">
+                </div>
+                <div class="column is-half has-text-centered">
+                    <a class="button is-primary" (click)="cancel()">
             Cancel
           </a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div
-    *ngIf="copyClicked"
-    id="copySuccessfulAlert"
-    class="notification is-primary"
-  >
-    Link is now in your clipboard
-  </div>
 </div>
+<notifier-container></notifier-container>

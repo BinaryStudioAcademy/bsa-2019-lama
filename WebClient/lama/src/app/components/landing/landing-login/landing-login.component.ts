@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService, UserService } from 'src/app/services';
 import { Router } from '@angular/router';
-import {AngularFireAuth} from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -10,14 +11,21 @@ import {AngularFireAuth} from '@angular/fire/auth';
   styleUrls: ['./landing-login.component.sass']
 })
 export class LandingLoginComponent implements OnInit {
-
   showAuthModal = false;
   private user: any;
 
-  constructor(private authService: AuthService, private router: Router, public afAuth: AngularFireAuth) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    public afAuth: AngularFireAuth,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {
-    this.afAuth.user.subscribe(user => this.user = user);
+    this.afAuth.user.subscribe(
+      user => (this.user = user),
+      error => this.notifier.notify('error', 'Error loading')
+    );
   }
 
   public openAuthWindow() {
@@ -27,5 +35,4 @@ export class LandingLoginComponent implements OnInit {
     }
     this.showAuthModal = true;
   }
-
 }

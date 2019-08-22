@@ -6,7 +6,8 @@
         <div class="column is-four-fifths">
           <button
             class="clear-button is-white button icon is-small is-right fas has-text-grey-light"
-            (click)="clearInput()">
+            (click)="clearInput()"
+          >
             <i class="fa fa-times" id="success-icon"></i>
           </button>
           <p class="control has-icons-left has-icons-right">
@@ -46,12 +47,12 @@
           </a>
         </div>
         <div class="column">
-            <span class="has-text-primary" *ngIf="availableAll && showAvailable">
-              Link is available to all
-            </span>
-            <span class="has-text-primary" *ngIf="!availableAll && showAvailable">
-              Link is available by emails
-            </span>
+          <span class="has-text-primary" *ngIf="availableAll && showAvailable">
+            Link is available to all
+          </span>
+          <span class="has-text-primary" *ngIf="!availableAll && showAvailable">
+            Link is available by emails
+          </span>
         </div>
       </div>
 
@@ -69,11 +70,5 @@
       </div>
     </div>
   </div>
-  <div
-    *ngIf="copyClicked"
-    id="copySuccessfulAlert"
-    class="notification is-primary"
-  >
-    Link is now in your clipboard
-  </div>
 </div>
+<notifier-container></notifier-container>

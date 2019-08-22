@@ -7,6 +7,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { UserService } from 'src/app/services/user.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-album-by-email',
@@ -22,7 +23,6 @@ export class ShareAlbumByEmailComponent implements OnInit {
   sharedLink = '';
   sharedEmail = '';
   imageUrl: string;
-  copyClicked = false;
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared/album';
@@ -30,7 +30,10 @@ export class ShareAlbumByEmailComponent implements OnInit {
   availableAll = true;
   showAvailable = false;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {}
 
@@ -40,15 +43,18 @@ export class ShareAlbumByEmailComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-        if (user.email) {
-          this.userEmails.push(user.email);
-          this.wrongInput = false;
-          this.clearInput();
-        } else {
-          this.wrongInput = true;
-        }
-      });
+      this.userService.getUserByEmail(this.sharedEmail).subscribe(
+        user => {
+          if (user.email) {
+            this.userEmails.push(user.email);
+            this.wrongInput = false;
+            this.clearInput();
+          } else {
+            this.wrongInput = true;
+          }
+        },
+        error => this.notifier.notify('error', 'Error getting email')
+      );
     } else {
       this.wrongInput = true;
     }
@@ -75,11 +81,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.copyClicked = !this.copyClicked;
-    setTimeout(
-      () => (this.copyClicked = !this.copyClicked),
-      this.DISAPPEARING_TIMEOUT
-    );
+    this.notifier.notify('success', 'Link is now in your clipboard');
   }
 
   public encodeAlbumData(album: SharedAlbum): string {
@@ -94,6 +96,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
     this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
   }
   public GenerateClick() {
+    this.createShareableLink();
     if (this.userEmails.length) {
       this.availableAll = false;
     }

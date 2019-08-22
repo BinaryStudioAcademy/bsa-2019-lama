@@ -1,23 +1,18 @@
 <div class="modal is-active">
     <div class="modal-background" (click)="cancel()"></div>
     <div class="modal-card">
-      <div class="modal-card-body">
-        <div class="columns">
-          <div class="column is-half">
-            <input id="share-link" class="input" type="text"  [(value)]="sharedLink" readonly>
-          </div>
-          <div class="column is-half">
-            <a class="button is-primary" (click)="copyShareableLink()">
+        <div class="modal-card-body">
+            <div class="columns">
+                <div class="column is-half">
+                    <input id="share-link" class="input" type="text" [(value)]="sharedLink" readonly>
+                </div>
+                <div class="column is-half">
+                    <a class="button is-primary" (click)="copyShareableLink()">
               Copy
             </a>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    <div *ngIf="copyClicked" id="copySuccessfulAlert" class="notification is-primary">
-        Link is now in your clipboard
-    </div>
-  </div>
-  
-  
-  
+</div>
+<notifier-container></notifier-container>

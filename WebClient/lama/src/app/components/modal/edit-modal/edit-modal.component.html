@@ -13,7 +13,7 @@
 
                             <!--crop template-->
                             <ng-template ngSwitchCase="crop">
-                                <app-crop-image [imageToCrop]="photo.blobId" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="save($event)">
+                                <app-crop-image [imageToCrop]="imageUrl" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="save($event)">
                                 </app-crop-image>
                             </ng-template>
 
@@ -21,7 +21,7 @@
 
                             <!--rotate template-->
                             <ng-template ngSwitchCase="rotate">
-                                <app-rotate-image [imageToRotate]="photo.blobId" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="save($event)">
+                                <app-rotate-image [imageToRotate]="imageUrl" (cancelClickedEvent)="goBackToImageView()" (saveClickedEvent)="save($event)">
                                 </app-rotate-image>
                             </ng-template>
                         </div>

@@ -4,6 +4,7 @@ import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -19,7 +20,6 @@ export class ShareByEmailModalComponent implements OnInit {
   sharedLink = '';
   sharedEmail = '';
   imageUrl: string;
-  copyClicked = false;
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared';
@@ -27,7 +27,10 @@ export class ShareByEmailModalComponent implements OnInit {
   showAvailable = false;
   availableAll = true;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {}
 
@@ -45,7 +48,8 @@ export class ShareByEmailModalComponent implements OnInit {
         } else {
           this.wrongInput = true;
         }
-      });
+      },
+      error => this.notifier.notify('error', 'Error getting email'));
     } else {
       this.wrongInput = true;
     }
@@ -72,11 +76,7 @@ export class ShareByEmailModalComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
-    this.copyClicked = !this.copyClicked;
-    setTimeout(
-      () => (this.copyClicked = !this.copyClicked),
-      this.DISAPPEARING_TIMEOUT
-    );
+    this.notifier.notify('success', 'Link is now in your clipboard');
   }
 
   public encodePhotoData(photo: SharedPhoto): string {
