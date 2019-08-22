@@ -42,7 +42,7 @@ namespace Lama.BusinessLogic.Services
 
                 if (comments[i].User.AvatarId.HasValue)
                 {
-                    commentLists[i].AuthorAvatar64Url = 
+                    commentLists[i].AuthorAvatar64Id = 
                         (await photoService.Get(comments[i].User.AvatarId.Value)).Blob64Id;
                 }
             }

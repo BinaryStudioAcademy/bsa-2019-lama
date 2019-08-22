@@ -3,6 +3,7 @@ import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
+import { FileService } from 'src/app/services/file.service';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
@@ -26,15 +27,21 @@ export class MainAlbumComponent implements OnInit {
   isMenu = true;
   showSharedModal = false;
   showSetCoverModal = false;
+  imageUrl: string;
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(
     private albumService: AlbumService,
     private favoriteService: FavoriteService,
+    private fileService: FileService,
     private notifier: NotifierService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fileService
+      .getPhoto(this.album.photo.blob256Id)
+      .subscribe(url => (this.imageUrl = url));
+  }
 
   clickPerformed(): void {
     this.Click.emit(this.album);
@@ -42,8 +49,11 @@ export class MainAlbumComponent implements OnInit {
 
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
-    this.toggleSetCoverModal();
-    this.notifier.notify('success', 'Cover Updated');
+    this.fileService.getPhoto(event.blob256Id).subscribe(url => {
+      this.imageUrl = url;
+      this.toggleSetCoverModal();
+      this.notifier.notify('success', 'Cover Updated');
+    });
   }
 
   clickMenu() {

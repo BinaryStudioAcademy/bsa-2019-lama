@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { PhotoRaw } from 'src/app/models';
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-choose-album-cover',
@@ -13,12 +14,14 @@ export class ChooseAlbumCoverComponent implements OnInit {
   @Output() Click = new EventEmitter<PhotoRaw>(true);
 
   isSelected: boolean;
+  imageUrl: string;
 
-  constructor() {
+  constructor(private fileService: FileService) {
     this.isSelected = false;
    }
 
   ngOnInit() {
+    this.fileService.getPhoto(this.cover.blob256Id).subscribe(url => this.imageUrl = url);
   }
 
   clickPerformed() {

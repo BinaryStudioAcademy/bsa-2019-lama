@@ -5,7 +5,7 @@
         public int CommentId { get; set; }
 
         public int AuthorId { get; set; }
-        public string AuthorAvatar64Url { get; set; }
+        public string AuthorAvatar64Id { get; set; }
         public string AuthorFirstName { get; set; }
         public string AuthorLastName { get; set; }
 

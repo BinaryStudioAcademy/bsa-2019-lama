@@ -30,7 +30,16 @@ export class DeletedPhotosComponent implements OnInit {
       .getDeletedPhotos(userId)
       .pipe(map(dto => dto as DeletedPhotoList[]))
       .subscribe(
-        items => (this.deletedPhotos = items),
+        items => {
+          this.deletedPhotos = items;
+          if (this.deletedPhotos) {
+            this.deletedPhotos.forEach(item => {
+              this.fileService
+                .getPhoto(item.blob256Id)
+                .subscribe(url => (item.imageUrl = url));
+            });
+          }
+        },
         error => this.notifier.notify('error', 'Error loading deleting photos')
       );
   }
@@ -67,7 +76,6 @@ export class DeletedPhotosComponent implements OnInit {
   private getSelectedItem(): PhotoToDeleteRestoreDTO[] {
     return this.deletedPhotos.filter(p => p.isMarked);
   }
-
   private removeSelectedPhotoFromView(): void {
     this.deletedPhotos = this.deletedPhotos.filter(p => !p.isMarked);
     this.countSelectedPhtoto = 0;

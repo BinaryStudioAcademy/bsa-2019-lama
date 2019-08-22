@@ -7,6 +7,7 @@ namespace Lama.Domain.BlobModels
     public partial class PhotoDocument
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string BlobId { get; set; }
         public string Blob64Id { get; set; }
         public string Blob256Id { get; set; }
