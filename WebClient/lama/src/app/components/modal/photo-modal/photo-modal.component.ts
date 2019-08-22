@@ -68,7 +68,7 @@ export class PhotoModalComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
-  address: string;
+  @Input() address: string;
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
@@ -95,6 +95,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
@@ -110,11 +111,15 @@ export class PhotoModalComponent implements OnInit {
     this.userService.getUser(this.userId).subscribe(
       user => {
         this.currentUser = user;
-        const reactions = this.photo.reactions;
+        let reactions = this.photo.reactions;
 
-        this.hasUserReaction = reactions.some(
-          x => x.userId === this.currentUser.id
-        );
+        if (reactions === null) {
+          reactions = [];
+        } else {
+          this.hasUserReaction = reactions.some(
+            x => x.userId === this.currentUser.id
+          );
+        }
       },
       error => this.notifier.notify('error', 'Error getting user')
     );

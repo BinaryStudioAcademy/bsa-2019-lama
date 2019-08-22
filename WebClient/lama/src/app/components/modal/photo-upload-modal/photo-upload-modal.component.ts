@@ -61,6 +61,7 @@ export class PhotoUploadModalComponent implements OnInit {
       uploadedPhotos => {
         this.addToListEvent.emit(uploadedPhotos);
         this.toggleModal();
+        this.notifier.notify('success', 'Uploaded');
       },
       error => this.notifier.notify('error', 'Error sending photos')
     );
