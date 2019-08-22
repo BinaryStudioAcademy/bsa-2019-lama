@@ -26,7 +26,9 @@ export class ShareAlbumByEmailComponent implements OnInit {
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   userEmails: Array<string> = [];
   sharingRoute = 'main/shared/album';
-  showSuccessIcon = false;
+  wrongInput = false;
+  availableAll = true;
+  showAvailable = false;
 
   constructor(private userService: UserService) {}
 
@@ -37,15 +39,18 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
 
   public AddEmail() {
-    if (this.sharedEmail) {
+    if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
       this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
         if (user.email) {
           this.userEmails.push(user.email);
-          this.showSuccessIcon = true;
+          this.wrongInput = false;
+          this.clearInput();
         } else {
-          this.showSuccessIcon = false;
+          this.wrongInput = true;
         }
       });
+    } else {
+      this.wrongInput = true;
     }
   }
 
@@ -89,6 +94,26 @@ export class ShareAlbumByEmailComponent implements OnInit {
     this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
   }
   public GenerateClick() {
+    if (this.userEmails.length) {
+      this.availableAll = false;
+    }
+    this.showAvailable = true;
     this.createShareableLink();
+  }
+
+  clearInput() {
+    this.sharedEmail = '';
+  }
+
+  isEmail(search: string) {
+    let serchfind: boolean;
+    const regexp = new RegExp(
+      // tslint:disable-next-line: max-line-length
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
+    serchfind = regexp.test(search);
+
+    return serchfind;
   }
 }

@@ -4,18 +4,24 @@
     <div class="modal-card-body">
       <div class="columns is-vcentered">
         <div class="column is-four-fifths">
-		  <p class="control has-icons-left has-icons-right">
-            <input id="share-link" class="input" type="email" placeholder="Email" [(ngModel)]="sharedEmail">
-			<span class="icon is-small is-left">
-				<i class="fa fa-envelope"></i>
-			</span>
-			<span class="icon is-small is-right fas has-text-danger" *ngIf="!showSuccessIcon">
-				<i class="fa fa-times" id="success-icon"></i>
-			</span>
-			<span class="icon is-small is-right fas has-text-success" *ngIf="showSuccessIcon">
-				<i class="fa fa-check" id="success-icon"></i>
-			</span>
-		  </p>
+          <button
+            class="clear-button is-white button icon is-small is-right fas has-text-grey-light"
+            (click)="clearInput()">
+            <i class="fa fa-times" id="success-icon"></i>
+          </button>
+          <p class="control has-icons-left has-icons-right">
+            <input
+              id="share-link"
+              class="input"
+              [class.is-danger]="wrongInput"
+              type="email"
+              placeholder="Email"
+              [(ngModel)]="sharedEmail"
+            />
+            <span class="icon is-small is-left">
+              <i class="fa fa-envelope"></i>
+            </span>
+          </p>
         </div>
         <div class="column">
           <a class="button is-primary" (click)="AddEmail()">
@@ -23,20 +29,34 @@
           </a>
         </div>
       </div>
-	  
-	  <div class="columns">
+
+      <div class="columns">
         <div class="column is-half">
-          <input id="share-link" class="input" type="text" [(value)]="sharedLink" readonly>
+          <input
+            id="share-link"
+            class="input"
+            type="text"
+            [(value)]="sharedLink"
+            readonly
+          />
         </div>
-        <div class="column is-half">
+        <div class="column is-2">
           <a class="button is-primary" (click)="copyShareableLink()">
             Copy
           </a>
         </div>
+        <div class="column">
+            <span class="has-text-primary" *ngIf="availableAll && showAvailable">
+              Link is available to all
+            </span>
+            <span class="has-text-primary" *ngIf="!availableAll && showAvailable">
+              Link is available by emails
+            </span>
+        </div>
       </div>
-	  
-	  <div class="columns">
-		<div class="column is-half  has-text-centered">
+
+      <div class="columns">
+        <div class="column is-half  has-text-centered">
           <a class="button is-primary" (click)="GenerateClick()">
             Generate shared link
           </a>
@@ -49,9 +69,11 @@
       </div>
     </div>
   </div>
-  <div *ngIf="copyClicked" id="copySuccessfulAlert" class="notification is-primary">
-      Link is now in your clipboard
-    </div>
+  <div
+    *ngIf="copyClicked"
+    id="copySuccessfulAlert"
+    class="notification is-primary"
+  >
+    Link is now in your clipboard
+  </div>
 </div>
-  
-  
