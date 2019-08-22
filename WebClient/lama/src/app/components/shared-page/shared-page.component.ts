@@ -2,12 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
-import { SharedService } from 'src/app/services/shared.service';
 import { SharingService } from 'src/app/services/sharing.service';
 import { SharedPageDataset } from 'src/app/models/sharedPageDataset';
 import { User } from 'firebase';
 import { UserService } from 'src/app/services/user.service';
-import { Photo } from 'src/app/models';
 import { Subject } from 'rxjs';
 import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
@@ -28,8 +26,6 @@ export class SharedPageComponent implements OnInit {
   userAvatarUrl: string;
 
   constructor(
-    private userService: UserService,
-    private router: Router,
     private route: ActivatedRoute,
     private sharingService: SharingService,
     private fileService: FileService,
