@@ -13,7 +13,7 @@ import { NotifierService } from 'angular-notifier';
 export class LandingLoginComponent implements OnInit {
   showAuthModal = false;
   private user: any;
-  
+
   constructor(
     private authService: AuthService,
     private router: Router,
