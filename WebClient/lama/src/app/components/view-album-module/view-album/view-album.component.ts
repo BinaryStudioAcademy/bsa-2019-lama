@@ -1,9 +1,17 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, DoCheck } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  DoCheck
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Album } from 'src/app/models/Album/album';
 import { Photo, PhotoRaw } from 'src/app/models';
-import {PhotoRawState} from 'src/app/models/Photo/photoRawState';
+import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
@@ -15,6 +23,7 @@ import { ZipService } from 'src/app/services/zip.service';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { User } from 'src/app/models/User/user';
 import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-view-album',
@@ -23,8 +32,7 @@ import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
   providers: [FavoriteService, ZipService]
 })
 export class ViewAlbumComponent implements OnInit, DoCheck {
-
-  @Input() album: ViewAlbum = { } as ViewAlbum;
+  @Input() album: ViewAlbum = {} as ViewAlbum;
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
@@ -39,32 +47,57 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
-  constructor(private route: ActivatedRoute, private router: Router,
-              private albumService: AlbumService, private favoriteService: FavoriteService,
-              private zipService: ZipService, private resolver: ComponentFactoryResolver) {
-                    this.routeSubscription = route.params.subscribe(params => this.AlbumId = params.id);
-                    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.album = this.router.getCurrentNavigation().extras.state.album;
-      }
-    });
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private albumService: AlbumService,
+    private favoriteService: FavoriteService,
+    private zipService: ZipService,
+    private resolver: ComponentFactoryResolver,
+    private notifier: NotifierService
+  ) {
+    this.routeSubscription = route.params.subscribe(
+      params => (this.AlbumId = params.id)
+    );
+    this.route.queryParams.subscribe(
+      params => {
+        if (this.router.getCurrentNavigation().extras.state) {
+          this.album = this.router.getCurrentNavigation().extras.state.album;
+        }
+      },
+      error => this.notifier.notify('error', 'Error getting query params')
+    );
   }
 
   ngOnInit() {
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.selectedPhotos = [];
-    if (this.loading == false && this.AlbumId != 0) {
-      this.albumService.getAlbum(this.AlbumId).subscribe( x => {this.album = x.body; });
-    } else if (this.AlbumId == 0) {
-            this.favoriteService.getFavoritesPhotos(userId)
-           .subscribe(data => {
-            this.album.photoAlbums = data;
-            this.album.id = 0;
-            this.album.title = 'Favorite photos';
-          });
+    if (this.loading === false && this.AlbumId !== 0) {
+      this.albumService.getAlbum(this.AlbumId).subscribe(
+        x => {
+          this.album = x.body;
+        },
+        error => this.notifier.notify('error', 'Error loading album')
+      );
+    } else if (this.AlbumId === 0) {
+      this.favoriteService.getFavoritesPhotos(userId).subscribe(
+        data => {
+          this.album.photoAlbums = data;
+          this.album.id = 0;
+          this.album.title = 'Favorite photos';
+        },
+        error =>
+          this.notifier.notify('error', 'Error loading favourites photos')
+      );
     }
-    this.favoriteService.getFavoritesIds(userId).subscribe(data => { this.favorites = new Set<number>(data); this.loading = true;});
-    this.coverId = parseInt(localStorage.getItem("favoriteCover"));
+    this.favoriteService.getFavoritesIds(userId).subscribe(
+      data => {
+        this.favorites = new Set<number>(data);
+        this.loading = true;
+      },
+      error => this.notifier.notify('error', 'Error loading favourites')
+    );
+    this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
   }
 
   public photoClicked(eventArgs: PhotoRaw) {
@@ -73,27 +106,43 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     console.log(eventArgs);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.deletePhotoEvenet.subscribe(
+      this.deletePhotoHandler.bind(this)
+    );
     componentRef.instance.currentUser = this.currentUser;
-    componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
+    componentRef.instance.updatePhotoEvent.subscribe(
+      this.updatePhotoHandler.bind(this)
+    );
   }
 
   public deletePhotoHandler(photoToDeleteId: number) {
-    this.album.photoAlbums = this.album.photoAlbums.filter(p => p.id !== photoToDeleteId);
+    this.album.photoAlbums = this.album.photoAlbums.filter(
+      p => p.id !== photoToDeleteId
+    );
   }
 
   public updatePhotoHandler(updatedPhoto: PhotoRaw) {
-    const index = this.album.photoAlbums.findIndex(i => i.id === updatedPhoto.id);
+    const index = this.album.photoAlbums.findIndex(
+      i => i.id === updatedPhoto.id
+    );
     this.album.photoAlbums[index] = updatedPhoto;
   }
 
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
-    if (this.album.photoAlbums != undefined && this.album.photoAlbums.length == 0) {
-      if (this.album.id == 0) {
+    if (
+      this.album.photoAlbums !== undefined &&
+      this.album.photoAlbums.length === 0
+    ) {
+      if (this.album.id === 0) {
         localStorage.removeItem('favoriteCover');
       } else {
-        this.albumService.removeAlbumCover(this.album.id).subscribe(x => x);
+        this.albumService
+          .removeAlbumCover(this.album.id)
+          .subscribe(
+            x => x,
+            error => this.notifier.notify('error', 'Error removing cover')
+          );
       }
     }
   }
@@ -109,26 +158,31 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   public deleteImages(): void {
     const indexes = new Array<number>();
-    this.selectedPhotos.forEach(element => {
-      indexes.push(this.album.photoAlbums.findIndex(i => i.id === element.id));
+    this.selectedPhotos.forEach(e => {
+      indexes.push(this.album.photoAlbums.findIndex(i => i.id === e.id));
     });
-    indexes.forEach(element => {
-      this.album.photoAlbums.splice(element, 1);
+    indexes.forEach(e => {
+      this.album.photoAlbums.splice(e, 1);
     });
     const ids = new Array<number>();
-    this.album.photoAlbums.forEach(element => {
-      ids.push(element.id);
+    this.album.photoAlbums.forEach(e => {
+      ids.push(e.id);
     });
-    if (this.AlbumId == 0) {
+    if (this.AlbumId === 0) {
       this.selectedPhotos.forEach(item => {
-        this.favoriteService.deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id).subscribe(() => {
-          this.favorites.delete(item.id);
-        });
+        this.favoriteService
+          .deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id)
+          .subscribe(
+            () => {
+              this.favorites.delete(item.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting favourites')
+          );
       });
-      if(!this.album.photoAlbums.find(p=> p.id == this.coverId))
-        localStorage.removeItem("favoriteCover");
-    }
-    else {
+      if (!this.album.photoAlbums.find(p => p.id === this.coverId)) {
+        localStorage.removeItem('favoriteCover');
+      }
+    } else {
       this.selectedPhotos = [];
       this.albumService.updateAlbum({
         title: this.album.title,

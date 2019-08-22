@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo, PhotoRaw } from 'src/app/models';
 import { FileService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-choose-storage-photos',
@@ -9,23 +10,30 @@ import { User } from 'src/app/models/User/user';
   styleUrls: ['./choose-storage-photos.component.sass']
 })
 export class ChooseStoragePhotosComponent implements OnInit {
-
   @Input()
   public IsShow: boolean;
 
   @Output()
   currentUser: User;
 
-  constructor(private photoService: FileService) {
+  constructor(
+    private photoService: FileService,
+    private notifier: NotifierService
+  ) {
     this.IsShow = true;
-   }
+  }
 
   @Input() photos: PhotoRaw[] = [];
-  @Output() onChange = new EventEmitter<PhotoRaw>();
+  @Output() Change = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
     const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
-    this.photoService.receiveUsersPhotos(id).subscribe( x => this.photos = x);
+    this.photoService
+      .receiveUsersPhotos(id)
+      .subscribe(
+        x => (this.photos = x),
+        error => this.notifier.notify('error', 'Error downloading')
+      );
   }
 
   toggleModal() {
@@ -33,6 +41,6 @@ export class ChooseStoragePhotosComponent implements OnInit {
   }
 
   clickPerformed(eventArgs: PhotoRaw) {
-    this.onChange.emit(eventArgs);
+    this.Change.emit(eventArgs);
   }
 }

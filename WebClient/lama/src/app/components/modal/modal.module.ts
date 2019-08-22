@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
-import {CreateAlbumModule} from '../create-album-module/create-album.module'
-
+import {CreateAlbumModule} from '../create-album-module/create-album.module';
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
 import { SharedModule } from '../shared.module';
@@ -21,6 +20,7 @@ import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
 import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
+import {NotificationModule} from '../../notification/notification.module';
 
 @NgModule(
 {
@@ -29,6 +29,7 @@ import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
     SharedModule,
     ImageCropperModule,
     UiModule,
+    NotificationModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',

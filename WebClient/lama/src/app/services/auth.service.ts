@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {environment} from '../../environments/environment';
+import { User } from '../models/User/user';
+import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
 
@@ -11,14 +13,13 @@ import { UserCreate } from '../models/User/userCreate';
   providedIn: 'root'
 })
 export class AuthService {
-
   token: string;
   user: UserCreate;
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
   isUserExisted = true;
-
+  
   constructor(public afAuth: AngularFireAuth,
               private httpClient: HttpClient,
               private userService: UserService) {
@@ -42,9 +43,9 @@ export class AuthService {
         toReject(err);
       });
     });
-   }
-
-   loginWithFacebookLinked() {
+  }
+  
+  loginWithFacebookLinked() {
      let existingEmail = null;
      let pendingCredential = null;
      const facebookProvider = new firebase.auth.FacebookAuthProvider();
@@ -93,7 +94,7 @@ export class AuthService {
         toResolve(res);
       });
     });
-   }
+  }
 
   doLogout() {
     return new Promise((toResolve, toReject) => {

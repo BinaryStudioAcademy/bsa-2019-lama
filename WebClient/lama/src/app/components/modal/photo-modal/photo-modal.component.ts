@@ -1,17 +1,27 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  ViewChild,
+  ElementRef,
+  NgZone
+} from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
-import * as  bulmaCalendar from 'bulma-calendar';
+import * as bulmaCalendar from 'bulma-calendar';
 import { load } from 'piexifjs';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
 import { PhotoDetailsAlbum } from 'src/app/models/Album/PhotodetailsAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { Entity } from 'src/app/models/entity';
 import { isUndefined } from 'util';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-photo-modal',
@@ -23,12 +33,12 @@ export class PhotoModalComponent implements OnInit {
   @Input()
   public photo: PhotoRaw;
   public isShown: boolean;
-  public isInfoShown: boolean = false;
+  public isInfoShown = false;
   public userId: number;
 
-  public showSharedModal: boolean = false;
-  public showSharedByLinkModal: boolean = false;
-  public showSharedByEmailModal: boolean = false;
+  public showSharedModal = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
 
   albums: PhotoDetailsAlbum[];
 
@@ -56,7 +66,6 @@ export class PhotoModalComponent implements OnInit {
 
   currentUser: User;
 
-
   // location
   latitude: number;
   longitude: number;
@@ -68,8 +77,15 @@ export class PhotoModalComponent implements OnInit {
   public searchElementRef: ElementRef;
 
   // constructors
-  constructor(fileService: FileService, private mapsAPILoader: MapsAPILoader, private ngZone: NgZone, private albumService: AlbumService,
-    authService: AuthService, userService: UserService) {
+  constructor(
+    fileService: FileService,
+    private mapsAPILoader: MapsAPILoader,
+    private ngZone: NgZone,
+    private albumService: AlbumService,
+    authService: AuthService,
+    userService: UserService,
+    private notifier: NotifierService
+  ) {
     this.isShown = true;
     this.fileService = fileService;
     this.authService = authService;
@@ -88,22 +104,36 @@ export class PhotoModalComponent implements OnInit {
       });
     });
     this.userId = this.authService.getLoggedUserId();
-    this.userService.getUser(this.userId).subscribe(user => {
-      this.currentUser = user;
-      let reactions = this.photo.reactions;
+    this.userService.getUser(this.userId).subscribe(
+      user => {
+        this.currentUser = user;
+        const reactions = this.photo.reactions;
 
-      this.hasUserReaction = reactions.some(x => x.userId === this.currentUser.id);
-    });
-
+        this.hasUserReaction = reactions.some(
+          x => x.userId === this.currentUser.id
+        );
+      },
+      error => this.notifier.notify('error', 'Error getting user')
+    );
 
     this.GetFile();
-    this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe((e) => this.albums = e.body);
+    this.albumService
+      .GetPhotoDetailsAlbums(this.photo.id)
+      .subscribe(
+        e => (this.albums = e.body),
+        error => this.notifier.notify('error', 'Error loading albums')
+      );
   }
 
-  ConvertDMSToDD(degrees: number, minutes: number, seconds: number, direction): number {
+  ConvertDMSToDD(
+    degrees: number,
+    minutes: number,
+    seconds: number,
+    direction
+  ): number {
     let dd = degrees + minutes / 60 + seconds / (60 * 60);
 
-    if (direction == "S" || direction == "W") {
+    if (direction === 'S' || direction === 'W') {
       dd = dd * -1;
     } // Don't do anything for N or E
     return dd;
@@ -117,72 +147,86 @@ export class PhotoModalComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
   getAddress(latitude, longitude) {
-    this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
-      if (status === 'OK') {
-        if (results[0]) {
-          this.zoom = 12;
-          this.address = results[0].formatted_address;
+    this.geoCoder.geocode(
+      { location: { lat: latitude, lng: longitude } },
+      (results, status) => {
+        if (status === 'OK') {
+          if (results[0]) {
+            this.zoom = 12;
+            this.address = results[0].formatted_address;
+          } else {
+            console.log('No results found');
+          }
         } else {
-          console.log('No results found');
+          console.log('Geocoder failed due to: ' + status);
         }
-      } else {
-        console.log('Geocoder failed due to: ' + status);
       }
-    });
+    );
     const loggedUserId: number = this.authService.getLoggedUserId();
 
-    this.userService.getUser(loggedUserId)
-      .subscribe(user => {
+    this.userService.getUser(loggedUserId).subscribe(
+      user => {
         this.currentUser = user;
 
         if (this.photo.reactions != null) {
-          this.hasUserReaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
-        }
-        else {
+          this.hasUserReaction = this.photo.reactions.some(
+            x => x.userId === this.currentUser.id
+          );
+        } else {
           this.hasUserReaction = false;
         }
-      });
-
+      },
+      error => this.notifier.notify('error', 'Error getting user')
+    );
   }
 
   // GET EXIF
   GetFile() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', this.photo.blobId, true);
     xhr.onload = () => {
-
       if (this.photo.blobId.endsWith('.png')) {
         return;
       }
 
-      var response = xhr.responseText;
-      var binary = ""
+      const response = xhr.responseText;
+      let binary = '';
       for (let i = 0; i < response.length; i++) {
-        binary += String.fromCharCode(response.charCodeAt(i) & 0xff);
+        binary += String.fromCharCode(response.charCodeAt(i) && 0xff);
       }
       console.log(binary);
-      let src = 'data:image/jpeg;base64,' + btoa(binary);
+      const src = 'data:image/jpeg;base64,' + btoa(binary);
 
-      let exifObj = load(src);
-      let GPS = exifObj["GPS"];
+      const exifObj = load(src);
+      const GPS = exifObj[exifObj.GPS];
 
-      if (exifObj["GPS"][1] == "N") {
-        this.latitude = this.ConvertDMSToDD(exifObj["GPS"][2][0][0], exifObj["GPS"][2][1][0], exifObj["GPS"][2][2][0] / exifObj["GPS"][2][2][1], exifObj["GPS"][1]);
-        this.longitude = this.ConvertDMSToDD(exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0], exifObj["GPS"][4][0][0] / exifObj["GPS"][4][2][1], exifObj["GPS"][3]);
+      if (exifObj[exifObj.GPS][1] === 'N') {
+        this.latitude = this.ConvertDMSToDD(
+          exifObj[exifObj.GPS][2][0][0],
+          exifObj[exifObj.GPS][2][1][0],
+          exifObj[exifObj.GPS][2][2][0] / exifObj[exifObj.GPS][2][2][1],
+          exifObj[exifObj.GPS][1]
+        );
+
+        this.longitude = this.ConvertDMSToDD(
+          exifObj[exifObj.GPS][4][0][0],
+          exifObj[exifObj.GPS][4][0][0],
+          exifObj[exifObj.GPS][4][0][0] / exifObj[exifObj.GPS][4][2][1],
+          exifObj[exifObj.GPS][3]
+        );
 
         // load Places Autocomplete
         this.mapsAPILoader.load().then(() => {
-
           if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition((position) => {
-              //this.latitude = position.coords.latitude;
-              //this.longitude = position.coords.longitude;
+            navigator.geolocation.getCurrentPosition(position => {
+              // this.latitude = position.coords.latitude;
+              // this.longitude = position.coords.longitude;
               this.zoom = 8;
               this.getAddress(this.latitude, this.longitude);
             });
           }
-
-          this.geoCoder = new google.maps.Geocoder;
+          // tslint:disable-next-line: new-parens
+          this.geoCoder = new google.maps.Geocoder();
 
           /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
@@ -192,12 +236,10 @@ export class PhotoModalComponent implements OnInit {
             this.ngZone.run(() => {
               // get the place result
               let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-  
               // verify result
               if (place.geometry === undefined || place.geometry === null) {
                 return;
               }
-  
               // set latitude, longitude and zoom
               this.latitude = place.geometry.location.lat();
               this.longitude = place.geometry.location.lng();
@@ -206,36 +248,31 @@ export class PhotoModalComponent implements OnInit {
           });*/
         });
       }
-    }
+    };
     xhr.overrideMimeType('text/plain; charset=x-user-defined');
     xhr.send();
-
   }
   private initializeMenuItem() {
-    this.defaultMenuItem =
-      [
-        { title: "share", icon: "share" },
-        { title: "remove", icon: "clear" },
-        { title: "download", icon: "cloud_download" },
-        { title: "edit", icon: "edit" },
-        { title: "info", icon: "info" }
-      ];
-    this.editingMenuItem =
-      [
-        { title: "crop", icon: "crop" },
-        { title: "rotate", icon: "rotate_left" }
-      ];
-    this.deletingMenuItem =
-      [
-        { title: "yes", icon: "done" },
-        { title: "no", icon: "remove" }
-      ];
+    this.defaultMenuItem = [
+      { title: 'share', icon: 'share' },
+      { title: 'remove', icon: 'clear' },
+      { title: 'download', icon: 'cloud_download' },
+      { title: 'edit', icon: 'edit' },
+      { title: 'info', icon: 'info' }
+    ];
+    this.editingMenuItem = [
+      { title: 'crop', icon: 'crop' },
+      { title: 'rotate', icon: 'rotate_left' }
+    ];
+    this.deletingMenuItem = [
+      { title: 'yes', icon: 'done' },
+      { title: 'no', icon: 'remove' }
+    ];
   }
 
   // methods
   public menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
-
 
     console.log(clickedMenuItem);
     // share
@@ -248,13 +285,11 @@ export class PhotoModalComponent implements OnInit {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
-    if (clickedMenuItem === this.deletingMenuItem[0])// yes
-    {
+    if (clickedMenuItem === this.deletingMenuItem[0]) {
       this.deleteImage();
     }
 
-    if (clickedMenuItem === this.deletingMenuItem[1])// no
-    {
+    if (clickedMenuItem === this.deletingMenuItem[1]) {
       this.shownMenuItems = this.defaultMenuItem;
     }
 
@@ -262,7 +297,6 @@ export class PhotoModalComponent implements OnInit {
 
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
-
       this.isEditing = true;
     }
 
@@ -270,7 +304,6 @@ export class PhotoModalComponent implements OnInit {
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       this.CloseInfo();
     }
-
   }
 
   public mouseLeftOverlayHandler(): void {
@@ -286,12 +319,14 @@ export class PhotoModalComponent implements OnInit {
       imageBase64: editedImage.editedImageBase64
     };
 
-    this.fileService.update(updatePhotoDTO)
-      .subscribe(updatedPhotoDTO => {
+    this.fileService.update(updatePhotoDTO).subscribe(
+      updatedPhotoDTO => {
         Object.assign(this.photo, updatedPhotoDTO);
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
-      });
+      },
+      error => this.notifier.notify('error', 'Error updating photo')
+    );
   }
 
   public goBackToImageView(): void {
@@ -318,15 +353,16 @@ export class PhotoModalComponent implements OnInit {
   }
 
   private deleteImage(): void {
-    this.fileService.markPhotoAsDeleted(this.photo.id)
-      .subscribe(res => {
+    this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
+      res => {
         this.closeModal();
 
         this.deletePhotoEvenet.emit(this.photo.id);
-      });
+      },
+      error => this.notifier.notify('error', 'Error deleting image')
+    );
   }
   public ReactionPhoto() {
-
     // TODO: you can not like your own photos
     // but currently we are testing
     // so lets suppose you can like any photos
@@ -334,50 +370,58 @@ export class PhotoModalComponent implements OnInit {
     // TODO: uncomment line below
     // also maybe hide like from HTML if its your photo
 
-    //if (this.photo.userId === parseInt(this.currentUser.id)) return;
+    // if (this.photo.userId === parseInt(this.currentUser.id)) return;
 
-
-    let hasreaction = this.photo.reactions.some(x => x.userId === this.currentUser.id);
+    const hasreaction = this.photo.reactions.some(
+      x => x.userId === this.currentUser.id
+    );
     const newReaction: NewLike = {
       photoId: this.photo.id,
       userId: this.currentUser.id
-    }
+    };
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(x => {
-        this.photo.reactions = this.photo.reactions.filter(x => x.userId !== this.currentUser.id);
-        this.hasUserReaction = false;
-      });
-    }
-    else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(newLikeId => {
-        this.photo.reactions.push({
-          id: newLikeId,
-          userId: this.currentUser.id,
-          photoId: this.photo.id,
-          user: { id: this.currentUser.id } as Entity,
-          photo: { id: this.photo.id } as Entity,
-        });
-        this.hasUserReaction = true;
-      });
+      this.fileService.RemoveReactionPhoto(newReaction).subscribe(
+        x => {
+          this.photo.reactions = this.photo.reactions.filter(
+            e => e.userId !== this.currentUser.id
+          );
+          this.hasUserReaction = false;
+        },
+        error => this.notifier.notify('error', 'Error removing reaction')
+      );
+    } else {
+      this.fileService.ReactionPhoto(newReaction).subscribe(
+        newLikeId => {
+          this.photo.reactions.push({
+            id: newLikeId,
+            userId: this.currentUser.id,
+            photoId: this.photo.id,
+            user: { id: this.currentUser.id } as Entity,
+            photo: { id: this.photo.id } as Entity
+          });
+          this.hasUserReaction = true;
+        },
+        error => this.notifier.notify('error', 'Error creating reaction')
+      );
     }
   }
 
   forceDownload() {
-    let url = this.photo.blobId;
-    var fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "blob";
-    xhr.onload = function () {
-      var urlCreator = window.URL;
-      var imageUrl = urlCreator.createObjectURL(this.response);
-      var tag = document.createElement('a');
+    const url = this.photo.blobId;
+    const fileName = this.photo.blobId.replace(/^.*[\\\/]/, '');
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+      const urlCreator = window.URL;
+      const imageUrl = urlCreator.createObjectURL(this.response);
+      const tag = document.createElement('a');
       tag.href = imageUrl;
       tag.download = fileName;
       document.body.appendChild(tag);
       tag.click();
       document.body.removeChild(tag);
-    }
+    };
     xhr.send();
   }
 
@@ -393,15 +437,13 @@ export class PhotoModalComponent implements OnInit {
     modalElem.classList.remove('active');
     overlay.classList.remove('active');
   }
-  openModalForPickCoord(event) {
-
-  }
+  openModalForPickCoord(event) {}
 
   CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
   }
 
   public isEqualId(): boolean {
-    return this.photo.userId == this.userId;
+    return this.photo.userId === this.userId;
   }
 }

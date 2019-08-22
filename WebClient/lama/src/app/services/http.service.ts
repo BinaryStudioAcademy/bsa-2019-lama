@@ -4,12 +4,11 @@ import {environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { User } from '../models/User/user';
 import { PhotoRaw } from '../models';
-  
+
 @Injectable()
-export class HttpService{
-  	
-    constructor(private http: HttpClient){ }
-	
+export class HttpService {
+    constructor(private http: HttpClient) { }
+
     getData(endPoint: string): Observable<User> {
         return this.http.get(`${environment.lamaApiUrl}/api/${endPoint}`) as Observable<User>;
     }

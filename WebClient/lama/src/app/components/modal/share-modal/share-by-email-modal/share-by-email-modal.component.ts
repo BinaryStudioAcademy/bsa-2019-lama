@@ -4,6 +4,7 @@ import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -11,87 +12,82 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./share-by-email-modal.component.sass']
 })
 export class ShareByEmailModalComponent implements OnInit {
-
-
   @Input() receivedPhoto: PhotoRaw;
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
-  DISAPPEARING_TIMEOUT: number = 1000;
-  sharedLink: string = '';
-  sharedEmail: string = '';
+  DISAPPEARING_TIMEOUT = 1000;
+  sharedLink = '';
+  sharedEmail = '';
   imageUrl: string;
-  copyClicked: boolean = false;
-  sharedPhoto: SharedPhoto = <SharedPhoto>{};
+  sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userEmails: Array<string> = [];
-  sharingRoute: String = "main/shared";
-  showSuccessIcon: boolean = false;
+  sharingRoute = 'main/shared';
+  showSuccessIcon = false;
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private notifier: NotifierService
+  ) {}
 
+  ngOnInit() {}
+
+  public cancel() {
+    this.Close.emit(null);
   }
 
-  ngOnInit() {
+  public AddEmail() {
+    this.userService.getUserByEmail(this.sharedEmail).subscribe(
+      user => {
+        if (user.email) {
+          this.userEmails.push(user.email);
+          this.showSuccessIcon = true;
+        } else {
+          this.showSuccessIcon = false;
+        }
+      },
+      error => this.notifier.notify('error', 'Error getting email')
+    );
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  public createShareableLink() {
+    this.initInvariableFields();
+    const encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
+    this.sharedLink = `${environment.clientApiUrl}/${
+      this.sharingRoute
+    }/${encodedPhotoData}`;
   }
 
-  public AddEmail(){
-    this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-	  if(user.email)
-      {
-		this.userEmails.push(user.email);
-		this.showSuccessIcon = true;
-      }
-      else
-      {
-		this.showSuccessIcon = false;
-      }
-	});
-  }
-  
-	public createShareableLink(){
-      this.initInvariableFields();
-      let encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
+  public copyShareableLink() {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.sharedLink;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+    console.log(`${this.sharedLink} was copied`);
+    this.notifier.notify('success', 'Link is now in your clipboard');
   }
 
-  
-  public copyShareableLink(){
-    let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = this.sharedLink;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-      console.log(`${this.sharedLink} was copied`);
-      this.copyClicked = !this.copyClicked;
-	  
-      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
-    }
-
-    public encodePhotoData(photo: SharedPhoto): string{
-      let encoded = btoa(JSON.stringify(photo)).replace("/","___");
-      encoded += btoa(JSON.stringify(this.userEmails)).replace("/","___");
-      console.log(encoded);
-      return encoded;
-    }
-
-    private initInvariableFields(){
-      this.sharedPhoto.photoId = this.receivedPhoto.id;
-      this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
-      this.sharedPhoto.userId = this.receivedPhoto.userId;
-    }
-	
-	public GenerateClick() {
-		this.createShareableLink();
-	}
-
+  public encodePhotoData(photo: SharedPhoto): string {
+    let encoded = btoa(JSON.stringify(photo)).replace('/', '___');
+    encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
+    console.log(encoded);
+    return encoded;
   }
+
+  private initInvariableFields() {
+    this.sharedPhoto.photoId = this.receivedPhoto.id;
+    this.sharedPhoto.sharedImageUrl = this.receivedPhoto.blobId;
+    this.sharedPhoto.userId = this.receivedPhoto.userId;
+  }
+
+  public GenerateClick() {
+    this.createShareableLink();
+  }
+}

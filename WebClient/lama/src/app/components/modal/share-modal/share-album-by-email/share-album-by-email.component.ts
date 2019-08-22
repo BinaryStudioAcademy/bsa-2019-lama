@@ -7,6 +7,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { UserService } from 'src/app/services/user.service';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-share-album-by-email',
@@ -14,85 +15,80 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./share-album-by-email.component.sass']
 })
 export class ShareAlbumByEmailComponent implements OnInit {
-
   @Input() receivedAlbum: ViewAlbum;
 
-  @Output() onClose = new EventEmitter();
+  @Output() Close = new EventEmitter();
 
-  DISAPPEARING_TIMEOUT: number = 1000;
-  sharedLink: string = '';
-  sharedEmail: string = '';
+  DISAPPEARING_TIMEOUT = 1000;
+  sharedLink = '';
+  sharedEmail = '';
   imageUrl: string;
-  copyClicked: boolean = false;
-  sharedAlbum: SharedAlbum = <SharedAlbum>{};
+  sharedAlbum: SharedAlbum = {} as SharedAlbum;
   userEmails: Array<string> = [];
-  sharingRoute: String = "main/shared/album";
-  showSuccessIcon: boolean = false;
+  sharingRoute = 'main/shared/album';
+  showSuccessIcon = false;
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private notifier: NotifierService
+  ) {}
 
+  ngOnInit() {}
+
+  public cancel() {
+    this.Close.emit(null);
   }
 
-  ngOnInit() {
+  public AddEmail() {
+    this.userService.getUserByEmail(this.sharedEmail).subscribe(
+      user => {
+        if (user.email) {
+          this.userEmails.push(user.email);
+          this.showSuccessIcon = true;
+        } else {
+          this.showSuccessIcon = false;
+        }
+      },
+      error => this.notifier.notify('error', 'Error getting email')
+    );
   }
 
-  public cancel(){
-    this.onClose.emit(null);
+  public createShareableLink() {
+    this.initInvariableFields();
+    const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
+    this.sharedLink = `${environment.clientApiUrl}/${
+      this.sharingRoute
+    }/${encodedAlbumData}`;
   }
 
-  public AddEmail(){
-    this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-	  if(user.email)
-      {
-		this.userEmails.push(user.email);
-		this.showSuccessIcon = true;
-      }
-      else
-      {
-		this.showSuccessIcon = false;
-      }
-	});
-  }
-  
-	public createShareableLink(){
-      this.initInvariableFields();
-      let encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
-      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
+  public copyShareableLink() {
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.sharedLink;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+    console.log(`${this.sharedLink} was copied`);
+    this.notifier.notify('success', 'Link is now in your clipboard');
   }
 
-  
-  public copyShareableLink(){
-    let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = this.sharedLink;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-      console.log(`${this.sharedLink} was copied`);
-      this.copyClicked = !this.copyClicked;
-	  
-      setTimeout(() => this.copyClicked = !this.copyClicked,this.DISAPPEARING_TIMEOUT);
-    }
+  public encodeAlbumData(album: SharedAlbum): string {
+    let encoded = btoa(JSON.stringify(album)).replace('/', '___');
+    encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
+    console.log(encoded);
+    return encoded;
+  }
 
-    public encodeAlbumData(album: SharedAlbum): string{
-      let encoded = btoa(JSON.stringify(album)).replace("/","___");
-      encoded += btoa(JSON.stringify(this.userEmails)).replace("/","___");
-      console.log(encoded);
-      return encoded;
-    }
-
-    private initInvariableFields(){
-      this.sharedAlbum.albumId = this.receivedAlbum.id;
-      this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
-    }
-	
-	public GenerateClick() {
-		this.createShareableLink();
-	}
-
+  private initInvariableFields() {
+    this.sharedAlbum.albumId = this.receivedAlbum.id;
+    this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+  }
+  public GenerateClick() {
+    this.createShareableLink();
+  }
 }
