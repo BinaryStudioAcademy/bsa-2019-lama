@@ -113,6 +113,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   public find() {
+    this.searchHistory.unshift(this.searchCriteria);
     const id = localStorage.getItem('userId');
     this.http.findPhotos(id, this.searchCriteria).subscribe(
       p => {

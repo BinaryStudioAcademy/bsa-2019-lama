@@ -41,7 +41,7 @@ namespace Lama.BusinessLogic.Services
             var history = await _context.GetRepository<SearchHistory>().GetAsync(h => h.UserId == userId);
             return history.Reverse()
                 .GroupBy(h => h.Text)
-                .Reverse()
+                .Take(5)
                 .Select(h => h.Take(5)
                     .First())
                 .ToList()

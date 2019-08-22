@@ -18,11 +18,13 @@
           [(ngModel)]="searchCriteria"
           list="values"
         />
-        <datalist id="values" *ngIf="!isActive">
-          <div *ngFor="let item of searchHistory">
-            <option>{{ item }}</option>
-          </div>
-        </datalist>
+        <div class="control is-expanded">
+          <datalist id="values" *ngIf="!isActive">
+            <div *ngFor="let item of searchHistory">
+              <option>{{ item }}</option>
+            </div>
+          </datalist>
+        </div>
       </div>
       <div class="control">
         <a
