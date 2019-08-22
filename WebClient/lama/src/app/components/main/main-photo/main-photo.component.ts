@@ -20,16 +20,14 @@ import { NotifierService } from 'angular-notifier';
   providers: [FavoriteService]
 })
 export class MainPhotoComponent implements OnChanges {
-  public isFavorite = false;
-  // properties
   @Input('_photo') photo: PhotoRaw;
-  isSelected = false;
   @Input('_id') id = -1;
   @Output() Click = new EventEmitter<PhotoRaw>();
   @Output() Select = new EventEmitter<PhotoRawState>();
   private userId: number;
+  isFavorite = false;
+  isSelected = false;
 
-  // constructors
   constructor(
     private favoriteService: FavoriteService,
     private notifier: NotifierService
@@ -62,17 +60,17 @@ export class MainPhotoComponent implements OnChanges {
       localStorage.removeItem('favoriteCover');
     }
   }
-
-  // methods
-  public clickPerformed() {
+  
+  clickPerformed() {
     this.Click.emit(this.photo);
   }
-
-  public selectItem() {
+  
+  selectItem() {
     this.isSelected = !this.isSelected;
-    this.Select.emit({ photo: this.photo, isSelected: this.isSelected });
+    this.Select.emit({photo: this.photo, isSelected: this.isSelected});
   }
-  public mark() {
+  
+  mark() {
     if (this.isFavorite) {
       this.favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
         data => this.checkCorrectReturn(data),
