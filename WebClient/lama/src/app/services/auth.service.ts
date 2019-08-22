@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
+import { NotifierService } from 'angular-notifier';
 
 
 @Injectable({
@@ -19,9 +20,10 @@ export class AuthService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
   isUserExisted = true;
-  
+
   constructor(public afAuth: AngularFireAuth,
               private httpClient: HttpClient,
+              private notifier: NotifierService,
               private userService: UserService) {
         this.afAuth.idToken.subscribe(token => {
           this.token =  token;
@@ -44,8 +46,8 @@ export class AuthService {
       });
     });
   }
-  
-  loginWithFacebookLinked() {
+
+  async loginWithFacebookLinked() {
      let existingEmail = null;
      let pendingCredential = null;
      const facebookProvider = new firebase.auth.FacebookAuthProvider();
@@ -53,7 +55,8 @@ export class AuthService {
       .then(result => {
         if (result.user.email === null) {
           this.afAuth.auth.signOut().then(() => {
-            console.log(`${result.user.email}`);
+            this.notifier.notify('error',
+             'You need to provide your email in order to create an account.');
           });
         } else {
           console.log(`${result.user.email}`);

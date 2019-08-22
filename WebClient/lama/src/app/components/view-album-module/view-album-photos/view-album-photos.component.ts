@@ -17,7 +17,7 @@ export class ViewAlbumPhotosComponent implements OnInit {
   ngOnInit() {
   }
 
-  public clickPerformed(): void {
+  clickPerformed(): void {
     this.Click.emit(this.photo);
   }
 
