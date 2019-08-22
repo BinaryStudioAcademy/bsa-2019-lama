@@ -32,6 +32,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   public avatarUrl;
   public searchCriteria = '';
   public isActive = false;
+  searchHistory: string[];
 
   public showSidebarMenu: boolean;
 
@@ -66,6 +67,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     } else {
       this.avatarUrl = this.auth.user.photo.imageUrl;
     }
+    this.getSearchHistory();
   }
 
   ngDoCheck() {
@@ -79,7 +81,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       }
       this.shared.avatar = null;
     }
-    this.searchCriteria.length < 3
+    this.searchCriteria.length < 1
       ? (this.isActive = false)
       : (this.isActive = true);
   }
@@ -100,6 +102,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       .catch(e => {
         console.log('user is not signed in');
       });
+  }
+
+  getSearchHistory() {
+    const id = parseInt(localStorage.getItem('userId'), 10);
+    this.file.getSearchHistory(id).subscribe(history => {
+      this.searchHistory = history;
+      console.log(history);
+    });
   }
 
   public find() {

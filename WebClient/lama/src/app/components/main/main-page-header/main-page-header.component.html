@@ -1,40 +1,61 @@
 <header class="navbar is-fixed-top">
-    <div class="align-right">
-        <a><i class="material-icons" (click)="onMenuClicked($event)">reorder</i></a>
-        <div class="logo">
-            <img src="assets/alpaca-icon-19.jpg">
-            <p>Lama</p>
-        </div>
+  <div class="align-right">
+    <a><i class="material-icons" (click)="onMenuClicked($event)">reorder</i></a>
+    <div class="logo">
+      <img src="assets/alpaca-icon-19.jpg" />
+      <p>Lama</p>
     </div>
+  </div>
 
-    <!--search-->
-    <div class="search-bar is-hidden-mobile">
-        <div class="field has-addons">
-            <div class="control input-form">
-                <input class="input" type="text" placeholder="Find a photo" [(ngModel)]="searchCriteria">
-            </div>
-            <div class="control">
-                <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{'not-active': !isActive}">
-                    Search
-                </a>
-            </div>
-
-            <!--upload-->
-            <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
-                <i class="material-icons">cloud_upload</i>
-                <p>Add</p>
-            </a>
-        </div>
-    </div>
-
-    <!--profile-->
-    <div class="align-right">
-        <a class="button is-primary" (click)="logOut()">Logout</a>
-        <a class="image is-64x64 profile" routerLink="/main/profile">
-            <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded">
+  <!--search-->
+  <div class="search-bar is-hidden-mobile">
+    <div class="field has-addons">
+      <div class="control input-form">
+        <input
+          class="input"
+          type="text"
+          placeholder="Find a photo"
+          [(ngModel)]="searchCriteria"
+          list="values"
+        />
+        <datalist id="values" *ngIf="!isActive">
+          <div *ngFor="let item of searchHistory">
+            <option>{{ item }}</option>
+          </div>
+        </datalist>
+      </div>
+      <div class="control">
+        <a
+          (click)="find()"
+          class="button is-primary"
+          id="button-search"
+          [ngClass]="{ 'not-active': !isActive }"
+        >
+          Search
         </a>
-    </div>
+      </div>
 
+      <!--upload-->
+      <a
+        (click)="openModalClicked()"
+        class="button is-primary is-hidden-mobile add"
+      >
+        <i class="material-icons">cloud_upload</i>
+        <p>Add</p>
+      </a>
+    </div>
+  </div>
+
+  <!--profile-->
+  <div class="align-right">
+    <a class="button is-primary" (click)="logOut()">Logout</a>
+    <a class="image is-64x64 profile" routerLink="/main/profile">
+      <img
+        [src]="avatarUrl || 'assets/default_avatar.png'"
+        class="is-rounded"
+      />
+    </a>
+  </div>
 </header>
 
 <template #photoUploadModal></template>
