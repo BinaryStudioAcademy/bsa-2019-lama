@@ -53,9 +53,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     if (id) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
         u => {
-          this.file
-            .getPhoto(u.photoUrl)
-            .subscribe(url => (this.avatarUrl = url));
+          if (u.photoUrl.indexOf('base64') === -1) {
+            this.file
+              .getPhoto(u.photoUrl)
+              .subscribe(url => (this.avatarUrl = url));
+          } else {
+            this.avatarUrl = u.photoUrl;
+          }
         },
         error => this.notifier.notify('error', 'Error loading user')
       );
