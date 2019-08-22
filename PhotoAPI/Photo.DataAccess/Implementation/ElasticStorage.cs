@@ -94,7 +94,7 @@ namespace Photo.DataAccess.Implementation
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        public async Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
             var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
              .Query(q => q
@@ -107,6 +107,10 @@ namespace Photo.DataAccess.Implementation
                          .Match(k => k
                              .Field(f => f.IsDeleted)
                              .Query("false")
+                         ), m => m
+                         .Match(k => k
+                            .Field(f => f.UserId)
+                            .Query($"{id}")
                          ), m => m
                          .Bool(b => b
                             .MinimumShouldMatch(1)

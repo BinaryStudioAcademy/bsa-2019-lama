@@ -103,7 +103,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   public find() {
-    this.http.findPhotos(this.searchCriteria).subscribe(
+    const id = localStorage.getItem('userId');
+    this.http.findPhotos(id, this.searchCriteria).subscribe(
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;

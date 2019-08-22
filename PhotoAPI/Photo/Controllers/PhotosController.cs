@@ -61,10 +61,10 @@ namespace Photo.Controllers
             return photoService.Get(id);
         }
 
-        [HttpGet("search/{criteria}")]
-        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        [HttpGet("search/{id}/{criteria}")]
+        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return photoService.Find(criteria);
+            return photoService.Find(id, criteria);
         }
 
         // POST api/values
