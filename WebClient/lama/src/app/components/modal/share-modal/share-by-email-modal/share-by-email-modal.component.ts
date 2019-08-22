@@ -41,17 +41,19 @@ export class ShareByEmailModalComponent implements OnInit {
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
       this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-        if (user.email) {
+        if (user) {
           this.userEmails.push(user.email);
           this.wrongInput = false;
           this.clearInput();
         } else {
           this.wrongInput = true;
+          this.notifier.notify('error', 'Error getting email');
         }
       },
       error => this.notifier.notify('error', 'Error getting email'));
     } else {
       this.wrongInput = true;
+      this.notifier.notify('error', 'Incorrect input');
     }
   }
 
@@ -108,7 +110,7 @@ export class ShareByEmailModalComponent implements OnInit {
     let serchfind: boolean;
     const regexp = new RegExp(
       // tslint:disable-next-line: max-line-length
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 
     serchfind = regexp.test(search);
