@@ -54,11 +54,11 @@ export class ShareAlbumByEmailComponent implements OnInit {
             this.notifier.notify('error', 'Error getting email');
           }
         },
-        error => this.notifier.notify('error', 'Incorrect getting email')
+        error => this.notifier.notify('error', 'Error getting email')
       );
     } else {
       this.wrongInput = true;
-      this.notifier.notify('error', 'Error input');
+      this.notifier.notify('error', 'Incorrect input');
     }
   }
 
