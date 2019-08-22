@@ -73,6 +73,7 @@ namespace Photo.BusinessLogic.Services
         {
             await elasticStorage.UpdateAsync(item);
         }
+
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
         {
             string filename = Path.GetFileName(updatePhotoDTO.BlobId);
@@ -93,12 +94,38 @@ namespace Photo.BusinessLogic.Services
             return updatedPhoto;
         }
 
+        public async Task<UpdatedPhotoResultDTO> ResetImage(UpdatePhotoDTO updatePhotoDTO)
+        {
+            string original = await ResetBlobAsync(elasticId: updatePhotoDTO.Id);
+            UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
+            {
+                BlobId = original,
+                Blob64Id = original,
+                Blob256Id = original
+            };
+            await elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
+            messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
+            return updatedPhoto;
+        }
+
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);
+            
             await storage.DeleteFileAsync(photoDocument.BlobId);
             await storage.DeleteFileAsync(photoDocument.Blob64Id);
             await storage.DeleteFileAsync(photoDocument.Blob256Id);
+        }
+
+        private async Task<string> ResetBlobAsync(int elasticId)
+        {
+            PhotoDocument photoDocument = await this.Get(elasticId);
+
+            await storage.DeleteFileAsync(photoDocument.BlobId);
+            await storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await storage.DeleteFileAsync(photoDocument.Blob256Id);
+
+            return photoDocument.OriginalBlobId;
         }
 
 
