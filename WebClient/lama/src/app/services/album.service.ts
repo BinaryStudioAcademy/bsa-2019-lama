@@ -15,59 +15,94 @@ import { ReturnAlbumDTO } from '../models/Album/return-album-dto';
   providedIn: 'root'
 })
 export class AlbumService {
-
-
   public baseUrl: string = environment.lamaApiUrl;
   public routeAlbum = '/api/album';
 
   public headers = new HttpHeaders();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient) {}
+
+  public GetPhotoDetailsAlbums(photoId: number, httpParams?: any) {
+    return this.http.get<PhotoDetailsAlbum[]>(
+      this.baseUrl + this.routeAlbum + '/details' + `/${photoId}`,
+      { observe: 'response', headers: this.headers, params: httpParams }
+    );
+  }
+  public getAlbums(userId: number, httpParams?: any) {
+    return this.http.get<ViewAlbum[]>(
+      this.baseUrl + this.routeAlbum + `/${userId}`,
+      { observe: 'response', headers: this.headers, params: httpParams }
+    );
   }
 
-  public GetPhotoDetailsAlbums(photoId: number , httpParams?: any) {
-    return this.http.get<PhotoDetailsAlbum[]>(this.baseUrl + this.routeAlbum + '/details' + `/${photoId}`,
-     { observe: 'response', headers: this.headers, params: httpParams });
-  }
-  public getAlbums(userId: number , httpParams?: any) {
-      return this.http.get<ViewAlbum[]>(this.baseUrl + this.routeAlbum
-        + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
-  }
-
-  public getAlbum(userId: number , httpParams?: any) {
-    return this.http.get<ViewAlbum>(this.baseUrl + this.routeAlbum +
-      '/album' + `/${userId}`, { observe: 'response', headers: this.headers, params: httpParams });
+  public getAlbum(userId: number, httpParams?: any) {
+    return this.http.get<ViewAlbum>(
+      this.baseUrl + this.routeAlbum + '/album' + `/${userId}`,
+      { observe: 'response', headers: this.headers, params: httpParams }
+    );
   }
   public createAlbumWithNewPhotos(album: NewAlbum): Observable<ReturnAlbumDTO> {
-      const headers = new HttpHeaders().set('content-type', 'application/json');
-      return this.http.post<ReturnAlbumDTO>(this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto', album , { headers });
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.post<ReturnAlbumDTO>(
+      this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
+      album,
+      { headers }
+    );
+  }
+  createEmptyAlbum(album: NewAlbum): Observable<ReturnAlbumDTO> {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.post<ReturnAlbumDTO>(
+      this.baseUrl + this.routeAlbum + '/CreateEmptyAlbum',
+      album,
+      { headers }
+    );
   }
 
-  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos): Observable<ReturnAlbumDTO> {
+  public createAlbumWithExistPhotos(
+    album: NewAlbumWithExistPhotos
+  ): Observable<ReturnAlbumDTO> {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto', album , { headers });
+    return this.http.post<ReturnAlbumDTO>(
+      this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto',
+      album,
+      { headers }
+    );
   }
 
   public updateAlbumCover(album: UpdateAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/updateCover`, album, {headers});
+    return this.http.put<UpdateAlbum>(
+      `${this.baseUrl}${this.routeAlbum}/updateCover`,
+      album,
+      { headers }
+    );
   }
 
   public updateAlbum(album: UpdateAlbum) {
-      const headers = new HttpHeaders().set('content-type', 'application/json');
-      return this.http.put<UpdateAlbum>(this.baseUrl + this.routeAlbum , album , { headers }).subscribe(e => console.log(e));
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http
+      .put<UpdateAlbum>(this.baseUrl + this.routeAlbum, album, { headers })
+      .subscribe(e => console.log(e));
   }
 
   public ArchiveAlbum(photos: PhotoRaw[]) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<[]>(this.baseUrl + this.routeAlbum + '/ArchivePhotos' , photos , { headers });
+    return this.http.post<[]>(
+      this.baseUrl + this.routeAlbum + '/ArchivePhotos',
+      photos,
+      { headers }
+    );
   }
 
   public removeAlbum(albumId: number) {
-    return this.http.delete<number>(`${this.baseUrl}${this.routeAlbum}/${albumId}`);
+    return this.http.delete<number>(
+      `${this.baseUrl}${this.routeAlbum}/${albumId}`
+    );
   }
 
   public removeAlbumCover(albumId: number) {
-    return this.http.delete(`${this.baseUrl}${this.routeAlbum}/cover/${albumId}`);
+    return this.http.delete(
+      `${this.baseUrl}${this.routeAlbum}/cover/${albumId}`
+    );
   }
 }

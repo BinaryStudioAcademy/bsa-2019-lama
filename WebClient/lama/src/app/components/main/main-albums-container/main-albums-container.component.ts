@@ -48,8 +48,6 @@ export class MainAlbumsContainerComponent implements OnInit {
       error => this.notifier.notify('error', 'Error loading user')
     );
   }
-
-  // constructors
   constructor(
     resolver: ComponentFactoryResolver,
     private router: Router,
@@ -121,17 +119,27 @@ export class MainAlbumsContainerComponent implements OnInit {
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.createdAlbumEvent.subscribe(
       (createdAlbums: CreatedAlbumsArgs) => {
-        this.albums.push({
-          id: createdAlbums.id,
-          name: createdAlbums.name,
-          title: createdAlbums.name,
-          photo: {
-            blob256Id: createdAlbums.photoUrl,
-            blobId: createdAlbums.photoUrl,
-            reactions: []
-          },
-          photoAlbums: []
-        });
+        if (createdAlbums.photoUrl !== null) {
+          this.albums.push({
+            id: createdAlbums.id,
+            name: createdAlbums.name,
+            title: createdAlbums.name,
+            photo: {
+              blob256Id: createdAlbums.photoUrl,
+              blobId: createdAlbums.photoUrl,
+              reactions: []
+            },
+            photoAlbums: []
+          });
+        } else {
+          this.albums.push({
+            id: createdAlbums.id,
+            name: createdAlbums.name,
+            title: createdAlbums.name,
+            photo: null,
+            photoAlbums: null
+          });
+        }
       }
     );
   }

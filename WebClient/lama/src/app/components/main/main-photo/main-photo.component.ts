@@ -22,18 +22,16 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
-export class MainPhotoComponent implements OnChanges, OnInit {
-  public isFavorite = false;
-  // properties
-  @Input('_photo') photo: PhotoRaw;
-  imageUrl: string;
-  isSelected = false;
+export class MainPhotoComponent implements OnInit, OnChanges {
   @Input('_id') id = -1;
+  @Input('_photo') photo: PhotoRaw;
   @Output() Click = new EventEmitter<PhotoRaw>();
   @Output() Select = new EventEmitter<PhotoRawState>();
   private userId: number;
+  imageUrl: string;
+  isFavorite = false;
+  isSelected = false;
 
-  // constructors
   constructor(
     private favoriteService: FavoriteService,
     private fileService: FileService,
@@ -73,16 +71,16 @@ export class MainPhotoComponent implements OnChanges, OnInit {
     }
   }
 
-  // methods
-  public clickPerformed() {
+  clickPerformed() {
     this.Click.emit(this.photo);
   }
 
-  public selectItem() {
+  selectItem() {
     this.isSelected = !this.isSelected;
     this.Select.emit({ photo: this.photo, isSelected: this.isSelected });
   }
-  public mark() {
+
+  mark() {
     if (this.isFavorite) {
       this.favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
         data => this.checkCorrectReturn(data),

@@ -98,6 +98,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
+    this.defaultImageUrl = this.photoUrl;
     this.httpService.putData(`users`, this.user).subscribe(
       (data: User) => {
         this.testReceivedUser = data;
@@ -132,5 +133,6 @@ export class ProfileComponent implements OnInit {
   removeProfilePhoto() {
     this.photoUrl = null;
     this.user.photo = null;
+    this.sharedService.avatar.imageUrl = null;
   }
 }

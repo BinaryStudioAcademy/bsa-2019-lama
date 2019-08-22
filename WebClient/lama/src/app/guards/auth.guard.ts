@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     private router: Router
   ) {}
 
-  public canActivate(
+  canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | boolean {
       if (state.url.indexOf('shared') !== -1) {
@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       );
     }
 
-  public canActivateChild(
+  canActivateChild(
       next: ActivatedRouteSnapshot,
       state: RouterStateSnapshot): Observable<boolean> | boolean {
       return this.canActivate(next, state);
