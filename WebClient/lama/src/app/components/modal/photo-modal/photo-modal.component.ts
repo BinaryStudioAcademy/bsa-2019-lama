@@ -187,10 +187,8 @@ export class PhotoModalComponent implements OnInit {
     }
     const src = this.imageUrl;
     const exifObj = load(src);
-    console.log(exifObj);
     const field = 'GPS';
     const GPS = exifObj[field];
-    console.log(GPS);
 
     if (exifObj[field][1] === 'N') {
       this.latitude = this.ConvertDMSToDD(
@@ -300,8 +298,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
-    console.log(this.fileService.getExif(editedImage.editedImageBase64));
-
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -323,7 +319,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   resetImageHandler(): void {
-    console.log('reset');
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: this.imageUrl,
@@ -332,9 +327,10 @@ export class PhotoModalComponent implements OnInit {
 
     this.fileService.resetToDefault(updatePhotoDTO).subscribe(
       updatedPhotoDTO => {
+        console.log(updatedPhotoDTO);
         Object.assign(this.photo, updatedPhotoDTO);
         this.fileService
-          .getPhoto(this.photo.blobId)
+          .getPhoto(this.photo.originalBlobId)
           .subscribe(url => (this.imageUrl = url));
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
