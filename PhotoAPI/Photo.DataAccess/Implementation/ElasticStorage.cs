@@ -135,7 +135,7 @@ namespace Photo.DataAccess.Implementation
             return requestResult.Documents;
         }
 
-        public async Task<IEnumerable<string>> FindFields(int id, string criteria)
+        public async Task<Dictionary<string, List<string>>>FindFields(int id, string criteria)
         {
             var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
             .Source(sr => sr
@@ -183,11 +183,16 @@ namespace Photo.DataAccess.Implementation
         );
             //To do - rewrite this awful code
             List<string> names = requestResult.Documents.Where(p => p.Name.ToLower().Contains(criteria.ToLower())).Select(m => m.Name).ToList();
-            names.AddRange(requestResult.Documents.Where(p => p.Description != null &&  p.Description.ToLower().Contains(criteria.ToLower())).Select(m => m.Description).ToList());
-            names.AddRange(requestResult.Documents.Where(p => p.Location != null && p.Location.ToLower().Contains(criteria.ToLower())).Select(m => m.Location).ToList());
+            List<string> description = requestResult.Documents.Where(p => p.Description != null &&  p.Description.ToLower().Contains(criteria.ToLower())).Select(m => m.Description).ToList();
+            List<string> locations = requestResult.Documents.Where(p => p.Location != null && p.Location.ToLower().Contains(criteria.ToLower())).Select(m => m.Location).ToList();
 
-
-            return names;
+            var dict = new Dictionary<string, List<string>>()
+            {
+                {"names", names },
+                {"desription", description },
+                {"locations", locations }
+            };
+            return dict;
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId)

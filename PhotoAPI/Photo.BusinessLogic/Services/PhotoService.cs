@@ -35,7 +35,7 @@ namespace Photo.BusinessLogic.Services
             return elasticStorage.Find(id, criteria);
         }
 
-        public Task<IEnumerable<string>> FindFields(int id, string criteria)
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
             return elasticStorage.FindFields(id, criteria);
         }

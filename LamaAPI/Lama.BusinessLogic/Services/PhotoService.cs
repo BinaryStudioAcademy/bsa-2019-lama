@@ -85,7 +85,7 @@ namespace Lama.BusinessLogic.Services
             return photoDocumentDTOs;
         }
 
-        public async Task<IEnumerable<object>> FindFields(int id, string criteria)
+        public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
 
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -95,7 +95,7 @@ namespace Lama.BusinessLogic.Services
             var responseContent = await response.Content.ReadAsStringAsync();
 
 
-            return JsonConvert.DeserializeObject<IEnumerable<object>>(responseContent);
+            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseContent);
         }
 
         // METHODS

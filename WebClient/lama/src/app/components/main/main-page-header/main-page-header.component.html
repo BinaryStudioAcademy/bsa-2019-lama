@@ -22,12 +22,21 @@
         <div class="control is-expanded">
           <datalist id="values" *ngIf="!isActive">
             <div *ngFor="let item of searchHistory">
-              <option value=" {{ item }}">&#xe000; </option>
+              <option value=" {{ item }}">{{ unicodeSearch }} </option>
             </div>
           </datalist>
           <datalist id="values" *ngIf="searchSuggestions">
-            <div *ngFor="let item of searchSuggestions">
-              <option value="{{ item }}"> &#xe000; </option>
+            <div *ngFor="let key of objectKeys(searchSuggestions)">
+              <div *ngFor="let item of searchSuggestions[key]">
+                <option
+                  *ngIf="key == 'names' || key == 'desription'"
+                  value="{{ item }}"
+                  >{{ unicodeSearch }}
+                </option>
+                <option *ngIf="key == 'locations'" value="{{ item }}"
+                  >{{ unicodeLocation }}
+                </option>
+              </div>
             </div>
           </datalist>
         </div>

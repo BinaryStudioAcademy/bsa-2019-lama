@@ -33,9 +33,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   public searchCriteria = '';
   public isActive = false;
   searchHistory: string[];
-  searchSuggestions: string[] = [];
+  searchSuggestions: { [name: string]: string[] } = {};
   id: number;
   timeout = null;
+  objectKeys = Object.keys;
+  unicodeSearch = '\u2315';
+  unicodeLocation = '\u2316';
 
   public showSidebarMenu: boolean;
 
@@ -104,6 +107,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
         .subscribe(items => {
           this.searchSuggestions = items;
         });
+      console.log(this.searchSuggestions);
     }
   }
 

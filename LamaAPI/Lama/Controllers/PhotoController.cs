@@ -59,7 +59,7 @@ namespace Lama.Controllers
         }
 
         [HttpGet("search/fields/{id}/{criteria}")]
-        public Task<IEnumerable<object>> FindFields(int id, string criteria)
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
             return _service.FindFields(id, criteria);
         }

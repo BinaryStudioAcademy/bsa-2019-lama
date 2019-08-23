@@ -68,7 +68,7 @@ namespace Photo.Controllers
         }
 
         [HttpGet("search/fields/{id}/{criteria}")]
-        public Task<IEnumerable<string>> FindFields(int id, string criteria)
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
             return photoService.FindFields(id, criteria);
         }

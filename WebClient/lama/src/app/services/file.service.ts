@@ -42,7 +42,7 @@ export class FileService {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
-    return this.client.get<string[]>(
+    return this.client.get<{ [name: string]: string[] }>(
       `${environment.lamaApiUrl}/api/photo/search/fields/${id}/${criteria}`
     );
   }
