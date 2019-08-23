@@ -14,7 +14,7 @@ export class TokenInterceptor implements HttpInterceptor {
     return this.authService.afAuth.idToken.pipe(mergeMap((token) => {
         this.authService.token = token;
         request = request.clone({setHeaders: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${this.authService.token}`
       }});
         return next.handle(request);
     }));
