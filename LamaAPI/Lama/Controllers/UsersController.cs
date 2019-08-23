@@ -30,7 +30,7 @@ namespace Lama.Controllers
         [HttpPut]
         public async Task<int> UpdateUser([FromBody] UserDTO user)
         {
-             return await _service.UpdateUser(user);
+            return await _service.UpdateUser(user);
         }
 
         [HttpGet("{id}")]
@@ -38,9 +38,9 @@ namespace Lama.Controllers
         {
             return await _service.Get(id);
         }
-		
-        [HttpGet("email/{email}")]
-        public async Task<UserDTO> GetByEmail(string email)
+
+        [HttpGet("email")]
+        public async Task<UserDTO> GetByEmail([FromHeader] string email)
         {
             return await _service.GetByEmail(email);
         }
