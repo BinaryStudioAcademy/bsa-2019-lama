@@ -8,37 +8,42 @@ using RabbitMQ.Client.MessagePatterns;
 namespace Services.Implementation.RabbitMq
 {
     public class Consumer : IConsumer
-    {     
-        private readonly IBroker _broker;
-        private readonly ISubscription _subscription;
+    {
+        // FIELDS        
+        private readonly IBroker broker;
 
+        private readonly ISubscription subscription;
+
+        // CONSTRUCTORS
         public Consumer(IConnectionFactory connectionFactory, Settings settings)
         {
-            _broker = new Broker(connectionFactory, settings);
+            this.broker = new Broker(connectionFactory, settings);
 
-            _subscription = new Subscription(_broker.Channel, settings.QueueName, autoAck: false);
+            this.subscription = new Subscription(broker.Channel, settings.QueueName, autoAck: false);
         }
 
         public void Dispose()
         {
-            _broker?.Dispose();
-            _subscription?.Dispose();
+            broker?.Dispose();
+            subscription?.Dispose();
         }
+
+        // METHODS
         public void SetAcknowledge(ulong deliveryTag, bool processed)
         {
             if (processed)
             {
-                _broker.Channel.BasicAck(deliveryTag, false);
+                broker.Channel.BasicAck(deliveryTag, false);
             }
             else
             {
-                _broker.Channel.BasicNack(deliveryTag, multiple: false, requeue: true);
+                broker.Channel.BasicNack(deliveryTag, multiple: false, requeue: true);
             }
         }
 
         public ReceiveData Receive(int millisecondsTimeout)
         {
-            if (_subscription.Next(millisecondsTimeout, out var basicDeliveryEventArgs))
+            if (subscription.Next(millisecondsTimeout, out BasicDeliverEventArgs basicDeliveryEventArgs))
             {
                 return new ReceiveData
                 {
@@ -46,8 +51,7 @@ namespace Services.Implementation.RabbitMq
                     Body = basicDeliveryEventArgs.Body
                 };
             }
-
-            return null;
+            else return null;
         }
     }
 }

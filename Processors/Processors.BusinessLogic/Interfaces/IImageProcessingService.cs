@@ -2,6 +2,6 @@
 {
     public interface IImageProcessingService
     {
-        byte[] CreateThumbnail(byte[] passedImage, int largestSide);
+        byte[] CreateThumbnail(byte[] PassedImage, int LargestSide);
     }
 }

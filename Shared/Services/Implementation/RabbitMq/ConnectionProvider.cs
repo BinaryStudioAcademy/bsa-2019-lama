@@ -2,20 +2,23 @@
 {
     public class ConnectionProvider : Interfaces.IConnectionProvider
     {
-        private readonly RabbitMQ.Client.IConnectionFactory _connectionFactory;
+        // FIELDS
+        private readonly RabbitMQ.Client.IConnectionFactory connectionFactory;
 
+        // CONSTRUCTORS
         public ConnectionProvider(RabbitMQ.Client.IConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            this.connectionFactory = connectionFactory;
         }
 
+        // METHODS
         public Interfaces.IConsumer Connect(Models.Settings settings)
         {
-            return new Consumer(_connectionFactory, settings);
+            return new Consumer(connectionFactory, settings);
         }
         public Interfaces.IProducer Open(Models.Settings settings)
         {
-            return new Producer(_connectionFactory, settings);
+            return new Producer(connectionFactory, settings);
         }
     }
 }

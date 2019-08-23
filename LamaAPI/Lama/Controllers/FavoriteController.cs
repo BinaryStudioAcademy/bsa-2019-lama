@@ -10,11 +10,9 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DTO;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Photo;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Lama.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FavoriteController : ControllerBase

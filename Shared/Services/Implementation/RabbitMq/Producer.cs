@@ -7,16 +7,17 @@ namespace Services.Implementation.RabbitMq
 {
     public class Producer : IProducer
     {
-        private readonly PublicationAddress _publicationAddress;
+        // FIELDS
+        private readonly PublicationAddress publicationAddress;
 
-        private readonly IBroker _broker;
+        private IBroker broker;
 
         // CONSTRUCTORS
         public Producer(IConnectionFactory connectionFactory, Settings settings)
         {
-            _broker = new Broker(connectionFactory, settings);
+            this.broker = new Broker(connectionFactory, settings);
 
-            _publicationAddress = new PublicationAddress(
+            this.publicationAddress = new PublicationAddress(
                     settings.ExchangeType,
                     settings.ExchangeName,
                     settings.RoutingKey);
@@ -24,20 +25,22 @@ namespace Services.Implementation.RabbitMq
 
         public void Dispose()
         {
-            _broker?.Dispose();
+            broker?.Dispose();
         }
 
-        private IModel Channel => _broker.Channel;
+        // PROPERTIES
+        public IModel Channel => broker.Channel;
 
+        // METHODS
         public void Send(byte[] body)
         {
-            Channel.BasicPublish(_publicationAddress, null, body);
+            Channel.BasicPublish(publicationAddress, null, body);
         }
         public void Send(string message)
         {
-            var body = System.Text.Encoding.UTF8.GetBytes(message);
+            byte[] body = System.Text.Encoding.UTF8.GetBytes(message);
 
-            Channel.BasicPublish(_publicationAddress, null, body);
+            Channel.BasicPublish(publicationAddress, null, body);
         }
 
     }
