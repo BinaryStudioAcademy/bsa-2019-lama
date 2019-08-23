@@ -45,7 +45,8 @@ namespace Lama.BusinessLogic.Services
                 .Select(h => h.Take(5)
                     .First())
                 .ToList()
-                .Select(h => h.Text);
+                .Select(h => h.Text)
+                .Distinct();
         }
         public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(int id, string criteria)
         {

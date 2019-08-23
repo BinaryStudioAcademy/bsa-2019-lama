@@ -182,9 +182,24 @@ namespace Photo.DataAccess.Implementation
             )
         );
             //To do - rewrite this awful code
-            List<string> names = requestResult.Documents.Where(p => p.Name.ToLower().Contains(criteria.ToLower())).Select(m => m.Name).ToList();
-            List<string> description = requestResult.Documents.Where(p => p.Description != null &&  p.Description.ToLower().Contains(criteria.ToLower())).Select(m => m.Description).ToList();
-            List<string> locations = requestResult.Documents.Where(p => p.Location != null && p.Location.ToLower().Contains(criteria.ToLower())).Select(m => m.Location).ToList();
+            List<string> names = requestResult.Documents
+                .Where(p => p.Name.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Name)
+                    .Distinct()
+                    .ToList();
+            List<string> description = requestResult.Documents
+                .Where(p => p.Description != null &&  p.Description.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Description)
+                    .Distinct()
+                    .ToList();
+            List<string> locations = requestResult.Documents
+                .Where(p => p.Location != null && p.Location.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Location)
+                    .Distinct()
+                    .ToList();
 
             var dict = new Dictionary<string, List<string>>()
             {
