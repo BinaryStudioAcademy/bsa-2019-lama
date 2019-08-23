@@ -333,9 +333,10 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.update(updatePhotoDTO).subscribe(
       updatedPhotoDTO => {
         Object.assign(this.photo, updatedPhotoDTO);
-        this.fileService
-          .getPhoto(this.photo.originalBlobId)
-          .subscribe(url => {this.imageUrl = url; updatePhotoDTO.imageBase64 = url; });
+        this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
+          this.imageUrl = url;
+          updatePhotoDTO.imageBase64 = url;
+        });
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo reseted');
