@@ -98,11 +98,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
-    this.file
-      .getSearchSuggestions(this.id, this.searchCriteria)
-      .subscribe(items => {
-        this.searchSuggestions = items;
-      });
+    if (this.isActive) {
+      this.file
+        .getSearchSuggestions(this.id, this.searchCriteria)
+        .subscribe(items => {
+          this.searchSuggestions = items;
+        });
+    }
   }
 
   public logOut() {
@@ -133,6 +135,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
 
   public find() {
     this.searchHistory.unshift(this.searchCriteria);
+    if (this.searchHistory.length > 5) {
+      this.searchHistory.pop();
+    }
     const id = localStorage.getItem('userId');
     this.http.findPhotos(id, this.searchCriteria).subscribe(
       p => {

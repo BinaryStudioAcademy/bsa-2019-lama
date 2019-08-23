@@ -14,7 +14,7 @@
         <input
           (keyup.enter)="find()"
           class="input"
-          type="text"
+          type="search"
           placeholder="Find a photo"
           [(ngModel)]="searchCriteria"
           list="values"
@@ -22,12 +22,12 @@
         <div class="control is-expanded">
           <datalist id="values" *ngIf="!isActive">
             <div *ngFor="let item of searchHistory">
-              <option> {{ item }} </option>
+              <option value=" {{ item }}">&#xe000; </option>
             </div>
           </datalist>
           <datalist id="values" *ngIf="searchSuggestions">
             <div *ngFor="let item of searchSuggestions">
-              <option> {{ item }} </option>
+              <option value="{{ item }}"> &#xe000; </option>
             </div>
           </datalist>
         </div>
