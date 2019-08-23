@@ -1,16 +1,19 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
+using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO;
-using Microsoft.AspNetCore.Authorization;
+using Lama.Domain.DTO.Photo;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lama.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SharedPhotosController: ControllerBase
@@ -37,7 +40,7 @@ namespace Lama.Controllers
         [HttpPut("{id}")]
         public async Task<PhotoDocument> UpdateSharedPhotoWithLink(int id)
         {
-            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
             {
                 var sharedLink = await reader.ReadToEndAsync();
                 return await _sharingPhotoService.UpdatePhotoDocumentWithSharedLink(id, sharedLink);

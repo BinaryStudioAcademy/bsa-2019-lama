@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { User } from '../models/User/user';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
 import { NotifierService } from 'angular-notifier';
@@ -95,6 +97,10 @@ export class AuthService {
 
   getLoggedUserId() {
     return Number(localStorage.getItem('userId'));
+  }
+
+  getToken() {
+    return localStorage.getItem('idKey');
   }
 
   async saveCredentials(user: firebase.User) {

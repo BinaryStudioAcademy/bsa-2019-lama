@@ -26,19 +26,20 @@ using QueueConnection = Services.Models.ConnectionSettings;
 
 namespace PhotoProcessor.Infrastructure
 {
-    
+    // singleton
     internal class ServicesConfiguration
     {
-        
-        static readonly ServicesConfiguration instance;
+        // FIELDS
+        static ServicesConfiguration instance;
 
-        private readonly IUnityContainer _container;
-        private readonly IConfiguration _configuration;
+        IUnityContainer container;
+        IConfiguration configuration;
 
-        private ServicesConfiguration()
+        // CONSTRUCTORS
+        ServicesConfiguration()
         {
-            _container = new UnityContainer();
-            _configuration = new ConfigurationBuilder()
+            container = new UnityContainer();
+            configuration = new ConfigurationBuilder()
                                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                                 .AddJsonFile("appsettings.json")
                                 .AddEnvironmentVariables()
@@ -53,23 +54,23 @@ namespace PhotoProcessor.Infrastructure
 
         private void Configure()
         {
-            _container.RegisterFactory<IConnectionFactory>(f => new DefaultConnectionFactory(_configuration.Bind<QueueConnection>("Queues:ConnectionSettings")));
-            _container.RegisterType<IConnectionProvider, ConnectionProvider>();
+            container.RegisterFactory<IConnectionFactory>(f => new DefaultConnectionFactory(configuration.Bind<QueueConnection>("Queues:ConnectionSettings")));
+            container.RegisterType<IConnectionProvider, ConnectionProvider>();
 
-            _container.RegisterFactory<IElasticStorage>(ElasticStorageFactory);
-            _container.RegisterFactory<IPhotoBlobStorage>(f => new PhotoBlobStore(_configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
+            container.RegisterFactory<IElasticStorage>(ElasticStorageFactory);
+            container.RegisterFactory<IPhotoBlobStorage>(f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
 
-            _container.RegisterType<IImageProcessingService, ImageProcessingService>();
-            _container.RegisterFactory<IMessageService>(MessageServiceFactory);
+            container.RegisterType<IImageProcessingService, ImageProcessingService>();
+            container.RegisterFactory<IMessageService>(MessageServiceFactory);
         }
 
         private IElasticStorage ElasticStorageFactory(IUnityContainer unityContainer)
         {
-            var url = _configuration["elasticsearch:url"];
-            var defaultIndex = _configuration["elasticsearch:index"];
-            var uri = new Uri(url);
+            string url = configuration["elasticsearch:url"];
+            string defaultIndex = configuration["elasticsearch:index"];
+            Uri uri = new Uri(url);
 
-            var settings = new NestConnection(uri)
+            NestConnection settings = new NestConnection(uri)
                 .DefaultIndex(defaultIndex)
                 .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));
 
@@ -77,18 +78,19 @@ namespace PhotoProcessor.Infrastructure
         }
         private IMessageService MessageServiceFactory(IUnityContainer unityContainer)
         {
-            var elasticStorage = unityContainer.Resolve<IElasticStorage>();
-            var photoBlobStorage = unityContainer.Resolve<IPhotoBlobStorage>();
+            IElasticStorage elasticStorage = unityContainer.Resolve<IElasticStorage>();
+            IPhotoBlobStorage photoBlobStorage = unityContainer.Resolve<IPhotoBlobStorage>();
 
-            var imageProcessingService = unityContainer.Resolve<IImageProcessingService>();
+            IImageProcessingService imageProcessingService = unityContainer.Resolve<IImageProcessingService>();
                         
-            var consumer = unityContainer.Resolve<IConnectionProvider>().Connect
-                (_configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"));
+            IConsumer consumer = unityContainer.Resolve<IConnectionProvider>().Connect
+                (configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"));
 
             return new MessageServices(imageProcessingService, elasticStorage, photoBlobStorage, consumer);
         }
 
-        public IUnityContainer Container => _container;
+        // PROPERTIES
+        public IUnityContainer Container => container;
         public static ServicesConfiguration Instance => instance;
     }
 }
