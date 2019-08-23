@@ -35,9 +35,9 @@ export class AlbumService {
     );
   }
 
-  public getAlbum(userId: number, httpParams?: any) {
+  public getAlbum(Id: number, httpParams?: any) {
     return this.http.get<ViewAlbum>(
-      this.baseUrl + this.routeAlbum + '/album' + `/${userId}`,
+      this.baseUrl + this.routeAlbum + '/album' + `/${Id}`,
       { observe: 'response', headers: this.headers, params: httpParams }
     );
   }
