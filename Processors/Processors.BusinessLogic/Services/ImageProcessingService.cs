@@ -7,40 +7,40 @@ namespace Processors.BusinessLogic.Services
     {
         public byte[] CreateThumbnail(byte[] PassedImage, int LargestSide)
         {
-            byte[] returnedThumbnail;
+            byte[] ReturnedThumbnail;
 
-            using (MemoryStream startMemoryStream = new MemoryStream(),
-                                newMemoryStream = new MemoryStream())
+            using (MemoryStream StartMemoryStream = new MemoryStream(),
+                                NewMemoryStream = new MemoryStream())
             {
-                startMemoryStream.Write(PassedImage, 0, PassedImage.Length);
-                var startBitmap = new Bitmap(startMemoryStream);
+                StartMemoryStream.Write(PassedImage, 0, PassedImage.Length);
+                Bitmap startBitmap = new Bitmap(StartMemoryStream);
                 int newHeight;
                 int newWidth;
                 double HW_ratio;
                 if (startBitmap.Height > startBitmap.Width)
                 {
                     newHeight = LargestSide;
-                    HW_ratio = LargestSide / (double)startBitmap.Height;
-                    newWidth = (int)(HW_ratio * startBitmap.Width);
+                    HW_ratio = (double)((double)LargestSide / (double)startBitmap.Height);
+                    newWidth = (int)(HW_ratio * (double)startBitmap.Width);
                 }
                 else
                 {
                     newWidth = LargestSide;
-                    HW_ratio = LargestSide / (double)startBitmap.Width;
-                    newHeight = (int)(HW_ratio * startBitmap.Height);
+                    HW_ratio = (double)((double)LargestSide / (double)startBitmap.Width);
+                    newHeight = (int)(HW_ratio * (double)startBitmap.Height);
                 }
-
-                var newBitmap = ResizeImage(startBitmap, newWidth, newHeight);
-                newBitmap.Save(newMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                returnedThumbnail = newMemoryStream.ToArray();
+                Bitmap newBitmap = new Bitmap(newWidth, newHeight);
+                newBitmap = ResizeImage(startBitmap, newWidth, newHeight);
+                newBitmap.Save(NewMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                ReturnedThumbnail = NewMemoryStream.ToArray();
             }
-            return returnedThumbnail;
+            return ReturnedThumbnail;
         }
 
         private Bitmap ResizeImage(Bitmap image, int width, int height)
         {
-            var resizedImage = new Bitmap(width, height);
-            using (var gfx = Graphics.FromImage(resizedImage))
+            Bitmap resizedImage = new Bitmap(width, height);
+            using (Graphics gfx = Graphics.FromImage(resizedImage))
             {
                 gfx.DrawImage(image, new Rectangle(0, 0, width, height),
                     new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);

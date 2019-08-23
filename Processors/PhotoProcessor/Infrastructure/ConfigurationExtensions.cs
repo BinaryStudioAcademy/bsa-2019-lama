@@ -7,7 +7,7 @@ namespace PhotoProcessor.Infrastructure
         public static T Bind<T>(this IConfiguration configuration, string key)
             where T : class, new()
         {
-            var objectToBind = new T();
+            T objectToBind = new T();
             configuration.Bind(key, objectToBind);
             return objectToBind;
         }
