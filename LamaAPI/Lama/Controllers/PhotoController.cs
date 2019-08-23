@@ -58,6 +58,12 @@ namespace Lama.Controllers
             return _service.GetHistory(id);
         }
 
+        [HttpGet("search/fields/{id}/{criteria}")]
+        public Task<IEnumerable<object>> FindFields(int id, string criteria)
+        {
+            return _service.FindFields(id, criteria);
+        }
+
         [HttpPut]
         public Task<UpdatedPhotoResultDTO> UpdatePhoto([FromBody] UpdatePhotoDTO photoToUpdate)
         {

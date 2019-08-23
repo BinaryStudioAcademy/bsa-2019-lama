@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
-
+using Nest;
 using Photo.BusinessLogic.Interfaces;
 
 using Photo.Domain.BlobModels;
@@ -65,6 +65,12 @@ namespace Photo.Controllers
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
             return photoService.Find(id, criteria);
+        }
+
+        [HttpGet("search/fields/{id}/{criteria}")]
+        public Task<IEnumerable<string>> FindFields(int id, string criteria)
+        {
+            return photoService.FindFields(id, criteria);
         }
 
         // POST api/values

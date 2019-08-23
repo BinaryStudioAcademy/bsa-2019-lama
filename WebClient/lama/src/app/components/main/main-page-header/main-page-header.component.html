@@ -12,6 +12,7 @@
     <div class="field has-addons">
       <div class="control input-form">
         <input
+          (keyup.enter)="find()"
           class="input"
           type="text"
           placeholder="Find a photo"
@@ -21,7 +22,12 @@
         <div class="control is-expanded">
           <datalist id="values" *ngIf="!isActive">
             <div *ngFor="let item of searchHistory">
-              <option>{{ item }}</option>
+              <option> {{ item }} </option>
+            </div>
+          </datalist>
+          <datalist id="values" *ngIf="searchSuggestions">
+            <div *ngFor="let item of searchSuggestions">
+              <option> {{ item }} </option>
             </div>
           </datalist>
         </div>

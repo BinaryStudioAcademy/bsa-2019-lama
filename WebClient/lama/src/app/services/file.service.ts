@@ -41,6 +41,12 @@ export class FileService {
     );
   }
 
+  getSearchSuggestions(id: number, criteria: string) {
+    return this.client.get<string[]>(
+      `${environment.lamaApiUrl}/api/photo/search/fields/${id}/${criteria}`
+    );
+  }
+
   public async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
     const blob = await response.blob();

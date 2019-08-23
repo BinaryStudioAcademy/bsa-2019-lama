@@ -33,6 +33,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   public searchCriteria = '';
   public isActive = false;
   searchHistory: string[];
+  searchSuggestions: string[] = [];
+  id: number;
+  timeout = null;
 
   public showSidebarMenu: boolean;
 
@@ -50,8 +53,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   ngOnInit() {
-    const id = localStorage.getItem('userId');
-    if (id) {
+    this.id = parseInt(localStorage.getItem('userId'), 10);
+    if (this.id) {
       this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
         u => {
           if (u.photoUrl.indexOf('base64') === -1) {
@@ -84,6 +87,22 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     this.searchCriteria.length < 1
       ? (this.isActive = false)
       : (this.isActive = true);
+    if (this.isActive) {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+      this.timeout = setTimeout(() => {
+        this.getSearchSuggestions(this.id, this.searchCriteria);
+      }, 300);
+    }
+  }
+
+  getSearchSuggestions(id: number, criteria: string) {
+    this.file
+      .getSearchSuggestions(this.id, this.searchCriteria)
+      .subscribe(items => {
+        this.searchSuggestions = items;
+      });
   }
 
   public logOut() {
@@ -123,6 +142,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
+    this.searchCriteria = '';
   }
 
   public restore() {

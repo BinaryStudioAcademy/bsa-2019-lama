@@ -85,6 +85,19 @@ namespace Lama.BusinessLogic.Services
             return photoDocumentDTOs;
         }
 
+        public async Task<IEnumerable<object>> FindFields(int id, string criteria)
+        {
+
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/search/fields/{id}/{criteria}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+
+            return JsonConvert.DeserializeObject<IEnumerable<object>>(responseContent);
+        }
+
         // METHODS
         #region CREATE
         public Task<int> Create(PhotoDocument item)

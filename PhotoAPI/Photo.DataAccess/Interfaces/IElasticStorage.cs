@@ -1,4 +1,5 @@
-﻿using Photo.Domain.BlobModels;
+﻿using Nest;
+using Photo.Domain.BlobModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace Photo.DataAccess.Interfaces
 
         Task<PhotoDocument> Get(int elasticId);
         Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
+        Task<IEnumerable<string>> FindFields(int id, string criteria);
         Task<IEnumerable<PhotoDocument>> Get();
         Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);

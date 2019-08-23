@@ -2,7 +2,7 @@
 
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.BlobModels;
-
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -115,17 +115,17 @@ namespace Photo.DataAccess.Implementation
                          .Bool(b => b
                             .MinimumShouldMatch(1)
                              .Should(s => s
-                                 .Wildcard(w => w
+                                 .MatchPhrasePrefix(w => w
                                      .Field(f => f.Description)
-                                     .Value($"*{criteria}*")
+                                     .Query($"{criteria}")
                                   ), s => s
-                                 .Wildcard(w => w
+                                 .MatchPhrasePrefix(w => w
                                      .Field(f => f.Name)
-                                     .Value($"*{criteria}*")
+                                     .Query($"{criteria}")
                                  ), s => s
-                                 .Wildcard(w => w
+                                 .MatchPhrasePrefix(w => w
                                     .Field(f => f.Location)
-                                    .Value($"*{criteria}*")
+                                    .Query($"{criteria}")
                                  )
                               )
                           )
@@ -133,6 +133,61 @@ namespace Photo.DataAccess.Implementation
                 )
             ));
             return requestResult.Documents;
+        }
+
+        public async Task<IEnumerable<string>> FindFields(int id, string criteria)
+        {
+            var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
+            .Source(sr => sr
+                .Includes(i => i
+                    .Field(f => f.Name)
+                    .Field(f => f.Location)
+                    .Field(f => f.Description)
+                 )
+              )
+             .Query(q => q
+                 .Bool(d => d
+                     .Must(m => m
+                         .Match(k => k
+                             .Field(f => f.BlobId)
+                             .Query(".*images.*")
+                         ), m => m
+                         .Match(k => k
+                             .Field(f => f.IsDeleted)
+                             .Query("false")
+                         ), m => m
+                         .Match(k => k
+                            .Field(f => f.UserId)
+                            .Query($"{id}")
+                         ), m => m
+                         .Bool(b => b
+                            .MinimumShouldMatch(1)
+                             .Should(s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Description)
+                                     .Query($"{criteria}")
+                                  ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Name)
+                                     .Query($"{criteria}")
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                    .Field(f => f.Location)
+                                    .Query($"{criteria}")
+                                 )
+                              )
+                          )
+                     )
+                )
+            )
+        );
+            //To do - rewrite this awful code
+            List<string> names = requestResult.Documents.Where(p => p.Name.ToLower().Contains(criteria.ToLower())).Select(m => m.Name).ToList();
+            names.AddRange(requestResult.Documents.Where(p => p.Description != null &&  p.Description.ToLower().Contains(criteria.ToLower())).Select(m => m.Description).ToList());
+            names.AddRange(requestResult.Documents.Where(p => p.Location != null && p.Location.ToLower().Contains(criteria.ToLower())).Select(m => m.Location).ToList());
+
+
+            return names;
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId)

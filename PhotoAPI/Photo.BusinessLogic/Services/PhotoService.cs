@@ -9,6 +9,7 @@ using Photo.Domain.DataTransferObjects;
 
 using AutoMapper;
 using System.IO;
+using Nest;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -32,6 +33,11 @@ namespace Photo.BusinessLogic.Services
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
             return elasticStorage.Find(id, criteria);
+        }
+
+        public Task<IEnumerable<string>> FindFields(int id, string criteria)
+        {
+            return elasticStorage.FindFields(id, criteria);
         }
 
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
