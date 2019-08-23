@@ -6,14 +6,7 @@
     public class ReceiveData
     {
         public ulong DeliveryTag { get; set; }
-        public byte[] Body { get; set; }
-        public string Message
-        {
-            get
-            {
-                return System.Text.Encoding.UTF8.GetString(this.Body);
-            }
-        }
-
+        public byte[] Body { private get; set; }
+        public string Message => System.Text.Encoding.UTF8.GetString(Body);
     }
 }

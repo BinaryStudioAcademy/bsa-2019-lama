@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-
 import { ImageCropperModule } from 'ngx-image-cropper';
 import {CreateAlbumModule} from '../create-album-module/create-album.module';
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
@@ -19,8 +18,9 @@ import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
-import { EqualIdDirective } from 'src/app/directives/equal-id.directive';
 import {NotificationModule} from '../../notification/notification.module';
+import { IsBlockedDirective } from 'src/app/directives/is-blocked.directive';
+import { MemeColorDirective } from 'src/app/directives/meme-color.directive';
 
 @NgModule(
 {
@@ -48,7 +48,7 @@ import {NotificationModule} from '../../notification/notification.module';
     ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
     CommentsListComponent,
     EditPhotoComponent,
-    EqualIdDirective
+    IsBlockedDirective, MemeColorDirective
   ],
   exports:
   [
