@@ -4,43 +4,37 @@ namespace Services.Implementation.RabbitMq
 {
     public class Broker : Interfaces.IBroker
     {
-        // FIELDS
-        private readonly IConnection connection;
-        private readonly IModel channel;
+        private readonly IConnection _connection;
+        private readonly IModel _channel;
 
-        // CONSTRUCTORS
         public Broker(IConnectionFactory connectionFactory, Models.Settings settings)
         {
-            connection = connectionFactory.CreateConnection();
-            channel = connection.CreateModel();
+            _connection = connectionFactory.CreateConnection();
+            _channel = _connection.CreateModel();
 
-            // establish connection
             DeclareExchange(settings.ExchangeName, settings.ExchangeType);
 
             if (settings.QueueName != null)
             {
                 BindQueue(settings.ExchangeName, settings.QueueName, settings.RoutingKey);
             }
-
         }
         public void Dispose()
         {
-            channel?.Dispose();
-            connection?.Dispose();
+            _channel?.Dispose();
+            _connection?.Dispose();
         }
 
-        // PROPERTIES
-        public IModel Channel => channel;
+        public IModel Channel => _channel;
 
-        // METHODS
         public void DeclareExchange(string exchangeName, string exchangeType)
         {
-            channel.ExchangeDeclare(exchangeName, exchangeType ?? string.Empty);
+            _channel.ExchangeDeclare(exchangeName, exchangeType ?? string.Empty);
         }
         public void BindQueue(string exchangeName, string queueName, string routingKey)
         {
-            channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-            channel.QueueBind(queueName, exchangeName, routingKey);
+            _channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            _channel.QueueBind(queueName, exchangeName, routingKey);
         }
     }
 }
