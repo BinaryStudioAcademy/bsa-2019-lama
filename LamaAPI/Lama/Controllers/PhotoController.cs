@@ -1,31 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Mvc;
-
-using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.DTO.Reaction;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lama.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class PhotoController : ControllerBase
     {
-        // FIELDS
         private readonly IPhotoService _service;
 
-        // CONSTRUCTORS
         public PhotoController(IPhotoService photoService)
         {
             _service = photoService;
-
         }
 
-        // METHODS
         #region CREATE
         [HttpPost]
         public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
@@ -84,14 +79,12 @@ namespace Lama.Controllers
 
 
         #region DELETE
-        // DELETE: api/photo/5
         [HttpDelete("{photoToDeleteId}")]
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
             return _service.MarkPhotoAsDeleted(photoToDeleteId);
         }
 
-        // GET: api/photo/deleted
         [HttpGet]
         [Route("deleted/{userId}")]
         public Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
@@ -99,7 +92,6 @@ namespace Lama.Controllers
             return _service.GetDeletedPhotos(userId);
         }
 
-        // POST: api/photo/delete_permanently
         [HttpPost]
         [Route("delete_permanently")]
         public Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
@@ -107,7 +99,6 @@ namespace Lama.Controllers
             return _service.DeletePhotosPermanently(photosToDelete);
         }
 
-        // POST: api/photo/restore
         [HttpPost]
         [Route("restore")]
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
