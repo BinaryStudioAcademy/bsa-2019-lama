@@ -22,10 +22,9 @@ namespace Lama.Controllers
         }
 
         [HttpPost("CreateWithNewPhoto")]
-        public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos([FromBody] NewAlbumDTO albumDto)
+        public async Task<int> CreateAlbumWithNewPhotos([FromBody] NewAlbumDTO albumDto)
         {
-            var createdAlbumId = await _service.CreateAlbumWithNewPhotos(albumDto);
-            return await _service.FindAlbum(createdAlbumId);
+            return await _service.CreateAlbumWithNewPhotos(albumDto);
         }
         
         [HttpPost("CreateWithExistPhoto")]

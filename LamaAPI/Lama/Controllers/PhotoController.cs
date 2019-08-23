@@ -64,11 +64,13 @@ namespace Lama.Controllers
         {
             return await _service.GetUserPhotos(id);
         }
+
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {
             return await _service.GetPhoto(blobId);
         }
+
         [HttpGet("avatars/{blobId}")]
         public async Task<string> GetAvatar(string blobId)
         {

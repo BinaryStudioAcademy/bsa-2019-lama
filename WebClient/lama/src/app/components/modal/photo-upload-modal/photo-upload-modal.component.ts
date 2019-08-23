@@ -43,6 +43,10 @@ export class PhotoUploadModalComponent implements OnInit {
   ngOnInit() {}
 
   saveChanges() {
+    if (this.photos.length === 0) {
+      this.notifier.notify('error', 'Error download photos');
+      return;
+    }
     const userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) {
       this.photos[i] = {
@@ -57,6 +61,7 @@ export class PhotoUploadModalComponent implements OnInit {
       uploadedPhotos => {
         this.addToListEvent.emit(uploadedPhotos);
         this.toggleModal();
+        this.notifier.notify('success', 'Uploaded');
       },
       error => this.notifier.notify('error', 'Error sending photos')
     );
