@@ -25,9 +25,9 @@ export class HttpService {
     return this.http.put(`${environment.lamaApiUrl}/api/${endPoint}`, data);
   }
 
-  findPhotos(criteria: string): Observable<PhotoRaw[]> {
+  findPhotos(id: string, criteria: string): Observable<PhotoRaw[]> {
     return this.http.get(
-      `${environment.lamaApiUrl}/api/photo/search/${criteria}`
+      `${environment.lamaApiUrl}/api/photo/search/${id}/${criteria}`
     ) as Observable<PhotoRaw[]>;
   }
 }
