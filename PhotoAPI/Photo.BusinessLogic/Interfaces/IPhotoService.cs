@@ -12,7 +12,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] item);
         Task<int> CreateAvatar(CreatePhotoDTO item);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
-        Task<UpdatedPhotoResultDTO> ResetImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
         Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task MarkPhotoAsDeleted(int photoId);

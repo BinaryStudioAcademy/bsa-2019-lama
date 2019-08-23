@@ -330,13 +330,12 @@ export class PhotoModalComponent implements OnInit {
       imageBase64: ''
     };
 
-    this.fileService.resetToDefault(updatePhotoDTO).subscribe(
+    this.fileService.update(updatePhotoDTO).subscribe(
       updatedPhotoDTO => {
-        console.log(updatedPhotoDTO);
         Object.assign(this.photo, updatedPhotoDTO);
         this.fileService
           .getPhoto(this.photo.originalBlobId)
-          .subscribe(url => (this.imageUrl = url));
+          .subscribe(url => {this.imageUrl = url; updatePhotoDTO.imageBase64 = url; });
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo reseted');
