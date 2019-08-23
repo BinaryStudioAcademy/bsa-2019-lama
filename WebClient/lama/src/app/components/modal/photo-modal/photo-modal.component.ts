@@ -291,8 +291,8 @@ export class PhotoModalComponent implements OnInit {
   resetImageHandler(): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
-      blobId: this.imageUrl,
-      imageBase64: ''
+      blobId: this.photo.blobId,
+      imageBase64: this.imageUrl
     };
 
     this.fileService.update(updatePhotoDTO).subscribe(
