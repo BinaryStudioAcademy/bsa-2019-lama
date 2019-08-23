@@ -9,6 +9,7 @@ using Photo.Domain.DataTransferObjects;
 
 using AutoMapper;
 using System.IO;
+using System.Threading;
 using Nest;
 
 namespace Photo.BusinessLogic.Services
@@ -77,6 +78,7 @@ namespace Photo.BusinessLogic.Services
         {
             await elasticStorage.UpdateAsync(item);
         }
+
         public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
         {
             string filename = Path.GetFileName(updatePhotoDTO.BlobId);
@@ -100,15 +102,27 @@ namespace Photo.BusinessLogic.Services
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);
+            
             await storage.DeleteFileAsync(photoDocument.BlobId);
             await storage.DeleteFileAsync(photoDocument.Blob64Id);
             await storage.DeleteFileAsync(photoDocument.Blob256Id);
         }
 
-
-        public Task Create(PhotoDocument item)
+        private async Task<string> ResetBlobAsync(int elasticId)
         {
-            return elasticStorage.CreateAsync(item);
+            PhotoDocument photoDocument = await this.Get(elasticId);
+
+            await storage.DeleteFileAsync(photoDocument.BlobId);
+            await storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await storage.DeleteFileAsync(photoDocument.Blob256Id);
+
+            return photoDocument.OriginalBlobId;
+        }
+
+
+        public async Task<CreateResponse> Create(PhotoDocument item)
+        {
+            return await elasticStorage.CreateAsync(item);
         }
 
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
@@ -123,7 +137,7 @@ namespace Photo.BusinessLogic.Services
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] items)
-        {    
+        {
             var createdPhotos = new List<CreatePhotoResultDTO>();
             foreach(var item in items)
             {
@@ -144,7 +158,6 @@ namespace Photo.BusinessLogic.Services
                 };
 
                 await Create(photoDocumentToCreate);
-
                 createdPhotos.Add(mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
                 messageService.SendPhotoToThumbnailProcessor(photoDocumentToCreate.Id);
             }

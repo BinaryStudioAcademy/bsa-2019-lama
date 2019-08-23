@@ -119,27 +119,9 @@ export class MainAlbumsContainerComponent implements OnInit {
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.createdAlbumEvent.subscribe(
       (createdAlbums: CreatedAlbumsArgs) => {
-        if (createdAlbums.photoUrl !== null) {
-          this.albums.push({
-            id: createdAlbums.id,
-            name: createdAlbums.name,
-            title: createdAlbums.name,
-            photo: {
-              blob256Id: createdAlbums.photoUrl,
-              blobId: createdAlbums.photoUrl,
-              reactions: []
-            },
-            photoAlbums: []
-          });
-        } else {
-          this.albums.push({
-            id: createdAlbums.id,
-            name: createdAlbums.name,
-            title: createdAlbums.name,
-            photo: null,
-            photoAlbums: null
-          });
-        }
+        this.albumService.getAlbum(createdAlbums.id).subscribe(album => {
+          this.albums.push(album.body);
+        });
       }
     );
   }

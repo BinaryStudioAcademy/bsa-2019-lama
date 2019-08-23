@@ -22,15 +22,15 @@ namespace Photo.DataAccess.Implementation
         }
 
         // METHODS
-        public Task CreateAsync(PhotoDocument item)
+        public async Task<CreateResponse> CreateAsync(PhotoDocument item)
         {
-            return elasticClient.CreateDocumentAsync(item);
+            return await elasticClient.CreateDocumentAsync(item);
         }
 
-        public Task CreateAsync(int id, PhotoDocument item)
+        public async Task<CreateResponse> CreateAsync(int id, PhotoDocument item)
         {
             item.Id = id;
-            return elasticClient.CreateDocumentAsync(item);
+            return await elasticClient.CreateDocumentAsync(item);
         }
 
         public async Task DeleteAsync(int id)

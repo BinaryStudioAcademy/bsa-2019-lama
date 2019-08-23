@@ -1,14 +1,23 @@
 <div class="tile is-ancestor">
-
-    <!--left panel-->
-    <div class="tile is-parent">
-
-        <!--image-->
+    <div #defaultMode class="tile is-parent">
         <div class="edit-container">
-            <image-cropper #editor [imageBase64]="imageToEditBase64" [cropperMinWidth]="cropperMinWidth" [cropperMinHeight]="cropperMinHeight" [maintainAspectRatio]="false" format="jpeg" (imageCropped)="imageCroppedHandler($event)">
-            </image-cropper>
-        </div>
+            <div *ngIf="isMemeMode; then memeMode else defaultMode"></div>
+            
+            <ng-template #memeMode>
+                <div class="memeArea">
+                    <img src="{{ imageToEditBase64 }}" alt="image">
+                    <div *ngIf="!memeSaved">
+                        <textarea [(ngModel)]="upText" rows="2" class="upTextArea" [appMemeColor]="colorPicker"></textarea>
+                        <textarea [(ngModel)]="downText" rows="2" class="downTextArea" [appMemeColor]="colorPicker"></textarea>
+                    </div>
+                </div>
+            </ng-template>
 
+            <ng-template #defaultMode>
+                <image-cropper #editor [imageBase64]="imageToEditBase64" [cropperMinWidth]="cropperMinWidth" [cropperMinHeight]="cropperMinHeight" [maintainAspectRatio]="false" format="jpeg" (imageCropped)="imageCroppedHandler($event)">
+                </image-cropper>
+            </ng-template>
+        </div>
     </div>
 
     <!--right panel-->
@@ -19,7 +28,7 @@
 
             <!--crop-->
             <details>
-                <summary>Crop</summary>
+                <summary (click)="disableMeme()">Crop</summary>
 
                 <div class="drop-content">
                     <table>
@@ -37,7 +46,7 @@
 
             <!--rotate-->
             <details>
-                <summary>Rotate</summary>
+                <summary (click)="disableMeme()">Rotate</summary>
 
                 <div class="drop-content">
                     <div class="columns">
@@ -60,7 +69,7 @@
 
             <!--flip-->
             <details>
-                <summary>Flip</summary>
+                <summary (click)="disableMeme()">Flip</summary>
 
                 <div class="drop-content">
                     <div class="columns">
@@ -81,6 +90,17 @@
                 </div>
             </details>
 
+            <details>
+                    <summary (click)="enableMeme()">Meme</summary>
+    
+                    <div class="drop-content">
+                        <div class="columns">
+                            <div class="column has-text-centered">    
+                                <input type="color" [(ngModel)]="colorPicker">
+                            </div>    
+                        </div>
+                    </div>
+                </details>
         </div>
 
         <!--save/cancel-->
@@ -97,6 +117,11 @@
                     <div class="column" (click)="cancelClickHandler()">
                         <i class="material-icons is-block">cancel</i>
                         <span> cancel </span>
+                    </div>
+
+                    <div class="column" (click)="resetClickHandler()">
+                        <i class="material-icons is-block">undo</i>
+                        <span> reset </span>
                     </div>
 
                 </div>

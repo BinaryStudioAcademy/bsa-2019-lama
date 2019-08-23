@@ -7,13 +7,13 @@ namespace Processors.BusinessLogic.Services
     {
         public byte[] CreateThumbnail(byte[] PassedImage, int LargestSide)
         {
-            byte[] ReturnedThumbnail;
+            byte[] returnedThumbnail;
 
-            using (MemoryStream StartMemoryStream = new MemoryStream(),
-                                NewMemoryStream = new MemoryStream())
+            using (MemoryStream startMemoryStream = new MemoryStream(),
+                                newMemoryStream = new MemoryStream())
             {
-                StartMemoryStream.Write(PassedImage, 0, PassedImage.Length);
-                Bitmap startBitmap = new Bitmap(StartMemoryStream);
+                startMemoryStream.Write(PassedImage, 0, PassedImage.Length);
+                var startBitmap = new Bitmap(startMemoryStream);
                 int newHeight;
                 int newWidth;
                 double HW_ratio;
@@ -29,18 +29,18 @@ namespace Processors.BusinessLogic.Services
                     HW_ratio = (double)((double)LargestSide / (double)startBitmap.Width);
                     newHeight = (int)(HW_ratio * (double)startBitmap.Height);
                 }
-                Bitmap newBitmap = new Bitmap(newWidth, newHeight);
+                var newBitmap = new Bitmap(newWidth, newHeight);
                 newBitmap = ResizeImage(startBitmap, newWidth, newHeight);
-                newBitmap.Save(NewMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                ReturnedThumbnail = NewMemoryStream.ToArray();
+                newBitmap.Save(newMemoryStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                returnedThumbnail = newMemoryStream.ToArray();
             }
-            return ReturnedThumbnail;
+            return returnedThumbnail;
         }
 
         private Bitmap ResizeImage(Bitmap image, int width, int height)
         {
-            Bitmap resizedImage = new Bitmap(width, height);
-            using (Graphics gfx = Graphics.FromImage(resizedImage))
+            var resizedImage = new Bitmap(width, height);
+            using (var gfx = Graphics.FromImage(resizedImage))
             {
                 gfx.DrawImage(image, new Rectangle(0, 0, width, height),
                     new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);

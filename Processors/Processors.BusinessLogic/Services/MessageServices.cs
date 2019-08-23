@@ -11,71 +11,63 @@ namespace Processors.BusinessLogic.Services
 {
     public class MessageServices : IMessageService
     {
-        // FIELDS
-        IImageProcessingService imageProcessingService;
+        private readonly IImageProcessingService _imageProcessingService;
 
-        IElasticStorage elasticStorage;
-        IPhotoBlobStorage photoBlobStore;
+        private readonly IElasticStorage _elasticStorage;
+        private readonly IPhotoBlobStorage _photoBlobStore;
 
-        IConsumer consumer;
+        private readonly IConsumer _consumer;
 
         // CONSTRUCTORS
         public MessageServices(IImageProcessingService imageProcessingService, IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer)
         {
-            this.imageProcessingService = imageProcessingService;
+            _imageProcessingService = imageProcessingService;
 
-            this.elasticStorage = elasticStorage;
-            this.photoBlobStore = photoBlobStore;
+            _elasticStorage = elasticStorage;
+            _photoBlobStore = photoBlobStore;
 
-            this.consumer = consumer;
+            _consumer = consumer;
         }
 
         public void Dispose()
         {
-            consumer?.Dispose();
+            _consumer?.Dispose();
         }
 
-        // METHODS
         public async Task RunAsync(int millisecondsTimeout)
         {
             while (true)
             {
-                ReceiveData receiveData = consumer.Receive(millisecondsTimeout);
+                var receiveData = _consumer.Receive(millisecondsTimeout);
 
-                if (receiveData != null)
-                {
-                    await HandleReceivedDataAsync(JsonConvert.DeserializeObject<MakePhotoThumbnailDTO>(receiveData.Message));
-                    consumer.SetAcknowledge(receiveData.DeliveryTag, true);
-                }
+                if (receiveData == null) continue;
+                await HandleReceivedDataAsync(JsonConvert.DeserializeObject<MakePhotoThumbnailDTO>(receiveData.Message));
+                _consumer.SetAcknowledge(receiveData.DeliveryTag, true);
             }
 
         }
         private async Task HandleReceivedDataAsync(MakePhotoThumbnailDTO makePhotoThumbnailDTO)
         {
-            // get image
-            string address = await elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
-            string fileName = address.Substring(address.LastIndexOf('/') + 1);
-            byte[] currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
+            var address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
+            var fileName = address.Substring(address.LastIndexOf('/') + 1);
+            var currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
 
-            // create thumbnails
-            byte[] image64 = imageProcessingService.CreateThumbnail(currentImg, 64);
-            byte[] image256 = imageProcessingService.CreateThumbnail(currentImg, 256);
+            var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
+            var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
 
-            // load blobs and update elastic only if
-            // document still exist
-            if (await elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
+            if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
             {
-                ThubnailUpdateDTO thubnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
+                var thumbnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
 
-                await elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thubnailUpdateDTO);
+                await _elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thumbnailUpdateDTO);
             }
         }
         private async Task<byte[]> GetImage(ImageType imageType, string fileName)
         {
             switch (imageType)
             {
-                case ImageType.Photo: return await photoBlobStore.GetPhoto(fileName);
-                case ImageType.Avatar: return await photoBlobStore.GetAvatar(fileName);
+                case ImageType.Photo: return await _photoBlobStore.GetPhoto(fileName);
+                case ImageType.Avatar: return await _photoBlobStore.GetAvatar(fileName);
 
                 default: throw new System.ArgumentException("Unexpected image type");
             }
@@ -86,16 +78,16 @@ namespace Processors.BusinessLogic.Services
             {
                 return new ThubnailUpdateDTO
                 {
-                    Blob64Id = await photoBlobStore.LoadAvatarToBlob(image64),
-                    Blob256Id = await photoBlobStore.LoadAvatarToBlob(image256),
+                    Blob64Id = await _photoBlobStore.LoadAvatarToBlob(image64),
+                    Blob256Id = await _photoBlobStore.LoadAvatarToBlob(image256),
                 };
             }
             else if (ImageType.Photo == imageType)
             {
                 return new ThubnailUpdateDTO
                 {
-                    Blob64Id = await photoBlobStore.LoadPhotoToBlob(image64),
-                    Blob256Id = await photoBlobStore.LoadPhotoToBlob(image256),
+                    Blob64Id = await _photoBlobStore.LoadPhotoToBlob(image64),
+                    Blob256Id = await _photoBlobStore.LoadPhotoToBlob(image256),
                 };
             }
             else throw new System.ArgumentException("Unexpected image type");

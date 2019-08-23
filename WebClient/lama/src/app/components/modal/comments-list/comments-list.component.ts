@@ -65,7 +65,8 @@ export class CommentsListComponent implements OnInit {
 
   // methods
   createCommentHandler() {
-    if (!this.newCommentText.length) {
+    if (!this.newCommentText ||
+        !this.newCommentText.length) {
       return;
     }
 

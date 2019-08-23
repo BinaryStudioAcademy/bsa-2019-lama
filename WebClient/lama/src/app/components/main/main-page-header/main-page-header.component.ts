@@ -172,7 +172,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     componentRef.instance.addToListEvent.subscribe(
       data => {
         this.shared.photos.push(...data);
-        this.notifier.notify('success', 'Uploaded');
       },
       err => {
         this.notifier.notify('error', 'Error Uploading');

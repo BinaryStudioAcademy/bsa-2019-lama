@@ -11,7 +11,7 @@ namespace PhotoProcessor
 
         static void Main(string[] args)
         {
-            using (IMessageService messageService = ServicesConfiguration.Instance.Container.Resolve<IMessageService>())
+            using (var messageService = ServicesConfiguration.Instance.Container.Resolve<IMessageService>())
             {
                 messageService.RunAsync(CheckForMessageEashMs).GetAwaiter().GetResult();
             }                  

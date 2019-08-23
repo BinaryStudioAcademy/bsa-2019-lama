@@ -35,6 +35,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
+  isHaveAnyPhotos = false;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -151,6 +152,13 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     } else {
       this.isAtLeastOnePhotoSelected = false;
     }
+    if (
+      this.photos.length === 0 &&
+      !this.showSpinner) {
+      this.isHaveAnyPhotos = false;
+    } else {
+      this.isHaveAnyPhotos = true;
+    }
   }
 
   // methods
@@ -160,7 +168,6 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       PhotoUploadModalComponent
     );
     const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
-
     componentRef.instance.onFileDropped(event);
     componentRef.instance.addToListEvent.subscribe(
       this.uploadPhotoHandler.bind(this)

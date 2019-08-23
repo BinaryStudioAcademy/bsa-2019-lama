@@ -35,15 +35,15 @@ export class AlbumService {
     );
   }
 
-  public getAlbum(userId: number, httpParams?: any) {
+  public getAlbum(Id: number, httpParams?: any) {
     return this.http.get<ViewAlbum>(
-      this.baseUrl + this.routeAlbum + '/album' + `/${userId}`,
+      this.baseUrl + this.routeAlbum + '/album' + `/${Id}`,
       { observe: 'response', headers: this.headers, params: httpParams }
     );
   }
-  public createAlbumWithNewPhotos(album: NewAlbum): Observable<ReturnAlbumDTO> {
+  public createAlbumWithNewPhotos(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(
+    return this.http.post<number>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }

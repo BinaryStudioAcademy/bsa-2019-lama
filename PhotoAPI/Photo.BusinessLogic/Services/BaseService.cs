@@ -1,4 +1,5 @@
-﻿using Photo.BusinessLogic.Interfaces;
+﻿using Nest;
+using Photo.BusinessLogic.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Photo.BusinessLogic.Services
 {
     public abstract class BaseService<T> : IBaseService<T> where T : class
     {
-        public Task Create(T item)
+        public Task<CreateResponse> Create(T item)
         {
             throw new NotImplementedException();
         }

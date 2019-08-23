@@ -38,6 +38,7 @@
   (fileDropped)="uploadFile($event)"
 >
   <h2 *ngIf="isNothingFounded">Nothing found!</h2>
+  <h2 *ngIf="!isHaveAnyPhotos">You don`t have any pictures yet!</h2>
   <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
   <!--photo list-->
   <div *ngFor="let item of photos">

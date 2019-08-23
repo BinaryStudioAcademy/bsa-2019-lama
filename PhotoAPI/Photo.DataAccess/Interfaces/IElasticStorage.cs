@@ -7,8 +7,8 @@ namespace Photo.DataAccess.Interfaces
 {
     public interface IElasticStorage
     {
-        Task CreateAsync(PhotoDocument item);
-        Task CreateAsync(int id, PhotoDocument item);
+        Task<CreateResponse> CreateAsync(PhotoDocument item);
+        Task<CreateResponse> CreateAsync(int id, PhotoDocument item);
 
         Task DeleteAsync(int id);
 
