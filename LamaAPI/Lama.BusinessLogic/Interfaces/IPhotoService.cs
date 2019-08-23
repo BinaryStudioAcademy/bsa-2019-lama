@@ -14,7 +14,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<Photo> CreateAvatar(CreatePhotoDTO item);
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
-        Task<UpdatedPhotoResultDTO> ResetPhoto(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> Get(int id);
         Task<string> GetPhoto(string blobId);
         Task<string> GetAvatar(string blobId);

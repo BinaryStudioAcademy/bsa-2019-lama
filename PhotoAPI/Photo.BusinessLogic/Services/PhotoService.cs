@@ -94,20 +94,6 @@ namespace Photo.BusinessLogic.Services
             return updatedPhoto;
         }
 
-        public async Task<UpdatedPhotoResultDTO> ResetImage(UpdatePhotoDTO updatePhotoDTO)
-        {
-            string original = await ResetBlobAsync(elasticId: updatePhotoDTO.Id);
-            UpdatedPhotoResultDTO updatedPhoto = new UpdatedPhotoResultDTO
-            {
-                BlobId = original,
-                Blob64Id = original,
-                Blob256Id = original
-            };
-            await elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-            messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
-            return updatedPhoto;
-        }
-
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             PhotoDocument photoDocument = await this.Get(elasticId);

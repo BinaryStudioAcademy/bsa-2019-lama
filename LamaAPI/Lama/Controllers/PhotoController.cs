@@ -58,12 +58,6 @@ namespace Lama.Controllers
             return _service.UpdatePhoto(photoToUpdate);
         }
 
-        [HttpPut("reset")]
-        public Task<UpdatedPhotoResultDTO> ResetPhoto([FromBody] UpdatePhotoDTO photoToUpdate)
-        {
-            return _service.ResetPhoto(photoToUpdate);
-        }
-
         [HttpGet]
         public async Task<IEnumerable<PhotoDocumentDTO>> LoadPhotos()
         {
@@ -75,11 +69,13 @@ namespace Lama.Controllers
         {
             return await _service.GetUserPhotos(id);
         }
+
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {
             return await _service.GetPhoto(blobId);
         }
+
         [HttpGet("avatars/{blobId}")]
         public async Task<string> GetAvatar(string blobId)
         {

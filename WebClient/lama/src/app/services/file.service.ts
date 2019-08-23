@@ -70,14 +70,6 @@ export class FileService {
       .pipe(map(res => res as UpdatedPhotoResultDTO));
   }
 
-  public resetToDefault(
-    photoToUpdate: UpdatePhotoDTO
-  ): Observable<UpdatedPhotoResultDTO> {
-    return this.client
-      .put(`${environment.lamaApiUrl}/api/photo/reset`, photoToUpdate)
-      .pipe(map(res => res as UpdatedPhotoResultDTO));
-  }
-
   public ReactionPhoto(NewReaction: NewLike): Observable<number> {
     return this.client.post<number>(
       `${environment.lamaApiUrl}/api/photo/reaction`,
