@@ -35,6 +35,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
+  isHaveAnyPhotos = false;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -150,6 +151,13 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.isAtLeastOnePhotoSelected = true;
     } else {
       this.isAtLeastOnePhotoSelected = false;
+    }
+    if (
+      this.photos.length === 0 && 
+      !this.showSpinner) {
+      this.isHaveAnyPhotos = false;
+    } else {
+      this.isHaveAnyPhotos = true;
     }
   }
 
