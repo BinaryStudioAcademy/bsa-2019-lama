@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.DbModels;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lama.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SharedAlbumsController : ControllerBase

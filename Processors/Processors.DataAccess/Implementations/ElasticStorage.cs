@@ -9,29 +9,26 @@ namespace Processors.DataAccess.Implementation
 {
     public class ElasticStorage : Interfaces.IElasticStorage
     {
-        // FIELDS
-        string indexName;
-        IElasticClient elasticClient;
+        private string _indexName;
+        private readonly IElasticClient _elasticClient;
 
-        // CONSTRUCTORS
         public ElasticStorage(string indexName, IElasticClient elasticClient)
         {
-            this.indexName = indexName;
-            this.elasticClient = elasticClient;
+            _indexName = indexName;
+            _elasticClient = elasticClient;
         }
-
-        // METHODS
+       
         public async Task<string> GetBlobId(long documentId)
         {
-            return (await elasticClient.GetAsync<PhotoDocument>(documentId)).Source.BlobId;
+            return (await _elasticClient.GetAsync<PhotoDocument>(documentId)).Source.BlobId;
         }
-        public Task UpdateThumbnailsAsync(long id, ThubnailUpdateDTO thubnailUpdate)
+        public Task UpdateThumbnailsAsync(long id, ThubnailUpdateDTO thumbnailUpdate)
         {
-            return elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thubnailUpdate));
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
         }
         public async Task<bool> ExistAsync(long id)
         {
-            return (await elasticClient.DocumentExistsAsync<PhotoDocument>(id)).Exists;
+            return (await _elasticClient.DocumentExistsAsync<PhotoDocument>(id)).Exists;
         }
     }
 }

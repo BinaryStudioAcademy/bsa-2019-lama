@@ -153,7 +153,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.isAtLeastOnePhotoSelected = false;
     }
     if (
-      this.photos.length === 0 && 
+      this.photos.length === 0 &&
       !this.showSpinner) {
       this.isHaveAnyPhotos = false;
     } else {

@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
-using Lama.BusinessLogic.Services;
 using Lama.Domain.BlobModels;
-using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lama.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AlbumController : ControllerBase
     {
         private readonly IAlbumService _service;
 
-        public AlbumController(IAlbumService AlbumService)
+        public AlbumController(IAlbumService albumService)
         {
-            _service = AlbumService;
+            _service = albumService;
         }
 
         [HttpPost("CreateWithNewPhoto")]
@@ -28,23 +26,27 @@ namespace Lama.Controllers
         {
             return await _service.CreateAlbumWithNewPhotos(albumDto);
         }
+        
         [HttpPost("CreateWithExistPhoto")]
         public async Task<ReturnAlbumDTO> CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotosDTO album)
         {
-            int createdAlbumId = await _service.CreateAlbumWithExistPhotos(album);
+            var createdAlbumId = await _service.CreateAlbumWithExistPhotos(album);
             return await _service.FindAlbum(createdAlbumId);
         }
+        
         [HttpPost("CreateEmptyAlbum")]
         public async Task<ReturnAlbumDTO> CreateEmptyAlbum([FromBody] NewAlbumDTO album)
         {
-            int createdAlbumId = await _service.CreateEmptyAlbum(album);
+            var createdAlbumId = await _service.CreateEmptyAlbum(album);
             return await _service.FindAlbum(createdAlbumId);
         }
+        
         [HttpPost("ArchivePhotos")]
         public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
         {
             return await _service.GetPhotos(photoDocuments);
         }
+        
         [HttpPut]
         public async Task UpdateAlbum([FromBody] UpdateAlbumDTO album)
         {
@@ -74,6 +76,7 @@ namespace Lama.Controllers
         {
             return await _service.GetAlbumPhotoDetails(id);
         }
+        
         [HttpGet("{id}")]
         public async Task<List<ReturnAlbumDTO>> GetUserAlbums(int id)
         {

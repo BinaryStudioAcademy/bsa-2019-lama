@@ -2,44 +2,39 @@
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.DTO.Comments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lama.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        // FIELDS
-        private readonly ICommentService commentService;
+        private readonly ICommentService _commentService;
 
-        // CONSTRUCTORS
         public CommentsController(ICommentService commentService)
         {
-            this.commentService = commentService;
+            _commentService = commentService;
         }
 
-        // METHODS
-        // GET: api/comments/5
         [HttpGet("{photoId}")]
         public Task<IEnumerable<CommentListDTO>> FindPhotos(int photoId)
         {
-            return commentService.GetAsync(photoId);
+            return _commentService.GetAsync(photoId);
         }
 
-        // POST: api/comments/
         [HttpPost]
         public Task<int> Create([FromBody]CreateCommentDTO createCommentDTO)
         {
-            return commentService.CreateAsync(createCommentDTO);
+            return _commentService.CreateAsync(createCommentDTO);
         }
 
-        // POST: api/comments/5
         [HttpDelete("{commentId}")]
         public Task Delete(int commentId)
         {
-            return commentService.DeleteAsync(commentId);
+            return _commentService.DeleteAsync(commentId);
         }
-
     }
 }
