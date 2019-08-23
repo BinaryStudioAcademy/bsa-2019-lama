@@ -27,7 +27,7 @@ export class ChooseStoragePhotosComponent implements OnInit {
   @Output() Change = new EventEmitter<PhotoRaw>();
 
   ngOnInit() {
-    const id = this.currentUser.id; // second parameter is radix (explicitly specifying numeric system )
+    const id = this.currentUser.id;
     this.photoService
       .receiveUsersPhotos(id)
       .subscribe(

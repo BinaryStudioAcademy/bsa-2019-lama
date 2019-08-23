@@ -37,6 +37,7 @@ export class PhotoUploadModalComponent implements OnInit {
   showSpinner = false;
   geoCoder;
   address: string;
+  showRemoveButton = false;
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
@@ -151,5 +152,19 @@ export class PhotoUploadModalComponent implements OnInit {
 
   toggleModal() {
     this.isActive = !this.isActive;
+  }
+
+  mouseEnterOverlayHandler() {
+    this.showRemoveButton = true;
+  }
+
+  mouseLeftOverlayHandler() {
+    this.showRemoveButton = false;
+  }
+
+  removePhoto(index: number) {
+    if (index !== -1) {
+      this.photos.splice(index, 1);
+    }
   }
 }
