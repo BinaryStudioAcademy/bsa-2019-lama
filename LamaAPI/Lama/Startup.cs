@@ -77,7 +77,6 @@ namespace Lama
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseCors("MyPolicy");
 

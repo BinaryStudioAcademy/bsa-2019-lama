@@ -4,14 +4,17 @@ namespace Services.Implementation.RabbitMq
 {
     public class Broker : Interfaces.IBroker
     {
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
+        // FIELDS
+        private readonly IConnection connection;
+        private readonly IModel channel;
 
+        // CONSTRUCTORS
         public Broker(IConnectionFactory connectionFactory, Models.Settings settings)
         {
-            _connection = connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
-            
+            connection = connectionFactory.CreateConnection();
+            channel = connection.CreateModel();
+
+            // establish connection
             DeclareExchange(settings.ExchangeName, settings.ExchangeType);
 
             if (settings.QueueName != null)
@@ -22,20 +25,22 @@ namespace Services.Implementation.RabbitMq
         }
         public void Dispose()
         {
-            _channel?.Dispose();
-            _connection?.Dispose();
+            channel?.Dispose();
+            connection?.Dispose();
         }
 
-        public IModel Channel => _channel;
+        // PROPERTIES
+        public IModel Channel => channel;
 
+        // METHODS
         public void DeclareExchange(string exchangeName, string exchangeType)
         {
-            _channel.ExchangeDeclare(exchangeName, exchangeType ?? string.Empty);
+            channel.ExchangeDeclare(exchangeName, exchangeType ?? string.Empty);
         }
         public void BindQueue(string exchangeName, string queueName, string routingKey)
         {
-            _channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-            _channel.QueueBind(queueName, exchangeName, routingKey);
+            channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channel.QueueBind(queueName, exchangeName, routingKey);
         }
     }
 }
