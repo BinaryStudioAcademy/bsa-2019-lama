@@ -16,8 +16,36 @@ textarea
     flex-direction: column
     justify-content: center
 
-#modal-image-container img 
+#modal-image-container img
     margin-top: 1rem
 
-#uploaded-image
-    margin-bottom: 1rem
+.uploaded-image
+    position: relative
+    width: 100%
+
+.uploaded-image:hover .overlay
+    opacity: 0.5
+
+.remove-button
+  font-size: 200px
+  position: relative
+  top: 0
+  right: -100%
+  transform: translate(-50%, -50%)
+  -ms-transform: translate(-50%, -50%)
+  text-align: center
+
+.overlay
+  position: absolute
+  top: 0
+  bottom: 0
+  right: 0
+  height: 100%
+  width: 100%
+  opacity: 0
+  transition: .3s ease
+  background-color: white
+
+.remove-button:hover
+  color:#808080
+  cursor: pointer
