@@ -60,7 +60,7 @@ export class UserService {
         );
     });
   }
-  public getUserByEmail(email: string): Observable<User> {
-    return this.httpService.getDataWithHeader(`users/email`, { email: data });
+  public getUserByEmail(userEmail: string): Observable<User> {
+    return this.httpService.getDataWithHeader(`users/email`, { email: userEmail });
   }
 }
