@@ -123,12 +123,6 @@ export class PhotoModalComponent implements OnInit {
       },
       error => this.notifier.notify('error', 'Error getting user')
     );
-    this.albumService
-      .GetPhotoDetailsAlbums(this.photo.id)
-      .subscribe(
-        e => (this.albums = e.body),
-        error => this.notifier.notify('error', 'Error loading albums')
-      );
   }
 
   ConvertDMSToDD(
@@ -294,6 +288,15 @@ export class PhotoModalComponent implements OnInit {
 
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
+      if (this.isInfoShown === false) {
+        this.albumService
+          .GetPhotoDetailsAlbums(this.photo.id)
+          .subscribe(
+            e => (this.albums = e.body),
+            error =>
+              this.notifier.notify('error', 'Error loading photo details')
+          );
+      }
       this.CloseInfo();
     }
   }
