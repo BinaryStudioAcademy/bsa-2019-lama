@@ -53,8 +53,6 @@ export class ProfileComponent implements OnInit {
           this.fileService
             .getPhoto(u.photoUrl)
             .subscribe(url => (this.photoUrl = url));
-          this.sharedService.avatar = { imageUrl: u.photoUrl };
-
           console.log(this.user.lastName);
           this.defaultEmail = this.user.email;
           this.defaultLastName = this.user.lastName;
@@ -109,7 +107,7 @@ export class ProfileComponent implements OnInit {
       error => this.notifier.notify('error', 'Error saving')
     );
     if (this.isPhotoLoaded) {
-      this.sharedService.avatar = { imageUrl: this.user.photoUrl };
+      this.sharedService.avatar = { imageUrl: this.photoUrl };
     }
     localStorage.setItem('firstName', `${this.user.firstName}`);
     localStorage.setItem('lastName', `${this.user.lastName}`);
