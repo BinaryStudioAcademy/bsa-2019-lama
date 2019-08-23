@@ -170,21 +170,16 @@ export class CreateAlbumModalComponent implements OnInit {
           photos: this.photos
         };
         this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
-          AlbumId => {
-            this.albumService.getAlbum(AlbumId).subscribe(
-              x => {
-                const album = x.body;
-                if (album.photo !== null) {
-                  this.createdAlbumEvent.emit({
-                    id: album.id,
-                    name: album.title,
-                    photoUrl: album.photo.blob256Id || album.photo.blobId,
-                    title: album.title
-                  });
-                }
-              },
-              error => this.notifier.notify('error', 'Error loading the album')
-            );
+          createdAlbum => {
+            console.log(createdAlbum);
+
+            this.createdAlbumEvent.emit({
+              id: createdAlbum.id,
+              name: createdAlbum.title,
+              photoUrl:
+                createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+              title: createdAlbum.title
+            });
             this.notifier.notify('success', 'Album created');
           },
           error => this.notifier.notify('error', 'Error creating the album')

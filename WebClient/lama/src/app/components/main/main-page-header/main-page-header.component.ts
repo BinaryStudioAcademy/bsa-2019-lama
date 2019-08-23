@@ -75,7 +75,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       : (this.isActive = true);
   }
 
-  public logOut() {
+  logOut() {
     this.auth
       .doLogout()
       .then((this.auth.token = null))
@@ -93,7 +93,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       });
   }
 
-  public find() {
+  find() {
     this.http.findPhotos(this.searchCriteria).subscribe(
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
@@ -104,7 +104,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     );
   }
 
-  public restore() {
+  restore() {
     this.file.receivePhoto().subscribe(
       p => {
         this.shared.foundedPhotos = p;
@@ -113,7 +113,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     );
   }
 
-  public openModalClicked() {
+  openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(
       PhotoUploadModalComponent
@@ -122,6 +122,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     componentRef.instance.addToListEvent.subscribe(
       data => {
         this.shared.photos.push(...data);
+        this.notifier.notify('success', 'Uploaded');
       },
       err => {
         this.notifier.notify('error', 'Error Uploading');
@@ -130,7 +131,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     componentRef.instance.toggleModal();
   }
 
-  public onMenuClicked(event) {
+  onMenuClicked(event) {
     this.showSidebarMenu = !this.showSidebarMenu;
     this.Click.emit(this.showSidebarMenu);
   }

@@ -1,5 +1,4 @@
-﻿using Nest;
-using Photo.Domain.BlobModels;
+﻿using Photo.Domain.BlobModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,8 +6,8 @@ namespace Photo.DataAccess.Interfaces
 {
     public interface IElasticStorage
     {
-        Task<CreateResponse> CreateAsync(PhotoDocument item);
-        Task<CreateResponse> CreateAsync(int id, PhotoDocument item);
+        Task CreateAsync(PhotoDocument item);
+        Task CreateAsync(int id, PhotoDocument item);
 
         Task DeleteAsync(int id);
 

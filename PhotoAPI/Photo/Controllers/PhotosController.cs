@@ -120,6 +120,7 @@ namespace Photo.Controllers
             return this.photoService.UpdateImage(value);
         }
 
+
         #region DELETE
         // DELETE: api/photos/5
         [HttpDelete("{photoToDeleteId}")]

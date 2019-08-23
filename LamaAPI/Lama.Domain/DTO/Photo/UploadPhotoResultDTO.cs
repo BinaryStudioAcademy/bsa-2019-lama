@@ -1,6 +1,4 @@
-﻿using Lama.Domain.DbModels;
-
-namespace Lama.Domain.DTO.Photo
+﻿namespace Lama.Domain.DTO.Photo
 {
     public class UploadPhotoResultDTO
     {
@@ -14,6 +12,5 @@ namespace Lama.Domain.DTO.Photo
         public string SharedLink { get; set; }
         public bool IsDeleted { get; set; }
         public string Description { get; set; }
-        public Like[] Reactions { set; get; }
     }
 }

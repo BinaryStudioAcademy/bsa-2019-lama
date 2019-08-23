@@ -36,6 +36,7 @@ import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 import {NotificationModule} from './notification/notification.module';
 
+
 @NgModule({
   declarations:
   [

@@ -160,6 +160,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       PhotoUploadModalComponent
     );
     const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
+
     componentRef.instance.onFileDropped(event);
     componentRef.instance.addToListEvent.subscribe(
       this.uploadPhotoHandler.bind(this)

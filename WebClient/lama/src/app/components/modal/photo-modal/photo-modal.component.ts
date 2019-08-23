@@ -68,7 +68,7 @@ export class PhotoModalComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
-  @Input() address: string;
+  address: string;
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
@@ -95,7 +95,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.photo);
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
@@ -111,15 +110,11 @@ export class PhotoModalComponent implements OnInit {
     this.userService.getUser(this.userId).subscribe(
       user => {
         this.currentUser = user;
-        let reactions = this.photo.reactions;
+        const reactions = this.photo.reactions;
 
-        if (reactions === null) {
-          reactions = [];
-        } else {
-          this.hasUserReaction = reactions.some(
-            x => x.userId === this.currentUser.id
-          );
-        }
+        this.hasUserReaction = reactions.some(
+          x => x.userId === this.currentUser.id
+        );
       },
       error => this.notifier.notify('error', 'Error getting user')
     );
@@ -192,8 +187,10 @@ export class PhotoModalComponent implements OnInit {
     }
     const src = this.imageUrl;
     const exifObj = load(src);
+    console.log(exifObj);
     const field = 'GPS';
     const GPS = exifObj[field];
+    console.log(GPS);
 
     if (exifObj[field][1] === 'N') {
       this.latitude = this.ConvertDMSToDD(
@@ -303,6 +300,8 @@ export class PhotoModalComponent implements OnInit {
   }
 
   public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+    console.log(this.fileService.getExif(editedImage.editedImageBase64));
+
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -317,30 +316,8 @@ export class PhotoModalComponent implements OnInit {
           .subscribe(url => (this.imageUrl = url));
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
-        this.notifier.notify('success', 'Photo updated');
       },
       error => this.notifier.notify('error', 'Error updating photo')
-    );
-  }
-
-  resetImageHandler(): void {
-    const updatePhotoDTO: UpdatePhotoDTO = {
-      id: this.photo.id,
-      blobId: this.imageUrl,
-      imageBase64: ''
-    };
-
-    this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.fileService
-          .getPhoto(this.photo.originalBlobId)
-          .subscribe(url => {this.imageUrl = url; updatePhotoDTO.imageBase64 = url; });
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo reseted');
-      },
-      error => this.notifier.notify('error', 'Error reseting photo')
     );
   }
 
@@ -371,8 +348,8 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
+
         this.deletePhotoEvenet.emit(this.photo.id);
-        this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')
     );

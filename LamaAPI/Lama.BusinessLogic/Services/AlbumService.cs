@@ -19,7 +19,6 @@ using Lama.BusinessLogic.Exceptions;
 using Lama.Domain.DTO;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Reaction;
-using System.Threading;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -136,13 +135,15 @@ namespace Lama.BusinessLogic.Services
 
             using (HttpClient httpClient = new HttpClient())
             {
-                var s = await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate);
-                var str  = await s.Content.ReadAsStringAsync();
-                var elasticId = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
+                var elasticIds = (JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(
+                    await
+                    (await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate)).Content.ReadAsStringAsync()))
+                    .Select(x => x.Id);
 
                 await Context.Albums.AddAsync(TempAlbum);
                 await Context.SaveChangesAsync();
             }
+
             return TempAlbum.Id;
         }
         public async Task<int> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
@@ -265,17 +266,16 @@ namespace Lama.BusinessLogic.Services
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
+                 .ThenInclude(x => x.Photo)
                 .Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
-            var elasticPhotos = await _photoService.GetAll();
+            var ListOfPhotos = _mapper.Map<IEnumerable<PhotoDocument>>(await _photoService.GetAll());
 
-            var ListOfPhotos = _mapper.Map<IEnumerable<PhotoDocument>>(elasticPhotos);
-         
             var Photos = from pa in result.PhotoAlbums
-                             join el in ListOfPhotos on pa.PhotoId equals el.Id
+                             join el in ListOfPhotos on pa.Photo.Id equals el.Id
                              select el;
-                             
+
             IEnumerable<PhotoDocumentDTO> photoDocumentDTOs = _mapper.Map<PhotoDocumentDTO[]>(Photos);
             foreach(PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
             {
@@ -294,6 +294,7 @@ namespace Lama.BusinessLogic.Services
                 }
             }
 
+
             var album = new ReturnAlbumDTO()
             {
                 Id = result.Id,
@@ -306,7 +307,6 @@ namespace Lama.BusinessLogic.Services
             }
             return album;
         }
-
         private void UnbindEntitiesFromAlbum(Album album)
         {
             UnbindPhotosFromAlbum(album);

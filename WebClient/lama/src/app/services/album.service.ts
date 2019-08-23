@@ -41,9 +41,9 @@ export class AlbumService {
       { observe: 'response', headers: this.headers, params: httpParams }
     );
   }
-  public createAlbumWithNewPhotos(album: NewAlbum) {
+  public createAlbumWithNewPhotos(album: NewAlbum): Observable<ReturnAlbumDTO> {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<number>(
+    return this.http.post<ReturnAlbumDTO>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }

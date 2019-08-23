@@ -131,7 +131,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
     if (
-      this.album.photoAlbums !== null &&
       this.album.photoAlbums !== undefined &&
       this.album.photoAlbums.length === 0
     ) {

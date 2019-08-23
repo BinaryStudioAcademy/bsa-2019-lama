@@ -1,5 +1,4 @@
-﻿using Nest;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Photo.BusinessLogic.Interfaces
@@ -8,7 +7,7 @@ namespace Photo.BusinessLogic.Interfaces
     {
         Task<IEnumerable<T>> Get();
         Task<T> Get(int id);
-        Task<CreateResponse> Create(T item);
+        Task Create(T item);
         Task Update(T item);
         Task Delete(int id);
     }

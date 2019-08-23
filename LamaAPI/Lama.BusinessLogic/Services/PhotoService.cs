@@ -107,8 +107,8 @@ namespace Lama.BusinessLogic.Services
             StringContent content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"{url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
-            var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
-            return converted;
+
+            return JsonConvert.DeserializeObject<UploadPhotoResultDTO[]>(responseContent);
         }
         
         public async Task<Photo> Create(CreatePhotoDTO item)

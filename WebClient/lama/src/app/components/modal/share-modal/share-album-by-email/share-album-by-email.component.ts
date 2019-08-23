@@ -45,20 +45,18 @@ export class ShareAlbumByEmailComponent implements OnInit {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
       this.userService.getUserByEmail(this.sharedEmail).subscribe(
         user => {
-          if (user) {
+          if (user.email) {
             this.userEmails.push(user.email);
             this.wrongInput = false;
             this.clearInput();
           } else {
             this.wrongInput = true;
-            this.notifier.notify('error', 'Error getting email');
           }
         },
         error => this.notifier.notify('error', 'Error getting email')
       );
     } else {
       this.wrongInput = true;
-      this.notifier.notify('error', 'Incorrect input');
     }
   }
 
