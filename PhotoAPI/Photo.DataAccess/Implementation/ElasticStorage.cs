@@ -181,7 +181,7 @@ namespace Photo.DataAccess.Implementation
                 )
             )
         );
-            //To do - rewrite this awful code
+            //TODO - rewrite this awful code
             List<string> names = requestResult.Documents
                 .Where(p => p.Name.ToLower()
                     .Contains(criteria.ToLower()))
