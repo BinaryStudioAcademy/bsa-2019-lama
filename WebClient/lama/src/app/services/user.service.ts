@@ -12,7 +12,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-
   constructor(
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
@@ -20,19 +19,22 @@ export class UserService {
     private httpService: HttpService
   ) {}
 
-
   // methods
   public getUser(userId: number): Observable<User> {
-    return this.client.get<User>(`${environment.lamaApiUrl}/api/users/${userId}`);
+    return this.client.get<User>(
+      `${environment.lamaApiUrl}/api/users/${userId}`
+    );
   }
 
   public getCurrentUserFromServer(): Observable<GetUserDTO> {
-    return this.client.get<GetUserDTO>(`${environment.lamaApiUrl}/api/users/current`);
+    return this.client.get<GetUserDTO>(
+      `${environment.lamaApiUrl}/api/users/current`
+    );
   }
 
   public getCurrentUserFirebase(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      const user = firebase.auth().onAuthStateChanged( (e) => {
+      const user = firebase.auth().onAuthStateChanged(e => {
         if (e) {
           resolve(e);
         } else {
@@ -45,15 +47,20 @@ export class UserService {
   public updateCurrentUser(value): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       const user = firebase.auth().currentUser;
-      user.updateProfile({
-        displayName: value.name,
-        photoURL: user.photoURL
-      }).then(res => {
-        resolve(res);
-      }, err => reject(err));
+      user
+        .updateProfile({
+          displayName: value.name,
+          photoURL: user.photoURL
+        })
+        .then(
+          res => {
+            resolve(res);
+          },
+          err => reject(err)
+        );
     });
   }
   public getUserByEmail(email: string): Observable<User> {
-    return this.httpService.getData(`users/email/${email}`);
+    return this.httpService.getDataWithHeader(`users/email`, { email: data });
   }
 }
