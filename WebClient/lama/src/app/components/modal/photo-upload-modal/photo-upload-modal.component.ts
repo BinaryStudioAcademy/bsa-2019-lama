@@ -6,18 +6,23 @@ import {
   Output,
   ViewContainerRef,
   ViewChild,
-  ComponentRef
+  ComponentRef,
+  AfterViewInit
 } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
-import { MainPhotosContainerComponent } from '../../main/main-photos-container/main-photos-container.component';
 import { Photo } from 'src/app/models';
-import { Subject } from 'rxjs';
 import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
+import { MapsAPILoader, MouseEvent } from '@agm/core';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude
+} from 'src/app/components/export-functions/exif';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -30,6 +35,9 @@ export class PhotoUploadModalComponent implements OnInit {
   photos: Photo[] = [];
   desc: string[] = [];
   showSpinner = false;
+  geoCoder;
+  address: string;
+  showRemoveButton = false;
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
@@ -37,10 +45,15 @@ export class PhotoUploadModalComponent implements OnInit {
 
   constructor(
     private fileService: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private mapsAPILoader: MapsAPILoader
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
+  }
 
   saveChanges() {
     if (this.photos.length === 0) {
@@ -53,7 +66,8 @@ export class PhotoUploadModalComponent implements OnInit {
         imageUrl: this.photos[i].imageUrl,
         description: this.desc[i],
         authorId: parseInt(userId, 10),
-        filename: this.photos[i].filename
+        filename: this.photos[i].filename,
+        location: this.photos[i].location
       };
     }
 
@@ -73,12 +87,20 @@ export class PhotoUploadModalComponent implements OnInit {
       await this.onFileDropped(files);
     }
   }
+
   async onFileDropped(files: File[]) {
     this.showSpinner = true;
     this.photos = [];
+    let latitude;
+    let longitude;
     for (const file of files) {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
+        const field = 'GPS';
+        latitude = getLatitude(exifObj);
+        longitude = getLongitude(exifObj);
+        console.log(latitude);
+        console.log(longitude);
         const d = dump(exifObj);
         const compressedFile = await imageCompression(
           file,
@@ -88,7 +110,22 @@ export class PhotoUploadModalComponent implements OnInit {
         remove(base64);
         const modifiedObject = insert(d, base64);
         this.showSpinner = false;
-        this.photos.push({ imageUrl: modifiedObject, filename: file.name });
+        if (latitude && longitude) {
+          getLocation(latitude, longitude, this.geoCoder).then(location => {
+            this.address = location;
+            this.photos.push({
+              imageUrl: modifiedObject,
+              filename: file.name,
+              location: this.address
+            });
+          });
+        } else {
+          this.photos.push({
+            imageUrl: modifiedObject,
+            filename: file.name,
+            location: this.address
+          });
+        }
       } else {
         const compressedFile = await imageCompression(
           file,
@@ -97,7 +134,8 @@ export class PhotoUploadModalComponent implements OnInit {
         this.showSpinner = false;
         this.photos.push({
           imageUrl: await this.toBase64(compressedFile),
-          filename: file.name
+          filename: file.name,
+          location: this.address
         });
       }
     }
@@ -114,5 +152,19 @@ export class PhotoUploadModalComponent implements OnInit {
 
   toggleModal() {
     this.isActive = !this.isActive;
+  }
+
+  mouseEnterOverlayHandler() {
+    this.showRemoveButton = true;
+  }
+
+  mouseLeftOverlayHandler() {
+    this.showRemoveButton = false;
+  }
+
+  removePhoto(index: number) {
+    if (index !== -1) {
+      this.photos.splice(index, 1);
+    }
   }
 }

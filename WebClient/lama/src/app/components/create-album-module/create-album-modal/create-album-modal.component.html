@@ -42,7 +42,14 @@
                 </div>
                 <div class="photos" [style.display]="this.photos.length==0 ? 'none' : 'block'">
                     <div class="photo" *ngFor="let photo of photos; let i = index">
-                        <img src="{{ photo.imageUrl }}" id="uploaded-image">
+                        <div class="uploaded-image">
+                            <img src="{{ photo.imageUrl }}" class="image"/>
+                            <div class="overlay" (mouseenter)="mouseEnterOverlayHandler()" (mouseleave)="mouseLeftOverlayHandler()">
+                              <div *ngIf="showRemoveButton" (click)="removePhoto(i)" class="remove-button">
+                                <i class="material-icons is-block">clear</i>
+                              </div>
+                            </div>
+                          </div>
                         <div class="desc">
                             <textarea class="textarea has-fixed-size" placeholder="Description" id="{{ i }}" [(ngModel)]="photo.description" rows="2"></textarea>
                         </div>

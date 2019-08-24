@@ -35,6 +35,18 @@ export class FileService {
     );
   }
 
+  getSearchHistory(id: number) {
+    return this.client.get<string[]>(
+      `${environment.lamaApiUrl}/api/photo/search_history/${id}`
+    );
+  }
+
+  getSearchSuggestions(id: number, criteria: string) {
+    return this.client.get<{ [name: string]: string[] }>(
+      `${environment.lamaApiUrl}/api/photo/search/fields/${id}/${criteria}`
+    );
+  }
+
   public async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
     const blob = await response.blob();
