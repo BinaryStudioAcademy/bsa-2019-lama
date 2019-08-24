@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Lama.Domain.DTO.Album;
+using Lama.Domain.DTO.Photo;
 
 namespace Lama.BusinessLogic.Interfaces
 {
@@ -21,5 +22,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> RemoveAlbumCover(int id);
         Task<int?> UpdateCover(UpdateAlbumDTO album);
         Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id);
+        Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum(NewPhotosAlbum newPhotosAlbum);
+        Task<List<PhotoDocumentDTO>> AddExistPhotosToAlbum(ExistPhotosAlbum existPhotosAlbum);
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Album;
+using Lama.Domain.DTO.Photo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,17 @@ namespace Lama.Controllers
         public async Task<List<byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
         {
             return await _service.GetPhotos(photoDocuments);
+        }
+
+        [HttpPost("AlbumNewPhotos")]
+        public async Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum([FromBody] NewPhotosAlbum newPhotosAlbum)
+        {
+            return await _service.AddNewPhotosToAlbum(newPhotosAlbum);
+        }
+        [HttpPost("AlbumExistPhotos")]
+        public async Task<List<PhotoDocumentDTO>> AddExistPhotosToAlbum([FromBody] ExistPhotosAlbum existPhotosAlbum)
+        {
+            return await _service.AddExistPhotosToAlbum(existPhotosAlbum);
         }
         [HttpPut]
         public async Task UpdateAlbum([FromBody] UpdateAlbumDTO album)
