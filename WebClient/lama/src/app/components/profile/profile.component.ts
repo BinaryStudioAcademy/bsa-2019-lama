@@ -133,6 +133,6 @@ export class ProfileComponent implements OnInit {
   removeProfilePhoto() {
     this.photoUrl = null;
     this.user.photo = null;
-    this.sharedService.avatar.imageUrl = null;
+    this.sharedService.avatar = null;
   }
 }
