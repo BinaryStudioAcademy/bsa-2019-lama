@@ -22,23 +22,29 @@ import { TokenInterceptor } from './services/token.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
-import { HttpClientModule} from '@angular/common/http';
-import { SharedModule, ModalModule, RemovedPhotosModule, UiModule, LandingModule } from 'src/app/components';
-import {ViewAlbumComponent} from './components/view-album-module/view-album/view-album.component';
-import {ViewAlbumPhotosComponent} from './components/view-album-module/view-album-photos/view-album-photos.component';
+import { HttpClientModule } from '@angular/common/http';
+import {
+  SharedModule,
+  ModalModule,
+  RemovedPhotosModule,
+  UiModule,
+  LandingModule
+} from 'src/app/components';
+import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
+import { ViewAlbumPhotosComponent } from './components/view-album-module/view-album-photos/view-album-photos.component';
 import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
-import {SharedPageHeaderComponent} from './components/shared-page/shared-page-header/shared-page-header.component';
+import { SharedPageHeaderComponent } from './components/shared-page/shared-page-header/shared-page-header.component';
 import { FavoriteDirective } from './directives/favorite.directive';
 import { CheckFavoriteDirective } from './directives/check-favorite.directive';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
-import {NotificationModule} from './notification/notification.module';
+import { NotificationModule } from './notification/notification.module';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
-  declarations:
-  [
+  declarations: [
     AppComponent,
     MainLandingPageComponent,
     MainPageComponent,
@@ -61,8 +67,7 @@ import {NotificationModule} from './notification/notification.module';
     SetAlbumCoverModalComponent,
     ChooseAlbumCoverComponent
   ],
-  imports:
-  [
+  imports: [
     SharedModule,
     LandingModule,
     AppRoutingModule,
@@ -77,10 +82,10 @@ import {NotificationModule} from './notification/notification.module';
     FormsModule,
     CreateAlbumModule,
     ReactiveFormsModule,
-    NotificationModule
+    NotificationModule,
+    InfiniteScrollModule
   ],
-  providers:
-  [
+  providers: [
     HttpService,
     {
       provide: HTTP_INTERCEPTORS,
@@ -90,5 +95,4 @@ import {NotificationModule} from './notification/notification.module';
   ],
   bootstrap: [AppComponent]
 })
-
-export class AppModule { }
+export class AppModule {}
