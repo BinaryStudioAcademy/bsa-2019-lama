@@ -39,8 +39,8 @@
                                                 <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
                                                     <ng-template ngSwitchCase="remove">
                                                         <div [appIsBlocked]="!isEqualId()">
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
+                                                            <i class="material-icons is-block">{{ item.icon }}</i>
+                                                            <span> {{ item.title }} </span>
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="download">

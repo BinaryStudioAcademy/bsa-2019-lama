@@ -20,6 +20,7 @@ using Lama.Domain.DTO;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Reaction;
 using System.Threading;
+using System.Net.Http.Headers;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -82,6 +83,85 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
 
             return TempAlbum.Id;
+        }
+        public async Task<List<PhotoDocumentDTO>> AddExistPhotosToAlbum(ExistPhotosAlbum existPhotosAlbum)
+        {
+            List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
+            foreach(var photoId in existPhotosAlbum.PhotosId)
+            {
+                photoAlbums.Add(new PhotoAlbum() { AlbumId=existPhotosAlbum.AlbumId, PhotoId= photoId});
+            }
+            await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
+            await Context.SaveChangesAsync();
+
+            string url = configuration["PhotoApiUrl"];
+
+            List<PhotoDocumentDTO> photos = new List<PhotoDocumentDTO>();
+            using (HttpClient httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await httpClient.GetAsync($"{url}api/photos");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+                photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            }
+            var ReturnPhotos = new List<PhotoDocumentDTO>();
+
+            foreach(var id in existPhotosAlbum.PhotosId)
+            {
+                var Photo = photos.FirstOrDefault(x => x.Id == id);
+                if(Photo != null)
+                ReturnPhotos.Add(Photo);
+            }
+            return ReturnPhotos;
+        }
+        public async Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum(NewPhotosAlbum newPhotosAlbum)
+        {
+            string url = configuration["PhotoApiUrl"];
+            var PhotosAlbum = newPhotosAlbum.Photos;
+
+            Photo[] savedPhotos = new Photo[PhotosAlbum.Length];
+
+            for (int i = 0; i < PhotosAlbum.Length; ++i)
+            {
+                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(new Photo());
+            }
+            await _context.SaveAsync();
+
+            CreatePhotoDTO[] PhotosToCreate = new CreatePhotoDTO[PhotosAlbum.Length];
+
+            for (int i = 0; i < PhotosToCreate.Length; ++i)
+            {
+                PhotosToCreate[i] = new CreatePhotoDTO()
+                {
+                    Id = savedPhotos[i].Id,
+                    AuthorId = newPhotosAlbum.UserId,
+                    ImageUrl = PhotosAlbum[i].ImageUrl,
+                    Description = PhotosAlbum[i].Description,
+                    FileName = PhotosAlbum[i].FileName
+                };
+            }
+
+            List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
+            for (int i = 0; i < savedPhotos.Length; i++)
+            {
+                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i] , AlbumId = newPhotosAlbum.AlbumId });
+            }
+            await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
+            await Context.SaveChangesAsync();
+
+            List<PhotoDocument> list = new List<PhotoDocument>();
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var s = await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate);
+                var str = await s.Content.ReadAsStringAsync();
+                list = JsonConvert.DeserializeObject<List<PhotoDocument>>(str);
+            }
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+            return photos;
         }
         public async Task<int> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
