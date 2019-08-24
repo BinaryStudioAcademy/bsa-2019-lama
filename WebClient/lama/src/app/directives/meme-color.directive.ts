@@ -1,4 +1,5 @@
 import { Directive, Input, OnChanges, ElementRef } from '@angular/core';
+import { invertColor } from 'src/app/export-functions/meme';
 
 @Directive({
   selector: '[appMemeColor]'
@@ -8,7 +9,8 @@ export class MemeColorDirective implements OnChanges {
   constructor(private elem: ElementRef) { }
 
   ngOnChanges() {
-    this.elem.nativeElement.style.color = this.color ? this.color : 'black';
+    this.elem.nativeElement.style.webkitTextStroke = `1px ${invertColor(this.color)}`;
+    this.elem.nativeElement.style.color = this.color;
   }
 
 }

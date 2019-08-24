@@ -22,7 +22,7 @@ import {
   getLocation,
   getLatitude,
   getLongitude
-} from 'src/app/components/export-functions/exif';
+} from 'src/app/export-functions/exif';
 
 @Component({
   // tslint:disable-next-line: component-selector
