@@ -5,7 +5,7 @@ import { MainPageComponent } from './components/main/main-page/main-page.compone
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
+import { ViewAlbumComponent } from './components/view-album/view-album.component';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
 import { DeletedPhotosComponent } from './components/removed-photos/deleted-photos/deleted-photos.component';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';

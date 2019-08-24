@@ -20,10 +20,10 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { element } from 'protractor';
 import { ZipService } from 'src/app/services/zip.service';
-import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { User } from 'src/app/models/User/user';
 import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 import { NotifierService } from 'angular-notifier';
+import { PhotoModalComponent } from '../modal/photo-modal/photo-modal.component';
 
 @Component({
   selector: 'app-view-album',
@@ -57,7 +57,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     private notifier: NotifierService
   ) {
     this.routeSubscription = route.params.subscribe(
-      params => (this.AlbumId = params.id)
+      params => (this.AlbumId = parseInt(params.id, 10))
     );
     this.route.queryParams.subscribe(
       params => {
@@ -104,7 +104,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
-    console.log(eventArgs);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvenet.subscribe(
       this.deletePhotoHandler.bind(this)
@@ -129,7 +128,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   }
 
   ngDoCheck() {
-    console.log(this.album);
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
     if (
       this.album.photoAlbums !== null &&
