@@ -64,12 +64,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     this.getSearchHistory(this.id);
     this.http.getData(`users/${this.id}`).subscribe(
       u => {
-        if (u.photoUrl.indexOf('base64') === -1) {
-          this.file
-            .getPhoto(u.photoUrl)
-            .subscribe(url => (this.avatarUrl = url));
-        } else {
-          this.avatarUrl = u.photoUrl;
+        if (u.photoUrl) {
+          if (u.photoUrl.indexOf('base64') === -1) {
+            this.file
+              .getPhoto(u.photoUrl)
+              .subscribe(url => (this.avatarUrl = url));
+          } else {
+            this.avatarUrl = u.photoUrl;
+          }
         }
       },
       error => this.notifier.notify('error', 'Error loading user')
@@ -82,14 +84,18 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
 
   ngDoCheck() {
     if (this.shared.avatar && this.shared.avatar.imageUrl) {
-      if (this.shared.avatar.imageUrl.indexOf('base64') === -1) {
-        this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
-          this.avatarUrl = url;
-        });
+      if (this.shared.avatar.imageUrl === 'deleted') {
+        this.avatarUrl = null;
       } else {
-        this.avatarUrl = this.shared.avatar.imageUrl;
+        if (this.shared.avatar.imageUrl.indexOf('base64') === -1) {
+          this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
+            this.avatarUrl = url;
+          });
+        } else {
+          this.avatarUrl = this.shared.avatar.imageUrl;
+        }
+        this.shared.avatar = null;
       }
-      this.shared.avatar = null;
     }
     this.searchCriteria.length < 1
       ? (this.isActive = false)
