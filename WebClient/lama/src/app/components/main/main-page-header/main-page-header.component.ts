@@ -55,25 +55,29 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     this.resolver = resolver;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.id = parseInt(localStorage.getItem('userId'), 10);
-    if (this.id) {
-      this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
-        u => {
-          if (u.photoUrl.indexOf('base64') === -1) {
-            this.file
-              .getPhoto(u.photoUrl)
-              .subscribe(url => (this.avatarUrl = url));
-          } else {
-            this.avatarUrl = u.photoUrl;
-          }
-        },
-        error => this.notifier.notify('error', 'Error loading user')
-      );
-    } else {
-      this.avatarUrl = this.auth.user.photo.imageUrl;
+    while (!this.id) {
+      await this.delay(500);
+      this.id = parseInt(localStorage.getItem('userId'), 10);
     }
-    this.getSearchHistory();
+    this.getSearchHistory(this.id);
+    this.http.getData(`users/${this.id}`).subscribe(
+      u => {
+        if (u.photoUrl.indexOf('base64') === -1) {
+          this.file
+            .getPhoto(u.photoUrl)
+            .subscribe(url => (this.avatarUrl = url));
+        } else {
+          this.avatarUrl = u.photoUrl;
+        }
+      },
+      error => this.notifier.notify('error', 'Error loading user')
+    );
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngDoCheck() {
@@ -129,8 +133,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       });
   }
 
-  getSearchHistory() {
-    const id = parseInt(localStorage.getItem('userId'), 10);
+  getSearchHistory(id: number) {
     this.file.getSearchHistory(id).subscribe(history => {
       this.searchHistory = history;
       console.log(history);

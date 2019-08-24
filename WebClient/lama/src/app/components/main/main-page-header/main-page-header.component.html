@@ -22,7 +22,7 @@
         <div class="control is-expanded">
           <datalist id="values" *ngIf="!isActive">
             <div *ngFor="let item of searchHistory">
-              <option value=" {{ item }}">{{ unicodeSearch }} </option>
+              <option value="{{ item }}">{{ unicodeSearch }} </option>
             </div>
           </datalist>
           <datalist id="values" *ngIf="searchSuggestions">
