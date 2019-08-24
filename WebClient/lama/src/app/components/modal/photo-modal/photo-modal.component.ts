@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
-
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -26,13 +25,14 @@ import {
   getLocation,
   getLatitude,
   getLongitude
-} from 'src/app/components/export-functions/exif';
+} from 'src/app/export-functions/exif';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
+
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
@@ -100,7 +100,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.photo);
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
@@ -164,7 +163,6 @@ export class PhotoModalComponent implements OnInit {
     }
     const src = this.imageUrl;
     const exifObj = load(src);
-    console.log(exifObj);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
     // load Places Autocomplete
@@ -229,7 +227,7 @@ export class PhotoModalComponent implements OnInit {
     }
 
     // remove
-    if (clickedMenuItem === this.defaultMenuItem[1] && this.isEqualId()) {
+    if (clickedMenuItem === this.defaultMenuItem[1]) {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
@@ -292,19 +290,18 @@ export class PhotoModalComponent implements OnInit {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: this.photo.blobId,
-      imageBase64: this.imageUrl
+      imageBase64: ''
     };
-
-    this.fileService.update(updatePhotoDTO).subscribe(
+    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
+      this.imageUrl = url;
+      updatePhotoDTO.imageBase64 = url;
+      this.fileService.update(updatePhotoDTO).subscribe(
       updatedPhotoDTO => {
         Object.assign(this.photo, updatedPhotoDTO);
-        this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
-          this.imageUrl = url;
-          updatePhotoDTO.imageBase64 = url;
-        });
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo reseted');
+      });
       },
       error => this.notifier.notify('error', 'Error reseting photo')
     );
@@ -319,10 +316,6 @@ export class PhotoModalComponent implements OnInit {
 
   private openShareModal(): void {
     this.showSharedModal = !this.showSharedModal;
-  }
-
-  private openEditModal(): void {
-    this.showEditModal = true;
   }
 
   openShareByLink() {
@@ -423,7 +416,7 @@ export class PhotoModalComponent implements OnInit {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  public isEqualId(): boolean {
-    return this.photo.userId === this.userId;
+  public isBlockById(): boolean {
+    return this.photo.userId !== this.userId;
   }
 }
