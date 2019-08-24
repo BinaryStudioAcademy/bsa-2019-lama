@@ -142,7 +142,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   getSearchHistory(id: number) {
     this.file.getSearchHistory(id).subscribe(history => {
       this.searchHistory = history;
-      console.log(history);
     });
   }
 

@@ -109,11 +109,9 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       info => {
         this.photos = info as PhotoRaw[];
         this.showSpinner = false;
-        console.log(this.photos);
       },
       err => {
         this.notifier.notify('error', 'Error getting photos');
-        console.log(err);
         this.showSpinner = false;
         this.isNothingFounded = true;
       }
