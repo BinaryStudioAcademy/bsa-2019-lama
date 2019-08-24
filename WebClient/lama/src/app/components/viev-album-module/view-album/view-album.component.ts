@@ -23,7 +23,9 @@ import { ZipService } from 'src/app/services/zip.service';
 import { User } from 'src/app/models/User/user';
 import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 import { NotifierService } from 'angular-notifier';
-import { PhotoModalComponent } from '../modal/photo-modal/photo-modal.component';
+import { AddPhotosToAlbumModalComponent } from '../add-photos-to-album-modal/add-photos-to-album-modal.component';
+import { HttpService } from 'src/app/services/http.service';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 
 @Component({
   selector: 'app-view-album',
@@ -47,6 +49,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
+  @ViewChild('AddPhotosToAlbum', { static: true, read: ViewContainerRef })
+  private modaladdPhoto: ViewContainerRef;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -54,7 +59,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     private favoriteService: FavoriteService,
     private zipService: ZipService,
     private resolver: ComponentFactoryResolver,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private httpService: HttpService
   ) {
     this.routeSubscription = route.params.subscribe(
       params => (this.AlbumId = parseInt(params.id, 10))
@@ -71,6 +77,12 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   ngOnInit() {
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
+    this.httpService.getData('users/' + userId).subscribe(
+      u => {
+        this.currentUser = u;
+      },
+      error => this.notifier.notify('error', 'Error loading user')
+    );
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !== 0) {
       this.albumService.getAlbum(this.AlbumId).subscribe(
@@ -127,6 +139,21 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.album.photoAlbums[index] = updatedPhoto;
   }
 
+  addPhoto(eventArgs) {
+    this.modaladdPhoto.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      AddPhotosToAlbumModalComponent
+    );
+    const componentRef = this.modaladdPhoto.createComponent(factory);
+    componentRef.instance.currentUser = this.currentUser;
+    componentRef.instance.AlbumId = this.AlbumId;
+    componentRef.instance.AddingPhotosToAlbum.subscribe(
+      this.AddToAlbumNewPhotos.bind(this)
+    );
+  }
+  AddToAlbumNewPhotos(photos: PhotoRaw[]) {
+    this.album.photoAlbums.push(...photos);
+  }
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
     if (

@@ -19,6 +19,9 @@
             </div>
         </div>
     </div>
+    <div class="photos">
+        <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
+    </div>
 </div>
 <div class="container">
     <div class="title">
@@ -31,6 +34,6 @@
         </div>
     </div>
     <template #modalPhotoContainer></template>
+    <template #AddPhotosToAlbum></template>
 </div>
 <notifier-container></notifier-container>
-

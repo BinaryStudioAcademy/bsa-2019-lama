@@ -220,7 +220,6 @@ export class PhotoModalComponent implements OnInit {
   public menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
 
-    console.log(clickedMenuItem);
     // share
     if (clickedMenuItem === this.defaultMenuItem[0]) {
       this.openShareModal();
