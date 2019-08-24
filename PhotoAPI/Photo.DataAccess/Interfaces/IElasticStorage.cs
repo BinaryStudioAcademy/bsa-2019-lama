@@ -22,5 +22,6 @@ namespace Photo.DataAccess.Interfaces
         Task<IEnumerable<PhotoDocument>> Get();
         Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
+        Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startIndex, int count);
     }
 }

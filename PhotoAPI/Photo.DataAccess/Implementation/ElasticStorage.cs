@@ -183,6 +183,45 @@ namespace Photo.DataAccess.Implementation
             };
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
+
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startIndex, int count)
+        {
+            var mustClauses = new List<QueryContainer>();
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                Value = false
+            });
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(t => t.UserId),
+                Value = userId,
+            });
+
+            mustClauses.Add(new MatchQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
+                Query = ".*images.*"
+            });
+
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = count,
+                From = startIndex,
+                Query = new BoolQuery { Must = mustClauses },
+                Sort = new List<ISort>
+                {
+                    new FieldSort
+                    {
+                        Field = Infer.Field<PhotoDocument>(p => p.Id),
+                        Order = SortOrder.Descending
+                    }
+                }
+            };
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+        }
         #endregion
     }
 }
