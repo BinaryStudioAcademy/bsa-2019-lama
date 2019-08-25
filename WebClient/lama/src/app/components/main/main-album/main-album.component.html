@@ -9,7 +9,7 @@
             <a class="dropdown-item" (click)="toggleSetCoverModal()">Set Album cover</a>
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
             <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
-            <a class="dropdown-item" (click)="addPhotos()">Add Photos</a>
+            <a class="dropdown-item" (click)="addPhotos($event)">Add Photos</a>
         </div>
         <img src="{{ imageUrl || imgname}}" (click)="clickPerformed()">
     </div>
