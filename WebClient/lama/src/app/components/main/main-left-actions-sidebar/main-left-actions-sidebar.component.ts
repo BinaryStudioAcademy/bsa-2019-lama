@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActionItem } from 'src/app/models/View/action-item';
+import { Router } from '@angular/router';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -8,7 +9,8 @@ import { ActionItem } from 'src/app/models/View/action-item';
   styleUrls: ['./main-left-actions-sidebar.component.sass']
 })
 export class MainLeftActionsSidebarComponent implements OnInit {
-  constructor() {}
+  constructor(private router: Router) {}
+
   items: ActionItem[];
   ngOnInit() {
     this.items = [
@@ -38,5 +40,9 @@ export class MainLeftActionsSidebarComponent implements OnInit {
         route: 'bin'
       }
     ];
+  }
+
+  isCurrentRouteRight(route: string) {
+    return route && this.router.url.search(route) !== -1;
   }
 }

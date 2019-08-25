@@ -40,8 +40,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
 
-  public showSidebarMenu: boolean;
-
   // constructors
   constructor(
     public auth: AuthService,
@@ -186,10 +184,5 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       }
     );
     componentRef.instance.toggleModal();
-  }
-
-  public onMenuClicked(event) {
-    this.showSidebarMenu = !this.showSidebarMenu;
-    this.Click.emit(this.showSidebarMenu);
   }
 }
