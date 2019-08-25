@@ -110,7 +110,6 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       info => {
         this.photos.push(...info);
         this.showSpinner = false;
-		console.log(this.photos.length);
       },
       error => this.notifier.notify('error', 'Error getting photos')
     );
@@ -238,7 +237,6 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   onScroll() {
-	console.log('onScroll');
     this.showSpinner = true;
 
     this.GetUserPhotosRange(
