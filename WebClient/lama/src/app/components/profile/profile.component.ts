@@ -139,12 +139,5 @@ export class ProfileComponent implements OnInit {
     this.photoUrl = null;
     this.user.photo = null;
     this.sharedService.avatar = { imageUrl: 'deleted' };
-    this.httpService.putData(`users`, this.user).subscribe(
-      (data: User) => {
-        this.testReceivedUser = data;
-        this.notifier.notify('success', 'Changes Saved');
-      },
-      error => this.notifier.notify('error', 'Error saving')
-    );
   }
 }

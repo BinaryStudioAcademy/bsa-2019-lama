@@ -9,6 +9,7 @@
             <a class="dropdown-item" (click)="toggleSetCoverModal()">Set Album cover</a>
             <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
             <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
+            <a class="dropdown-item" (click)="addPhotos($event)">Add Photos</a>
         </div>
         <img src="{{ imageUrl || imgname}}" (click)="clickPerformed()">
     </div>
@@ -16,7 +17,8 @@
         <p>{{album.title}}</p>
     </div>
     <app-share-album-by-email [receivedAlbum]='album' *ngIf="showSharedModal" (Close)="showSharedModal=false"></app-share-album-by-email>
-    
+
     <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (Close)="showSetCoverModal=false"></app-set-album-cover-modal>
 </a>
+<template #AddPhotosToAlbum></template>
 <notifier-container></notifier-container>

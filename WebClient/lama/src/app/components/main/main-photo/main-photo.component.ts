@@ -31,6 +31,7 @@ export class MainPhotoComponent implements OnInit, OnChanges {
   imageUrl: string;
   isFavorite = false;
   isSelected = false;
+  isShowSpinner = true;
 
   constructor(
     private favoriteService: FavoriteService,
@@ -38,9 +39,10 @@ export class MainPhotoComponent implements OnInit, OnChanges {
     private notifier: NotifierService
   ) {}
   ngOnInit() {
-    this.fileService
-      .getPhoto(this.photo.blob256Id)
-      .subscribe(url => (this.imageUrl = url));
+    this.fileService.getPhoto(this.photo.blob256Id).subscribe(url => {
+      this.imageUrl = url;
+      this.isShowSpinner = false;
+    });
   }
 
   ngOnChanges() {

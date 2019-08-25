@@ -16,6 +16,7 @@ export class DeletedPhotosComponent implements OnInit {
   // properties
   public countSelectedPhtoto: number;
   public deletedPhotos: DeletedPhotoList[];
+  isShowSpinner = true;
 
   // fields
   constructor(
@@ -34,9 +35,10 @@ export class DeletedPhotosComponent implements OnInit {
           this.deletedPhotos = items;
           if (this.deletedPhotos) {
             this.deletedPhotos.forEach(item => {
-              this.fileService
-                .getPhoto(item.blob256Id)
-                .subscribe(url => (item.imageUrl = url));
+              this.fileService.getPhoto(item.blob256Id).subscribe(url => {
+                item.imageUrl = url;
+                this.isShowSpinner = false;
+              });
             });
           }
         },
