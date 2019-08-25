@@ -152,6 +152,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     );
   }
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
+    if (this.album.photoAlbums === null) {
+      this.album.photoAlbums = [];
+    }
     this.album.photoAlbums.push(...photos);
   }
   ngDoCheck() {

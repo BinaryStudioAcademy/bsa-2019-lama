@@ -116,6 +116,15 @@ namespace Lama.BusinessLogic.Services
                 if(Photo != null)
                 ReturnPhotos.Add(Photo);
             }
+
+            var album = await Context.Albums.FirstOrDefaultAsync(x => x.Id == existPhotosAlbum.AlbumId);
+            if (album.Photo == null && ReturnPhotos.Count() != 0)
+            {
+                album.CoverId = ReturnPhotos[0].Id;
+                Context.Albums.Update(album);
+                await Context.SaveChangesAsync();
+            }
+
             return ReturnPhotos;
         }
         public async Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum(NewPhotosAlbum newPhotosAlbum)
@@ -153,6 +162,14 @@ namespace Lama.BusinessLogic.Services
             await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
             await Context.SaveChangesAsync();
 
+            var album = await Context.Albums.FirstOrDefaultAsync(x => x.Id == newPhotosAlbum.AlbumId);
+            if(album.Photo == null && savedPhotos.Count() != 0)
+            {
+                album.Photo = savedPhotos[0];
+                Context.Albums.Update(album);
+                await Context.SaveChangesAsync();
+            }
+
             List<PhotoDocument> list = new List<PhotoDocument>();
             using (HttpClient httpClient = new HttpClient())
             {
@@ -163,7 +180,7 @@ namespace Lama.BusinessLogic.Services
             var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
             return photos;
         }
-        public async Task<int> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
             var PhotosAlbum = albumDto.Photos;
@@ -214,18 +231,32 @@ namespace Lama.BusinessLogic.Services
                 TempAlbum.PhotoAlbums = photoAlbums;
             }
 
+            IEnumerable<PhotoDocument> list = new List<PhotoDocument>();
             using (HttpClient httpClient = new HttpClient())
             {
                 var s = await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate);
                 var str  = await s.Content.ReadAsStringAsync();
-                var elasticId = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
-
-                await Context.Albums.AddAsync(TempAlbum);
-                await Context.SaveChangesAsync();
+                var Photos = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
+                list = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
             }
-            return TempAlbum.Id;
+       
+        var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+        var album = await Context.Albums.AddAsync(TempAlbum);
+            await Context.SaveChangesAsync();
+
+            var Album = new ReturnAlbumDTO()
+            {
+                Id = album.Entity.Id,
+                Title = album.Entity.Title
+            };
+            if(photos !=null)
+            {
+                Album.Photo = photos[0];
+                Album.PhotoAlbums = photos;
+            }
+            return Album;
         }
-        public async Task<int> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
         {
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
             Album TempAlbum = new Album()
@@ -246,17 +277,38 @@ namespace Lama.BusinessLogic.Services
                     photoAlbums.Add(new PhotoAlbum() { Photo = TempPhoto, Album = TempAlbum });
                 }
             }
-
             if (photos.Count != 0)
             {
                 TempAlbum.Photo = photos[0];
                 TempAlbum.PhotoAlbums = photoAlbums;
             }
 
-            await Context.Albums.AddAsync(TempAlbum);
+
+            var BdAlbum = await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
 
-            return TempAlbum.Id;
+            string url = configuration["PhotoApiUrl"];
+            List<PhotoDocumentDTO> Getphotos = new List<PhotoDocumentDTO>();
+            using (HttpClient httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await httpClient.GetAsync($"{url}api/photos");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+                Getphotos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            }
+
+            var Album = new ReturnAlbumDTO()
+            {
+                Id = BdAlbum.Entity.Id,
+                Title = BdAlbum.Entity.Title,
+                Photo = Getphotos[0],
+                PhotoAlbums = Getphotos
+            };
+            return Album;
 
         }
         public async Task<List<ReturnAlbumDTO>> FindAll(int UserId)
@@ -283,10 +335,11 @@ namespace Lama.BusinessLogic.Services
                     Id = item.Id,
                     Title = item.Title
                 };
-                if(item.Photo != null)
+                var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+                if (item.Photo != null)
                 {
-                    album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
-                    album.PhotoAlbums = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+                    album.Photo = AlbumPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
+                    album.PhotoAlbums = AlbumPhotos;
                 }
                 albums.Add(album);
             }
@@ -379,10 +432,11 @@ namespace Lama.BusinessLogic.Services
                 Id = result.Id,
                 Title = result.Title,
             };
-            if(result.Photo != null)
+            var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+            if (result.Photo != null)
             {
-                album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
-                album.PhotoAlbums = photoDocumentDTOs;
+                album.Photo = AlbumPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
+                album.PhotoAlbums = AlbumPhotos;
             }
             return album;
         }
