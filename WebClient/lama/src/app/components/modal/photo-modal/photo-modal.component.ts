@@ -32,7 +32,6 @@ import {
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
@@ -100,6 +99,9 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
@@ -165,20 +167,23 @@ export class PhotoModalComponent implements OnInit {
     const exifObj = load(src);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
+    getLocation(this.latitude, this.longitude, this.geoCoder).then(location => {
+      this.address = location;
+    });
     // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-          // this.latitude = position.coords.latitude;
-          // this.longitude = position.coords.longitude;
-          this.zoom = 8;
-          this.getAddress(this.latitude, this.longitude);
-        });
-      }
-      // tslint:disable-next-line: new-parens
-      this.geoCoder = new google.maps.Geocoder();
+    // this.mapsAPILoader.load().then(() => {
+    // if ('geolocation' in navigator) {
+    //   navigator.geolocation.getCurrentPosition(position => {
+    //     this.latitude = position.coords.latitude;
+    //     this.longitude = position.coords.longitude;
+    //     this.zoom = 8;
 
-      /*
+    // }
+
+    // tslint:disable-next-line: new-parens
+    // this.geoCoder = new google.maps.Geocoder();
+
+    /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -196,7 +201,7 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-    });
+    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -291,16 +296,16 @@ export class PhotoModalComponent implements OnInit {
       blobId: this.photo.blobId,
       imageBase64: ''
     };
-    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
-      this.imageUrl = url;
-      updatePhotoDTO.imageBase64 = url;
-      this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo reseted');
-      });
+    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(
+      url => {
+        this.imageUrl = url;
+        updatePhotoDTO.imageBase64 = url;
+        this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.updatePhotoEvent.emit(this.photo);
+          this.goBackToImageView();
+          this.notifier.notify('success', 'Photo reseted');
+        });
       },
       error => this.notifier.notify('error', 'Error reseting photo')
     );
