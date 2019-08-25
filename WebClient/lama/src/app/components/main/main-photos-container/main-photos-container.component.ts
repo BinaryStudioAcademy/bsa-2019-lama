@@ -106,6 +106,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
+	if (startId === 0) {
+		this.isNothingFounded = false;
+		this.shared.isSearchTriggeredAtLeastOnce = false;
+		this.showSpinner = true;
+		this.photos = [];
+	}
     this.fileService.receiveUsersPhotosRange(userId, startId, count).subscribe(
       info => {
         this.photos.push(...info);
@@ -136,7 +142,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   ngDoCheck() {
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
-        this.photos.push(element);
+        this.photos.unshift(element);
       });
     }
     if (
