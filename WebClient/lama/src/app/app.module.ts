@@ -38,6 +38,7 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 import { NotificationModule } from './notification/notification.module';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 // tslint:disable-next-line:max-line-length
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
@@ -81,7 +82,8 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     FormsModule,
     CreateAlbumModule,
     ReactiveFormsModule,
-    NotificationModule
+    NotificationModule,
+    InfiniteScrollModule
   ],
   providers: [
     HttpService,
