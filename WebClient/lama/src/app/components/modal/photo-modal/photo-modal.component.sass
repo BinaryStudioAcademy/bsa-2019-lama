@@ -18,7 +18,7 @@
 
 
 .notification
-    height: 700px
+    height: 810px
 
 .column a 
     text-decoration: none
@@ -93,7 +93,6 @@ article
 
 .information
     width: auto
-    margin-left: 15px
     @include transition(all 300ms linear)
 
 .flex-content
@@ -113,8 +112,8 @@ article
 .titl img
     float: right
     display: inline-block
-    height: 27px
-    width: 27px
+    height: 22px
+    width: 22px
 
 .titl h4
     display: inline-block
@@ -123,10 +122,11 @@ article
     max-height: 25px
     overflow: hidden
 
-
-    
+.submarg
+    margin-bottom: 5px
+     
 .item-description
-    margin-top: 15px
+    margin-top: 25px
 
 .item-albums
     margin-top: 15px
@@ -145,8 +145,10 @@ article
     width: 100%
 
 .flex-album
-    max-height: 190px
+    max-height: 118px
     display: flex
+    flex-direction: column
+    overflow: auto
 
 .album
     display: flex
@@ -157,6 +159,7 @@ article
     
 .album img
     height: 55px
+    width: 80px
 
 .album h4
     overflow: hidden

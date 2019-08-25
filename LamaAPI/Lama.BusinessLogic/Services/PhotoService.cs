@@ -174,7 +174,6 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
-
             string uri = $"{url}api/photos";
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
