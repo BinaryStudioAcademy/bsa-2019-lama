@@ -86,10 +86,17 @@ namespace Lama.BusinessLogic.Services
         }
         public async Task<List<PhotoDocumentDTO>> AddExistPhotosToAlbum(ExistPhotosAlbum existPhotosAlbum)
         {
+            List<int> returnIdPhotos = new List<int>();
             List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
             foreach(var photoId in existPhotosAlbum.PhotosId)
             {
-                photoAlbums.Add(new PhotoAlbum() { AlbumId=existPhotosAlbum.AlbumId, PhotoId= photoId});
+                var search = await Context.PhotoAlbums.FirstOrDefaultAsync(x => x.AlbumId == existPhotosAlbum.AlbumId && x.PhotoId == photoId);
+                if (search == null)
+                {
+                    var dbPhoto = new PhotoAlbum() { AlbumId = existPhotosAlbum.AlbumId, PhotoId = photoId };
+                    photoAlbums.Add(dbPhoto);
+                    returnIdPhotos.Add(photoId);
+                }
             }
             await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
             await Context.SaveChangesAsync();
@@ -110,7 +117,7 @@ namespace Lama.BusinessLogic.Services
             }
             var ReturnPhotos = new List<PhotoDocumentDTO>();
 
-            foreach(var id in existPhotosAlbum.PhotosId)
+            foreach(var id in returnIdPhotos)
             {
                 var Photo = photos.FirstOrDefault(x => x.Id == id);
                 if(Photo != null)
