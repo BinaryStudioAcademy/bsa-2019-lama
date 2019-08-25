@@ -27,7 +27,8 @@
       [class.marked]="photo.isMarked"
       (click)="selectPhoto(photo)"
     >
-      <img src="{{ photo.imageUrl }}" />
+      <spinner *ngIf="isShowSpinner"></spinner>
+      <img *ngIf="!isShowSpinner" src="{{ photo.imageUrl }}" />
     </div>
   </div>
 
