@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainLandingPageComponent } from './components/landing/main-landing-page/main-landing-page.component';
-
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main/main-page-header/main-page-header.component';
 import { MainLeftActionsSidebarComponent } from './components/main/main-left-actions-sidebar/main-left-actions-sidebar.component';
@@ -30,8 +29,6 @@ import {
   UiModule,
   LandingModule
 } from 'src/app/components';
-import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
-import { ViewAlbumPhotosComponent } from './components/view-album-module/view-album-photos/view-album-photos.component';
 import { CreateAlbumModule } from './components/create-album-module/create-album.module';
 import { SharedPageComponent } from './components/shared-page/shared-page.component';
 import { SharedPageHeaderComponent } from './components/shared-page/shared-page-header/shared-page-header.component';
@@ -42,6 +39,9 @@ import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 import { NotificationModule } from './notification/notification.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
+// tslint:disable-next-line:max-line-length
+import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +58,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     MainAlbumsContainerComponent,
     MainAlbumComponent,
     ViewAlbumComponent,
-    ViewAlbumPhotosComponent,
+    AddPhotosToAlbumModalComponent,
     SharedPageComponent,
     SharedPageHeaderComponent,
     FavoriteDirective,
@@ -93,6 +93,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
       multi: true
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [AddPhotosToAlbumModalComponent]
 })
 export class AppModule {}

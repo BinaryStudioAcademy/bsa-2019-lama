@@ -7,8 +7,8 @@
                 <div class="memeArea">
                     <img src="{{ imageToEditBase64 }}" alt="image">
                     <div *ngIf="!memeSaved">
-                        <textarea [(ngModel)]="upText" rows="2" class="upTextArea" [appMemeColor]="colorPicker"></textarea>
-                        <textarea [(ngModel)]="downText" rows="2" class="downTextArea" [appMemeColor]="colorPicker"></textarea>
+                        <textarea [(ngModel)]="upText" rows="2" class="upTextArea" [appMemeColor]="colorPicker" maxlength="55"></textarea>
+                        <textarea [(ngModel)]="downText" rows="2" class="downTextArea" [appMemeColor]="colorPicker" maxlength="55"></textarea>
                     </div>
                 </div>
             </ng-template>

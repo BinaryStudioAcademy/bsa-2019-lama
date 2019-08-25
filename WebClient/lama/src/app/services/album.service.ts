@@ -10,6 +10,8 @@ import { PhotoDetailsAlbum } from '../models/Album/PhotodetailsAlbum';
 import { UpdateAlbum } from '../models/Album/updatedAlbum';
 import { Observable } from 'rxjs';
 import { ReturnAlbumDTO } from '../models/Album/return-album-dto';
+import { AlbumExistPhotos } from '../models/Album/AlbumExistPhotos';
+import { AlbumNewPhotos } from '../models/Album/AlbumNewPhotos';
 
 @Injectable({
   providedIn: 'root'
@@ -43,26 +45,40 @@ export class AlbumService {
   }
   public createAlbumWithNewPhotos(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<number>(
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }
     );
   }
-  createEmptyAlbum(album: NewAlbum): Observable<ReturnAlbumDTO> {
+  public addExistPhotosToAlbum(albumExistPhotos: AlbumExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(
+    return this.http.post<PhotoRaw[]>(
+      this.baseUrl + this.routeAlbum + '/AlbumExistPhotos',
+      albumExistPhotos,
+      { headers }
+    );
+  }
+  public addNewPhotosToAlbum(album: AlbumNewPhotos) {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.post<PhotoRaw[]>(
+      this.baseUrl + this.routeAlbum + '/AlbumNewPhotos',
+      album,
+      { headers }
+    );
+  }
+  createEmptyAlbum(album: NewAlbum) {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateEmptyAlbum',
       album,
       { headers }
     );
   }
 
-  public createAlbumWithExistPhotos(
-    album: NewAlbumWithExistPhotos
-  ): Observable<ReturnAlbumDTO> {
+  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto',
       album,
       { headers }

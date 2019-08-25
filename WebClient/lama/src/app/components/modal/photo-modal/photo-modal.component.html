@@ -38,7 +38,13 @@
                                             <div class="column" *ngFor="let item of shownMenuItems">
                                                 <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
                                                     <ng-template ngSwitchCase="remove">
-                                                        <div [appIsBlocked]="!isEqualId()">
+                                                        <div [appIsBlocked]="isBlockById()">
+                                                        <i class="material-icons is-block">{{ item.icon }}</i>
+                                                        <span> {{ item.title }} </span>
+                                                        </div>
+                                                    </ng-template>
+                                                    <ng-template ngSwitchCase="edit">
+                                                        <div [appIsBlocked]="isBlockById()">
                                                         <i class="material-icons is-block">{{ item.icon }}</i>
                                                         <span> {{ item.title }} </span>
                                                         </div>
