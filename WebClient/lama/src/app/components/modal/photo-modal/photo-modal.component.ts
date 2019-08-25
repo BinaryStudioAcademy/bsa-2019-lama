@@ -167,9 +167,13 @@ export class PhotoModalComponent implements OnInit {
     const exifObj = load(src);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
-    getLocation(this.latitude, this.longitude, this.geoCoder).then(location => {
-      this.address = location;
-    });
+    if (this.latitude && this.longitude) {
+      getLocation(this.latitude, this.longitude, this.geoCoder).then(
+        location => {
+          this.address = location;
+        }
+      );
+    }
     // load Places Autocomplete
     // this.mapsAPILoader.load().then(() => {
     // if ('geolocation' in navigator) {
