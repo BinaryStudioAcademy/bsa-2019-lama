@@ -67,6 +67,10 @@ namespace Photo.BusinessLogic.Services
         {
             return elasticStorage.Get(elasticId);
         }
+        public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
+        {
+            return elasticStorage.GetUserPhotosRange(userId, startId, count);
+        }
 
         public async Task Delete(int id)
         {

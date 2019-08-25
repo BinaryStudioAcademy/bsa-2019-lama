@@ -261,6 +261,28 @@ namespace Lama.BusinessLogic.Services
 
             return JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
         }
+
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count)
+        {
+            var countPhotos = await _context.GetRepository<Photo>().CountAsync(x => x.User.Id == userId);
+            httpClient.DefaultRequestHeaders.Add("userId", $"{userId}");
+            httpClient.DefaultRequestHeaders.Add("startId", $"{startId}");
+            httpClient.DefaultRequestHeaders.Add("count", $"{count}");
+
+            var response = await httpClient.GetAsync($"{url}api/photos/rangeUserPhotos");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+
+            for (int i = 0; i < photos.Count(); i++)
+            {
+                var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
+            }
+            return photos;
+        }
         #endregion
 
         #region DELETE

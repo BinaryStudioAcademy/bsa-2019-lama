@@ -3,32 +3,41 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule } from '@angular/material';
+import {
+  MatButtonModule,
+  MatMenuModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatCardModule
+} from '@angular/material';
 
 import { FileUploadDirective } from '../directives';
 
 import { FileService } from '../services';
 
-@NgModule(
-{
-  declarations:
-  [
-    FileUploadDirective,
+@NgModule({
+  declarations: [FileUploadDirective],
+  providers: [FileService],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatCardModule
   ],
-  providers:
-  [
-    FileService,
-  ],
-  imports:
-  [
-    CommonModule, RouterModule, FormsModule,
-    MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule
-  ],
-  exports:
-  [
-    CommonModule, RouterModule, FormsModule,
-    MatButtonModule, MatMenuModule, MatToolbarModule, MatIconModule, MatCardModule,
+  exports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatCardModule,
     FileUploadDirective
   ]
 })
-export class SharedModule { }
+export class SharedModule {}

@@ -1,48 +1,57 @@
 import {
   Component,
   OnInit,
-  Input,
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
+  Input,
   Output,
   EventEmitter
 } from '@angular/core';
-import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
-import imageCompression from 'browser-image-compression';
-import { Photo, PhotoRaw, CreatedAlbumsArgs } from 'src/app/models';
-import { environment } from '../../../../environments/environment';
-import { Album } from 'src/app/models/Album/album';
-import { User } from 'src/app/models/User/user';
-import { HttpService } from 'src/app/services/http.service';
+import { Photo, PhotoRaw, User, CreatedAlbumsArgs } from 'src/app/models';
 import { NewAlbum } from 'src/app/models/Album/NewAlbum';
-import { isUndefined } from 'util';
-import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+import { environment } from '../../../../environments/environment';
+import imageCompression from 'browser-image-compression';
+import { ChooseStoragePhotosComponent } from '../../create-album-module/choose-storage-photos/choose-storage-photos.component';
 import { NotifierService } from 'angular-notifier';
-import { FileService } from 'src/app/services/file.service';
+import { FileService } from 'src/app/services';
+import { AlbumService } from 'src/app/services/album.service';
+import { AlbumExistPhotos } from 'src/app/models/Album/AlbumExistPhotos';
+import { AlbumNewPhotos } from 'src/app/models/Album/AlbumNewPhotos';
 
 @Component({
-  selector: 'app-create-album-modal',
-  templateUrl: './create-album-modal.component.html',
-  styleUrls: ['./create-album-modal.component.sass']
+  selector: 'app-add-photos-to-album-modal',
+  templateUrl: './add-photos-to-album-modal.component.html',
+  styleUrls: ['./add-photos-to-album-modal.component.sass']
 })
-export class CreateAlbumModalComponent implements OnInit {
+export class AddPhotosToAlbumModalComponent {
+  constructor(
+    private resolver: ComponentFactoryResolver,
+    private notifier: NotifierService,
+    private albumService: AlbumService,
+    private fileService: FileService
+  ) {
+    this.isShown = true;
+  }
+
+  @Input()
+  public isShown: boolean;
+
+  @Output()
+  AddingPhotosToAlbum = new EventEmitter<PhotoRaw[]>();
+
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
 
-  private resolver: ComponentFactoryResolver;
-
   photos: Photo[] = [];
-  album: NewAlbum;
   imageUrl: string;
-  showRemoveButton = false;
-  albumWithExistPhotos: NewAlbumWithExistPhotos;
+
   ExistPhotosId: number[] = [];
 
-  albumName = '';
-  checkForm = true;
+  AlbumExistPhotos: AlbumExistPhotos;
+  AlbumNewPhotos: AlbumNewPhotos;
 
   activeColor = '#00d1b2';
   overlayColor = 'rgba(255,255,255,0.5)';
@@ -52,29 +61,10 @@ export class CreateAlbumModalComponent implements OnInit {
   LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
   baseColor: any;
+  currentUser: User;
+  AlbumId: number;
 
   ExistPhotos: PhotoRaw[] = [];
-
-  @Output()
-  createdAlbumEvent = new EventEmitter<CreatedAlbumsArgs>();
-
-  @Output()
-  currentUser: User;
-
-  @Input()
-  public isShown: boolean;
-
-  constructor(
-    resolver: ComponentFactoryResolver,
-    private albumService: AlbumService,
-    private fileService: FileService,
-    private notifier: NotifierService
-  ) {
-    this.isShown = true;
-    this.resolver = resolver;
-  }
-
-  ngOnInit() {}
 
   handleDragEnter() {
     this.dragging = true;
@@ -139,62 +129,6 @@ export class CreateAlbumModalComponent implements OnInit {
     });
   }
 
-  CreateAlbum() {
-    if (this.albumName === '') {
-      this.checkForm = false;
-    } else {
-      if (this.photos.length === 0) {
-        this.album = {
-          title: this.albumName,
-          photo: this.photos[0],
-          authorId: this.currentUser.id,
-          photos: this.photos
-        };
-        this.albumService.createEmptyAlbum(this.album).subscribe(
-          createdAlbum => {
-            this.createdAlbumEvent.emit(createdAlbum);
-            this.notifier.notify('success', 'Empty Album created');
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
-      } else if (this.LoadNewImage === true) {
-        this.album = {
-          title: this.albumName,
-          photo: this.photos[0],
-          authorId: this.currentUser.id,
-          photos: this.photos
-        };
-        this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
-          album => {
-            this.createdAlbumEvent.emit(album);
-            this.notifier.notify('success', 'Album created');
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
-      } else {
-        this.albumWithExistPhotos = {
-          title: this.albumName,
-          photosId: this.ExistPhotosId,
-          authorId: this.currentUser.id
-        };
-        this.albumService
-          .createAlbumWithExistPhotos(this.albumWithExistPhotos)
-          .subscribe(
-            createdAlbum => {
-              this.createdAlbumEvent.emit(createdAlbum);
-              this.notifier.notify('success', 'Album created');
-            },
-            error => this.notifier.notify('error', 'Error creating the album')
-          );
-      }
-      this.toggleModal();
-    }
-  }
-
-  toggleModal() {
-    this.isShown = false;
-  }
-
   ChoosePhoto() {
     this.ExistPhotosId = [];
     this.photos = [];
@@ -229,18 +163,40 @@ export class CreateAlbumModalComponent implements OnInit {
       this.photos = this.photos.filter(x => x.imageUrl !== photo.blob256Id);
     }
   }
-
-  mouseEnterOverlayHandler() {
-    this.showRemoveButton = true;
-  }
-
-  mouseLeftOverlayHandler() {
-    this.showRemoveButton = false;
-  }
-
-  removePhoto(index: number) {
-    if (index !== -1) {
-      this.photos.splice(index, 1);
+  CreateAlbum() {
+    if (this.photos.length === 0) {
+      this.notifier.notify('error', 'Error no photos');
+    } else if (this.LoadNewImage === true) {
+      this.AlbumNewPhotos = {
+        AlbumId: this.AlbumId,
+        photos: this.photos,
+        UserId: this.currentUser.id
+      };
+      this.albumService.addNewPhotosToAlbum(this.AlbumNewPhotos).subscribe(
+        photos => {
+          this.AddingPhotosToAlbum.emit(photos);
+          this.notifier.notify('success', 'Photos added');
+        },
+        error => this.notifier.notify('error', 'Error adding photos')
+      );
+      this.toggleModal();
+    } else {
+      this.AlbumExistPhotos = {
+        AlbumId: this.AlbumId,
+        photosId: this.ExistPhotosId
+      };
+      this.albumService.addExistPhotosToAlbum(this.AlbumExistPhotos).subscribe(
+        photos => {
+          this.AddingPhotosToAlbum.emit(photos);
+          this.notifier.notify('success', 'Photos added');
+        },
+        error => this.notifier.notify('error', 'Error adding photos')
+      );
+      this.toggleModal();
     }
+  }
+
+  toggleModal() {
+    this.isShown = false;
   }
 }

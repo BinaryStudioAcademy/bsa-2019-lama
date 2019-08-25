@@ -89,6 +89,11 @@ namespace Lama.Controllers
             return await _service.GetAvatar(blobId);
         }
 
+        [HttpGet("rangeUserPhotos")]
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange([FromHeader] int id, [FromHeader] int startId, [FromHeader] int count)
+        {
+            return await _service.GetUserPhotosRange(id, startId, count);
+        }
 
         #region DELETE
         [HttpDelete("{photoToDeleteId}")]

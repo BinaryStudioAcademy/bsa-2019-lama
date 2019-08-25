@@ -1,10 +1,6 @@
 <div class="content-header">
-  <h2 id="photos-container-title">Recent images:</h2>
-  <a
-    (click)="GetUserPhotos(currentUser.id)"
-    class="button is-primary"
-    *ngIf="isSearchTriggered"
-  >
+  <h2 id="photos-container-title" *ngIf="isHaveAnyPhotos">Recent images:</h2>
+  <a (click)="GetPhotos()" class="button is-primary" *ngIf="isSearchTriggered">
     Show all photos?
   </a>
   <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
@@ -30,12 +26,14 @@
   </div>
 </div>
 
-<spinner *ngIf="showSpinner"></spinner>
-
 <div
   class="items-container-centered"
   fileDrop
   (fileDropped)="uploadFile($event)"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollDistance]="500"
+  (scrolled)="onScroll()"
 >
   <h2 *ngIf="isNothingFounded">Nothing found!</h2>
   <h2 *ngIf="!isHaveAnyPhotos">You don`t have any pictures yet!</h2>
@@ -50,7 +48,8 @@
     >
     </main-photo>
   </div>
-
+	<spinner *ngIf="showSpinner"></spinner>
+	
   <!--modal-->
   <template #modalPhotoContainer></template>
   <template #modalUploadPhoto></template>

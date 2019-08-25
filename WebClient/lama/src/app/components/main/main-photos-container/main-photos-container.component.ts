@@ -36,6 +36,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
   isHaveAnyPhotos = false;
+  numberLoadPhoto = 30;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -66,7 +67,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         user => this.initializeUserAndFavorites(user),
         error => this.notifier.notify('error', 'Error getting user')
       );
-    this.GetUserPhotos(parseInt(userId, 10));
+    this.GetUserPhotosRange(
+      parseInt(userId, 10),
+      this.photos.length,
+      this.numberLoadPhoto
+    );
     this.selectedPhotos = [];
   }
 
@@ -100,6 +105,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
   }
 
+  public GetUserPhotosRange(userId: number, startId: number, count: number) {
+    this.fileService.receiveUsersPhotosRange(userId, startId, count).subscribe(
+      info => {
+        this.photos.push(...info);
+        this.showSpinner = false;
+      },
+      error => this.notifier.notify('error', 'Error getting photos')
+    );
+  }
+
   GetPhotos() {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
@@ -109,11 +124,9 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       info => {
         this.photos = info as PhotoRaw[];
         this.showSpinner = false;
-        console.log(this.photos);
       },
       err => {
         this.notifier.notify('error', 'Error getting photos');
-        console.log(err);
         this.showSpinner = false;
         this.isNothingFounded = true;
       }
@@ -152,9 +165,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     } else {
       this.isAtLeastOnePhotoSelected = false;
     }
-    if (
-      this.photos.length === 0 &&
-      !this.showSpinner) {
+    if (this.photos.length === 0 && !this.showSpinner) {
       this.isHaveAnyPhotos = false;
     } else {
       this.isHaveAnyPhotos = true;
@@ -223,5 +234,15 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   public downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
+  }
+
+  onScroll() {
+    this.showSpinner = true;
+
+    this.GetUserPhotosRange(
+      this.currentUser.id,
+      this.photos.length,
+      this.numberLoadPhoto
+    );
   }
 }

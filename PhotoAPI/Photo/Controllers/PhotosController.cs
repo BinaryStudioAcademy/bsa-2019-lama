@@ -73,6 +73,12 @@ namespace Photo.Controllers
             return photoService.FindFields(id, criteria);
         }
 
+        [HttpGet("rangeUserPhotos")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange([FromHeader] int userId, [FromHeader] int startId, [FromHeader] int count)
+        {
+            return await photoService.GetUserPhotosRange(userId, startId, count);
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)

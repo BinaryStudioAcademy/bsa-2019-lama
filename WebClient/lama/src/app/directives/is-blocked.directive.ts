@@ -10,9 +10,9 @@ export class IsBlockedDirective implements OnInit {
 
   ngOnInit() {
     if (this.blocked) {
-      this.elem.nativeElement.style.color = 'grey';
+      this.elem.nativeElement.parentElement.parentElement.style.display = 'none';
     } else {
-      this.elem.nativeElement.style.color = 'inherit';
+      this.elem.nativeElement.parentElement.parentElement.style.display = 'block';
     }
   }
 

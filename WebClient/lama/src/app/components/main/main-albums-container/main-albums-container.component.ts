@@ -118,10 +118,8 @@ export class MainAlbumsContainerComponent implements OnInit {
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.createdAlbumEvent.subscribe(
-      (createdAlbums: CreatedAlbumsArgs) => {
-        this.albumService.getAlbum(createdAlbums.id).subscribe(album => {
-          this.albums.push(album.body);
-        });
+      (createdAlbum: ViewAlbum) => {
+        this.albums.push(createdAlbum);
       }
     );
   }

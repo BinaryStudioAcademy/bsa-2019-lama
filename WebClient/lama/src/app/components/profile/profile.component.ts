@@ -49,10 +49,15 @@ export class ProfileComponent implements OnInit {
         u => {
           this.isSuccesfull = true;
           this.user = u;
-          this.showSpinner = false;
-          this.fileService
-            .getPhoto(u.photoUrl)
-            .subscribe(url => (this.photoUrl = url));
+          if (u.photoUrl) {
+            this.showSpinner = false;
+            this.fileService
+              .getPhoto(u.photoUrl)
+              .subscribe(url => (this.photoUrl = url));
+          } else {
+            this.showSpinner = false;
+            this.photoUrl = null;
+          }
           console.log(this.user.lastName);
           this.defaultEmail = this.user.email;
           this.defaultLastName = this.user.lastName;
@@ -133,6 +138,13 @@ export class ProfileComponent implements OnInit {
   removeProfilePhoto() {
     this.photoUrl = null;
     this.user.photo = null;
-    this.sharedService.avatar = null;
+    this.sharedService.avatar = { imageUrl: 'deleted' };
+    this.httpService.putData(`users`, this.user).subscribe(
+      (data: User) => {
+        this.testReceivedUser = data;
+        this.notifier.notify('success', 'Changes Saved');
+      },
+      error => this.notifier.notify('error', 'Error saving')
+    );
   }
 }
