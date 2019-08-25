@@ -103,6 +103,9 @@ export class PhotoModalComponent implements OnInit {
 
   ngOnInit() {
     this.lastDescription = this.photo.description;
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
@@ -161,20 +164,24 @@ export class PhotoModalComponent implements OnInit {
     const exifObj = load(src);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
+    if (this.latitude && this.longitude) {
+      getLocation(this.latitude, this.longitude, this.geoCoder).then(
+        location => (this.address = location)
+      );
+    }
     // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-          // this.latitude = position.coords.latitude;
-          // this.longitude = position.coords.longitude;
-          this.zoom = 8;
-          this.getAddress(this.latitude, this.longitude);
-        });
-      }
-      // tslint:disable-next-line: new-parens
-      this.geoCoder = new google.maps.Geocoder();
+    // this.mapsAPILoader.load().then(() => {
+    //   if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition(position => {
+    //       // this.latitude = position.coords.latitude;
+    //       // this.longitude = position.coords.longitude;
+    //       this.zoom = 8;
+    //       this.getAddress(this.latitude, this.longitude);
+    //     });
+    //   }
+    //   // tslint:disable-next-line: new-parent
 
-      /*
+    /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -192,7 +199,7 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-    });
+    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [

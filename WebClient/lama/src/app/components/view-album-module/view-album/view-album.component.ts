@@ -140,6 +140,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   }
 
   addPhoto(eventArgs) {
+    let files;
+    if (eventArgs) {
+      files = eventArgs;
+    }
     this.modaladdPhoto.clear();
     const factory = this.resolver.resolveComponentFactory(
       AddPhotosToAlbumModalComponent
@@ -147,6 +151,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.AlbumId;
+    componentRef.instance.LoadFile(files);
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)
     );
