@@ -187,8 +187,12 @@ export class AddPhotosToAlbumModalComponent {
       };
       this.albumService.addExistPhotosToAlbum(this.AlbumExistPhotos).subscribe(
         photos => {
-          this.AddingPhotosToAlbum.emit(photos);
-          this.notifier.notify('success', 'Photos added');
+          if (photos.length !== 0) {
+            this.AddingPhotosToAlbum.emit(photos);
+            this.notifier.notify('success', 'Photos added');
+          } else {
+            this.notifier.notify('error', 'Photos already exist in album');
+          }
         },
         error => this.notifier.notify('error', 'Error adding photos')
       );
