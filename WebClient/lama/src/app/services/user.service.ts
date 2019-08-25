@@ -61,6 +61,8 @@ export class UserService {
     });
   }
   public getUserByEmail(userEmail: string): Observable<User> {
-    return this.httpService.getDataWithHeader(`users/email`, { email: userEmail });
+    return this.httpService.getDataWithHeader(`users/email`, {
+      email: userEmail
+    });
   }
 }

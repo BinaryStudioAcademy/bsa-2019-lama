@@ -26,7 +26,7 @@ import {
   getLatitude,
   getLongitude
 } from 'src/app/export-functions/exif';
-import { NewDescription } from 'src/app/models/PhotoDetails/newDescription';
+import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
 
 @Component({

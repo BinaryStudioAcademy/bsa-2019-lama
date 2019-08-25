@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { NewDescription } from '../models/PhotoDetails/newDescription';
+import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
