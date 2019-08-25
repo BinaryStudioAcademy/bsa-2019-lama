@@ -308,12 +308,19 @@ namespace Lama.BusinessLogic.Services
                 Getphotos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
             }
 
+            List<PhotoDocumentDTO> returnPhotos = new List<PhotoDocumentDTO>();
+            foreach(var id in album.PhotosId)
+            {
+                var photo = Getphotos.FirstOrDefault(x => x.Id == id);
+                if (photo != null)
+                    returnPhotos.Add(photo);
+            }
             var Album = new ReturnAlbumDTO()
             {
                 Id = BdAlbum.Entity.Id,
                 Title = BdAlbum.Entity.Title,
-                Photo = Getphotos[0],
-                PhotoAlbums = Getphotos
+                Photo = returnPhotos[0],
+                PhotoAlbums = returnPhotos
             };
             return Album;
 
