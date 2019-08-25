@@ -39,14 +39,14 @@
                                                 <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
                                                     <ng-template ngSwitchCase="remove">
                                                         <div [appIsBlocked]="isBlockById()">
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
+                                                            <i class="material-icons is-block">{{ item.icon }}</i>
+                                                            <span> {{ item.title }} </span>
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="edit">
                                                         <div [appIsBlocked]="isBlockById()">
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
+                                                            <i class="material-icons is-block">{{ item.icon }}</i>
+                                                            <span> {{ item.title }} </span>
                                                         </div>
                                                     </ng-template>
                                                     <ng-template ngSwitchCase="download">
@@ -116,15 +116,16 @@
                                         <img src="assets/right-arrow.svg" alt="" (click)="CloseInfo()">
                                     </div>
                                     <div class="item-description">
+                                        <h4 class="subtitle is-5 submarg">Description</h4>
                                         <div class="field">
                                             <div class="control">
-                                                <textarea class="textarea is-primary" [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
+                                                <textarea class="textarea is-primary" (blur)="ChangeDescription($event.target.value)" [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="item-albums">
+                                    <div class="item-albums" *ngIf="albums.length !== 0">
                                         <div class="subtitl">
-                                            <h4 class="subtitle is-5">Albums</h4>
+                                            <h4 class="subtitle is-5 submarg">Albums</h4>
                                         </div>
                                         <div class="flex-album">
                                             <div *ngFor="let album of albums" class="album">
@@ -134,7 +135,8 @@
                                         </div>
                                     </div>
                                     <div class="item-date">
-                                        <div class="datetimepicker-dummy is-primary" (click)="openModalForPickDate($event)">
+                                        <h4 class="subtitle is-5 submarg">Date Upload</h4>
+                                        <div class="datetimepicker-dummy is-primary">
                                             <div class="datetimepicker-dummy-wrapper">
                                                 <input placeholder="" readonly="readonly" [ngModel]="photo.uploadDate | date:'MM/dd/yyyy'" class="datetimepicker-dummy-input size" type="text">
                                             </div>
@@ -145,7 +147,7 @@
                                         <div class="overlay-date" (click)="CloseModalForPickDate(event)"></div>
 
                                     </div>
-                                    <div class="item-location">
+                                    <div class="item-location" *ngIf="address != ''">
                                         <!-- <div class="form-group">
                                         <input type="text" class="form-control input is-primary" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
                                     </div> -->
@@ -154,6 +156,7 @@
                                         <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
                                     </agm-map>
                                     -->
+                                        <h4 class="subtitle is-5 submarg">Location</h4>
                                         <div class="adress">
                                             <h4 class="title is-6">{{address}}</h4>
                                         </div>

@@ -119,15 +119,15 @@ export class FileService {
   public receiveUsersPhotosRange(
     userId: number,
     startId: number,
-    count: number): Observable<PhotoRaw[]> {
+    count: number
+  ): Observable<PhotoRaw[]> {
     this.httpOptions.headers.append('userId', `${userId}`);
     this.httpOptions.headers.append('startId', `${startId}`);
     this.httpOptions.headers.append('count', `${count}`);
     return this.client
-      .get(
-        `${environment.lamaApiUrl}/api/photo/rangeUserPhotos`,
-        { headers: { id: `${userId}`, startId: `${startId}`, count: `${count}` }}
-      )
+      .get(`${environment.lamaApiUrl}/api/photo/rangeUserPhotos`, {
+        headers: { id: `${userId}`, startId: `${startId}`, count: `${count}` }
+      })
       .pipe(map(res => res as PhotoRaw[]));
   }
 

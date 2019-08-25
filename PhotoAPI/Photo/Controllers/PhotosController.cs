@@ -131,7 +131,11 @@ namespace Photo.Controllers
         {
             return this.photoService.UpdateImage(value);
         }
-
+        [HttpPut("document")]
+        public async Task UpdateDocument([FromBody] PhotoDocument document)
+        {
+            await photoService.Update(document);
+        }
         #region DELETE
         // DELETE: api/photos/5
         [HttpDelete("{photoToDeleteId}")]
