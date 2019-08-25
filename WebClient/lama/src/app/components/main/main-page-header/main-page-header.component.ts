@@ -32,6 +32,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   public avatarUrl;
   public searchCriteria = '';
   public isActive = false;
+  searchHistory: string[];
+  searchSuggestions: { [name: string]: string[] } = {};
+  id: number;
+  timeout = null;
+  objectKeys = Object.keys;
+  unicodeSearch = '\u2315';
+  unicodeLocation = '\u2316';
 
   public showSidebarMenu: boolean;
 
@@ -48,31 +55,70 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     this.resolver = resolver;
   }
 
-  ngOnInit() {
-    const id = localStorage.getItem('userId');
-    if (id) {
-      this.http.getData(`users/${localStorage.getItem('userId')}`).subscribe(
-        u => {
-          this.file
-            .getPhoto(u.photoUrl)
-            .subscribe(url => (this.avatarUrl = url));
-        },
-        error => this.notifier.notify('error', 'Error loading user')
-      );
-    } else {
-      this.avatarUrl = this.auth.user.photo.imageUrl;
+  async ngOnInit() {
+    this.id = parseInt(localStorage.getItem('userId'), 10);
+    while (!this.id) {
+      await this.delay(500);
+      this.id = parseInt(localStorage.getItem('userId'), 10);
     }
+    this.getSearchHistory(this.id);
+    this.http.getData(`users/${this.id}`).subscribe(
+      u => {
+        if (u.photoUrl) {
+          if (u.photoUrl.indexOf('base64') === -1) {
+            this.file
+              .getPhoto(u.photoUrl)
+              .subscribe(url => (this.avatarUrl = url));
+          } else {
+            this.avatarUrl = u.photoUrl;
+          }
+        }
+      },
+      error => this.notifier.notify('error', 'Error loading user')
+    );
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngDoCheck() {
-    if (this.shared.avatar != null) {
-      this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
-        this.avatarUrl = url;
-      });
+    if (this.shared.avatar && this.shared.avatar.imageUrl) {
+      if (this.shared.avatar.imageUrl === 'deleted') {
+        this.avatarUrl = null;
+      } else {
+        if (this.shared.avatar.imageUrl.indexOf('base64') === -1) {
+          this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
+            this.avatarUrl = url;
+          });
+        } else {
+          this.avatarUrl = this.shared.avatar.imageUrl;
+        }
+        this.shared.avatar = null;
+      }
     }
-    this.searchCriteria.length < 3
+    this.searchCriteria.length < 1
       ? (this.isActive = false)
       : (this.isActive = true);
+    if (this.isActive) {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+      this.timeout = setTimeout(() => {
+        this.getSearchSuggestions(this.id, this.searchCriteria);
+      }, 300);
+    }
+  }
+
+  getSearchSuggestions(id: number, criteria: string) {
+    if (this.isActive) {
+      this.file
+        .getSearchSuggestions(this.id, this.searchCriteria)
+        .subscribe(items => {
+          this.searchSuggestions = items;
+        });
+      console.log(this.searchSuggestions);
+    }
   }
 
   public logOut() {
@@ -93,8 +139,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       });
   }
 
+  getSearchHistory(id: number) {
+    this.file.getSearchHistory(id).subscribe(history => {
+      this.searchHistory = history;
+      console.log(history);
+    });
+  }
+
   public find() {
-    this.http.findPhotos(this.searchCriteria).subscribe(
+    this.searchHistory.unshift(this.searchCriteria);
+    if (this.searchHistory.length > 5) {
+      this.searchHistory.pop();
+    }
+    const id = localStorage.getItem('userId');
+    this.http.findPhotos(id, this.searchCriteria).subscribe(
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
@@ -102,6 +160,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
+    this.searchCriteria = '';
   }
 
   public restore() {

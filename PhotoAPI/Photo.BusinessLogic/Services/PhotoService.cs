@@ -31,9 +31,14 @@ namespace Photo.BusinessLogic.Services
             this.mapper = mapper;
         }
 
-        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return elasticStorage.Find(criteria);
+            return elasticStorage.Find(id, criteria);
+        }
+
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        {
+            return elasticStorage.FindFields(id, criteria);
         }
 
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
@@ -152,7 +157,8 @@ namespace Photo.BusinessLogic.Services
                     Blob256Id = blobId,
                     OriginalBlobId = await storage.LoadPhotoToBlob(blob),
                     UserId = item.AuthorId,
-                    Description = item.Description
+                    Description = item.Description,
+                    Location = item.Location
                 };
 
                 await Create(photoDocumentToCreate);

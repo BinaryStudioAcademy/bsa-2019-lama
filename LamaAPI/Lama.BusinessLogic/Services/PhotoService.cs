@@ -36,12 +36,24 @@ namespace Lama.BusinessLogic.Services
         {
             this.httpClient.Dispose();
         }
-
-        public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(string criteria)
+        public async Task<IEnumerable<string>> GetHistory(int userId)
         {
+            var history = await _context.GetRepository<SearchHistory>().GetAsync(h => h.UserId == userId);
+            return history.Reverse()
+                .GroupBy(h => h.Text)
+                .Take(5)
+                .Select(h => h.Take(5)
+                    .First())
+                .ToList()
+                .Select(h => h.Text)
+                .Distinct();
+        }
+        public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(int id, string criteria)
+        {
+        
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/search/{criteria}");
+            var response = await httpClient.GetAsync($"{url}api/photos/search/{id}/{criteria}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -63,8 +75,28 @@ namespace Lama.BusinessLogic.Services
                     }
                 }
             }
+            await _context.GetRepository<SearchHistory>().InsertAsync(new SearchHistory
+            {
+                Text = criteria,
+                UserId = id,
+                SearchDate = DateTime.Now
+            });
+            await _context.SaveAsync();
 
             return photoDocumentDTOs;
+        }
+
+        public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        {
+
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/search/fields/{id}/{criteria}");
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+
+            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseContent);
         }
 
         // METHODS

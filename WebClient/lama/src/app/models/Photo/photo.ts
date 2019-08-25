@@ -1,8 +1,8 @@
-
 export interface Photo {
-    imageUrl: string;
-    authorId?: number;
-    author?: string;
-    description?: string;
-    filename?: string;
+  imageUrl: string;
+  authorId?: number;
+  author?: string;
+  description?: string;
+  filename?: string;
+  location?: string;
 }

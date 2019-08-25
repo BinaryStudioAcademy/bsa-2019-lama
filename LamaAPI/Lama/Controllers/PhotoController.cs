@@ -41,10 +41,22 @@ namespace Lama.Controllers
         }
         #endregion
 
-        [HttpGet("search/{criteria}")]
-        public Task<IEnumerable<PhotoDocumentDTO>> FindPhotos(string criteria)
+        [HttpGet("search/{id}/{criteria}")]
+        public Task<IEnumerable<PhotoDocumentDTO>> FindPhotos(int id, string criteria)
         {
-            return _service.FindPhoto(criteria);
+            return _service.FindPhoto(id, criteria);
+        }
+
+        [HttpGet("search_history/{id}")]
+        public Task<IEnumerable<string>> GetHistory(int id)
+        {
+            return _service.GetHistory(id);
+        }
+
+        [HttpGet("search/fields/{id}/{criteria}")]
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        {
+            return _service.FindFields(id, criteria);
         }
 
         [HttpPut]

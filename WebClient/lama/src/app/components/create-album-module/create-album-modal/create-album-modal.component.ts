@@ -37,7 +37,7 @@ export class CreateAlbumModalComponent implements OnInit {
   photos: Photo[] = [];
   album: NewAlbum;
   imageUrl: string;
-
+  showRemoveButton = false;
   albumWithExistPhotos: NewAlbumWithExistPhotos;
   ExistPhotosId: number[] = [];
 
@@ -253,6 +253,20 @@ export class CreateAlbumModalComponent implements OnInit {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
       this.photos = this.photos.filter(x => x.imageUrl !== photo.blob256Id);
+    }
+  }
+
+  mouseEnterOverlayHandler() {
+    this.showRemoveButton = true;
+  }
+
+  mouseLeftOverlayHandler() {
+    this.showRemoveButton = false;
+  }
+
+  removePhoto(index: number) {
+    if (index !== -1) {
+      this.photos.splice(index, 1);
     }
   }
 }
