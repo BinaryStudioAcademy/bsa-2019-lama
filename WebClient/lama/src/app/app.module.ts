@@ -7,7 +7,6 @@ import { MainLandingPageComponent } from './components/landing/main-landing-page
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main/main-page-header/main-page-header.component';
 import { MainLeftActionsSidebarComponent } from './components/main/main-left-actions-sidebar/main-left-actions-sidebar.component';
-import { MainLeftActionItemComponent } from './components/main/main-left-action-item/main-left-action-item.component';
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
@@ -44,7 +43,6 @@ import {NotificationModule} from './notification/notification.module';
     MainPageComponent,
     MainPageHeaderComponent,
     MainLeftActionsSidebarComponent,
-    MainLeftActionItemComponent,
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
