@@ -20,12 +20,12 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { element } from 'protractor';
 import { ZipService } from 'src/app/services/zip.service';
-import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { User } from 'src/app/models/User/user';
 import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { HttpService } from 'src/app/services/http.service';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 
 @Component({
   selector: 'app-view-album',
@@ -63,7 +63,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     private httpService: HttpService
   ) {
     this.routeSubscription = route.params.subscribe(
-      params => (this.AlbumId = params.id)
+      params => (this.AlbumId = parseInt(params.id, 10))
     );
     this.route.queryParams.subscribe(
       params => {
