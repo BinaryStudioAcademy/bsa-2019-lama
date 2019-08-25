@@ -236,6 +236,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         error => this.notifier.notify('error', 'Error deleting images')
       );
     });
+    this.selectedPhotos = [];
   }
 
   public downloadImages() {
