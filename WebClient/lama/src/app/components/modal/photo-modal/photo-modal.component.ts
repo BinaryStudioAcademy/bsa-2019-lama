@@ -102,6 +102,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
