@@ -110,7 +110,7 @@ export class ShareByEmailModalComponent implements OnInit {
     if (this.availableAll && this.showAvailable) {
       this.notifier.notify('success', 'Link is available to all');
     } else if (!this.availableAll && this.showAvailable) {
-      this.notifier.notify('success', 'Link is sent to specified emails');
+      this.notifier.notify('success', 'Link is sent to specified users');
     }
     this.userEmails = [];
   }
