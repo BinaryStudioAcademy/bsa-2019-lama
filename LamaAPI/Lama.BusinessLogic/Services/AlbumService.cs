@@ -120,8 +120,12 @@ namespace Lama.BusinessLogic.Services
             foreach (var id in returnIdPhotos)
             {
                 var Photo = photos.FirstOrDefault(x => x.Id == id);
+                var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == id);
+                Photo.Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
                 if (Photo != null)
+                {
                     ReturnPhotos.Add(Photo);
+                }
             }
 
             var album = await Context.Albums.FirstOrDefaultAsync(x => x.Id == existPhotosAlbum.AlbumId);
@@ -185,6 +189,10 @@ namespace Lama.BusinessLogic.Services
                 list = JsonConvert.DeserializeObject<List<PhotoDocument>>(str);
             }
             var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+            foreach(var item in photos)
+            {
+                item.Reactions = new List<LikeDTO>();   
+            }
             return photos;
         }
         public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
@@ -251,6 +259,10 @@ namespace Lama.BusinessLogic.Services
             var album = await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
 
+            foreach(var item in photos)
+            {
+                item.Reactions = new List<LikeDTO>();
+            }
             var Album = new ReturnAlbumDTO()
             {
                 Id = album.Entity.Id,
@@ -314,6 +326,10 @@ namespace Lama.BusinessLogic.Services
                 var photo = Getphotos.FirstOrDefault(x => x.Id == id);
                 if (photo != null)
                     returnPhotos.Add(photo);
+            }
+            foreach (var item in returnPhotos)
+            {
+                item.Reactions = new List<LikeDTO>();
             }
             var Album = new ReturnAlbumDTO()
             {
