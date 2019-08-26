@@ -35,9 +35,12 @@ namespace Lama.BusinessLogic.Services
                 await Context.SaveChangesAsync();
                 var user = Context.Users.FirstOrDefault(u => u.Email == item.Email);
                 item.Photo.AuthorId = user.Id;
-                var avatar = await _photoService.CreateAvatar(item.Photo);
-                user.AvatarId = avatar.Id;
-                Context.Users.Update(user);
+                if (item.Photo != null)
+                {
+                    var avatar = await _photoService.CreateAvatar(item.Photo);
+                    user.AvatarId = avatar.Id;
+                    Context.Users.Update(user);
+                }
                 await Context.SaveChangesAsync();
                 return (await Context.Users.FirstOrDefaultAsync(u => u.Id == user.Id)).Id;
             }
@@ -73,7 +76,7 @@ namespace Lama.BusinessLogic.Services
             var user = (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
             Photo avatar = null;
             string url = "";
-            if (user != null)
+            if (user != null && user.AvatarId != null)
             {
                 avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
                 url = (await _photoService.Get(avatar.Id))?.Blob256Id;

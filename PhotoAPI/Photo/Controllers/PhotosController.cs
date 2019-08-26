@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
-
+using Nest;
 using Photo.BusinessLogic.Interfaces;
 
 using Photo.Domain.BlobModels;
@@ -58,10 +58,22 @@ namespace Photo.Controllers
             return _photoService.Get(id);
         }
 
-        [HttpGet("search/{criteria}")]
-        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        [HttpGet("search/{id}/{criteria}")]
+        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return _photoService.Find(criteria);
+            return photoService.Find(id, criteria);
+        }
+
+        [HttpGet("search/fields/{id}/{criteria}")]
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        {
+            return photoService.FindFields(id, criteria);
+        }
+
+        [HttpGet("rangeUserPhotos")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange([FromHeader] int userId, [FromHeader] int startId, [FromHeader] int count)
+        {
+            return await photoService.GetUserPhotosRange(userId, startId, count);
         }
 
         // POST api/values
@@ -111,7 +123,11 @@ namespace Photo.Controllers
         {
             return _photoService.UpdateImage(value);
         }
-
+        [HttpPut("document")]
+        public async Task UpdateDocument([FromBody] PhotoDocument document)
+        {
+            await photoService.Update(document);
+        }
         #region DELETE
         // DELETE: api/photos/5
         [HttpDelete("{photoToDeleteId}")]

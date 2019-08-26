@@ -1,4 +1,5 @@
-﻿using Photo.Domain.BlobModels;
+﻿using Nest;
+using Photo.Domain.BlobModels;
 using Photo.Domain.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,9 @@ namespace Photo.BusinessLogic.Interfaces
         Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
-        Task<IEnumerable<PhotoDocument>> Find(string criteria);
         Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId);
+        Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
+        Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task MarkPhotoAsDeleted(int photoId);
         Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
         Task<string> GetPhoto(string value);
@@ -24,5 +26,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
+        Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count);
     }
 }

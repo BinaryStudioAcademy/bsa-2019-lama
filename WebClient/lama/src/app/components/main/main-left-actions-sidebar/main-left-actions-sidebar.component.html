@@ -1,8 +1,12 @@
-<aside class="menu left-actions-sidebar">
-    <ul class="menu-list" >
-      <li *ngFor="let _item of items">
-        <main-left-action-item [item]="_item">
-        </main-left-action-item>
+<aside #navContent id="nav-content" class="menu left-actions-sidebar">
+  <nav>
+    <ul class="menu-list">
+      <li *ngFor="let _item of items" routerLink={{_item.route}}
+        [ngClass]="{'active': isCurrentRouteRight(_item.route)}">
+        <div class="action-item">
+          <i class="material-icons" [ngClass]="{'active-item':isCurrentRouteRight(_item.route)}">{{_item.icon}}</i>
+        </div>
       </li>
     </ul>
-  </aside>
+  </nav>
+</aside>

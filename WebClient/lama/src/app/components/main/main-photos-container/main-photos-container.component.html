@@ -1,24 +1,24 @@
 <div class="content-header">
-    <h2 id="photos-container-title" *ngIf="isHaveAnyPhotos">Recent images: </h2>
-    <a (click)="GetPhotos()" class="button is-primary" *ngIf="isSearchTriggered">
-        Show all photos?
-    </a>
-    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
-        <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                <span>Options</span>
-            </button>
+  <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
+  <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary"
+    *ngIf="isSearchTriggered">
+    Show all photos?
+  </a>
+  <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+    <div class="dropdown-trigger">
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+        <span>Options</span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+      <div class="dropdown-content">
+        <div class="dropdown-item" (click)="deleteImages()">
+          <p>Delete</p>
         </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-            <div class="dropdown-content">
-                <div class="dropdown-item" (click)="deleteImages()">
-                    <p>Delete</p>
-                </div>
-                <div class="dropdown-item" (click)="downloadImages()">
-                    <p>Download</p>
-                </div>
-            </div>
+        <div class="dropdown-item" (click)="downloadImages()">
+          <p>Download</p>
         </div>
+      </div>
     </div>
     <div *ngIf="!isAtLeastOnePhotoSelected" class="align-right">
       <a  class="button is-primary" (click)="findDuplicates()">Find Duplicates</a>
@@ -26,17 +26,22 @@
 
 </div>
 
-<spinner *ngIf="showSpinner"></spinner>
+<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
+  [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
+  <h2 *ngIf="isNothingFounded">Nothing found!</h2>
+  <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="">
+  </div>
+  <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
+  <!--photo list-->
+  <div *ngFor="let item of photos">
+    <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)"
+      [_id]="favorites.has(item.id) == true ? item.id : -1">
+    </main-photo>
+  </div>
+  <spinner *ngIf="showSpinner"></spinner>
 
-<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)">
-    <h2 *ngIf="isNothingFounded">Nothing found!</h2>
-    <h2 *ngIf="!isHaveAnyPhotos">You don`t have any pictures yet!</h2>
-    <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
-    <!--photo list-->
-    <div *ngFor="let item of photos">
-        <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)" [_id]="favorites.has(item.id)==true?item.id:-1">
-        </main-photo>
-    </div>
 
     <!--modal-->
     <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deletePhotoHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>

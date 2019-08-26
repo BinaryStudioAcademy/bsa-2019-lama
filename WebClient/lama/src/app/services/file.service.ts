@@ -35,11 +35,25 @@ export class FileService {
     );
   }
 
+
   uploadDuplicates(duplicates: UploadPhotoResultDTO[]) {
     return this.client.post<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates`, duplicates, this.httpOptions);
   }
 
   async getImageBase64(url: string): Promise<string> {
+  getSearchHistory(id: number) {
+    return this.client.get<string[]>(
+      `${environment.lamaApiUrl}/api/photo/search_history/${id}`
+    );
+  }
+
+  getSearchSuggestions(id: number, criteria: string) {
+    return this.client.get<{ [name: string]: string[] }>(
+      `${environment.lamaApiUrl}/api/photo/search/fields/${id}/${criteria}`
+    );
+  }
+
+  public async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
     const blob = await response.blob();
 
@@ -111,6 +125,21 @@ export class FileService {
         `${environment.lamaApiUrl}/api/photo/user/${userId}`,
         this.httpOptions
       )
+      .pipe(map(res => res as PhotoRaw[]));
+  }
+
+  receiveUsersPhotosRange(
+    userId: number,
+    startId: number,
+    count: number
+  ): Observable<PhotoRaw[]> {
+    this.httpOptions.headers.append('userId', `${userId}`);
+    this.httpOptions.headers.append('startId', `${startId}`);
+    this.httpOptions.headers.append('count', `${count}`);
+    return this.client
+      .get(`${environment.lamaApiUrl}/api/photo/rangeUserPhotos`, {
+        headers: { id: `${userId}`, startId: `${startId}`, count: `${count}` }
+      })
       .pipe(map(res => res as PhotoRaw[]));
   }
 

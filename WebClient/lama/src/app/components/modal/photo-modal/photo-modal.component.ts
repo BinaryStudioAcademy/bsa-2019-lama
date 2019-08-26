@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
-
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -22,6 +21,13 @@ import { AlbumService } from 'src/app/services/album.service';
 import { Entity } from 'src/app/models/entity';
 import { isUndefined } from 'util';
 import { NotifierService } from 'angular-notifier';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude
+} from 'src/app/export-functions/exif';
+import { NewDescription } from 'src/app/models/Photo/NewDescription';
+import { PhotodetailsService } from 'src/app/services/photodetails.service';
 
 @Component({
   selector: 'app-photo-modal',
@@ -39,7 +45,7 @@ export class PhotoModalComponent implements OnInit {
   public showSharedModal = false;
   public showSharedByLinkModal = false;
   public showSharedByEmailModal = false;
-  albums: PhotoDetailsAlbum[];
+  albums: PhotoDetailsAlbum[] = [];
   isShowSpinner = true;
   public clickedMenuItem: MenuItem;
   public shownMenuItems: MenuItem[];
@@ -57,7 +63,7 @@ export class PhotoModalComponent implements OnInit {
   private fileService: FileService;
   private authService: AuthService;
   private userService: UserService;
-
+  private lastDescription: string;
   private defaultMenuItem: MenuItem[];
   private editingMenuItem: MenuItem[];
   private deletingMenuItem: MenuItem[];
@@ -68,7 +74,7 @@ export class PhotoModalComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
-  @Input() address: string;
+  @Input() address = '';
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
@@ -82,7 +88,8 @@ export class PhotoModalComponent implements OnInit {
     private albumService: AlbumService,
     authService: AuthService,
     userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private photodetailsService: PhotodetailsService
   ) {
     this.isShown = true;
     this.fileService = fileService;
@@ -96,16 +103,14 @@ export class PhotoModalComponent implements OnInit {
 
   ngOnInit() {
     console.log(this.photo);
+    this.lastDescription = this.photo.description;
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
       this.GetFile();
-    });
-    const calendars = bulmaCalendar.attach('[type="date"]');
-    calendars.forEach(calendar => {
-      calendar.on('select', date => {
-        // console.log(date);
-      });
     });
     this.userId = this.authService.getLoggedUserId();
     this.userService.getUser(this.userId).subscribe(
@@ -125,42 +130,14 @@ export class PhotoModalComponent implements OnInit {
     );
   }
 
-  ConvertDMSToDD(
-    degrees: number,
-    minutes: number,
-    seconds: number,
-    direction
-  ): number {
-    let dd = degrees + minutes / 60 + seconds / (60 * 60);
-
-    if (direction === 'S' || direction === 'W') {
-      dd = dd * -1;
-    } // Don't do anything for N or E
-    return dd;
-  }
-  // Get Current Location Coordinates
-
   markerDragEnd($event: MouseEvent) {
-    console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
   getAddress(latitude, longitude) {
-    this.geoCoder.geocode(
-      { location: { lat: latitude, lng: longitude } },
-      (results, status) => {
-        if (status === 'OK') {
-          if (results[0]) {
-            this.zoom = 12;
-            this.address = results[0].formatted_address;
-          } else {
-            console.log('No results found');
-          }
-        } else {
-          console.log('Geocoder failed due to: ' + status);
-        }
-      }
+    getLocation(latitude, longitude, this.geoCoder).then(
+      location => (this.address = location)
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
     this.userService.getUser(loggedUserId).subscribe(
@@ -186,38 +163,26 @@ export class PhotoModalComponent implements OnInit {
     }
     const src = this.imageUrl;
     const exifObj = load(src);
-    const field = 'GPS';
-    const GPS = exifObj[field];
-
-    if (exifObj[field][1] === 'N') {
-      this.latitude = this.ConvertDMSToDD(
-        exifObj[field][2][0][0],
-        exifObj[field][2][1][0],
-        exifObj[field][2][2][0] / exifObj[field][2][2][1],
-        exifObj[field][1]
+    this.latitude = getLatitude(exifObj);
+    this.longitude = getLongitude(exifObj);
+    if (this.latitude && this.longitude) {
+      getLocation(this.latitude, this.longitude, this.geoCoder).then(
+        location => (this.address = location)
       );
+    }
+    // load Places Autocomplete
+    // this.mapsAPILoader.load().then(() => {
+    //   if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition(position => {
+    //       // this.latitude = position.coords.latitude;
+    //       // this.longitude = position.coords.longitude;
+    //       this.zoom = 8;
+    //       this.getAddress(this.latitude, this.longitude);
+    //     });
+    //   }
+    //   // tslint:disable-next-line: new-parent
 
-      this.longitude = this.ConvertDMSToDD(
-        exifObj[field][4][0][0],
-        exifObj[field][4][0][0],
-        exifObj[field][4][0][0] / exifObj[field][4][2][1],
-        exifObj[field][3]
-      );
-
-      // load Places Autocomplete
-      this.mapsAPILoader.load().then(() => {
-        if ('geolocation' in navigator) {
-          navigator.geolocation.getCurrentPosition(position => {
-            // this.latitude = position.coords.latitude;
-            // this.longitude = position.coords.longitude;
-            this.zoom = 8;
-            this.getAddress(this.latitude, this.longitude);
-          });
-        }
-        // tslint:disable-next-line: new-parens
-        this.geoCoder = new google.maps.Geocoder();
-
-        /*
+    /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -235,8 +200,7 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-      });
-    }
+    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -260,14 +224,13 @@ export class PhotoModalComponent implements OnInit {
   public menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
 
-    console.log(clickedMenuItem);
     // share
     if (clickedMenuItem === this.defaultMenuItem[0]) {
       this.openShareModal();
     }
 
     // remove
-    if (clickedMenuItem === this.defaultMenuItem[1] && this.isEqualId()) {
+    if (clickedMenuItem === this.defaultMenuItem[1]) {
       this.shownMenuItems = this.deletingMenuItem;
     }
 
@@ -289,13 +252,12 @@ export class PhotoModalComponent implements OnInit {
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       if (this.isInfoShown === false) {
-        this.albumService
-          .GetPhotoDetailsAlbums(this.photo.id)
-          .subscribe(
-            e => (this.albums = e.body),
-            error =>
-              this.notifier.notify('error', 'Error loading photo details')
-          );
+        this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe(
+          e => {
+            this.albums = e.body;
+          },
+          error => this.notifier.notify('error', 'Error loading photo details')
+        );
       }
       this.CloseInfo();
     }
@@ -325,24 +287,38 @@ export class PhotoModalComponent implements OnInit {
       error => this.notifier.notify('error', 'Error updating photo')
     );
   }
-
+  ChangeDescription(desc) {
+    if (this.lastDescription === this.photo.description) {
+      return;
+    }
+    const newdesc: NewDescription = {
+      id: this.photo.id,
+      description: desc
+    };
+    this.photodetailsService.updateDescription(newdesc).subscribe(
+      descr => {
+        this.photo.description = descr;
+        this.notifier.notify('success', 'Description Updated');
+      },
+      error => this.notifier.notify('error', 'Error updating description')
+    );
+  }
   resetImageHandler(): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
-      blobId: this.imageUrl,
+      blobId: this.photo.blobId,
       imageBase64: ''
     };
-
-    this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
-          this.imageUrl = url;
-          updatePhotoDTO.imageBase64 = url;
+    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(
+      url => {
+        this.imageUrl = url;
+        updatePhotoDTO.imageBase64 = url;
+        this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.updatePhotoEvent.emit(this.photo);
+          this.goBackToImageView();
+          this.notifier.notify('success', 'Photo reseted');
         });
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo reseted');
       },
       error => this.notifier.notify('error', 'Error reseting photo')
     );
@@ -357,10 +333,6 @@ export class PhotoModalComponent implements OnInit {
 
   private openShareModal(): void {
     this.showSharedModal = !this.showSharedModal;
-  }
-
-  private openEditModal(): void {
-    this.showEditModal = true;
   }
 
   openShareByLink() {
@@ -461,7 +433,7 @@ export class PhotoModalComponent implements OnInit {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  public isEqualId(): boolean {
-    return this.photo.userId === this.userId;
+  public isBlockById(): boolean {
+    return this.photo.userId !== this.userId;
   }
 }

@@ -33,9 +33,14 @@ namespace Photo.BusinessLogic.Services
             _blobUrl = blobUrl;
         }
 
-        public Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return _elasticStorage.Find(criteria);
+            return elasticStorage.Find(id, criteria);
+        }
+
+        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        {
+            return elasticStorage.FindFields(id, criteria);
         }
 
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
@@ -63,6 +68,10 @@ namespace Photo.BusinessLogic.Services
         public Task<PhotoDocument> Get(int elasticId)
         {
             return _elasticStorage.Get(elasticId);
+        }
+        public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
+        {
+            return elasticStorage.GetUserPhotosRange(userId, startId, count);
         }
 
         public async Task Delete(int id)

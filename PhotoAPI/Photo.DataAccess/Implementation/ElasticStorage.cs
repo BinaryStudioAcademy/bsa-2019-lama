@@ -2,7 +2,7 @@
 
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.BlobModels;
-
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -94,7 +94,7 @@ namespace Photo.DataAccess.Implementation
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
 
-        public async Task<IEnumerable<PhotoDocument>> Find(string criteria)
+        public async Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
             var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
              .Query(q => q
@@ -108,16 +108,24 @@ namespace Photo.DataAccess.Implementation
                              .Field(f => f.IsDeleted)
                              .Query("false")
                          ), m => m
+                         .Match(k => k
+                            .Field(f => f.UserId)
+                            .Query($"{id}")
+                         ), m => m
                          .Bool(b => b
                             .MinimumShouldMatch(1)
                              .Should(s => s
-                                 .Wildcard(w => w
+                                 .MatchPhrasePrefix(w => w
                                      .Field(f => f.Description)
-                                     .Value($"*{criteria}*")
+                                     .Query($"{criteria}")
                                   ), s => s
-                                 .Wildcard(w => w
+                                 .MatchPhrasePrefix(w => w
                                      .Field(f => f.Name)
-                                     .Value($"*{criteria}*")
+                                     .Query($"{criteria}")
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                    .Field(f => f.Location)
+                                    .Query($"{criteria}")
                                  )
                               )
                           )
@@ -125,6 +133,81 @@ namespace Photo.DataAccess.Implementation
                 )
             ));
             return requestResult.Documents;
+        }
+
+        public async Task<Dictionary<string, List<string>>>FindFields(int id, string criteria)
+        {
+            var requestResult = await elasticClient.SearchAsync<PhotoDocument>(p => p
+            .Source(sr => sr
+                .Includes(i => i
+                    .Field(f => f.Name)
+                    .Field(f => f.Location)
+                    .Field(f => f.Description)
+                 )
+              )
+             .Query(q => q
+                 .Bool(d => d
+                     .Must(m => m
+                         .Match(k => k
+                             .Field(f => f.BlobId)
+                             .Query(".*images.*")
+                         ), m => m
+                         .Match(k => k
+                             .Field(f => f.IsDeleted)
+                             .Query("false")
+                         ), m => m
+                         .Match(k => k
+                            .Field(f => f.UserId)
+                            .Query($"{id}")
+                         ), m => m
+                         .Bool(b => b
+                            .MinimumShouldMatch(1)
+                             .Should(s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Description)
+                                     .Query($"{criteria}")
+                                  ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Name)
+                                     .Query($"{criteria}")
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                    .Field(f => f.Location)
+                                    .Query($"{criteria}")
+                                 )
+                              )
+                          )
+                     )
+                )
+            )
+        );
+            //TODO - rewrite this awful code
+            List<string> names = requestResult.Documents
+                .Where(p => p.Name.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Name)
+                    .Distinct()
+                    .ToList();
+            List<string> description = requestResult.Documents
+                .Where(p => p.Description != null &&  p.Description.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Description)
+                    .Distinct()
+                    .ToList();
+            List<string> locations = requestResult.Documents
+                .Where(p => p.Location != null && p.Location.ToLower()
+                    .Contains(criteria.ToLower()))
+                    .Select(m => m.Location)
+                    .Distinct()
+                    .ToList();
+
+            var dict = new Dictionary<string, List<string>>()
+            {
+                {"names", names },
+                {"desription", description },
+                {"locations", locations }
+            };
+            return dict;
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId)
@@ -180,6 +263,45 @@ namespace Photo.DataAccess.Implementation
                 Size = 100,
                 From = 0,
                 Query = new BoolQuery { Must = mustClauses }
+            };
+            return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+        }
+
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startIndex, int count)
+        {
+            var mustClauses = new List<QueryContainer>();
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
+                Value = false
+            });
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(t => t.UserId),
+                Value = userId,
+            });
+
+            mustClauses.Add(new MatchQuery
+            {
+                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
+                Query = ".*images.*"
+            });
+
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = count,
+                From = startIndex,
+                Query = new BoolQuery { Must = mustClauses },
+                Sort = new List<ISort>
+                {
+                    new FieldSort
+                    {
+                        Field = Infer.Field<PhotoDocument>(p => p.Id),
+                        Order = SortOrder.Descending
+                    }
+                }
             };
             return (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }

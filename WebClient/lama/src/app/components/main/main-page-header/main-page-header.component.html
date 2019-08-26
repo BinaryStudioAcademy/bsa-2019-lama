@@ -1,40 +1,57 @@
 <header class="navbar is-fixed-top">
-    <div class="align-right">
-        <a><i class="material-icons" (click)="onMenuClicked($event)">reorder</i></a>
-        <div class="logo">
-            <img src="assets/alpaca-icon-19.jpg">
-            <p>Lama</p>
-        </div>
+  <div class="align-right">
+    <main-left-actions-sidebar style="height: 100%">
+    </main-left-actions-sidebar>
+    <div class="logo">
+      <img src="assets/lama.jpg" routerLink="/main/photos" />
     </div>
+  </div>
 
-    <!--search-->
-    <div class="search-bar is-hidden-mobile">
-        <div class="field has-addons">
-            <div class="control input-form">
-                <input class="input" type="text" placeholder="Find a photo" [(ngModel)]="searchCriteria">
+  <!--search-->
+  <div class="search-bar is-hidden-mobile">
+    <div class="field has-addons">
+      <div class="control input-form">
+        <input (keyup.enter)="find()" class="input" type="search" placeholder="Find a photo"
+          [(ngModel)]="searchCriteria" list="values" />
+        <div class="control is-expanded">
+          <datalist id="values" *ngIf="!isActive">
+            <div *ngFor="let item of searchHistory">
+              <option value="{{ item }}">{{ unicodeSearch }} </option>
             </div>
-            <div class="control">
-                <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{'not-active': !isActive}">
-                    Search
-                </a>
+          </datalist>
+          <datalist id="values" *ngIf="searchSuggestions">
+            <div *ngFor="let key of objectKeys(searchSuggestions)">
+              <div *ngFor="let item of searchSuggestions[key]">
+                <option *ngIf="key == 'names' || key == 'desription'" value="{{ item }}">{{ unicodeSearch }}
+                </option>
+                <option *ngIf="key == 'locations'" value="{{ item }}">{{ unicodeLocation }}
+                </option>
+              </div>
             </div>
-
-            <!--upload-->
-            <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
-                <i class="material-icons">cloud_upload</i>
-                <p>Add</p>
-            </a>
+          </datalist>
         </div>
-    </div>
-
-    <!--profile-->
-    <div class="align-right">
-        <a class="button is-primary" (click)="logOut()">Logout</a>
-        <a class="image is-64x64 profile" routerLink="/main/profile">
-            <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded">
+      </div>
+      <div class="control">
+        <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{ 'not-active': !isActive }">
+          Search
         </a>
-    </div>
+      </div>
 
+      <!--upload-->
+      <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
+        <i class="material-icons">cloud_upload</i>
+        <p>Add</p>
+      </a>
+    </div>
+  </div>
+
+  <!--profile-->
+  <div class="align-right">
+    <a class="button is-primary" (click)="logOut()">Logout</a>
+    <a class="image is-48x48 profile">
+      <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
+    </a>
+  </div>
 </header>
 
 <template #photoUploadModal></template>

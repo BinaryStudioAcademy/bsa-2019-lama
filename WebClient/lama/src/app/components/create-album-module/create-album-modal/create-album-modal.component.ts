@@ -40,7 +40,7 @@ export class CreateAlbumModalComponent implements OnInit {
   ExistPhotosId: number[] = [];
   duplicates: PhotoRaw[] = [];
   duplicatesFound = false;
-
+  albumsTitles: string[] = [];
   albumName = '';
   checkForm = true;
 
@@ -142,6 +142,10 @@ export class CreateAlbumModalComponent implements OnInit {
   CreateAlbum() {
     if (this.albumName === '') {
       this.checkForm = false;
+    }
+    if (this.albumsTitles.indexOf(this.albumName) !== -1) {
+      this.checkForm = false;
+      this.notifier.notify('error', 'Album with this title already exists');
     } else {
       if (this.photos.length === 0) {
         this.album = {
@@ -152,12 +156,7 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService.createEmptyAlbum(this.album).subscribe(
           createdAlbum => {
-            this.createdAlbumEvent.emit({
-              id: createdAlbum.id,
-              name: createdAlbum.title,
-              photoUrl: null,
-              title: createdAlbum.title
-            });
+            this.createdAlbumEvent.emit(createdAlbum);
             this.notifier.notify('success', 'Empty Album created');
           },
           error => this.notifier.notify('error', 'Error creating the album')
@@ -206,13 +205,7 @@ export class CreateAlbumModalComponent implements OnInit {
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
           .subscribe(
             createdAlbum => {
-              this.createdAlbumEvent.emit({
-                id: createdAlbum.id,
-                name: createdAlbum.title,
-                photoUrl:
-                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
-                title: createdAlbum.title
-              });
+              this.createdAlbumEvent.emit(createdAlbum);
               this.notifier.notify('success', 'Album created');
             },
             error => this.notifier.notify('error', 'Error creating the album')

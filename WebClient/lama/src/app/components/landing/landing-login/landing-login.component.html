@@ -1,16 +1,18 @@
 <div class="container">
-    <div class="content-container">
-        <img src="https://icon-library.net/images/alpaca-icon/alpaca-icon-19.jpg">
-        <div class="title">
-            Lama
-        </div>
-        <div class="description">
-            Free storage and automatic organization for all your memories.
-        </div>
-        <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
-        <app-auth-modal *ngIf="showAuthModal" (Close)="showAuthModal=false"></app-auth-modal>
+  <div class="content-container">
+    <img src="assets/lama.jpg" />
+    <div class="title">
+      Lama
     </div>
-    <img src="../../../assets/many-photos.jpg">
-
+    <div class="description">
+      Free storage and automatic organization for all your memories.
+    </div>
+    <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
+    <app-auth-modal
+      *ngIf="showAuthModal"
+      (Close)="showAuthModal = false"
+    ></app-auth-modal>
+  </div>
+  <img src="assets/many-photos.jpg" />
 </div>
 <notifier-container></notifier-container>

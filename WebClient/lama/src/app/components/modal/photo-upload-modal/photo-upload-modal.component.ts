@@ -6,17 +6,24 @@ import {
   Output,
   ViewContainerRef,
   ViewChild,
-  ComponentRef
+  ComponentRef,
+  AfterViewInit
 } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
 import { Photo } from 'src/app/models';
-
 import imageCompression from 'browser-image-compression';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
+import { Router } from '@angular/router';
+import { MapsAPILoader, MouseEvent } from '@agm/core';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude
+} from 'src/app/export-functions/exif';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -30,6 +37,8 @@ export class PhotoUploadModalComponent implements OnInit {
   desc: string[] = [];
   duplicates: UploadPhotoResultDTO[] = [];
   showSpinner = false;
+  geoCoder;
+  address: string;
   showRemoveButton = false;
   duplicatesFound = false;
   @Output()
@@ -40,23 +49,31 @@ export class PhotoUploadModalComponent implements OnInit {
 
   constructor(
     private fileService: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private mapsAPILoader: MapsAPILoader,
+    private router: Router
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
+  }
 
   saveChanges() {
     if (this.photos.length === 0) {
       this.notifier.notify('error', 'Error download photos');
       return;
     }
+    this.showSpinner = true;
     const userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) {
       this.photos[i] = {
         imageUrl: this.photos[i].imageUrl,
         description: this.desc[i],
         authorId: parseInt(userId, 10),
-        filename: this.photos[i].filename
+        filename: this.photos[i].filename,
+        location: this.photos[i].location
       };
     }
 
@@ -117,9 +134,16 @@ export class PhotoUploadModalComponent implements OnInit {
   async onFileDropped(files: File[]) {
     this.showSpinner = true;
     this.photos = [];
+    let latitude;
+    let longitude;
     for (const file of files) {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
+        const field = 'GPS';
+        latitude = getLatitude(exifObj);
+        longitude = getLongitude(exifObj);
+        console.log(latitude);
+        console.log(longitude);
         const d = dump(exifObj);
         const compressedFile = await imageCompression(
           file,
@@ -129,7 +153,22 @@ export class PhotoUploadModalComponent implements OnInit {
         remove(base64);
         const modifiedObject = insert(d, base64);
         this.showSpinner = false;
-        this.photos.push({ imageUrl: modifiedObject, filename: file.name });
+        if (latitude && longitude) {
+          getLocation(latitude, longitude, this.geoCoder).then(location => {
+            this.address = location;
+            this.photos.push({
+              imageUrl: modifiedObject,
+              filename: file.name,
+              location: this.address
+            });
+          });
+        } else {
+          this.photos.push({
+            imageUrl: modifiedObject,
+            filename: file.name,
+            location: this.address
+          });
+        }
       } else {
         const compressedFile = await imageCompression(
           file,
@@ -138,7 +177,8 @@ export class PhotoUploadModalComponent implements OnInit {
         this.showSpinner = false;
         this.photos.push({
           imageUrl: await this.toBase64(compressedFile),
-          filename: file.name
+          filename: file.name,
+          location: this.address
         });
       }
     }
