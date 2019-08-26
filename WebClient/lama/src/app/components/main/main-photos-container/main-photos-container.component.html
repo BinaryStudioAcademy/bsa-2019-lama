@@ -26,7 +26,7 @@
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
   [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
   <h2 *ngIf="isNothingFounded">Nothing found!</h2>
-  <div class="no-content" *ngIf="!isHaveAnyPhotos">
+  <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
     <h2>Nothing here yet..</h2>
     <img src="assets/nocontent.jpg" alt="">
   </div>

@@ -171,10 +171,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     } else {
       this.isAtLeastOnePhotoSelected = false;
     }
-    if (this.photos.length === 0 && !this.showSpinner) {
-      this.isHaveAnyPhotos = false;
-    } else {
+    if (this.photos.length !== 0 && !this.showSpinner) {
       this.isHaveAnyPhotos = true;
+    } else {
+      this.isHaveAnyPhotos = false;
     }
   }
 
