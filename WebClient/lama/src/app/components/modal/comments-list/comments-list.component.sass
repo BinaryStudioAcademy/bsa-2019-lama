@@ -2,13 +2,33 @@ article
     margin: 5px
     padding: 5px
 
-.add-comment
-    margin-bottom: 10px
+.no-comments
+    text-align: center
+    padding-top: 20px
 
+.add-comment
+    margin-bottom: 5px
+    display: flex
+    flex-direction: row
     textarea
         resize: none
         margin-bottom: 5px
+        padding: 0
+        padding-bottom: calc(.375em - 1px)
+        padding-left: calc(.625em - 1px)
+        padding-right: calc(.625em - 1px)
+        padding-top: calc(.375em - 1px)
+        height: 55px
+        border-top-right-radius: 0
+        border-bottom-right-radius: 0
+        min-width: auto
+    .button
+        height: 55px
+        border-top-left-radius: 0
+        border-bottom-left-radius: 0
 
 .comments-list
-    max-height: 250px
+    max-height: 400px
     overflow-y: auto
+    border: 1px solid #dbdbdb
+    border-radius: 4px
