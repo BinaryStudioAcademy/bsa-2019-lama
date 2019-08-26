@@ -116,6 +116,21 @@ export class FileService {
       .pipe(map(res => res as PhotoRaw[]));
   }
 
+  public receiveUsersPhotosRange(
+    userId: number,
+    startId: number,
+    count: number
+  ): Observable<PhotoRaw[]> {
+    this.httpOptions.headers.append('userId', `${userId}`);
+    this.httpOptions.headers.append('startId', `${startId}`);
+    this.httpOptions.headers.append('count', `${count}`);
+    return this.client
+      .get(`${environment.lamaApiUrl}/api/photo/rangeUserPhotos`, {
+        headers: { id: `${userId}`, startId: `${startId}`, count: `${count}` }
+      })
+      .pipe(map(res => res as PhotoRaw[]));
+  }
+
   public markPhotoAsDeleted(photosToDeleteId: number): Observable<object> {
     return this.client.delete(
       `${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`

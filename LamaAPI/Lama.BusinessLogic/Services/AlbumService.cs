@@ -30,7 +30,7 @@ namespace Lama.BusinessLogic.Services
         private IUnitOfWork _context;
         IConfiguration configuration;
         private readonly IMapper _mapper;
-        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context,IMapper _mapper)
+        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context, IMapper _mapper)
             : base(Context)
         {
             this._photoService = _photoService;
@@ -42,7 +42,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task UpdateAlbum(UpdateAlbumDTO album)
         {
-   
+
             var photoAlbums = Context.PhotoAlbums.Where(i => i.AlbumId == album.Id);
             List<int> ids = photoAlbums.Select(i => i.PhotoId).ToList();
             var removedIds = ids.Except(album.PhotoIds);
@@ -55,7 +55,7 @@ namespace Lama.BusinessLogic.Services
             Context.PhotoAlbums.RemoveRange(removedPhotoAlbums);
             await Context.SaveChangesAsync();
         }
-        
+
         public async Task<int?> UpdateCover(UpdateAlbumDTO album)
         {
             var albumToUpdate = await Context.Albums.FindAsync(album.Id);
@@ -64,12 +64,12 @@ namespace Lama.BusinessLogic.Services
             {
                 albumToUpdate.CoverId = album.CoverId;
             }
-            
+
             await Context.SaveChangesAsync();
 
             return albumToUpdate.CoverId;
         }
-        
+
         public async Task<int> CreateEmptyAlbum(NewAlbumDTO albumDto)
         {
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == albumDto.AuthorId);
@@ -86,10 +86,17 @@ namespace Lama.BusinessLogic.Services
         }
         public async Task<List<PhotoDocumentDTO>> AddExistPhotosToAlbum(ExistPhotosAlbum existPhotosAlbum)
         {
+            List<int> returnIdPhotos = new List<int>();
             List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
-            foreach(var photoId in existPhotosAlbum.PhotosId)
+            foreach (var photoId in existPhotosAlbum.PhotosId)
             {
-                photoAlbums.Add(new PhotoAlbum() { AlbumId=existPhotosAlbum.AlbumId, PhotoId= photoId});
+                var search = await Context.PhotoAlbums.FirstOrDefaultAsync(x => x.AlbumId == existPhotosAlbum.AlbumId && x.PhotoId == photoId);
+                if (search == null)
+                {
+                    var dbPhoto = new PhotoAlbum() { AlbumId = existPhotosAlbum.AlbumId, PhotoId = photoId };
+                    photoAlbums.Add(dbPhoto);
+                    returnIdPhotos.Add(photoId);
+                }
             }
             await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
             await Context.SaveChangesAsync();
@@ -110,12 +117,25 @@ namespace Lama.BusinessLogic.Services
             }
             var ReturnPhotos = new List<PhotoDocumentDTO>();
 
-            foreach(var id in existPhotosAlbum.PhotosId)
+            foreach (var id in returnIdPhotos)
             {
                 var Photo = photos.FirstOrDefault(x => x.Id == id);
-                if(Photo != null)
-                ReturnPhotos.Add(Photo);
+                var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == id);
+                Photo.Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
+                if (Photo != null)
+                {
+                    ReturnPhotos.Add(Photo);
+                }
             }
+
+            var album = await Context.Albums.FirstOrDefaultAsync(x => x.Id == existPhotosAlbum.AlbumId);
+            if (album.Photo == null && ReturnPhotos.Count() != 0)
+            {
+                album.CoverId = ReturnPhotos[0].Id;
+                Context.Albums.Update(album);
+                await Context.SaveChangesAsync();
+            }
+
             return ReturnPhotos;
         }
         public async Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum(NewPhotosAlbum newPhotosAlbum)
@@ -148,10 +168,18 @@ namespace Lama.BusinessLogic.Services
             List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
             for (int i = 0; i < savedPhotos.Length; i++)
             {
-                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i] , AlbumId = newPhotosAlbum.AlbumId });
+                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i], AlbumId = newPhotosAlbum.AlbumId });
             }
             await Context.PhotoAlbums.AddRangeAsync(photoAlbums);
             await Context.SaveChangesAsync();
+
+            var album = await Context.Albums.FirstOrDefaultAsync(x => x.Id == newPhotosAlbum.AlbumId);
+            if (album.Photo == null && savedPhotos.Count() != 0)
+            {
+                album.Photo = savedPhotos[0];
+                Context.Albums.Update(album);
+                await Context.SaveChangesAsync();
+            }
 
             List<PhotoDocument> list = new List<PhotoDocument>();
             using (HttpClient httpClient = new HttpClient())
@@ -161,9 +189,13 @@ namespace Lama.BusinessLogic.Services
                 list = JsonConvert.DeserializeObject<List<PhotoDocument>>(str);
             }
             var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+            foreach(var item in photos)
+            {
+                item.Reactions = new List<LikeDTO>();   
+            }
             return photos;
         }
-        public async Task<int> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto)
         {
             string url = configuration["PhotoApiUrl"];
             var PhotosAlbum = albumDto.Photos;
@@ -197,15 +229,15 @@ namespace Lama.BusinessLogic.Services
                     ImageUrl = PhotosAlbum[i].ImageUrl,
                     Description = PhotosAlbum[i].Description,
                     FileName = PhotosAlbum[i].FileName
-                    };
+                };
             }
-            
+
             List<PhotoAlbum> photoAlbums = new List<PhotoAlbum>();
 
 
             for (int i = 0; i < savedPhotos.Length; i++)
             {
-                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i] , Album = TempAlbum });
+                photoAlbums.Add(new PhotoAlbum() { Photo = savedPhotos[i], Album = TempAlbum });
             }
 
             if (savedPhotos.Length != 0)
@@ -214,18 +246,36 @@ namespace Lama.BusinessLogic.Services
                 TempAlbum.PhotoAlbums = photoAlbums;
             }
 
+            IEnumerable<PhotoDocument> list = new List<PhotoDocument>();
             using (HttpClient httpClient = new HttpClient())
             {
                 var s = await httpClient.PostAsJsonAsync($"{url}api/photos", PhotosToCreate);
-                var str  = await s.Content.ReadAsStringAsync();
-                var elasticId = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
-
-                await Context.Albums.AddAsync(TempAlbum);
-                await Context.SaveChangesAsync();
+                var str = await s.Content.ReadAsStringAsync();
+                var Photos = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
+                list = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(str);
             }
-            return TempAlbum.Id;
+
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+            var album = await Context.Albums.AddAsync(TempAlbum);
+            await Context.SaveChangesAsync();
+
+            foreach(var item in photos)
+            {
+                item.Reactions = new List<LikeDTO>();
+            }
+            var Album = new ReturnAlbumDTO()
+            {
+                Id = album.Entity.Id,
+                Title = album.Entity.Title
+            };
+            if (photos != null)
+            {
+                Album.Photo = photos[0];
+                Album.PhotoAlbums = photos;
+            }
+            return Album;
         }
-        public async Task<int> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
+        public async Task<ReturnAlbumDTO> CreateAlbumWithExistPhotos(AlbumWithExistPhotosDTO album)
         {
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == album.AuthorId);
             Album TempAlbum = new Album()
@@ -246,17 +296,49 @@ namespace Lama.BusinessLogic.Services
                     photoAlbums.Add(new PhotoAlbum() { Photo = TempPhoto, Album = TempAlbum });
                 }
             }
-
             if (photos.Count != 0)
             {
                 TempAlbum.Photo = photos[0];
                 TempAlbum.PhotoAlbums = photoAlbums;
             }
 
-            await Context.Albums.AddAsync(TempAlbum);
+
+            var BdAlbum = await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
 
-            return TempAlbum.Id;
+            string url = configuration["PhotoApiUrl"];
+            List<PhotoDocumentDTO> Getphotos = new List<PhotoDocumentDTO>();
+            using (HttpClient httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await httpClient.GetAsync($"{url}api/photos");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+                Getphotos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            }
+
+            List<PhotoDocumentDTO> returnPhotos = new List<PhotoDocumentDTO>();
+            foreach(var id in album.PhotosId)
+            {
+                var photo = Getphotos.FirstOrDefault(x => x.Id == id);
+                if (photo != null)
+                    returnPhotos.Add(photo);
+            }
+            foreach (var item in returnPhotos)
+            {
+                item.Reactions = new List<LikeDTO>();
+            }
+            var Album = new ReturnAlbumDTO()
+            {
+                Id = BdAlbum.Entity.Id,
+                Title = BdAlbum.Entity.Title,
+                Photo = returnPhotos[0],
+                PhotoAlbums = returnPhotos
+            };
+            return Album;
 
         }
         public async Task<List<ReturnAlbumDTO>> FindAll(int UserId)
@@ -283,10 +365,11 @@ namespace Lama.BusinessLogic.Services
                     Id = item.Id,
                     Title = item.Title
                 };
-                if(item.Photo != null)
+                var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+                if (item.Photo != null)
                 {
-                    album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
-                    album.PhotoAlbums = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+                    album.Photo = AlbumPhotos.FirstOrDefault(x => x.Id == item.Photo.Id);
+                    album.PhotoAlbums = AlbumPhotos;
                 }
                 albums.Add(album);
             }
@@ -305,6 +388,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id)
         {
+<<<<<<< HEAD
                 List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
                 var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x=>x.Album).Where(x=>x.Photo.Id == id).Select(x=>x.Album).ToListAsync();
                 foreach(var album in albums)
@@ -316,6 +400,24 @@ namespace Lama.BusinessLogic.Services
                     list.Add(returnAlbum);
                 }
             
+=======
+
+            List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
+            var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x => x.Album).Where(x => x.Photo.Id == id).Select(x => x.Album).ToListAsync();
+            foreach (var album in albums)
+            {
+                var Document = await _photoService.Get(album.CoverId.Value);
+                string image = Document.BlobId.Substring(7);
+                var tempohoto = await _photoService.GetPhoto(image);
+                var photo = new PhotoAlbumDetails() { ImageUrl = tempohoto };
+
+                var returnAlbum = _mapper.Map<AlbumPhotoDetails>(album);
+                returnAlbum.Photo = photo;
+
+                list.Add(returnAlbum);
+            }
+
+>>>>>>> a1ca4fd5689dcc40c44966f9b4307434bd0dabcc
 
             return list;
         }
@@ -326,7 +428,7 @@ namespace Lama.BusinessLogic.Services
             {
                 throw new NotFoundException(nameof(Album), id);
             }
-            
+
             UnbindEntitiesFromAlbum(albumToDelete);
             Context.Albums.Remove(albumToDelete);
             await Context.SaveChangesAsync();
@@ -350,15 +452,15 @@ namespace Lama.BusinessLogic.Services
             var elasticPhotos = await _photoService.GetAll();
 
             var ListOfPhotos = _mapper.Map<IEnumerable<PhotoDocument>>(elasticPhotos);
-         
+
             var Photos = from pa in result.PhotoAlbums
-                             join el in ListOfPhotos on pa.PhotoId equals el.Id
-                             select el;
-                             
+                         join el in ListOfPhotos on pa.PhotoId equals el.Id
+                         select el;
+
             IEnumerable<PhotoDocumentDTO> photoDocumentDTOs = _mapper.Map<PhotoDocumentDTO[]>(Photos);
-            foreach(PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            foreach (PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
             {
-                photoDocumentDTO.Reactions = 
+                photoDocumentDTO.Reactions =
                     _mapper.Map<LikeDTO[]>(
                     Context.Likes
                     .Where(l => l.PhotoId == photoDocumentDTO.Id)
@@ -378,9 +480,9 @@ namespace Lama.BusinessLogic.Services
                 Id = result.Id,
                 Title = result.Title,
             };
-            if(result.Photo != null)
+            if (result.Photo != null)
             {
-                album.Photo = ListOfPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
+                album.Photo = photoDocumentDTOs.FirstOrDefault(x => x.Id == result.Photo.Id);
                 album.PhotoAlbums = photoDocumentDTOs;
             }
             return album;
@@ -395,7 +497,7 @@ namespace Lama.BusinessLogic.Services
 
         private void UnbindPhotosFromAlbum(Album album)
         {
-            var photoAlbumsFromDeletingAlbum = 
+            var photoAlbumsFromDeletingAlbum =
                 Context.PhotoAlbums.Where(photo => EF.Property<int>(photo, "AlbumId") == album.Id);
             foreach (var photoAlbum in photoAlbumsFromDeletingAlbum)
             {

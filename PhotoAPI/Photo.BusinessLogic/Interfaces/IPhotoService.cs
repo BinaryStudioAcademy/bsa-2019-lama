@@ -24,5 +24,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
+        Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count);
     }
 }

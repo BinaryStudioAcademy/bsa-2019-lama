@@ -1,18 +1,11 @@
 <!--heading-->
-<h2 class="title">Deleted photos:</h2>
+<h2 *ngIf="deletedPhotos && deletedPhotos.length !== 0">Deleted photos:</h2>
 
 <!--buttons-->
-<div
-  class="buttons has-addons is-centered"
-  *ngIf="deletedPhotos && deletedPhotos.length"
->
-  <span class="button is-success is-outlined" (click)="restoreSelectedPhoto()"
-    >Restore</span
-  >
+<div class="buttons has-addons is-centered" *ngIf="deletedPhotos && deletedPhotos.length">
+  <span class="button is-success is-outlined" (click)="restoreSelectedPhoto()">Restore</span>
   <span class="button is-static"> - {{ countSelectedPhtoto }} - </span>
-  <span class="button is-danger is-outlined" (click)="deleteSelectedPhoto()"
-    >Delete</span
-  >
+  <span class="button is-danger is-outlined" (click)="deleteSelectedPhoto()">Delete</span>
 </div>
 
 <!--spinner-->
@@ -22,18 +15,16 @@
 <div class="items-container-centered">
   <!--photos list-->
   <div *ngFor="let photo of deletedPhotos">
-    <div
-      class="photo"
-      [class.marked]="photo.isMarked"
-      (click)="selectPhoto(photo)"
-    >
-      <img src="{{ photo.imageUrl }}" />
+    <div class="photo" [class.marked]="photo.isMarked" (click)="selectPhoto(photo)">
+      <spinner *ngIf="isShowSpinner"></spinner>
+      <img *ngIf="!isShowSpinner" src="{{ photo.imageUrl }}" />
     </div>
   </div>
 
   <!--no image-->
-  <div *ngIf="deletedPhotos && !deletedPhotos.length">
-    <h3 class="title">empty</h3>
+  <div class="no-content" *ngIf="deletedPhotos && !deletedPhotos.length">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="">
   </div>
 </div>
 <notifier-container></notifier-container>

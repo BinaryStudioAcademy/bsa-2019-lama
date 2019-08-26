@@ -1,8 +1,16 @@
-import { Component, OnInit, Input, ViewChild, ViewContainerRef, ComponentFactoryResolver, DoCheck } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  DoCheck
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PhotoRaw } from 'src/app/models';
-import {PhotoRawState} from 'src/app/models/Photo/photoRawState';
+import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { ZipService } from 'src/app/services/zip.service';
@@ -16,8 +24,7 @@ import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
   styleUrls: ['./shared-page-album.component.sass']
 })
 export class SharedPageAlbumComponent implements OnInit, DoCheck {
-
-  @Input() album: ViewAlbum = { } as ViewAlbum;
+  @Input() album: ViewAlbum = {} as ViewAlbum;
 
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   AlbumId: number;
@@ -31,16 +38,22 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
-  constructor(private route: ActivatedRoute, private router: Router,
-              private albumService: AlbumService, private zipService: ZipService,
-              private resolver: ComponentFactoryResolver) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private albumService: AlbumService,
+    private zipService: ZipService,
+    private resolver: ComponentFactoryResolver
+  ) {
     this.decodeUserData();
   }
 
   ngOnInit() {
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.selectedPhotos = [];
-    this.albumService.getAlbum(this.sharedAlbum.albumId).subscribe( x => {this.album = x.body; });
+    this.albumService.getAlbum(this.sharedAlbum.albumId).subscribe(x => {
+      this.album = x.body;
+    });
     this.loading = true;
   }
 
@@ -50,6 +63,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.currentUser = this.currentUser;
+
   }
 
   ngDoCheck() {
@@ -71,7 +85,8 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
 
   private decodeUserData() {
     const encodedData = this.route.snapshot.params.userdata as string;
-    const jsonData = atob(encodedData.replace('___', '/'));
+    let jsonData = atob(encodedData.replace('___', '/'));
+    jsonData = jsonData.replace('[]', '');
     this.sharedAlbum = JSON.parse(jsonData);
   }
 }

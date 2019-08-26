@@ -6,7 +6,6 @@ import { MainLandingPageComponent } from './components/landing/main-landing-page
 import { MainPageComponent } from './components/main/main-page/main-page.component';
 import { MainPageHeaderComponent } from './components/main/main-page-header/main-page-header.component';
 import { MainLeftActionsSidebarComponent } from './components/main/main-left-actions-sidebar/main-left-actions-sidebar.component';
-import { MainLeftActionItemComponent } from './components/main/main-left-action-item/main-left-action-item.component';
 import { MainContentContainerComponent } from './components/main/main-content-container/main-content-container.component';
 import { MainPhotosContainerComponent } from './components/main/main-photos-container/main-photos-container.component';
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
@@ -38,6 +37,7 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 import { NotificationModule } from './notification/notification.module';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
 // tslint:disable-next-line:max-line-length
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
@@ -49,7 +49,6 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     MainPageComponent,
     MainPageHeaderComponent,
     MainLeftActionsSidebarComponent,
-    MainLeftActionItemComponent,
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
@@ -81,7 +80,8 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     FormsModule,
     CreateAlbumModule,
     ReactiveFormsModule,
-    NotificationModule
+    NotificationModule,
+    InfiniteScrollModule
   ],
   providers: [
     HttpService,

@@ -73,6 +73,12 @@ namespace Photo.Controllers
             return photoService.FindFields(id, criteria);
         }
 
+        [HttpGet("rangeUserPhotos")]
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange([FromHeader] int userId, [FromHeader] int startId, [FromHeader] int count)
+        {
+            return await photoService.GetUserPhotosRange(userId, startId, count);
+        }
+
         // POST api/values
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)
@@ -125,7 +131,11 @@ namespace Photo.Controllers
         {
             return this.photoService.UpdateImage(value);
         }
-
+        [HttpPut("document")]
+        public async Task UpdateDocument([FromBody] PhotoDocument document)
+        {
+            await photoService.Update(document);
+        }
         #region DELETE
         // DELETE: api/photos/5
         [HttpDelete("{photoToDeleteId}")]

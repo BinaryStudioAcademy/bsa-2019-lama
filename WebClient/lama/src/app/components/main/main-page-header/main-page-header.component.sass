@@ -5,8 +5,11 @@ header
     flex-direction: row
     justify-content: space-between
     background-color: white
-    height: 4.5rem
+    height: 70px
     border-bottom: 1px solid #f5f5f5
+
+.button
+    height: 35px
 
 header
     width: 100%
@@ -17,11 +20,11 @@ datalist div
     display: flex
     align-items: center
     justify-content: center
+    & a
+        margin-left: 18px
+
 input::-webkit-calendar-picker-indicator
   display: none
-
-.align-right a
-    margin: 1rem
 
 .align-left
     display: flex
@@ -44,7 +47,7 @@ input::-webkit-calendar-picker-indicator
     display: flex
     align-items: center
     justify-items: center
-    width: 65%
+    width: 100%
 
 .control .button
     border-radius: 0 4px 4px 0 !important
@@ -54,26 +57,26 @@ input::-webkit-calendar-picker-indicator
 
 .control .button, .add
     margin-right: 1.5rem
+
 .logo
-    margin-left: 2rem
+    margin-left: 10px
     height: 100%
     display: flex
     align-items: center
     justify-content: flex-start
+    cursor: pointer    
 
 .logo img
     margin-right: .4rem
     height: 100%
+    outline: none
 
 .logo p
     font-weight: 500
-    font-size: 2rem
+    font-size: 19pt
 
 .field i
     margin-right: .5rem
-
-.align-right a
-    margin: .5rem
 
 .profile img
     height: 100%

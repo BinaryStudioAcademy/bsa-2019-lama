@@ -1,19 +1,12 @@
 <div class="content-header">
-  <h2 id="photos-container-title">Recent images:</h2>
-  <a
-    (click)="GetUserPhotos(currentUser.id)"
-    class="button is-primary"
-    *ngIf="isSearchTriggered"
-  >
+  <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
+  <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary"
+    *ngIf="isSearchTriggered">
     Show all photos?
   </a>
   <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
     <div class="dropdown-trigger">
-      <button
-        class="button"
-        aria-haspopup="true"
-        aria-controls="dropdown-menu4"
-      >
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
       </button>
     </div>
@@ -30,26 +23,21 @@
   </div>
 </div>
 
-<spinner *ngIf="showSpinner"></spinner>
-
-<div
-  class="items-container-centered"
-  fileDrop
-  (fileDropped)="uploadFile($event)"
->
+<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
+  [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
   <h2 *ngIf="isNothingFounded">Nothing found!</h2>
-  <h2 *ngIf="!isHaveAnyPhotos">You don`t have any pictures yet!</h2>
+  <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="">
+  </div>
   <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
   <!--photo list-->
   <div *ngFor="let item of photos">
-    <main-photo
-      [_photo]="item"
-      (Click)="photoClicked($event)"
-      (Select)="photoSelected($event)"
-      [_id]="favorites.has(item.id) == true ? item.id : -1"
-    >
+    <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)"
+      [_id]="favorites.has(item.id) == true ? item.id : -1">
     </main-photo>
   </div>
+  <spinner *ngIf="showSpinner"></spinner>
 
   <!--modal-->
   <template #modalPhotoContainer></template>

@@ -26,18 +26,19 @@ import {
   getLatitude,
   getLongitude
 } from 'src/app/export-functions/exif';
+import { NewDescription } from 'src/app/models/Photo/NewDescription';
+import { PhotodetailsService } from 'src/app/services/photodetails.service';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
   photo: PhotoRaw;
-  photos: PhotoRaw[];
+  photos: PhotoRaw[] = [];
   isShown: boolean;
   isInfoShown = false;
   imageUrl: string;
@@ -45,7 +46,7 @@ export class PhotoModalComponent implements OnInit {
   showSharedModal = false;
   showSharedByLinkModal = false;
   showSharedByEmailModal = false;
-  albums: PhotoDetailsAlbum[];
+  albums: PhotoDetailsAlbum[] = [];
   isShowSpinner = true;
   clickedMenuItem: MenuItem;
   shownMenuItems: MenuItem[];
@@ -64,7 +65,7 @@ export class PhotoModalComponent implements OnInit {
   private fileService: FileService;
   private authService: AuthService;
   private userService: UserService;
-
+  private lastDescription: string;
   private defaultMenuItem: MenuItem[];
   currentUser: User;
 
@@ -72,7 +73,7 @@ export class PhotoModalComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
-  @Input() address: string;
+  @Input() address = '';
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
@@ -86,7 +87,8 @@ export class PhotoModalComponent implements OnInit {
     private albumService: AlbumService,
     authService: AuthService,
     userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private photodetailsService: PhotodetailsService
   ) {
     this.isShown = true;
     this.fileService = fileService;
@@ -96,20 +98,17 @@ export class PhotoModalComponent implements OnInit {
     this.initializeMenuItem();
     this.shownMenuItems = this.defaultMenuItem;
     this.clickedMenuItem = null;
-    this.photos = [];
   }
 
   ngOnInit() {
+    this.lastDescription = this.photo.description;
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
       this.GetFile();
-    });
-    const calendars = bulmaCalendar.attach('[type="date"]');
-    calendars.forEach(calendar => {
-      calendar.on('select', date => {
-        // console.log(date);
-      });
     });
     this.userId = this.authService.getLoggedUserId();
     this.userService.getUser(this.userId).subscribe(
@@ -130,7 +129,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   markerDragEnd($event: MouseEvent) {
-    console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
@@ -165,20 +163,24 @@ export class PhotoModalComponent implements OnInit {
     const exifObj = load(src);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
+    if (this.latitude && this.longitude) {
+      getLocation(this.latitude, this.longitude, this.geoCoder).then(
+        location => (this.address = location)
+      );
+    }
     // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-          // this.latitude = position.coords.latitude;
-          // this.longitude = position.coords.longitude;
-          this.zoom = 8;
-          this.getAddress(this.latitude, this.longitude);
-        });
-      }
-      // tslint:disable-next-line: new-parens
-      this.geoCoder = new google.maps.Geocoder();
+    // this.mapsAPILoader.load().then(() => {
+    //   if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition(position => {
+    //       // this.latitude = position.coords.latitude;
+    //       // this.longitude = position.coords.longitude;
+    //       this.zoom = 8;
+    //       this.getAddress(this.latitude, this.longitude);
+    //     });
+    //   }
+    //   // tslint:disable-next-line: new-parent
 
-      /*
+    /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -196,7 +198,7 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-    });
+    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -239,13 +241,12 @@ export class PhotoModalComponent implements OnInit {
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       if (this.isInfoShown === false) {
-        this.albumService
-          .GetPhotoDetailsAlbums(this.photo.id)
-          .subscribe(
-            e => (this.albums = e.body),
-            error =>
-              this.notifier.notify('error', 'Error loading photo details')
-          );
+        this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe(
+          e => {
+            this.albums = e.body;
+          },
+          error => this.notifier.notify('error', 'Error loading photo details')
+        );
       }
       this.CloseInfo();
     }
@@ -277,23 +278,38 @@ export class PhotoModalComponent implements OnInit {
       error => this.notifier.notify('error', 'Error updating photo')
     );
   }
-
+  ChangeDescription(desc) {
+    if (this.lastDescription === this.photo.description) {
+      return;
+    }
+    const newdesc: NewDescription = {
+      id: this.photo.id,
+      description: desc
+    };
+    this.photodetailsService.updateDescription(newdesc).subscribe(
+      descr => {
+        this.photo.description = descr;
+        this.notifier.notify('success', 'Description Updated');
+      },
+      error => this.notifier.notify('error', 'Error updating description')
+    );
+  }
   resetImageHandler(): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: this.photo.blobId,
       imageBase64: ''
     };
-    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
-      this.imageUrl = url;
-      updatePhotoDTO.imageBase64 = url;
-      this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo reseted');
-      });
+    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(
+      url => {
+        this.imageUrl = url;
+        updatePhotoDTO.imageBase64 = url;
+        this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.updatePhotoEvent.emit(this.photo);
+          this.goBackToImageView();
+          this.notifier.notify('success', 'Photo reseted');
+        });
       },
       error => this.notifier.notify('error', 'Error reseting photo')
     );

@@ -17,6 +17,7 @@ import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
+import { Router } from '@angular/router';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
 import {
   getLocation,
@@ -46,7 +47,8 @@ export class PhotoUploadModalComponent implements OnInit {
   constructor(
     private fileService: FileService,
     private notifier: NotifierService,
-    private mapsAPILoader: MapsAPILoader
+    private mapsAPILoader: MapsAPILoader,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -60,6 +62,7 @@ export class PhotoUploadModalComponent implements OnInit {
       this.notifier.notify('error', 'Error download photos');
       return;
     }
+    this.showSpinner = true;
     const userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) {
       this.photos[i] = {
@@ -76,6 +79,7 @@ export class PhotoUploadModalComponent implements OnInit {
         this.addToListEvent.emit(uploadedPhotos);
         this.toggleModal();
         this.notifier.notify('success', 'Uploaded');
+        this.router.navigate(['/main']);
       },
       error => this.notifier.notify('error', 'Error sending photos')
     );

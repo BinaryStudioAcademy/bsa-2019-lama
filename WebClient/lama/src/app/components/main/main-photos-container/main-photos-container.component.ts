@@ -36,6 +36,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
   isHaveAnyPhotos = false;
+  numberLoadPhoto = 30;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -66,7 +67,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         user => this.initializeUserAndFavorites(user),
         error => this.notifier.notify('error', 'Error getting user')
       );
-    this.GetUserPhotos(parseInt(userId, 10));
+    this.GetUserPhotosRange(
+      parseInt(userId, 10),
+      this.photos.length,
+      this.numberLoadPhoto
+    );
     this.selectedPhotos = [];
   }
 
@@ -100,6 +105,22 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
   }
 
+  public GetUserPhotosRange(userId: number, startId: number, count: number) {
+    if (startId === 0) {
+      this.isNothingFounded = false;
+      this.shared.isSearchTriggeredAtLeastOnce = false;
+      this.showSpinner = true;
+      this.photos = [];
+    }
+    this.fileService.receiveUsersPhotosRange(userId, startId, count).subscribe(
+      info => {
+        this.photos.push(...info);
+        this.showSpinner = false;
+      },
+      error => this.notifier.notify('error', 'Error getting photos')
+    );
+  }
+
   GetPhotos() {
     this.isNothingFounded = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
@@ -121,7 +142,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   ngDoCheck() {
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
-        this.photos.push(element);
+        this.photos.unshift(element);
       });
     }
     if (
@@ -150,12 +171,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     } else {
       this.isAtLeastOnePhotoSelected = false;
     }
-    if (
-      this.photos.length === 0 &&
-      !this.showSpinner) {
-      this.isHaveAnyPhotos = false;
-    } else {
+    if (this.photos.length !== 0 && !this.showSpinner) {
       this.isHaveAnyPhotos = true;
+    } else {
+      this.isHaveAnyPhotos = false;
     }
   }
 
@@ -217,9 +236,20 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         error => this.notifier.notify('error', 'Error deleting images')
       );
     });
+    this.selectedPhotos = [];
   }
 
   public downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
+  }
+
+  onScroll() {
+    this.showSpinner = true;
+
+    this.GetUserPhotosRange(
+      this.currentUser.id,
+      this.photos.length,
+      this.numberLoadPhoto
+    );
   }
 }

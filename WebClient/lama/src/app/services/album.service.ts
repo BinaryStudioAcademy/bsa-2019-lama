@@ -45,7 +45,7 @@ export class AlbumService {
   }
   public createAlbumWithNewPhotos(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<number>(
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }
@@ -67,20 +67,18 @@ export class AlbumService {
       { headers }
     );
   }
-  createEmptyAlbum(album: NewAlbum): Observable<ReturnAlbumDTO> {
+  createEmptyAlbum(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateEmptyAlbum',
       album,
       { headers }
     );
   }
 
-  public createAlbumWithExistPhotos(
-    album: NewAlbumWithExistPhotos
-  ): Observable<ReturnAlbumDTO> {
+  public createAlbumWithExistPhotos(album: NewAlbumWithExistPhotos) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ReturnAlbumDTO>(
+    return this.http.post<ViewAlbum>(
       this.baseUrl + this.routeAlbum + '/CreateWithExistPhoto',
       album,
       { headers }

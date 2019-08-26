@@ -65,9 +65,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   public createShareableLink() {
     this.initInvariableFields();
     const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
-    this.sharedLink = `${environment.clientApiUrl}/${
-      this.sharingRoute
-    }/${encodedAlbumData}`;
+    this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
   }
 
   public copyShareableLink() {
@@ -84,6 +82,11 @@ export class ShareAlbumByEmailComponent implements OnInit {
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
     this.notifier.notify('success', 'Link is now in your clipboard');
+    this.sharedLink = null;
+  }
+
+  removeEmail(email: string) {
+    this.userEmails = this.userEmails.filter(i => i !== email);
   }
 
   public encodeAlbumData(album: SharedAlbum): string {
@@ -99,11 +102,18 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
   public GenerateClick() {
     this.createShareableLink();
+    this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+    } else {
+      this.availableAll = true;
     }
-    this.showAvailable = true;
-    this.createShareableLink();
+    if (this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is available to all');
+    } else if (!this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is sent to specified users');
+    }
+    this.userEmails = [];
   }
 
   clearInput() {

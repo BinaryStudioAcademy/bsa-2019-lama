@@ -1,10 +1,20 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ViewContainerRef,
+  ComponentFactoryResolver
+} from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-import { PhotoRaw } from 'src/app/models';
+import { PhotoRaw, User } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { FileService } from 'src/app/services/file.service';
 import { NotifierService } from 'angular-notifier';
+import { AddPhotosToAlbumModalComponent } from '../../view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -22,6 +32,9 @@ export class MainAlbumComponent implements OnInit {
   @Input('_isFavorite') isFavorite: boolean;
   @Output() Click = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
+  @Input() currentUser: User;
+  @ViewChild('AddPhotosToAlbum', { static: true, read: ViewContainerRef })
+  private modaladdPhoto: ViewContainerRef;
 
   isContent = false;
   isMenu = true;
@@ -34,7 +47,8 @@ export class MainAlbumComponent implements OnInit {
     private albumService: AlbumService,
     private favoriteService: FavoriteService,
     private fileService: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private resolver: ComponentFactoryResolver
   ) {}
 
   ngOnInit() {
@@ -75,7 +89,30 @@ export class MainAlbumComponent implements OnInit {
   toggleSetCoverModal() {
     this.showSetCoverModal = !this.showSetCoverModal;
   }
-
+  addPhotos(e) {
+    this.modaladdPhoto.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      AddPhotosToAlbumModalComponent
+    );
+    const componentRef = this.modaladdPhoto.createComponent(factory);
+    componentRef.instance.currentUser = this.currentUser;
+    componentRef.instance.AlbumId = this.album.id;
+    componentRef.instance.AddingPhotosToAlbum.subscribe(
+      this.AddToAlbumNewPhotos.bind(this)
+    );
+  }
+  AddToAlbumNewPhotos(photos: PhotoRaw[]) {
+    if (this.album.photoAlbums === null) {
+      this.album.photoAlbums = [];
+    }
+    this.album.photoAlbums.push(...photos);
+    if (this.album.photo === null) {
+      this.album.photo = photos[0];
+      this.fileService
+        .getPhoto(this.album.photo.blob256Id)
+        .subscribe(url => (this.imageUrl = url));
+    }
+  }
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
