@@ -450,11 +450,10 @@ namespace Lama.BusinessLogic.Services
                 Id = result.Id,
                 Title = result.Title,
             };
-            var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
             if (result.Photo != null)
             {
-                album.Photo = AlbumPhotos.FirstOrDefault(x => x.Id == result.Photo.Id);
-                album.PhotoAlbums = AlbumPhotos;
+                album.Photo = photoDocumentDTOs.FirstOrDefault(x => x.Id == result.Photo.Id);
+                album.PhotoAlbums = photoDocumentDTOs;
             }
             return album;
         }
