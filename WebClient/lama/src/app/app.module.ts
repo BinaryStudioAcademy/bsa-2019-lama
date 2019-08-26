@@ -35,6 +35,7 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
 import {NotificationModule} from './notification/notification.module';
+import { DuplicatesModalComponent } from './components/modal/duplicates-modal/duplicates-modal.component';
 
 @NgModule({
   declarations:
@@ -59,7 +60,8 @@ import {NotificationModule} from './notification/notification.module';
     CheckFavoriteDirective,
     SharedPageAlbumComponent,
     SetAlbumCoverModalComponent,
-    ChooseAlbumCoverComponent
+    ChooseAlbumCoverComponent,
+    DuplicatesModalComponent
   ],
   imports:
   [

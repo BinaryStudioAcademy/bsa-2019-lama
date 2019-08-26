@@ -20,6 +20,10 @@
             </div>
         </div>
     </div>
+    <div *ngIf="!isAtLeastOnePhotoSelected" class="align-right">
+      <a  class="button is-primary" (click)="findDuplicates()">Find Duplicates</a>
+  </div>
+
 </div>
 
 <spinner *ngIf="showSpinner"></spinner>
@@ -35,6 +39,7 @@
     </div>
 
     <!--modal-->
+    <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deletePhotoHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
     <template #modalPhotoContainer></template>
     <template #modalUploadPhoto></template>
 </div>

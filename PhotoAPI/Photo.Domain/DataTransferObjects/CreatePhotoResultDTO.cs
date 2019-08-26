@@ -9,8 +9,11 @@
         public string Blob256Id { get; set; }
         public int UserId { get; set; }
         public string OriginalBlobId { get; set; }
+        
         public string SharedLink { get; set; }
+        
         public bool IsDeleted { get; set; }
         public string Description { get; set; }
+        public bool IsDuplicate { get; set; }
     }
 }

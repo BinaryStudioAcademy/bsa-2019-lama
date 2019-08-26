@@ -28,6 +28,18 @@ namespace Lama.Controllers
             return _service.CreateAll(photos);
         }
 
+        [HttpPost("duplicates")]
+        public Task<IEnumerable<UploadPhotoResultDTO>> PostDuplicates([FromBody] UploadPhotoResultDTO[] duplicates)
+        {
+            return _service.CreateDuplicates(duplicates);
+        }
+
+        [HttpGet("duplicates/{id}")]
+        public Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int id)
+        {
+            return _service.GetDuplicates(id);
+        }
+
         [HttpPost("reaction")]
         public async Task PostReaction([FromBody] NewLikeDTO newLike)
         {
