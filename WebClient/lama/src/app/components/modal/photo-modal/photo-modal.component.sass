@@ -6,6 +6,10 @@
     -webkit-transition: $transition
     transition:         $transition
 
+.menu-items
+    margin: 0
+    height: 100%
+
 .notification
     height: 810px
 
@@ -53,18 +57,24 @@ article
     opacity: 0
     background: rgba(0, 0, 0, 0.5)
     background-image: linear-gradient(rgba(45,45,45,0.5), rgba(45,45,45,1))
-    box-shadow: 0px -15px 15px rgba(45,45,45)
+    box-shadow: 0px -3px 7px #2d2d2d
     color: #f1f1f1
     width: 100%
     transition: .5s ease
     font-size: 20px
     text-align: center
 
+.overlay-item
+    display: flex !important
+    align-items: center
+    justify-content: center
+    & div
+        height: 28px
 
 .main-photo:hover .overlay  
     opacity: 0.85
 
-.overlay .column:hover
+.overlay .tooltip:hover
     color: #00d1b2
     opacity: 1
     cursor: pointer
@@ -99,7 +109,6 @@ article
 
 .flex-content
     display: flex
-
 
 .info
     flex-direction: column
@@ -165,9 +174,6 @@ article
     overflow: hidden
     max-height: 54px
     max-width: 150px
-
-
-
 
 // MODAL
 

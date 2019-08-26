@@ -26,29 +26,34 @@
                   <!--overlay-->
                   <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
                     <!--menu items-->
-                    <div class="columns has-text-centered">
-                      <div class="column" *ngFor="let item of shownMenuItems">
+                    <div class="columns menu-items has-text-centered">
+                      <div class="column overlay-item" *ngFor="let item of shownMenuItems">
                         <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
                           <ng-template ngSwitchCase="remove">
-                            <div [appIsBlocked]="isBlockById()">
+                            <div class="tooltip" [appIsBlocked]="isBlockById()">
                               <i class="material-icons is-block">{{ item.icon }}</i>
-                              <span> {{ item.title }} </span>
+                              <span class="tooltiptext"> {{ item.title }} </span>
                             </div>
                           </ng-template>
                           <ng-template ngSwitchCase="edit">
-                            <div [appIsBlocked]="isBlockById()">
+                            <div class="tooltip" [appIsBlocked]="isBlockById()">
                               <i class="material-icons is-block">{{ item.icon }}</i>
-                              <span> {{ item.title }} </span>
+                              <span class="tooltiptext"> {{ item.title }} </span>
                             </div>
                           </ng-template>
                           <ng-template ngSwitchCase="download">
-                            <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
-                              <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
-                            </a>
+                            <div class="tooltip">
+                              <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
+                                <i class="material-icons is-block">{{ item.icon }}</i>
+                              </a>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
                           </ng-template>
                           <ng-template ngSwitchDefault>
-                            <i class="material-icons is-block">{{ item.icon }}</i>
-                            <span> {{ item.title }} </span>
+                            <div class="tooltip">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
                           </ng-template>
                         </div>
                       </div>
@@ -59,13 +64,15 @@
             </div>
             <!--right panel-->
             <div class="column is-4">
-              <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
-              <div class="likes">
-                <a class="reaction">
-                  <img alt="" [src]="hasUserReaction ? 'assets/like.svg' : 'assets/no-like.svg' "
-                    (click)="ReactionPhoto(event)">
-                  <span class="count">{{photo?.reactions?.length}} loved it</span>
-                </a>
+              <div *ngIf="!isInfoShown">
+                <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
+                <div class="likes">
+                  <a class="reaction">
+                    <img alt="" [src]="hasUserReaction ? 'assets/like.svg' : 'assets/no-like.svg' "
+                      (click)="ReactionPhoto(event)">
+                    <span class="count">{{photo?.reactions?.length || 0}} loved it</span>
+                  </a>
+                </div>
               </div>
               <div *ngIf="isInfoShown" id="info-content" class="information">
                 <div class="flex-content info">

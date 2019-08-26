@@ -1,26 +1,42 @@
 .is-no-flex
     flex: none
 
+.action-buttons
+    color: white
+    display: flex
+    flex-direction: column
+    & a
+        margin-top: 15px
+
+.photo-container
+    height: 500px
+    background: lavender
+    padding: 0
+
+.right-panel
+    padding-top: 0
+    padding-bottom: 0
+
 .edit-container
   width: 100%
   display: flex
   flex-direction: column
   justify-content: center
   align-items: center
-  max-height: 610px
+  max-height: 500px
 
 summary
-    background-color: #24292e
+    background-color: lavender
     padding: 10px
-    color: #eee
+    color: black
     cursor: pointer
 
 .memeArea
     position: relative
-    max-height: 610px
+    max-height: 500px
 
 .memeArea img
-    max-height: 610px
+    max-height: 500px
 
 .memeArea textarea 
     position: absolute
@@ -43,12 +59,11 @@ summary
     bottom: 15px
 
 details
-    background-color: #fff
+    background-color: transparent
     .drop-content
-        padding: 10px
-        
+        padding: 10px        
         button:hover
-            color: #00d1b2
+            color: #00ffd9
         table
             width: 100%
             td 
