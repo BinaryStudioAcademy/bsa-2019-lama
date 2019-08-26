@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Favorite } from '../models/favorite';
 
 @Injectable({
@@ -32,5 +32,18 @@ export class FavoriteService {
 
   deleteAllFavorites(userId: number): Observable<any> {
     return this.http.delete(this.baseUrl + userId);
+  }
+
+  removeSelectedFavorites(userId: number, photos: number[]) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+      body: photos
+    };
+    return this.http.delete(
+      `${this.baseUrl}selected/${userId}`, httpOptions
+    );
+
   }
 }

@@ -46,6 +46,12 @@ namespace Lama.Controllers
             return await _service.DeleteFavorite(userId, photoId);
         }
 
+        [HttpDelete("selected/{userId}")]
+        public async Task<int> DeleteSelectedFavorite(int userId, [FromBody]int[] photos)
+        {
+            return await _service.DeleteSelectedFavorites(userId, photos);
+        }
+
         [HttpDelete("{userId}")]
         public async Task<int> DeleteFavorites(int userId)
         {
