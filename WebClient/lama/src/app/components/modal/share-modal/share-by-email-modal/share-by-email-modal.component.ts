@@ -40,29 +40,33 @@ export class ShareByEmailModalComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(user => {
-        if (user) {
-          this.userEmails.push(user.email);
-          this.wrongInput = false;
-          this.clearInput();
-        } else {
-          this.wrongInput = true;
-          this.notifier.notify('error', 'Error getting email');
-        }
-      },
-      error => this.notifier.notify('error', 'Error getting email'));
+      this.userService.getUserByEmail(this.sharedEmail).subscribe(
+        user => {
+          if (user) {
+            this.userEmails.push(user.email);
+            this.wrongInput = false;
+            this.clearInput();
+          } else {
+            this.wrongInput = true;
+            this.notifier.notify('error', 'Error getting email');
+          }
+        },
+        error => this.notifier.notify('error', 'Error getting email')
+      );
     } else {
       this.wrongInput = true;
       this.notifier.notify('error', 'Incorrect input');
     }
   }
 
+  removeEmail(email: string) {
+    this.userEmails = this.userEmails.filter(i => i !== email);
+  }
+
   public createShareableLink() {
     this.initInvariableFields();
     const encodedPhotoData = this.encodePhotoData(this.sharedPhoto);
-    this.sharedLink = `${environment.clientApiUrl}/${
-      this.sharingRoute
-    }/${encodedPhotoData}`;
+    this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedPhotoData}`;
   }
 
   public copyShareableLink() {
@@ -79,6 +83,7 @@ export class ShareByEmailModalComponent implements OnInit {
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
     this.notifier.notify('success', 'Link is now in your clipboard');
+    this.sharedLink = null;
   }
 
   public encodePhotoData(photo: SharedPhoto): string {
@@ -95,11 +100,19 @@ export class ShareByEmailModalComponent implements OnInit {
   }
 
   public GenerateClick() {
+    this.createShareableLink();
+    this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+    } else {
+      this.availableAll = true;
     }
-    this.showAvailable = true;
-    this.createShareableLink();
+    if (this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is available to all');
+    } else if (!this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is sent to specified emails');
+    }
+    this.userEmails = [];
   }
 
   clearInput() {
