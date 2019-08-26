@@ -85,6 +85,10 @@ export class ShareAlbumByEmailComponent implements OnInit {
     this.sharedLink = null;
   }
 
+  removeEmail(email: string) {
+    this.userEmails = this.userEmails.filter(i => i !== email);
+  }
+
   public encodeAlbumData(album: SharedAlbum): string {
     let encoded = btoa(JSON.stringify(album)).replace('/', '___');
     encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
@@ -98,11 +102,18 @@ export class ShareAlbumByEmailComponent implements OnInit {
   }
   public GenerateClick() {
     this.createShareableLink();
+    this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+    } else {
+      this.availableAll = true;
     }
-    this.showAvailable = true;
-    this.createShareableLink();
+    if (this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is available to all');
+    } else if (!this.availableAll && this.showAvailable) {
+      this.notifier.notify('success', 'Link is sent to specified emails');
+    }
+    this.userEmails = [];
   }
 
   clearInput() {

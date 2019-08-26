@@ -51,9 +51,13 @@ export class CommentsListComponent implements OnInit {
       comments => {
         this.commentList = comments;
         this.commentList.forEach(c => {
-          this.fileService
-            .getPhoto(c.authorAvatar64Id)
-            .subscribe(url => (c.authorAvatar64Url = url));
+          if (c.authorAvatar64Id) {
+            this.fileService
+              .getPhoto(c.authorAvatar64Id)
+              .subscribe(url => (c.authorAvatar64Url = url));
+          } else {
+            c.authorAvatar64Url = 'assets/default_avatar.png';
+          }
         });
       },
       err => {
@@ -65,8 +69,7 @@ export class CommentsListComponent implements OnInit {
 
   // methods
   createCommentHandler() {
-    if (!this.newCommentText ||
-        !this.newCommentText.length) {
+    if (!this.newCommentText || !this.newCommentText.length) {
       return;
     }
 
@@ -87,12 +90,17 @@ export class CommentsListComponent implements OnInit {
           authorLastName: this.loggedUser.lastName,
           commentText: commentToCreate.text
         };
-        this.fileService
-          .getPhoto(commentToShow.authorAvatar64Id)
-          .subscribe(url => {
-            commentToShow.authorAvatar64Url = url;
-            this.commentList.push(commentToShow);
-          });
+        if (commentToShow.authorAvatar64Id) {
+          this.fileService
+            .getPhoto(commentToShow.authorAvatar64Id)
+            .subscribe(url => {
+              commentToShow.authorAvatar64Url = url;
+              this.commentList.push(commentToShow);
+            });
+        } else {
+          commentToShow.authorAvatar64Url = 'assets/default_avatar.png';
+          this.commentList.push(commentToShow);
+        }
       },
       error => this.notifier.notify('error', 'Error creating comments')
     );
