@@ -43,7 +43,7 @@ export class AlbumService {
   }
   public createAlbumWithNewPhotos(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<number>(
+    return this.http.post<ReturnAlbumDTO>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }

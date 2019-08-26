@@ -11,7 +11,7 @@ namespace Lama.Domain.DTO.Album
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public PhotoDocument Photo { get; set; }
+        public PhotoDocumentDTO Photo { get; set; }
         public IEnumerable<PhotoDocumentDTO> PhotoAlbums { get; set; }
     }
 }
