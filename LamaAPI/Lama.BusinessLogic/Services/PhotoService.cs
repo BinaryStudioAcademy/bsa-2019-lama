@@ -140,6 +140,10 @@ namespace Lama.BusinessLogic.Services
             var response = await httpClient.PostAsync($"{url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
+            foreach(var photo in converted)
+            {
+                photo.Reactions = new Like[0];
+            }
             return converted;
         }
         
