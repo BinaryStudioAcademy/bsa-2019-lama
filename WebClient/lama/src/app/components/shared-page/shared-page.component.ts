@@ -24,6 +24,7 @@ export class SharedPageComponent implements OnInit {
   userData: SharedPageDataset;
   sharedPhotoUrl: string;
   userAvatarUrl: string;
+  isShowSpinner = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +46,10 @@ export class SharedPageComponent implements OnInit {
           this.updatedPhoto = updated;
           this.fileService
             .getPhoto(this.sharedPhoto.sharedImageUrl)
-            .subscribe(url => (this.sharedPhotoUrl = url));
+            .subscribe(url => {
+              this.sharedPhotoUrl = url;
+              this.isShowSpinner = false;
+            });
           console.log(this.updatedPhoto.sharedLink);
         },
         error =>
@@ -72,9 +76,13 @@ export class SharedPageComponent implements OnInit {
     this.userSubject.subscribe(
       data => {
         this.userData = data;
-        this.fileService
-          .getPhoto(this.userData.user.photoUrl)
-          .subscribe(url => (this.userAvatarUrl = url));
+        if (this.userData.photo.imageUrl) {
+          this.fileService
+            .getPhoto(this.userData.user.photoUrl)
+            .subscribe(url => (this.userAvatarUrl = url));
+        } else {
+          this.userAvatarUrl = 'assets/default_avatar.png';
+        }
       },
       error => this.notifier.notify('error', 'Error user subject')
     );
@@ -92,7 +100,8 @@ export class SharedPageComponent implements OnInit {
   private decodeUserData() {
     const encodedData = (this.sharedLinkData = this.route.snapshot.params
       .userdata as string);
-    const jsonData = atob(encodedData.replace('___', '/'));
+    let jsonData = atob(encodedData.replace('___', '/'));
+    jsonData = jsonData.replace('[]', '');
     this.sharedPhoto = JSON.parse(jsonData);
   }
 }
