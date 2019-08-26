@@ -60,7 +60,7 @@
 
         <!--footer-->
         <footer class="modal-card-foot buttons is-right">
-            <a  *ngIf="!duplicatesFound" [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="CreateAlbum()">Save Changes</a>
+            <a  *ngIf="!duplicatesFound || photos.length === 0" [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="CreateAlbum()">Save Changes</a>
             <a  *ngIf="duplicatesFound" [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="createWithDuplicates()">Proceed with duplicates</a>
             <a class="button" (click)="toggleModal()">Cancel</a>
         </footer>

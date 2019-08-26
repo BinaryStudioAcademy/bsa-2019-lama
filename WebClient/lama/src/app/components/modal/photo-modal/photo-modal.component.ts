@@ -54,7 +54,7 @@ export class PhotoModalComponent implements OnInit {
 
   // events
   @Output()
-  deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvent = new EventEmitter<number>();
   @Output()
   public updatePhotoEvent = new EventEmitter<PhotoRaw>();
   public hasUserReaction: boolean;
@@ -347,7 +347,7 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
-        this.deletePhotoEvenet.emit(this.photo.id);
+        this.deletePhotoEvent.emit(this.photo.id);
         this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')

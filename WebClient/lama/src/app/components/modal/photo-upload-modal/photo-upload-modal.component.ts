@@ -86,6 +86,7 @@ export class PhotoUploadModalComponent implements OnInit {
           this.toggleModal();
         } else {
           this.removeUploaded(filteredPhotos);
+          this.showSpinner = false;
           this.notifier.notify('warning', 'This photos appear to be duplicates. Upload them anyway?');
         }
       },
@@ -118,10 +119,6 @@ export class PhotoUploadModalComponent implements OnInit {
       this.duplicatesFound = true;
     }
     return uploadedPhotos;
-  }
-
-  isDuplicate(photo: Photo) {
-    return this.duplicates.some(duplicate => duplicate.name === photo.filename);
   }
 
   async onFileSelected(event) {
@@ -213,5 +210,9 @@ export class PhotoUploadModalComponent implements OnInit {
     if (this.photos.length === 0) {
       this.duplicatesFound = false;
     }
+  }
+
+  isDuplicate(photo: Photo) {
+    return this.duplicates.some(duplicate => duplicate.name === photo.filename);
   }
 }

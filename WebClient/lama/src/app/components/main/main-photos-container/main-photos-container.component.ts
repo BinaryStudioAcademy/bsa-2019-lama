@@ -211,7 +211,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(
+    componentRef.instance.deletePhotoEvent.subscribe(
       this.deletePhotoHandler.bind(this)
     );
     componentRef.instance.currentUser = this.currentUser;
@@ -222,6 +222,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   deletePhotoHandler(photoToDeleteId: number): void {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  modalHandler(duplicatesRemoved: boolean) {
+    this.duplicatesFound = duplicatesRemoved;
   }
 
   updatePhotoHandler(updatedPhoto: PhotoRaw): void {
@@ -254,7 +258,8 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         this.notifier.notify('success', 'No duplicates found');
       }
     });
-    
+  }
+
   onScroll() {
     this.showSpinner = true;
 

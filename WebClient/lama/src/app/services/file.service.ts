@@ -35,12 +35,10 @@ export class FileService {
     );
   }
 
-
   uploadDuplicates(duplicates: UploadPhotoResultDTO[]) {
     return this.client.post<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates`, duplicates, this.httpOptions);
   }
 
-  async getImageBase64(url: string): Promise<string> {
   getSearchHistory(id: number) {
     return this.client.get<string[]>(
       `${environment.lamaApiUrl}/api/photo/search_history/${id}`
@@ -53,7 +51,7 @@ export class FileService {
     );
   }
 
-  public async getImageBase64(url: string): Promise<string> {
+  async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
     const blob = await response.blob();
 

@@ -35,12 +35,12 @@ namespace Photo.BusinessLogic.Services
 
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return elasticStorage.Find(id, criteria);
+            return _elasticStorage.Find(id, criteria);
         }
 
         public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
-            return elasticStorage.FindFields(id, criteria);
+            return _elasticStorage.FindFields(id, criteria);
         }
 
         public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
@@ -71,7 +71,7 @@ namespace Photo.BusinessLogic.Services
         }
         public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
         {
-            return elasticStorage.GetUserPhotosRange(userId, startId, count);
+            return _elasticStorage.GetUserPhotosRange(userId, startId, count);
         }
 
         public async Task Delete(int id)
@@ -162,7 +162,7 @@ namespace Photo.BusinessLogic.Services
             var userPhotos = await GetUserPhotos(userId);
             foreach (var photo in userPhotos)
             {
-                var photosWithSameName = await _elasticStorage.Find(photo.Name);
+                var photosWithSameName = await _elasticStorage.Find(userId, photo.Name);
                 var collectionWithSameNames = photosWithSameName.Where(element => element.IsDeleted == false).ToList();
                 if (collectionWithSameNames.Count <= 1 || !IsSameSized(collectionWithSameNames, photo)) continue;
                 
@@ -182,7 +182,7 @@ namespace Photo.BusinessLogic.Services
                 var base64 = ConvertToBase64(item.ImageUrl);
                 var blob = Convert.FromBase64String(base64);
                 var blobId = await _storage.LoadPhotoToBlob(blob);
-                var filesWithSameName = await _elasticStorage.Find(item.FileName);
+                var filesWithSameName = await _elasticStorage.Find(item.AuthorId, item.FileName);
                 var collectionWithSameNameFiles = filesWithSameName.ToList();
                 if (collectionWithSameNameFiles.Any() && IsSameSized(collectionWithSameNameFiles, item))
                 {

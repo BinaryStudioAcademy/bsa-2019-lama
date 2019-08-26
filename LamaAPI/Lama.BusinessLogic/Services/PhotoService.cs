@@ -138,7 +138,7 @@ namespace Lama.BusinessLogic.Services
             }
 
             // send photos to Photo project
-            StringContent content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"{url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
@@ -331,11 +331,11 @@ namespace Lama.BusinessLogic.Services
         {
             string uri = $"{url}api/photos/delete_permanently";
 
-            StringContent content = new StringContent(JsonConvert.SerializeObject(photosToDelete), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(photosToDelete), Encoding.UTF8, "application/json");
 
             await httpClient.PostAsync(uri, content);
 
-            foreach (PhotoToDeleteRestoreDTO photoToDelete in photosToDelete)
+            foreach (var photoToDelete in photosToDelete)
             {
                 await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }

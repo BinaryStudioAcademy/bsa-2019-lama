@@ -20,6 +20,7 @@ import { load, dump, insert,  remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 
 @Component({
   selector: 'app-create-album-modal',
@@ -40,7 +41,7 @@ export class CreateAlbumModalComponent implements OnInit {
   ExistPhotosId: number[] = [];
   duplicates: PhotoRaw[] = [];
   duplicatesFound = false;
-  albumsTitles: string[] = [];
+
   albumName = '';
   checkForm = true;
 
@@ -52,6 +53,7 @@ export class CreateAlbumModalComponent implements OnInit {
   LoadNewImage: boolean;
   CreateWithNewPhoto: boolean;
   baseColor: any;
+  createdAlbum: ViewAlbum;
 
   ExistPhotos: PhotoRaw[] = [];
 
@@ -63,6 +65,7 @@ export class CreateAlbumModalComponent implements OnInit {
 
   @Input()
   public isShown: boolean;
+  albumsTitles: string[];
 
   constructor(
     resolver: ComponentFactoryResolver,
@@ -142,10 +145,6 @@ export class CreateAlbumModalComponent implements OnInit {
   CreateAlbum() {
     if (this.albumName === '') {
       this.checkForm = false;
-    }
-    if (this.albumsTitles.indexOf(this.albumName) !== -1) {
-      this.checkForm = false;
-      this.notifier.notify('error', 'Album with this title already exists');
     } else {
       if (this.photos.length === 0) {
         this.album = {
@@ -156,7 +155,12 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService.createEmptyAlbum(this.album).subscribe(
           createdAlbum => {
-            this.createdAlbumEvent.emit(createdAlbum);
+            this.createdAlbumEvent.emit({
+              id: createdAlbum.id,
+              name: createdAlbum.title,
+              photoUrl: null,
+              title: createdAlbum.title
+            });
             this.notifier.notify('success', 'Empty Album created');
           },
           error => this.notifier.notify('error', 'Error creating the album')
@@ -169,11 +173,12 @@ export class CreateAlbumModalComponent implements OnInit {
           photos: this.photos
         };
         this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
-          returnAlbum => {
-            const filteredPhotos = this.resolveDuplicates(returnAlbum.photoAlbums);
-            this.albumService.getAlbum(returnAlbum.id).subscribe(
+          returnedAlbum => {
+            const filteredPhotos = this.resolveDuplicates(returnedAlbum.photoAlbums);
+            this.albumService.getAlbum(returnedAlbum.id).subscribe(
               x => {
                 const album = x.body;
+                this.createdAlbum = album;
                 if (album.photo !== null) {
                   this.createdAlbumEvent.emit({
                     id: album.id,
@@ -205,7 +210,13 @@ export class CreateAlbumModalComponent implements OnInit {
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
           .subscribe(
             createdAlbum => {
-              this.createdAlbumEvent.emit(createdAlbum);
+              this.createdAlbumEvent.emit({
+                id: createdAlbum.id,
+                name: createdAlbum.title,
+                photoUrl:
+                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+                title: createdAlbum.title
+              });
               this.notifier.notify('success', 'Album created');
             },
             error => this.notifier.notify('error', 'Error creating the album')
@@ -283,5 +294,16 @@ export class CreateAlbumModalComponent implements OnInit {
     if (index !== -1) {
       this.photos.splice(index, 1);
     }
+  }
+
+  createWithDuplicates() {
+    this.fileService.uploadDuplicates(this.duplicates as UploadPhotoResultDTO[]).subscribe(
+      uploadedDuplicates => {
+        this.albumService.addNewPhotosToAlbum({AlbumId: this.createdAlbum.id, UserId: this.album.authorId, photos: this.photos});
+        this.notifier.notify('success', 'Duplicates uploaded');
+        this.toggleModal();
+      },
+      error => this.notifier.notify('error', 'Error sending photos')
+    );
   }
 }

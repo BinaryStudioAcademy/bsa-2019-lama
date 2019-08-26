@@ -14,6 +14,7 @@ export class DuplicatesModalComponent implements OnInit {
 
   @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
   @Output() Change = new EventEmitter<number>();
+  @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
   isActive = true;
   constructor(private fileService: FileService, private notifier: NotifierService) {
@@ -34,7 +35,9 @@ export class DuplicatesModalComponent implements OnInit {
     this.fileService.deletePhotosPermanently(toDelete).subscribe(response => {
       toDelete.forEach(photo => {
         this.Change.emit(photo.id);
+        this.Click.emit(false);
       });
+      this.notifier.notify('success', 'Duplicates removed successfully');
     });
   }
 

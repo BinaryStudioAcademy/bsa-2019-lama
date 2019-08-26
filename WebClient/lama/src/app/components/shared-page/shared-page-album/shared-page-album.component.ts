@@ -50,7 +50,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     console.log(eventArgs);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(this.deletePhotoHandler.bind(this));
+    componentRef.instance.deletePhotoEvent.subscribe(this.deletePhotoHandler.bind(this));
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.updatePhotoEvent.subscribe(this.updatePhotoHandler.bind(this));
   }

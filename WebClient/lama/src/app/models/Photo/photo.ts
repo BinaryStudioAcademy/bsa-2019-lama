@@ -5,5 +5,6 @@ export class Photo {
     author?: string;
     description?: string;
     filename?: string;
+    location?: string;
     isDuplicate ? = false;
 }

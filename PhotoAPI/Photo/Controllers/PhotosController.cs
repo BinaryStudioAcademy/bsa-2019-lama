@@ -18,12 +18,10 @@ namespace Photo.Controllers
     public class PhotosController : ControllerBase
     {
         private readonly IPhotoService _photoService;
-        private IMessageService _messageService;
 
-        public PhotosController(IPhotoService photoService, IMessageService messageService)
+        public PhotosController(IPhotoService photoService)
         {
             _photoService = photoService;
-            _messageService = messageService;
         }
 
         [HttpGet]
@@ -59,24 +57,23 @@ namespace Photo.Controllers
         }
 
         [HttpGet("search/{id}/{criteria}")]
-        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
+        public async Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
-            return photoService.Find(id, criteria);
+            return await _photoService.Find(id, criteria);
         }
 
         [HttpGet("search/fields/{id}/{criteria}")]
-        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
-            return photoService.FindFields(id, criteria);
+            return await _photoService.FindFields(id, criteria);
         }
 
         [HttpGet("rangeUserPhotos")]
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange([FromHeader] int userId, [FromHeader] int startId, [FromHeader] int count)
         {
-            return await photoService.GetUserPhotosRange(userId, startId, count);
+            return await _photoService.GetUserPhotosRange(userId, startId, count);
         }
-
-        // POST api/values
+        
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)
         {
@@ -126,7 +123,7 @@ namespace Photo.Controllers
         [HttpPut("document")]
         public async Task UpdateDocument([FromBody] PhotoDocument document)
         {
-            await photoService.Update(document);
+            await _photoService.Update(document);
         }
         #region DELETE
         // DELETE: api/photos/5

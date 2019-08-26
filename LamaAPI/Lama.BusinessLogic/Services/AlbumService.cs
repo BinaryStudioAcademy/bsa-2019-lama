@@ -243,15 +243,16 @@ namespace Lama.BusinessLogic.Services
             using (var httpClient = new HttpClient())
             {
                 var s = await httpClient.PostAsJsonAsync($"{url}api/photos", photosToCreate);
-                var str  = await s.Content.ReadAsStringAsync();
-                photos = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(str);            
+                var str = await s.Content.ReadAsStringAsync();
+                photos = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(str);
+            }
 
 
-            var photos = _mapper.Map<List<PhotoDocumentDTO>>(list);
+            var list = _mapper.Map<List<PhotoDocumentDTO>>(photos);
             var album = await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
 
-            foreach(var item in photos)
+            foreach(var item in list)
             {
                 item.Reactions = new List<LikeDTO>();
             }
@@ -261,11 +262,9 @@ namespace Lama.BusinessLogic.Services
                 Id = album.Entity.Id,
                 Title = album.Entity.Title
             };
-            if (photos != null)
-            {
-                Album.Photo = photos[0];
-                Album.PhotoAlbums = photos;
-            }
+            if (photos == null) return Album;
+            Album.Photo = list[0];
+            Album.PhotoAlbums = list;
             return Album;
         }
         
@@ -300,9 +299,9 @@ namespace Lama.BusinessLogic.Services
             var BdAlbum = await Context.Albums.AddAsync(TempAlbum);
             await Context.SaveChangesAsync();
 
-            string url = configuration["PhotoApiUrl"];
-            List<PhotoDocumentDTO> Getphotos = new List<PhotoDocumentDTO>();
-            using (HttpClient httpClient = new HttpClient())
+            var url = configuration["PhotoApiUrl"];
+            var Getphotos = new List<PhotoDocumentDTO>();
+            using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -314,13 +313,7 @@ namespace Lama.BusinessLogic.Services
                 Getphotos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
             }
 
-            List<PhotoDocumentDTO> returnPhotos = new List<PhotoDocumentDTO>();
-            foreach(var id in album.PhotosId)
-            {
-                var photo = Getphotos.FirstOrDefault(x => x.Id == id);
-                if (photo != null)
-                    returnPhotos.Add(photo);
-            }
+            var returnPhotos = album.PhotosId.Select(id => Getphotos.FirstOrDefault(x => x.Id == id)).Where(photo => photo != null).ToList();
             foreach (var item in returnPhotos)
             {
                 item.Reactions = new List<LikeDTO>();
@@ -371,8 +364,8 @@ namespace Lama.BusinessLogic.Services
         }
         public async Task<List<byte[]>> GetPhotos(PhotoDocument[] photoDocuments)
         {
-            string url = configuration["PhotoApiUrl"];
-            using (HttpClient httpClient = new HttpClient())
+            var url = configuration["PhotoApiUrl"];
+            using (var httpClient = new HttpClient())
             {
                 return JsonConvert.DeserializeObject<List<Byte[]>>(
                     await

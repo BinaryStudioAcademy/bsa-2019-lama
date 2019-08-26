@@ -12,12 +12,11 @@
         <img *ngIf="photos.length === 0" src="assets/your_photo_here.png" />
         <div class="image" *ngFor="let photo of photos; let i = index">
           <div class="uploaded-image" [ngStyle]="{'opacity': isDuplicate(photo)? '0.3': '1'}">
-            <img src="{{ photo.imageUrl }}" class="image"/>
+            <img src="{{ photo.imageUrl }}" />
             <div class="overlay" (mouseenter)="mouseEnterOverlayHandler()" (mouseleave)="mouseLeftOverlayHandler()">
               <div (click)="removePhoto(i)" class="remove-button">
                 <i class="material-icons is-block">clear</i>
               </div>
-
             </div>
           </div>
 
@@ -41,7 +40,6 @@
     </section>
     <footer class="modal-card-foot buttons is-right">
       <button *ngIf="!duplicatesFound" class="button is-success" (click)="saveChanges()">
-
         Save changes
       </button>
       <button *ngIf="duplicatesFound" class="button is-success" (click)="uploadDuplicates()">
