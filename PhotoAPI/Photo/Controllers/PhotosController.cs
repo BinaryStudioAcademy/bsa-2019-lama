@@ -17,48 +17,45 @@ namespace Photo.Controllers
     [Route("api/[controller]")]
     public class PhotosController : ControllerBase
     {
-        // FIELDS
-        IPhotoService photoService;
-        IMessageService messageService;
+        private readonly IPhotoService _photoService;
+        private IMessageService _messageService;
 
-        // CONSTRUCTORS
         public PhotosController(IPhotoService photoService, IMessageService messageService)
         {
-            this.photoService = photoService;
-            this.messageService = messageService;
+            _photoService = photoService;
+            _messageService = messageService;
         }
 
-        // ACTIONS
-        // GET api/photos
         [HttpGet]
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return await photoService.Get();
+            return await _photoService.Get();
         }
+        
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {
-            return await photoService.GetPhoto(blobId);
+            return await _photoService.GetPhoto(blobId);
         }
 
         [HttpGet("avatars/{blobId}")]
         public async Task<string> GetAvatar(string blobId)
         {
-            return await photoService.GetAvatar(blobId);
+            return await _photoService.GetAvatar(blobId);
         }
 
         // GET api/photos/5
         [HttpGet("user/{id}")]
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int id)
         {
-            return await photoService.GetUserPhotos(id);
+            return await _photoService.GetUserPhotos(id);
         }
 
         // GET api/photos/5
         [HttpGet("{id}")]
         public Task<PhotoDocument> Get(int id)
         {
-            return photoService.Get(id);
+            return _photoService.Get(id);
         }
 
         [HttpGet("search/{id}/{criteria}")]
@@ -83,45 +80,40 @@ namespace Photo.Controllers
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)
         {
-            return await this.photoService.Create(values);
+            return await _photoService.Create(values);
+        }
+
+        [HttpPost("duplicates")]
+        public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoResultDTO[] duplicates)
+        {
+            return await _photoService.CreateDuplicates(duplicates);
+        }
+
+        [HttpGet("duplicates/{id}")]
+        public async Task<IEnumerable<CreatePhotoResultDTO>> GetDuplicates(int id)
+        {
+            return await _photoService.FindDuplicates(id);
         }
 
         [HttpPost("ArchivePhotos")]
-        public async Task<List<Byte[]>> GetPhotos([FromBody] PhotoDocument[] values)
+        public async Task<List<byte[]>> GetPhotos([FromBody] PhotoDocument[] values)
         {
-            return await this.photoService.GetPhotos(values);
+            return await _photoService.GetPhotos(values);
         }
         [HttpPost("avatar")]
         public async Task<int> PostAvatar([FromBody] CreatePhotoDTO value)
         {
-            return await this.photoService.CreateAvatar(value);
+            return await _photoService.CreateAvatar(value);
         }
-
-        //[HttpPost]
-        //public async Task<int> Post([FromBody] PhotoReceived value)
-        //{
-        //    return await this.photoService.Create(value);
-        //}
-
-
-        //TODO: set up for working with elastic
-        /*        [HttpPut("/shared/{id}")]
-                public async Task<ActionResult<PhotoDocument>> UpdateWithSharedLink(int id, [FromBody] string sharedLink)
-                {
-                    return Ok(await photoService.UpdateWithSharedLink(id, sharedLink));
-                }*/
-
-        // PUT api/photos/shared/1
-        // TODO: set up for working with elastic
-        // TODO: check if this work
+        
         [HttpPut("shared/{id}")]
         public async Task<PhotoDocument> UpdateWithSharedLink(int id)
         {
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
             {
                 var sharedLink = await reader.ReadToEndAsync();
                 
-                return await photoService.UpdateWithSharedLink(id, sharedLink);
+                return await _photoService.UpdateWithSharedLink(id, sharedLink);
             }
         }
 
@@ -129,7 +121,7 @@ namespace Photo.Controllers
         [HttpPut]
         public Task<UpdatedPhotoResultDTO> Put([FromBody] UpdatePhotoDTO value)
         {
-            return this.photoService.UpdateImage(value);
+            return _photoService.UpdateImage(value);
         }
         [HttpPut("document")]
         public async Task UpdateDocument([FromBody] PhotoDocument document)
@@ -141,7 +133,7 @@ namespace Photo.Controllers
         [HttpDelete("{photoToDeleteId}")]
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
-            return this.photoService.MarkPhotoAsDeleted(photoToDeleteId);
+            return _photoService.MarkPhotoAsDeleted(photoToDeleteId);
         }
 
         // GET: api/photos/deleted
@@ -149,8 +141,7 @@ namespace Photo.Controllers
         [Route("deleted/{userId}")]
         public Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-
-            return this.photoService.GetDeletedPhotos(userId);
+            return _photoService.GetDeletedPhotos(userId);
         }
 
         // POST: api/photos/delete_permanently
@@ -158,7 +149,7 @@ namespace Photo.Controllers
         [Route("delete_permanently")]
         public Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
         {
-            return this.photoService.DeletePhotosPermanently(photosToDelete);
+            return _photoService.DeletePhotosPermanently(photosToDelete);
         }
 
         // POST: api/photos/restore
@@ -166,7 +157,7 @@ namespace Photo.Controllers
         [Route("restore")]
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {
-            return this.photoService.RestoresDeletedPhotos(photosToRestore);
+            return _photoService.RestoresDeletedPhotos(photosToRestore);
         }
         #endregion
     }

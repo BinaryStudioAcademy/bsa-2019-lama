@@ -35,14 +35,17 @@ export class PhotoUploadModalComponent implements OnInit {
   isActive: boolean;
   photos: Photo[] = [];
   desc: string[] = [];
+  duplicates: UploadPhotoResultDTO[] = [];
   showSpinner = false;
   geoCoder;
   address: string;
   showRemoveButton = false;
+  duplicatesFound = false;
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
   >();
+
 
   constructor(
     private fileService: FileService,
@@ -74,15 +77,51 @@ export class PhotoUploadModalComponent implements OnInit {
       };
     }
 
-    this.fileService.sendPhoto(this.photos).subscribe(
+    this.fileService.sendPhotos(this.photos).subscribe(
       uploadedPhotos => {
-        this.addToListEvent.emit(uploadedPhotos);
-        this.toggleModal();
-        this.notifier.notify('success', 'Uploaded');
-        this.router.navigate(['/main']);
+        const filteredPhotos = this.resolveDuplicates(uploadedPhotos);
+        this.addToListEvent.emit(filteredPhotos);
+        if (!this.duplicatesFound) {
+          this.notifier.notify('success', 'Uploaded');
+          this.toggleModal();
+        } else {
+          this.removeUploaded(filteredPhotos);
+          this.notifier.notify('warning', 'This photos appear to be duplicates. Upload them anyway?');
+        }
       },
       error => this.notifier.notify('error', 'Error sending photos')
     );
+  }
+
+  uploadDuplicates() {
+    this.fileService.uploadDuplicates(this.duplicates).subscribe(
+      uploadedDuplicates => {
+        this.addToListEvent.emit(uploadedDuplicates);
+        this.notifier.notify('success', 'Duplicates uploaded');
+        this.toggleModal();
+      },
+      error => this.notifier.notify('error', 'Error sending photos')
+    );
+  }
+
+  removeUploaded(filteredPhotos: UploadPhotoResultDTO[]) {
+    filteredPhotos.forEach(filtered => {
+      const index = this.photos.findIndex(photo => photo.filename === filtered.name);
+      this.photos.splice(index, 1);
+    });
+  }
+
+  resolveDuplicates(uploadedPhotos: UploadPhotoResultDTO[]) {
+    if (uploadedPhotos.some(photo => photo.isDuplicate)) {
+      this.duplicates = uploadedPhotos.filter(photo => photo.isDuplicate);
+      uploadedPhotos = uploadedPhotos.filter((photo) => !this.duplicates.includes(photo));
+      this.duplicatesFound = true;
+    }
+    return uploadedPhotos;
+  }
+
+  isDuplicate(photo: Photo) {
+    return this.duplicates.some(duplicate => duplicate.name === photo.filename);
   }
 
   async onFileSelected(event) {
@@ -145,7 +184,7 @@ export class PhotoUploadModalComponent implements OnInit {
     }
   }
 
-  public toBase64(file): Promise<string> {
+  toBase64(file): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -169,6 +208,10 @@ export class PhotoUploadModalComponent implements OnInit {
   removePhoto(index: number) {
     if (index !== -1) {
       this.photos.splice(index, 1);
+      this.duplicates.splice(index, 1);
+    }
+    if (this.photos.length === 0) {
+      this.duplicatesFound = false;
     }
   }
 }

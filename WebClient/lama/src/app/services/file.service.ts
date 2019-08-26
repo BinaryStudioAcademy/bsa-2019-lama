@@ -27,7 +27,7 @@ export class FileService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
 
-  public sendPhoto(photos: Photo[]): Observable<UploadPhotoResultDTO[]> {
+  sendPhotos(photos: Photo[]): Observable<UploadPhotoResultDTO[]> {
     return this.client.post<UploadPhotoResultDTO[]>(
       `${environment.lamaApiUrl}/api/photo`,
       photos,
@@ -35,6 +35,12 @@ export class FileService {
     );
   }
 
+
+  uploadDuplicates(duplicates: UploadPhotoResultDTO[]) {
+    return this.client.post<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates`, duplicates, this.httpOptions);
+  }
+
+  async getImageBase64(url: string): Promise<string> {
   getSearchHistory(id: number) {
     return this.client.get<string[]>(
       `${environment.lamaApiUrl}/api/photo/search_history/${id}`
@@ -59,11 +65,11 @@ export class FileService {
     });
   }
 
-  public getExif(imageBase64: string): any {
+  getExif(imageBase64: string): any {
     return load(imageBase64);
   }
 
-  public copyExif(from: string, to: string): string {
+  copyExif(from: string, to: string): string {
     let modified = to;
 
     if (from.indexOf('image/jpeg') !== -1 || from.indexOf('image/jpg') !== -1) {
@@ -74,7 +80,7 @@ export class FileService {
     return modified;
   }
 
-  public update(
+  update(
     photoToUpdate: UpdatePhotoDTO
   ): Observable<UpdatedPhotoResultDTO> {
     return this.client
@@ -82,32 +88,38 @@ export class FileService {
       .pipe(map(res => res as UpdatedPhotoResultDTO));
   }
 
-  public ReactionPhoto(NewReaction: NewLike): Observable<number> {
+  ReactionPhoto(NewReaction: NewLike): Observable<number> {
     return this.client.post<number>(
       `${environment.lamaApiUrl}/api/photo/reaction`,
       NewReaction
     );
   }
 
-  public RemoveReactionPhoto(Reaction: NewLike) {
+  RemoveReactionPhoto(Reaction: NewLike) {
     return this.client.post(
       `${environment.lamaApiUrl}/api/photo/removereaction`,
       Reaction
     );
   }
+
   getPhoto(name: string) {
     return this.client.get<string>(
       `${environment.lamaApiUrl}/api/photo/${name}`
     );
   }
-  public receivePhoto(): Observable<PhotoRaw[]> {
+
+  getDuplicates(id: number) {
+    return this.client.get<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates/${id}`);
+  }
+
+  receivePhoto(): Observable<PhotoRaw[]> {
     return this.client.get<PhotoRaw[]>(
       `${environment.lamaApiUrl}/api/photo`,
       this.httpOptions
     );
   }
 
-  public receiveUsersPhotos(userId: number): Observable<PhotoRaw[]> {
+  receiveUsersPhotos(userId: number): Observable<PhotoRaw[]> {
     return this.client
       .get(
         `${environment.lamaApiUrl}/api/photo/user/${userId}`,
@@ -116,7 +128,7 @@ export class FileService {
       .pipe(map(res => res as PhotoRaw[]));
   }
 
-  public receiveUsersPhotosRange(
+  receiveUsersPhotosRange(
     userId: number,
     startId: number,
     count: number
@@ -131,19 +143,19 @@ export class FileService {
       .pipe(map(res => res as PhotoRaw[]));
   }
 
-  public markPhotoAsDeleted(photosToDeleteId: number): Observable<object> {
+  markPhotoAsDeleted(photosToDeleteId: number): Observable<object> {
     return this.client.delete(
       `${environment.lamaApiUrl}/api/photo/${photosToDeleteId}`
     );
   }
 
-  public getDeletedPhotos(userId: number): Observable<DeletedPhotoDTO[]> {
+  getDeletedPhotos(userId: number): Observable<DeletedPhotoDTO[]> {
     return this.client
       .get(`${environment.lamaApiUrl}/api/photo/deleted/${userId}`)
       .pipe(map(res => res as DeletedPhotoDTO[]));
   }
 
-  public deletePhotosPermanently(
+  deletePhotosPermanently(
     photosToDelete: PhotoToDeleteRestoreDTO[]
   ): Observable<object> {
     return this.client.post(
@@ -152,7 +164,7 @@ export class FileService {
     );
   }
 
-  public restoresDeletedPhotos(
+  restoresDeletedPhotos(
     photosToRestore: PhotoToDeleteRestoreDTO[]
   ): Observable<object> {
     return this.client.post(
