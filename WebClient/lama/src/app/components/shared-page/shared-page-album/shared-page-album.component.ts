@@ -61,28 +61,9 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
-    console.log(eventArgs);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(
-      this.deletePhotoHandler.bind(this)
-    );
     componentRef.instance.currentUser = this.currentUser;
-    componentRef.instance.updatePhotoEvent.subscribe(
-      this.updatePhotoHandler.bind(this)
-    );
-  }
 
-  deletePhotoHandler(photoToDeleteId: number): void {
-    this.album.photoAlbums = this.album.photoAlbums.filter(
-      p => p.id !== photoToDeleteId
-    );
-  }
-
-  updatePhotoHandler(updatedPhoto: PhotoRaw): void {
-    const index = this.album.photoAlbums.findIndex(
-      i => i.id === updatedPhoto.id
-    );
-    this.album.photoAlbums[index] = updatedPhoto;
   }
 
   ngDoCheck() {
@@ -96,26 +77,6 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
       const index = this.selectedPhotos.indexOf(eventArgs.photo);
       this.selectedPhotos.splice(index, 1);
     }
-  }
-
-  deleteImages(): void {
-    const indexes = new Array<number>();
-    this.selectedPhotos.forEach(e => {
-      indexes.push(this.album.photoAlbums.findIndex(i => i.id === e.id));
-    });
-    indexes.forEach(e => {
-      this.album.photoAlbums.splice(e, 1);
-    });
-    const ids = new Array<number>();
-    this.album.photoAlbums.forEach(e => {
-      ids.push(e.id);
-    });
-    this.selectedPhotos = [];
-    this.albumService.updateAlbum({
-      title: this.album.title,
-      id: this.album.id,
-      photoIds: ids
-    });
   }
 
   downloadImages() {

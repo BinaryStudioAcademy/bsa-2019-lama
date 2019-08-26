@@ -40,6 +40,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   AlbumId: number;
   coverId: number;
   loading = false;
+  isDeleting: boolean;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   private routeSubscription: Subscription;
@@ -132,6 +133,12 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     );
   }
 
+  deletePhotosHandler(photosToDelete: number[]) {
+    for (const p of photosToDelete) {
+      this.deletePhotoHandler(p);
+    }
+  }
+
   updatePhotoHandler(updatedPhoto: PhotoRaw) {
     const index = this.album.photoAlbums.findIndex(
       i => i.id === updatedPhoto.id
@@ -169,7 +176,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       this.album.photoAlbums !== undefined &&
       this.album.photoAlbums.length === 0
     ) {
-      if (this.album.id === 0) {
+      if (this.isFavorite()) {
         localStorage.removeItem('favoriteCover');
       } else {
         this.albumService
@@ -203,7 +210,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.album.photoAlbums.forEach(e => {
       ids.push(e.id);
     });
-    if (this.AlbumId === 0) {
+    if (this.isFavorite()) {
       this.selectedPhotos.forEach(item => {
         this.favoriteService
           .deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id)
@@ -229,5 +236,17 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
+  }
+
+  deleteWindow() {
+    this.isDeleting = true;
+  }
+
+  public goBackToImageView(): void {
+    this.isDeleting = false;
+  }
+
+  isFavorite() {
+    return this.AlbumId === 0;
   }
 }

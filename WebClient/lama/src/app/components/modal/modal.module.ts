@@ -21,6 +21,7 @@ import { EditPhotoComponent } from './edit-photo/edit-photo.component';
 import {NotificationModule} from '../../notification/notification.module';
 import { IsBlockedDirective } from 'src/app/directives/is-blocked.directive';
 import { MemeColorDirective } from 'src/app/directives/meme-color.directive';
+import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 
 @NgModule(
 {
@@ -48,13 +49,14 @@ import { MemeColorDirective } from 'src/app/directives/meme-color.directive';
     ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
     CommentsListComponent,
     EditPhotoComponent,
-    IsBlockedDirective, MemeColorDirective
+    IsBlockedDirective, MemeColorDirective, DeleteModalComponent
   ],
   exports:
   [
     PhotoModalComponent, PhotoUploadModalComponent, EditModalComponent,
     ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
-    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
+    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
+    DeleteModalComponent
   ],
   entryComponents:
   [

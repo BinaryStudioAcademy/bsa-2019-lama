@@ -388,6 +388,19 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id)
         {
+<<<<<<< HEAD
+                List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
+                var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x=>x.Album).Where(x=>x.Photo.Id == id).Select(x=>x.Album).ToListAsync();
+                foreach(var album in albums)
+                {              
+                    var Document = await _photoService.Get(album.CoverId.Value);
+                    var photo = _mapper.Map<PhotoAlbumDetails>(Document);
+                    var returnAlbum = _mapper.Map<AlbumPhotoDetails>(album);
+                    returnAlbum.Photo = photo;
+                    list.Add(returnAlbum);
+                }
+            
+=======
 
             List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
             var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x => x.Album).Where(x => x.Photo.Id == id).Select(x => x.Album).ToListAsync();
@@ -404,6 +417,7 @@ namespace Lama.BusinessLogic.Services
                 list.Add(returnAlbum);
             }
 
+>>>>>>> a1ca4fd5689dcc40c44966f9b4307434bd0dabcc
 
             return list;
         }
@@ -507,6 +521,16 @@ namespace Lama.BusinessLogic.Services
             {
                 album.SharedAlbums.Remove(sharedAlbum);
             }
+        }
+
+        public async Task<int> RemovePhotosFromAlbum(int albumId, int[] photos)
+        {
+            foreach(var p in photos)
+            {
+                var photoAlbum = await Context.PhotoAlbums.FirstOrDefaultAsync(pa => pa.AlbumId == albumId && pa.PhotoId == p);
+                Context.PhotoAlbums.Remove(photoAlbum);
+            }
+            return await Context.SaveChangesAsync();
         }
     }
 }
