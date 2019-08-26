@@ -65,9 +65,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   public createShareableLink() {
     this.initInvariableFields();
     const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
-    this.sharedLink = `${environment.clientApiUrl}/${
-      this.sharingRoute
-    }/${encodedAlbumData}`;
+    this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
   }
 
   public copyShareableLink() {
@@ -84,6 +82,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
     this.notifier.notify('success', 'Link is now in your clipboard');
+    this.sharedLink = null;
   }
 
   public encodeAlbumData(album: SharedAlbum): string {
