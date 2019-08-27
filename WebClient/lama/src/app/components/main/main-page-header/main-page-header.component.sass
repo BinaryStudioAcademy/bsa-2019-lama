@@ -22,6 +22,8 @@ datalist div
     justify-content: center
     & a
         margin-left: 18px
+    .button
+        margin-right: 10px
 
 input::-webkit-calendar-picker-indicator
   display: none
@@ -64,23 +66,27 @@ input::-webkit-calendar-picker-indicator
     display: flex
     align-items: center
     justify-content: flex-start
-    cursor: pointer    
+    cursor: pointer
+    &:focus
+        outline: none   
 
 .logo img
     margin-right: .4rem
     height: 100%
-    outline: none
+    
 
 .logo p
     font-weight: 500
     font-size: 19pt
+    padding-left: 10px
 
 .field i
     margin-right: .5rem
 
 .profile img
     height: 100%
-    width: auto
+    max-height: 48px
+    max-width: 48px
     margin: auto
 
     
@@ -111,6 +117,21 @@ input::-webkit-calendar-picker-indicator
         i
             font-size: 20px
             vertical-align: top
+
+a.button.is-large
+    background-color: #00d1b2
+    width: 85px
+    .fa
+        color: white
+    &:hover .fa
+        color: #00d1b2
+    .tooltiptext
+        bottom: 0
+        color: white
+        height: 35px
+        left: inherit
+        right: 0
+        width: 85px
 
 
 @media screen and (max-width: 768px)
