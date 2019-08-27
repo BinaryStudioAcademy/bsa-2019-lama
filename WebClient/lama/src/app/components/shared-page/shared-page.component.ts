@@ -58,7 +58,7 @@ export class SharedPageComponent implements OnInit {
             'Error updating photo with sharing link'
           )
       );
-    // this.getUserData();
+    this.getUserData();
   }
 
   private getUserData() {
