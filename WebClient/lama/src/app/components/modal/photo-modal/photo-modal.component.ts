@@ -358,7 +358,7 @@ export class PhotoModalComponent implements OnInit {
 
   deleteImages(photos: number[]) {
     for (const p of photos) {
-      this.deletePhotoEvenet.emit(p);
+      this.deletePhotoEvent.emit(p);
     }
     this.closeModal();
   }
