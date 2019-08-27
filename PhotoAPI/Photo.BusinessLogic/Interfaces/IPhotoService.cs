@@ -10,10 +10,12 @@ namespace Photo.BusinessLogic.Interfaces
     public interface IPhotoService : IBaseService<PhotoDocument>
     {
 
-        Task<IEnumerable<CreatePhotoResultDTO>> Create(CreatePhotoDTO[] item);
+        Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> item);
         Task<int> CreateAvatar(CreatePhotoDTO item);
+        Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
+        Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId);
         Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
         Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task MarkPhotoAsDeleted(int photoId);

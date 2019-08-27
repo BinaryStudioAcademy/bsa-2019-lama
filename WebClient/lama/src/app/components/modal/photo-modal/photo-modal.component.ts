@@ -9,7 +9,7 @@ import {
   NgZone
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
+import { UpdatePhotoDTO, ImageEditedArgs, MenuItem, Photo } from 'src/app/models';
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -26,43 +26,46 @@ import {
   getLatitude,
   getLongitude
 } from 'src/app/export-functions/exif';
+import { NewDescription } from 'src/app/models/Photo/NewDescription';
+import { PhotodetailsService } from 'src/app/services/photodetails.service';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
-  public photo: PhotoRaw;
-  public isShown: boolean;
-  public isInfoShown = false;
-  public imageUrl: string;
-  public userId: number;
-  public showSharedModal = false;
-  public showSharedByLinkModal = false;
-  public showSharedByEmailModal = false;
-  albums: PhotoDetailsAlbum[];
+  photo: PhotoRaw;
+  photos: PhotoRaw[];
+  isShown: boolean;
+  isInfoShown = false;
+  imageUrl: string;
+  userId: number;
+  showSharedModal = false;
+  showSharedByLinkModal = false;
+  showSharedByEmailModal = false;
+  albums: PhotoDetailsAlbum[] = [];
   isShowSpinner = true;
-  public clickedMenuItem: MenuItem;
-  public shownMenuItems: MenuItem[];
-  public isEditing: boolean;
+  clickedMenuItem: MenuItem;
+  shownMenuItems: MenuItem[];
+  isEditing: boolean;
+  isDeleting: boolean;
   showEditModal: boolean;
 
   // events
   @Output()
-  deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvent = new EventEmitter<number>();
   @Output()
-  public updatePhotoEvent = new EventEmitter<PhotoRaw>();
-  public hasUserReaction: boolean;
+  updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  hasUserReaction: boolean;
 
   // fields
   private fileService: FileService;
   private authService: AuthService;
   private userService: UserService;
-
+  private lastDescription: string;
   private defaultMenuItem: MenuItem[];
   private editingMenuItem: MenuItem[];
   private deletingMenuItem: MenuItem[];
@@ -73,11 +76,11 @@ export class PhotoModalComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
-  @Input() address: string;
+  @Input() address = '';
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
-  public searchElementRef: ElementRef;
+  searchElementRef: ElementRef;
 
   // constructors
   constructor(
@@ -87,7 +90,8 @@ export class PhotoModalComponent implements OnInit {
     private albumService: AlbumService,
     authService: AuthService,
     userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private photodetailsService: PhotodetailsService
   ) {
     this.isShown = true;
     this.fileService = fileService;
@@ -100,16 +104,15 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
+    this.lastDescription = this.photo.description;
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
     this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
       this.imageUrl = data;
       this.isShowSpinner = false;
       this.GetFile();
-    });
-    const calendars = bulmaCalendar.attach('[type="date"]');
-    calendars.forEach(calendar => {
-      calendar.on('select', date => {
-        // console.log(date);
-      });
     });
     this.userId = this.authService.getLoggedUserId();
     this.userService.getUser(this.userId).subscribe(
@@ -130,11 +133,11 @@ export class PhotoModalComponent implements OnInit {
   }
 
   markerDragEnd($event: MouseEvent) {
-    console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
+
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
       location => (this.address = location)
@@ -165,20 +168,24 @@ export class PhotoModalComponent implements OnInit {
     const exifObj = load(src);
     this.latitude = getLatitude(exifObj);
     this.longitude = getLongitude(exifObj);
+    if (this.latitude && this.longitude) {
+      getLocation(this.latitude, this.longitude, this.geoCoder).then(
+        location => (this.address = location)
+      );
+    }
     // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-          // this.latitude = position.coords.latitude;
-          // this.longitude = position.coords.longitude;
-          this.zoom = 8;
-          this.getAddress(this.latitude, this.longitude);
-        });
-      }
-      // tslint:disable-next-line: new-parens
-      this.geoCoder = new google.maps.Geocoder();
+    // this.mapsAPILoader.load().then(() => {
+    //   if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition(position => {
+    //       // this.latitude = position.coords.latitude;
+    //       // this.longitude = position.coords.longitude;
+    //       this.zoom = 8;
+    //       this.getAddress(this.latitude, this.longitude);
+    //     });
+    //   }
+    //   // tslint:disable-next-line: new-parent
 
-      /*
+    /*
           let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
             types: ['address']
           });
@@ -196,7 +203,7 @@ export class PhotoModalComponent implements OnInit {
               this.zoom = 12;
             });
           });*/
-    });
+    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -212,12 +219,14 @@ export class PhotoModalComponent implements OnInit {
     ];
     this.deletingMenuItem = [
       { title: 'yes', icon: 'done' },
-      { title: 'no', icon: 'remove' }
+      { title: 'no', icon: 'remove' },
+      { title: 'info', icon: 'info' },
+      { title: 'save', icon: 'save' }
     ];
   }
 
   // methods
-  public menuClickHandler(clickedMenuItem: MenuItem): void {
+  menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
 
     // share
@@ -231,7 +240,8 @@ export class PhotoModalComponent implements OnInit {
     }
 
     if (clickedMenuItem === this.deletingMenuItem[0]) {
-      this.deleteImage();
+      this.photos.push(this.photo);
+      this.isDeleting = true;
     }
 
     if (clickedMenuItem === this.deletingMenuItem[1]) {
@@ -245,26 +255,30 @@ export class PhotoModalComponent implements OnInit {
       this.isEditing = true;
     }
 
+    if (clickedMenuItem === this.defaultMenuItem[5]) {
+      this.saveMe();
+    }
+
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       if (this.isInfoShown === false) {
-        this.albumService
-          .GetPhotoDetailsAlbums(this.photo.id)
-          .subscribe(
-            e => (this.albums = e.body),
-            error =>
-              this.notifier.notify('error', 'Error loading photo details')
-          );
+        this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe(
+          e => {
+            this.albums = e.body;
+          },
+          error => this.notifier.notify('error', 'Error loading photo details')
+        );
       }
       this.CloseInfo();
     }
   }
 
-  public mouseLeftOverlayHandler(): void {
+  mouseLeftOverlayHandler(): void {
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+  saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+    this.isShowSpinner = true;
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -280,36 +294,55 @@ export class PhotoModalComponent implements OnInit {
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo updated');
+        this.isShowSpinner = false;
       },
       error => this.notifier.notify('error', 'Error updating photo')
     );
   }
 
+  ChangeDescription(desc) {
+    if (this.lastDescription === this.photo.description) {
+      return;
+    }
+    const newdesc: NewDescription = {
+      id: this.photo.id,
+      description: desc
+    };
+    this.photodetailsService.updateDescription(newdesc).subscribe(
+      descr => {
+        this.photo.description = descr;
+        this.notifier.notify('success', 'Description Updated');
+      },
+      error => this.notifier.notify('error', 'Error updating description')
+    );
+  }
   resetImageHandler(): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: this.photo.blobId,
       imageBase64: ''
     };
-    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(url => {
-      this.imageUrl = url;
-      updatePhotoDTO.imageBase64 = url;
-      this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo reseted');
-      });
+    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(
+      url => {
+        this.imageUrl = url;
+        updatePhotoDTO.imageBase64 = url;
+        this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.updatePhotoEvent.emit(this.photo);
+          this.goBackToImageView();
+          this.notifier.notify('success', 'Photo reseted');
+        });
       },
       error => this.notifier.notify('error', 'Error reseting photo')
     );
   }
 
-  public goBackToImageView(): void {
+  goBackToImageView(): void {
     this.isEditing = false;
+    this.isDeleting = false;
   }
-  public closeModal(): void {
+
+  closeModal(): void {
     this.isShown = false;
   }
 
@@ -329,13 +362,21 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
-        this.deletePhotoEvenet.emit(this.photo.id);
+        this.deletePhotoEvent.emit(this.photo.id);
         this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')
     );
   }
-  public ReactionPhoto() {
+
+  deleteImages(photos: number[]) {
+    for (const p of photos) {
+      this.deletePhotoEvent.emit(p);
+    }
+    this.closeModal();
+  }
+
+  ReactionPhoto() {
     // TODO: you can not like your own photos
     // but currently we are testing
     // so lets suppose you can like any photos
@@ -415,7 +456,24 @@ export class PhotoModalComponent implements OnInit {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  public isBlockById(): boolean {
+  isBlockById() {
     return this.photo.userId !== this.userId;
+  }
+
+  saveMe() {
+    const photos: Photo[] = [{
+      imageUrl: this.imageUrl,
+      description: this.photo.description,
+      authorId: this.userId,
+      filename: this.photo.name,
+      location: this.photo.location
+    }];
+
+    this.fileService.sendPhotos(photos).subscribe(
+      uploadedPhotos => {
+        this.notifier.notify('success', 'Photo saved');
+      },
+        error => this.notifier.notify('error', 'Error saving photo')
+    );
   }
 }

@@ -2,6 +2,30 @@
   <div class="modal-background" (click)="cancel()"></div>
   <div class="modal-card">
     <div class="modal-card-body">
+      <div *ngFor="let email of userEmails">
+        <div class="columns is-vcentered">
+          <div class="column is-four-fifths">
+            <button
+              class="clear-button is-white button icon is-small is-right fas has-text-grey-light"
+              (click)="removeEmail(email)"
+            >
+              <i class="fa fa-times" id="success-icon"></i>
+            </button>
+            <p class="control has-icons-left has-icons-right">
+              <input
+                disabled
+                id="share-link"
+                class="input"
+                type="email"
+                value="{{ email }}"
+              />
+              <span class="icon is-small is-left">
+                <i class="fa fa-envelope"></i>
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
       <div class="columns is-vcentered">
         <div class="column is-four-fifths">
           <button
@@ -31,8 +55,8 @@
         </div>
       </div>
 
-      <div class="columns">
-        <div class="column is-half">
+      <div class="columns" *ngIf="sharedLink && availableAll">
+        <div class="column is-four-fifths">
           <input
             id="share-link"
             class="input"
@@ -41,21 +65,12 @@
             readonly
           />
         </div>
-        <div class="column is-2">
+        <div class="column">
           <a class="button is-primary" (click)="copyShareableLink()">
             Copy
           </a>
         </div>
-        <div class="column">
-          <span class="has-text-primary" *ngIf="availableAll && showAvailable">
-            Link is available to all
-          </span>
-          <span class="has-text-primary" *ngIf="!availableAll && showAvailable">
-            Link is available by emails
-          </span>
-        </div>
       </div>
-
       <div class="columns">
         <div class="column is-half  has-text-centered">
           <a class="button is-primary" (click)="GenerateClick()">

@@ -40,6 +40,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   AlbumId: number;
   coverId: number;
   loading = false;
+  isDeleting: boolean;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
   private routeSubscription: Subscription;
@@ -117,7 +118,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(
+    componentRef.instance.deletePhotoEvent.subscribe(
       this.deletePhotoHandler.bind(this)
     );
     componentRef.instance.currentUser = this.currentUser;
@@ -132,6 +133,12 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     );
   }
 
+  deletePhotosHandler(photosToDelete: number[]) {
+    for (const p of photosToDelete) {
+      this.deletePhotoHandler(p);
+    }
+  }
+
   updatePhotoHandler(updatedPhoto: PhotoRaw) {
     const index = this.album.photoAlbums.findIndex(
       i => i.id === updatedPhoto.id
@@ -140,6 +147,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   }
 
   addPhoto(eventArgs) {
+    let files;
+    if (eventArgs) {
+      files = eventArgs;
+    }
     this.modaladdPhoto.clear();
     const factory = this.resolver.resolveComponentFactory(
       AddPhotosToAlbumModalComponent
@@ -147,6 +158,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.AlbumId;
+    componentRef.instance.LoadFile(files);
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)
     );
@@ -164,7 +176,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       this.album.photoAlbums !== undefined &&
       this.album.photoAlbums.length === 0
     ) {
-      if (this.album.id === 0) {
+      if (this.isFavorite()) {
         localStorage.removeItem('favoriteCover');
       } else if (this.album.photo) {
         this.albumService
@@ -198,7 +210,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.album.photoAlbums.forEach(e => {
       ids.push(e.id);
     });
-    if (this.AlbumId === 0) {
+    if (this.isFavorite()) {
       this.selectedPhotos.forEach(item => {
         this.favoriteService
           .deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id)
@@ -228,5 +240,17 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
+  }
+
+  deleteWindow() {
+    this.isDeleting = true;
+  }
+
+  public goBackToImageView(): void {
+    this.isDeleting = false;
+  }
+
+  isFavorite() {
+    return this.AlbumId === 0;
   }
 }

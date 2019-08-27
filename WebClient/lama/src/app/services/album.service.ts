@@ -5,7 +5,7 @@ import { Album } from '../models/Album/album';
 import { ViewAlbum } from '../models/Album/ViewAlbum';
 import { NewAlbum } from '../models/Album/NewAlbum';
 import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos';
-import { PhotoRaw } from '../models';
+import { PhotoRaw, PhotoToDeleteRestoreDTO } from '../models';
 import { PhotoDetailsAlbum } from '../models/Album/PhotodetailsAlbum';
 import { UpdateAlbum } from '../models/Album/updatedAlbum';
 import { Observable } from 'rxjs';
@@ -45,7 +45,7 @@ export class AlbumService {
   }
   public createAlbumWithNewPhotos(album: NewAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http.post<ViewAlbum>(
+    return this.http.post<ReturnAlbumDTO>(
       this.baseUrl + this.routeAlbum + '/CreateWithNewPhoto',
       album,
       { headers }
@@ -116,9 +116,21 @@ export class AlbumService {
     );
   }
 
-  public removeAlbumCover(albumId: number) {
+  removeAlbumCover(albumId: number) {
     return this.http.delete(
       `${this.baseUrl}${this.routeAlbum}/cover/${albumId}`
+    );
+  }
+
+  removePhotosFromAlbum(albumId: number, photos: number[]) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      }),
+      body: photos
+    };
+    return this.http.delete(
+      `${this.baseUrl}${this.routeAlbum}/photos/${albumId}`, httpOptions
     );
   }
 }

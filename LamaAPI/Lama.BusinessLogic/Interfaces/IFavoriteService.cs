@@ -13,5 +13,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> CreateFavorite(Favorite favorite);
         Task<int> DeleteFavorite(int userId, int photoId);
         Task<int> DeleteFavoritesForUser(int userId);
+        Task<int> DeleteSelectedFavorites(int userId, int[] favorites);
     }
 }

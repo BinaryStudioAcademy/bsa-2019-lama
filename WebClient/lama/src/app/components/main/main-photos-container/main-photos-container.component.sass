@@ -1,9 +1,22 @@
+.no-content 
+    display: flex
+    flex-direction: column
+    align-items: center
+    & img
+        height: 300px
+    & h2
+        margin-top: 10rem
+        font-size: 1.4rem
+
 h2
     font-weight: 500
-    font-size: 2rem
-    margin-left: .5rem
-.items-container-centered h2
-    text-align: center
+    font-size: 1.5rem
+    margin-left: .5rem    
+
+.items-container-centered
+    background-color: white !important
+    & h2
+        text-align: center
 
 .content-header
     display: flex
@@ -11,7 +24,7 @@ h2
     justify-content: space-between
 
 .button
-    margin-right: 2rem
+    margin: 20px
 
 .dropdown-trigger .button
     background-color: #00D1B2
@@ -28,3 +41,4 @@ h2
 
 spinner
     width: 100%
+    background-color: white

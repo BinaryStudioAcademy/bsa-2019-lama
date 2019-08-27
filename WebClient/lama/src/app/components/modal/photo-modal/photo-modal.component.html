@@ -1,177 +1,155 @@
 <div class="modal" [class.is-active]="isShown">
-    <div class="modal-background" (click)="closeModal()"></div>
+  <div class="modal-background" (click)="closeModal()"></div>
+  <div class="modal-content">
+    <div class="container">
+      <div class="notification">
+        <!--content-->
+        <ng-template [ngIf]="isEditing">
+          <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl"
+            (saveClickedEvent)="saveEditedImageHandler($event)" (resetClickedEvent)="resetImageHandler()"
+            (cancelClickedEvent)="goBackToImageView()">
+          </app-edit-photo>
+        </ng-template>
 
-    <!--content-->
-    <div class="modal-content">
-        <div class="container">
-            <div class="notification">
+        <ng-template [ngIf]="isDeleting">
+          <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="photos"
+            (deleteEvent)="deleteImages($event)">
+          </app-delete-modal>
+        </ng-template>
 
-                <!--content-->
-                <div *ngIf="isEditing; then editView else imageView"></div>
-
-                <!--editing view-->
-                <ng-template #editView>
-                    <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (resetClickedEvent)="resetImageHandler()" (cancelClickedEvent)="goBackToImageView()">
-                    </app-edit-photo>
-                </ng-template>
-
-                <!--image view-->
-                <ng-template #imageView>
-
-                    <div class="columns">
-
-                        <!--photo-->
-                        <div class="column is-8">
-
-                            <div class="is-relative main-photo">
-                                <!--image-->
-                                <spinner *ngIf="isShowSpinner"></spinner>
-                                <div class="photo" *ngIf="!isShowSpinner">
-                                    <img src="{{ imageUrl }}" alt="Image">
-
-                                    <!--overlay-->
-                                    <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
-
-                                        <!--menu items-->
-                                        <div class="columns has-text-centered">
-
-                                            <div class="column" *ngFor="let item of shownMenuItems">
-                                                <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
-                                                    <ng-template ngSwitchCase="remove">
-                                                        <div [appIsBlocked]="isBlockById()">
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
-                                                        </div>
-                                                    </ng-template>
-                                                    <ng-template ngSwitchCase="edit">
-                                                        <div [appIsBlocked]="isBlockById()">
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
-                                                        </div>
-                                                    </ng-template>
-                                                    <ng-template ngSwitchCase="download">
-                                                        <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
-                                                            <i class="material-icons is-block">{{ item.icon }}</i> {{ item.title }}
-                                                        </a>
-                                                    </ng-template>
-                                                    <ng-template ngSwitchDefault>
-                                                        <i class="material-icons is-block">{{ item.icon }}</i>
-                                                        <span> {{ item.title }} </span>
-                                                    </ng-template>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+        <!--image view-->
+        <ng-template [ngIf]="!isDeleting && !isEditing">
+          <div class="columns">
+            <!--photo-->
+            <div class="column is-8">
+              <div class="is-relative main-photo">
+                <!--image-->
+                <spinner *ngIf="isShowSpinner"></spinner>
+                <div class="photo" *ngIf="!isShowSpinner">
+                  <img src="{{ imageUrl }}" alt="Image">
+                  <!--overlay-->
+                  <div class="overlay" (mouseleave)="mouseLeftOverlayHandler()">
+                    <!--menu items-->
+                    <div class="columns menu-items has-text-centered">
+                      <div class="column overlay-item" *ngFor="let item of shownMenuItems">
+                        <div (click)="menuClickHandler(item)" [ngSwitch]="item.title">
+                          <ng-template ngSwitchCase="remove">
+                            <div class="tooltip" [appIsBlocked]="isBlockById()">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span class="tooltiptext"> {{ item.title }} </span>
                             </div>
+                          </ng-template>
+                          <ng-template ngSwitchCase="edit">
+                            <div class="tooltip" [appIsBlocked]="isBlockById()">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
+                          </ng-template>
+                          <ng-template ngSwitchCase="share">
+                            <div class="tooltip" [appIsBlocked]="isBlockById()">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
+                          </ng-template>
+                          <ng-template ngSwitchCase="save">
+                            <div [appIsBlocked]="!isBlockById()">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span> {{ item.title }} </span>
+                            </div>
+                          </ng-template>
+                          <ng-template ngSwitchCase="download">
+                            <div class="tooltip">
+                              <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
+                                <i class="material-icons is-block">{{ item.icon }}</i>
+                              </a>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
+                          </ng-template>
+                          <ng-template ngSwitchDefault>
+                            <div class="tooltip">
+                              <i class="material-icons is-block">{{ item.icon }}</i>
+                              <span class="tooltiptext"> {{ item.title }} </span>
+                            </div>
+                          </ng-template>
                         </div>
-
-
-                        <!--right panel-->
-                        <div class="column is-4">
-
-                            <!--likes-->
-                            <div>
-                                <p class="is-size-2">Reactions</p>
-
-                                <!--set like-->
-                                <div class="likes">
-                                    <a class="reaction">
-                                        <img alt="" [src]="hasUserReaction ? 'assets/like.svg' : 'assets/no-like.svg' " (click)="ReactionPhoto(event)">
-                                    </a>
-                                    <div class="count">
-                                        <span>{{photo?.reactions?.length}}</span>
-                                    </div>
-                                </div>
-
-                                <!--reactions list-->
-                                <!-- <div class="reactions">
-
-                                    <div *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]">
-                                        <article class="media">
-                                            <figure class="media-left">
-                                                <p class="image is-32x32">
-                                                    <img class="is-rounded" src="https://i.pravatar.cc/32?img=3" alt="User avarar">
-                                                </p>
-                                            </figure>
-                                            <div class="media-content">
-                                                <span class="field">Nickname</span>
-                                            </div>
-                                        </article>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            < !--comments-->
-                                <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
-                            </div>
-                            <div *ngIf="isInfoShown" id="info-content" class="information">
-
-                                <div class="flex-content info">
-                                    <div class="titl">
-                                        <h4 class="title is-4">Information </h4>
-                                        <img src="assets/right-arrow.svg" alt="" (click)="CloseInfo()">
-                                    </div>
-                                    <div class="item-description">
-                                        <div class="field">
-                                            <div class="control">
-                                                <textarea class="textarea is-primary" [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="item-albums">
-                                        <div class="subtitl">
-                                            <h4 class="subtitle is-5">Albums</h4>
-                                        </div>
-                                        <div class="flex-album">
-                                            <div *ngFor="let album of albums" class="album">
-                                                <img src="{{album.photo?.imageUrl}}" alt="">
-                                                <h4 class="subtitle is-5">{{album.title}}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="item-date">
-                                        <div class="datetimepicker-dummy is-primary" (click)="openModalForPickDate($event)">
-                                            <div class="datetimepicker-dummy-wrapper">
-                                                <input placeholder="" readonly="readonly" [ngModel]="photo.uploadDate | date:'MM/dd/yyyy'" class="datetimepicker-dummy-input size" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="modal-date">
-                                            <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input" type="date" value="09/25/2018" size="395px">
-                                        </div>
-                                        <div class="overlay-date" (click)="CloseModalForPickDate(event)"></div>
-
-                                    </div>
-                                    <div class="item-location">
-                                        <!-- <div class="form-group">
-                                        <input type="text" class="form-control input is-primary" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
-                                    </div> -->
-                                        <!--
-                                    <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
-                                        <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
-                                    </agm-map>
-                                    -->
-                                        <div class="adress">
-                                            <h4 class="title is-6">{{address}}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                </ng-template>
-
+                  </div>
+                </div>
+              </div>
             </div>
-
-        </div>
+            <!--right panel-->
+            <div class="column is-4">
+              <div *ngIf="!isInfoShown">
+                <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId"></app-comments-list>
+                <div class="likes">
+                  <a class="reaction">
+                    <img alt="" [src]="hasUserReaction ? 'assets/like.svg' : 'assets/no-like.svg' "
+                      (click)="ReactionPhoto(event)">
+                    <span class="count">{{photo?.reactions?.length || 0}} loved it</span>
+                  </a>
+                </div>
+              </div>
+              <div *ngIf="isInfoShown" id="info-content" class="information">
+                <div class="flex-content info">
+                  <div class="titl">
+                    <h4 class="title is-4">Information </h4>
+                    <img src="assets/right-arrow.svg" alt="" (click)="CloseInfo()">
+                  </div>
+                  <div class="item-description">
+                    <h4 class="subtitle is-5 submarg">Description</h4>
+                    <div class="field">
+                      <div class="control">
+                        <textarea class="textarea is-primary" (blur)="ChangeDescription($event.target.value)"
+                          [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-albums" *ngIf="albums.length !== 0">
+                    <div class="subtitl">
+                      <h4 class="subtitle is-5 submarg">Albums</h4>
+                    </div>
+                    <div class="flex-album">
+                      <div *ngFor="let album of albums" class="album">
+                        <img src="{{album.photo?.imageUrl}}" alt="">
+                        <h4 class="subtitle is-5">{{album.title}}</h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-date">
+                    <h4 class="subtitle is-5 submarg">Date Upload</h4>
+                    <div class="datetimepicker-dummy is-primary">
+                      <div class="datetimepicker-dummy-wrapper">
+                        <input placeholder="" readonly="readonly" [ngModel]="photo.uploadDate | date:'MM/dd/yyyy'"
+                          class="datetimepicker-dummy-input size" type="text">
+                      </div>
+                    </div>
+                    <div class="modal-date">
+                      <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input" type="date"
+                        value="09/25/2018" size="395px">
+                    </div>
+                    <div class="overlay-date" (click)="CloseModalForPickDate(event)"></div>
+                  </div>
+                  <div class="item-location" *ngIf="address != ''">
+                    <h4 class="subtitle is-5 submarg">Location</h4>
+                    <div class="adress">
+                      <h4 class="title is-6">{{address}}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
     </div>
+  </div>
 
-    <app-share-by-email-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (Close)="showSharedModal=false"></app-share-by-email-modal>
-    <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal=false" (Done)="imageHandler($event)"></app-edit-modal>
+  <app-share-by-email-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (Close)="showSharedModal=false">
+  </app-share-by-email-modal>
+  <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal=false" (Done)="imageHandler($event)">
+  </app-edit-modal>
 
-    <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
+  <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>
 <notifier-container></notifier-container>

@@ -1,27 +1,35 @@
 @import '~compass-mixins/lib/compass/css3'
 
-@media screen and (min-width: 1000px)
-    .modal-content
-        width: 70%
-    
-@media screen and (max-width: 1000px)
-    .modal-content
-        width: 100%
-
-
 @mixin transition($transition...) 
     -moz-transition:    $transition
     -o-transition:      $transition
     -webkit-transition: $transition
     transition:         $transition
 
-
+.menu-items
+    margin: 0
+    height: 100%
 
 .notification
-    height: 700px
+    height: 810px
 
-.column a 
-    text-decoration: none
+.photo
+    display: flex
+    align-items: center    
+    flex-direction: column
+    height: 500px
+    width: 100%
+    background: lavender
+    justify-content: center
+
+.photo img
+    width: auto !important
+    max-height: 500px
+
+.column
+    position: relative
+    & a 
+        text-decoration: none
 
 .main-photo
   display: flex
@@ -30,14 +38,8 @@
   align-items: center
   width: auto
 
-.main-photo img
-    width: auto !important
-    max-height: 610px
-    min-width: 370px
-
 agm-map 
     height: 100px
-
 
 .reactions
     margin-top: 10px
@@ -49,104 +51,107 @@ article
     padding: 5px
 
 .overlay 
-    position: relative
-    bottom: 76px
+    position: absolute
+    bottom: 0
+    height: 60px
     opacity: 0
     background: rgba(0, 0, 0, 0.5)
     background-image: linear-gradient(rgba(45,45,45,0.5), rgba(45,45,45,1))
-    box-shadow: 0px -15px 15px rgba(45,45,45)
+    box-shadow: 0px -3px 7px #2d2d2d
     color: #f1f1f1
     width: 100%
     transition: .5s ease
     font-size: 20px
     text-align: center
 
+.overlay-item
+    display: flex !important
+    align-items: center
+    justify-content: center
+    & div
+        height: 28px
 
 .main-photo:hover .overlay  
     opacity: 0.85
 
-.overlay .column:hover
+.overlay .tooltip:hover
     color: #00d1b2
     opacity: 1
     cursor: pointer
 
 .reaction
-    display: block
+    display: flex
+    flex-direction: row
+    align-items: center
+    position: absolute
+    top: calc(100% - 0.75rem - 25px)
 
-.reaction img
-    height: 36px
-    width:  36px
+.reaction 
+    & img
+        height: 25px
+        width:  25px
+    & span
+        margin-left: 10px
 
 .likes
     display: flex
+    max-height: 40px
+    margin-top: 10px
 
 .count
-    position: relative
-    margin-left: 7px
-
-.count span
-   position: absolute
-   bottom: 0
-   right: 0
-
-
+    font-size: 12pt
+    font-weight: 600
+    text-align: center
 
 .information
     width: auto
-    margin-left: 15px
     @include transition(all 300ms linear)
 
 .flex-content
     display: flex
 
-
 .info
     flex-direction: column
-
-
 
 .titl
     overflow: hidden
     max-height: 27px
     width: 100%
-
-.titl img
-    float: right
-    display: inline-block
-    height: 27px
-    width: 27px
-
-.titl h4
-    display: inline-block
+    & img
+        float: right
+        display: inline-block
+        height: 22px
+        width: 22px
+    & h4
+        display: inline-block
 
 .subtitl
     max-height: 25px
     overflow: hidden
 
-
-    
+.submarg
+    margin-bottom: 5px
+     
 .item-description
-    margin-top: 15px
+    margin-top: 25px
 
 .item-albums
     margin-top: 15px
 
-
 .item-date
     margin-top: 15px
 
-
-
 .item-location
     margin-top: 15px
-
 
 .photo-profile
     width: 100%
 
 .flex-album
-    max-height: 190px
+    max-height: 118px
     display: flex
+    flex-direction: column
+    overflow: auto
 
 .album
     display: flex
@@ -157,6 +162,7 @@ article
     
 .album img
     height: 55px
+    width: 80px
 
 .album h4
     overflow: hidden
@@ -169,10 +175,12 @@ article
     max-height: 54px
     max-width: 150px
 
-
-
-
 // MODAL
+
+.modal-content
+    width: 90%
+    overflow-x: hidden
+    overflow-y: hidden
 
 .overlay-date  
    opacity: 0

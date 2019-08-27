@@ -1,4 +1,13 @@
-import { Component, Input, EventEmitter, Output, ViewChild, OnChanges, DoCheck, ElementRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  EventEmitter,
+  Output,
+  ViewChild,
+  OnChanges,
+  DoCheck,
+  ElementRef
+} from '@angular/core';
 import { ImageEditedArgs } from 'src/app/models';
 import { FileService } from 'src/app/services';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
@@ -10,7 +19,6 @@ import { createMem } from 'src/app/export-functions/meme';
   templateUrl: './edit-photo.component.html',
   styleUrls: ['./edit-photo.component.sass']
 })
-
 export class EditPhotoComponent {
   // fields
   private imageUrl: string;
@@ -29,8 +37,9 @@ export class EditPhotoComponent {
   public set imageToEdit(imageToCropUrl: string) {
     this.imageUrl = imageToCropUrl;
 
-    this.imageService.getImageBase64(imageToCropUrl)
-      .then((res) => this.imageToEditBase64 = res);
+    this.imageService
+      .getImageBase64(imageToCropUrl)
+      .then(res => (this.imageToEditBase64 = res));
   }
 
   @ViewChild('editor', { static: false, read: ImageCropperComponent })
@@ -55,7 +64,7 @@ export class EditPhotoComponent {
     this.imageService = imageService;
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
-    this.colorPicker = '#000000';
+    this.colorPicker = '#ffffff';
   }
 
   // methods
@@ -80,36 +89,46 @@ export class EditPhotoComponent {
   }
   public async saveClickHandler(): Promise<void> {
     if (this.isMemeMode) {
-      const base64 = createMem(this.imageToEditBase64, this.upText, this.downText, this.colorPicker);
+      const base64 = createMem(
+        this.imageToEditBase64,
+        this.upText,
+        this.downText,
+        this.colorPicker
+      );
       this.upText = this.downText = '';
       this.memeSaved = true;
       this.saveClickedEvent.emit({
         originalImageUrl: this.imageToEditBlobId,
-        editedImageBase64: this.imageService.copyExif(this.imageToEditBase64, base64)
+        editedImageBase64: this.imageService.copyExif(
+          this.imageToEditBase64,
+          base64
+        )
       });
     } else {
       const event: ImageCroppedEvent = await this.imageEditor.crop();
       this.saveClickedEvent.emit({
         originalImageUrl: this.imageToEditBlobId,
-        editedImageBase64: this.imageService.copyExif(this.imageToEditBase64, event.base64)
+        editedImageBase64: this.imageService.copyExif(
+          this.imageToEditBase64,
+          event.base64
+        )
       });
-  }
+    }
   }
 
   public cancelClickHandler() {
     this.cancelClickedEvent.emit();
   }
 
-resetClickHandler() {
-  this.resetClickedEvent.emit();
-}
+  resetClickHandler() {
+    this.resetClickedEvent.emit();
+  }
 
   enableMeme() {
-    this.isMemeMode = true;
+    this.isMemeMode = !this.isMemeMode;
   }
 
   disableMeme() {
     this.isMemeMode = false;
   }
-
 }
