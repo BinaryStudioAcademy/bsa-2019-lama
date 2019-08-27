@@ -375,7 +375,6 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<List<AlbumPhotoDetails>> GetAlbumPhotoDetails(int id)
         {
-
             List<AlbumPhotoDetails> list = new List<AlbumPhotoDetails>();
             var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x => x.Album).Where(x => x.Photo.Id == id).Select(x => x.Album).ToListAsync();
             foreach (var album in albums)
@@ -390,7 +389,6 @@ namespace Lama.BusinessLogic.Services
 
                 list.Add(returnAlbum);
             }
-
 
             return list;
         }
@@ -495,6 +493,16 @@ namespace Lama.BusinessLogic.Services
             {
                 album.SharedAlbums.Remove(sharedAlbum);
             }
+        }
+
+        public async Task<int> RemovePhotosFromAlbum(int albumId, int[] photos)
+        {
+            foreach(var p in photos)
+            {
+                var photoAlbum = await Context.PhotoAlbums.FirstOrDefaultAsync(pa => pa.AlbumId == albumId && pa.PhotoId == p);
+                Context.PhotoAlbums.Remove(photoAlbum);
+            }
+            return await Context.SaveChangesAsync();
         }
     }
 }

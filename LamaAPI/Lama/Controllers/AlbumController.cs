@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
+using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Photo;
 using Microsoft.AspNetCore.Authorization;
@@ -76,6 +77,12 @@ namespace Lama.Controllers
         public async Task<int> DeleteAlbumCover(int id)
         {
             return await _service.RemoveAlbumCover(id);
+        }
+
+        [HttpDelete("photos/{albumId}")]
+        public async Task<int> DeletePhotosFromAlbum(int albumId, [FromBody]int[] photos)
+        {
+            return await _service.RemovePhotosFromAlbum(albumId, photos);
         }
 
         [HttpGet("details/{id}")]

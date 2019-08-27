@@ -96,7 +96,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<int> DeleteFavorite(int userId, int photoId)
         {
-            Favorite fav = await Context.Favorites.Where(f => f.UserId == userId && f.PhotoId == photoId).FirstOrDefaultAsync();
+            Favorite fav = await Context.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.PhotoId == photoId);
             if (fav != null)
             {
                 await Delete(fav);
@@ -112,6 +112,16 @@ namespace Lama.BusinessLogic.Services
             {
                 Favorite fav = await Context.Favorites.FindAsync(f);
                 Context.Favorites.Remove(fav);
+            }
+            return await Context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteSelectedFavorites(int userId, int[] photos)
+        {
+            foreach(var p in photos)
+            {
+                var fav = await Context.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.PhotoId == p);
+                Context.Remove(fav);
             }
             return await Context.SaveChangesAsync();
         }

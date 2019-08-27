@@ -52,8 +52,11 @@ namespace Lama.BusinessLogic.Services
             {
                 throw new NotFoundException(nameof(SharedPhoto), id);
             }
-            var url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
-            
+            string url = String.Empty;
+            if (sharedPhotoData.User.Photo != null)
+            {
+                url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
+            }
             var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
             mappedResponse.User.PhotoUrl = url;
 
