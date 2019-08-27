@@ -9,7 +9,12 @@ import {
   NgZone
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-import { UpdatePhotoDTO, ImageEditedArgs, MenuItem, Photo } from 'src/app/models';
+import {
+  UpdatePhotoDTO,
+  ImageEditedArgs,
+  MenuItem,
+  Photo
+} from 'src/app/models';
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -38,7 +43,7 @@ export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
   photo: PhotoRaw;
-  photos: PhotoRaw[];
+  photos: PhotoRaw[] = [];
   isShown: boolean;
   isInfoShown = false;
   imageUrl: string;
@@ -104,7 +109,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -461,19 +465,21 @@ export class PhotoModalComponent implements OnInit {
   }
 
   saveMe() {
-    const photos: Photo[] = [{
-      imageUrl: this.imageUrl,
-      description: this.photo.description,
-      authorId: this.userId,
-      filename: this.photo.name,
-      location: this.photo.location
-    }];
+    const photos: Photo[] = [
+      {
+        imageUrl: this.imageUrl,
+        description: this.photo.description,
+        authorId: this.userId,
+        filename: this.photo.name,
+        location: this.photo.location
+      }
+    ];
 
     this.fileService.sendPhotos(photos).subscribe(
       uploadedPhotos => {
         this.notifier.notify('success', 'Photo saved');
       },
-        error => this.notifier.notify('error', 'Error saving photo')
+      error => this.notifier.notify('error', 'Error saving photo')
     );
   }
 }
