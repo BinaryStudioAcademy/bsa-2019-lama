@@ -9,7 +9,7 @@ import {
   ComponentFactoryResolver
 } from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-import { PhotoRaw, User } from 'src/app/models';
+import { PhotoRaw, User, PhotoToDeleteRestoreDTO } from 'src/app/models';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { FileService } from 'src/app/services/file.service';
@@ -101,6 +101,7 @@ export class MainAlbumComponent implements OnInit {
       this.AddToAlbumNewPhotos.bind(this)
     );
   }
+
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
@@ -113,6 +114,7 @@ export class MainAlbumComponent implements OnInit {
         .subscribe(url => (this.imageUrl = url));
     }
   }
+
   DownloadAlbum(event) {
     this.ClickDownload.emit(this.album);
   }
@@ -136,5 +138,27 @@ export class MainAlbumComponent implements OnInit {
         );
     }
     this.deleteAlbumEvent.emit(this.album);
+  }
+
+  private removeDuplicates() {
+    const deletingArray = [];
+    this.fileService.getDuplicates(this.currentUser.id).subscribe(duplicates => {
+      this.album.photoAlbums.forEach(photo => {
+        if (duplicates.map(x => x.name).includes(photo.name)) {
+          deletingArray.push(photo.id);
+        }
+      });
+      deletingArray.forEach(id => {
+        this.fileService.markPhotoAsDeleted(id).subscribe(x => x);
+        this.notifier.notify('success', 'Duplicates removed to the bin');
+      });
+      if (this.album.photoAlbums.length === 0) {
+        this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+      }
+
+      // this.fileService.deletePhotosPermanently(deletingArray).subscribe(x => {
+      //   this.notifier.notify('success', 'successssss');
+      // });
+    });
   }
 }

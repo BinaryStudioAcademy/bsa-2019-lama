@@ -10,7 +10,7 @@ namespace Photo.Domain.MappingProfiles
         public PhotoProfile()
         {
             CreateMap<PhotoDocument, DeletedPhotoDTO>();
-            CreateMap<PhotoDocument, CreatePhotoResultDTO>();
+            CreateMap<PhotoDocument, CreatePhotoResultDTO>().ReverseMap();
         }
     }
 }

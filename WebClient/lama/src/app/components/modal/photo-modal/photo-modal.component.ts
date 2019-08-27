@@ -9,7 +9,7 @@ import {
   NgZone
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-import { UpdatePhotoDTO, ImageEditedArgs, MenuItem, Photo } from 'src/app/models';
+import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -37,29 +37,27 @@ import { PhotodetailsService } from 'src/app/services/photodetails.service';
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
-  photo: PhotoRaw;
-  photos: PhotoRaw[] = [];
-  isShown: boolean;
-  isInfoShown = false;
-  imageUrl: string;
-  userId: number;
-  showSharedModal = false;
-  showSharedByLinkModal = false;
-  showSharedByEmailModal = false;
+  public photo: PhotoRaw;
+  public isShown: boolean;
+  public isInfoShown = false;
+  public imageUrl: string;
+  public userId: number;
+  public showSharedModal = false;
+  public showSharedByLinkModal = false;
+  public showSharedByEmailModal = false;
   albums: PhotoDetailsAlbum[] = [];
   isShowSpinner = true;
-  clickedMenuItem: MenuItem;
-  shownMenuItems: MenuItem[];
-  isEditing: boolean;
-  isDeleting: boolean;
+  public clickedMenuItem: MenuItem;
+  public shownMenuItems: MenuItem[];
+  public isEditing: boolean;
   showEditModal: boolean;
 
   // events
   @Output()
-  deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvent = new EventEmitter<number>();
   @Output()
-  updatePhotoEvent = new EventEmitter<PhotoRaw>();
-  hasUserReaction: boolean;
+  public updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  public hasUserReaction: boolean;
 
   // fields
   private fileService: FileService;
@@ -67,6 +65,9 @@ export class PhotoModalComponent implements OnInit {
   private userService: UserService;
   private lastDescription: string;
   private defaultMenuItem: MenuItem[];
+  private editingMenuItem: MenuItem[];
+  private deletingMenuItem: MenuItem[];
+
   currentUser: User;
 
   // location
@@ -77,7 +78,7 @@ export class PhotoModalComponent implements OnInit {
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
-  searchElementRef: ElementRef;
+  public searchElementRef: ElementRef;
 
   // constructors
   constructor(
@@ -101,6 +102,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -133,6 +135,7 @@ export class PhotoModalComponent implements OnInit {
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
+
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
       location => (this.address = location)
@@ -206,13 +209,20 @@ export class PhotoModalComponent implements OnInit {
       { title: 'remove', icon: 'clear' },
       { title: 'download', icon: 'cloud_download' },
       { title: 'edit', icon: 'edit' },
-      { title: 'info', icon: 'info' },
-      { title: 'save', icon: 'save' }
+      { title: 'info', icon: 'info' }
+    ];
+    this.editingMenuItem = [
+      { title: 'crop', icon: 'crop' },
+      { title: 'rotate', icon: 'rotate_left' }
+    ];
+    this.deletingMenuItem = [
+      { title: 'yes', icon: 'done' },
+      { title: 'no', icon: 'remove' }
     ];
   }
 
   // methods
-  public menuClickHandler(clickedMenuItem: MenuItem): void {
+  menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
 
     // share
@@ -222,9 +232,15 @@ export class PhotoModalComponent implements OnInit {
 
     // remove
     if (clickedMenuItem === this.defaultMenuItem[1]) {
-      this.photos.push(this.photo);
-      this.isDeleting = true;
-      // this.deleteImage();
+      this.shownMenuItems = this.deletingMenuItem;
+    }
+
+    if (clickedMenuItem === this.deletingMenuItem[0]) {
+      this.deleteImage();
+    }
+
+    if (clickedMenuItem === this.deletingMenuItem[1]) {
+      this.shownMenuItems = this.defaultMenuItem;
     }
 
     // download
@@ -232,10 +248,6 @@ export class PhotoModalComponent implements OnInit {
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
       this.isEditing = true;
-    }
-
-    if (clickedMenuItem === this.defaultMenuItem[5]) {
-      this.saveMe();
     }
 
     // info
@@ -252,12 +264,11 @@ export class PhotoModalComponent implements OnInit {
     }
   }
 
-  public mouseLeftOverlayHandler(): void {
+  mouseLeftOverlayHandler(): void {
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
-    this.isShowSpinner = true;
+  saveEditedImageHandler(editedImage: ImageEditedArgs): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -273,11 +284,11 @@ export class PhotoModalComponent implements OnInit {
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo updated');
-        this.isShowSpinner = false;
       },
       error => this.notifier.notify('error', 'Error updating photo')
     );
   }
+
   ChangeDescription(desc) {
     if (this.lastDescription === this.photo.description) {
       return;
@@ -315,11 +326,10 @@ export class PhotoModalComponent implements OnInit {
     );
   }
 
-  public goBackToImageView(): void {
+  goBackToImageView(): void {
     this.isEditing = false;
-    this.isDeleting = false;
   }
-  public closeModal(): void {
+  closeModal(): void {
     this.isShown = false;
   }
 
@@ -339,20 +349,13 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
-        this.deletePhotoEvenet.emit(this.photo.id);
+        this.deletePhotoEvent.emit(this.photo.id);
         this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')
     );
   }
-
-  deleteImages(photos: number[]) {
-    for (const p of photos) {
-      this.deletePhotoEvenet.emit(p);
-    }
-  }
-
-  ReactionPhoto() {
+  public ReactionPhoto() {
     // TODO: you can not like your own photos
     // but currently we are testing
     // so lets suppose you can like any photos
@@ -420,7 +423,6 @@ export class PhotoModalComponent implements OnInit {
     modalElem.classList.add('active');
     overlay.classList.add('active');
   }
-
   CloseModalForPickDate(event) {
     const overlay = document.getElementsByClassName('overlay-date')[0];
     const modalElem = document.getElementsByClassName('modal-date')[0];
@@ -433,24 +435,7 @@ export class PhotoModalComponent implements OnInit {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  isBlockById(): boolean {
+  public isBlockById(): boolean {
     return this.photo.userId !== this.userId;
-  }
-
-  saveMe() {
-    const photos: Photo[] = [{
-      imageUrl: this.imageUrl,
-      description: this.photo.description,
-      authorId: this.userId,
-      filename: this.photo.name,
-      location: this.photo.location
-    }];
-
-    this.fileService.sendPhoto(photos).subscribe(
-      uploadedPhotos => {
-        this.notifier.notify('success', 'Photo saved');
-      },
-        error => this.notifier.notify('error', 'Error saving photo')
-    );
   }
 }

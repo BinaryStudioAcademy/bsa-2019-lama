@@ -62,8 +62,8 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
+    componentRef.instance.deletePhotoEvent.subscribe(this.deletePhotoHandler.bind(this));
     componentRef.instance.currentUser = this.currentUser;
-
   }
 
   ngDoCheck() {

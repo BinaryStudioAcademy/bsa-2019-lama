@@ -33,10 +33,13 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   isSearchTriggered: boolean;
   currentUser: User;
   selectedPhotos: PhotoRaw[];
+  duplicates: UploadPhotoResultDTO[] = [];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
   isHaveAnyPhotos = false;
+  duplicatesFound = false;
   numberLoadPhoto = 30;
+
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -178,8 +181,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     }
   }
 
-  // methods
-  public uploadFile(event) {
+  uploadFile(event) {
     this.modalUploadPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(
       PhotoUploadModalComponent
@@ -191,11 +193,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
     componentRef.instance.toggleModal();
   }
-  public uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
+  uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
     this.photos.push(...uploadedPhotos);
   }
 
-  public photoSelected(eventArgs: PhotoRawState) {
+  photoSelected(eventArgs: PhotoRawState) {
     if (eventArgs.isSelected) {
       this.selectedPhotos.push(eventArgs.photo);
     } else {
@@ -204,12 +206,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     }
   }
 
-  public photoClicked(eventArgs: PhotoRaw) {
+  photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvenet.subscribe(
+    componentRef.instance.deletePhotoEvent.subscribe(
       this.deletePhotoHandler.bind(this)
     );
     componentRef.instance.currentUser = this.currentUser;
@@ -218,11 +220,15 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
   }
 
-  public deletePhotoHandler(photoToDeleteId: number): void {
+  deletePhotoHandler(photoToDeleteId: number): void {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
-  public updatePhotoHandler(updatedPhoto: PhotoRaw): void {
+  modalHandler(duplicatesRemoved: boolean) {
+    this.duplicatesFound = duplicatesRemoved;
+  }
+
+  updatePhotoHandler(updatedPhoto: PhotoRaw): void {
     const index = this.photos.findIndex(i => i.id === updatedPhoto.id);
     this.photos[index] = Object.assign({}, updatedPhoto);
   }
@@ -239,8 +245,19 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.selectedPhotos = [];
   }
 
-  public downloadImages() {
+  downloadImages() {
     this.zipService.downloadImages(this.selectedPhotos);
+  }
+
+  findDuplicates() {
+    this.fileService.getDuplicates(this.currentUser.id).subscribe(duplicates => {
+      this.duplicates = duplicates;
+      if (this.duplicates.length > 0) {
+        this.duplicatesFound = true;
+      } else {
+        this.notifier.notify('success', 'No duplicates found');
+      }
+    });
   }
 
   onScroll() {

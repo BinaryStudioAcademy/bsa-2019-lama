@@ -5,6 +5,7 @@ using Services.Models;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
 using System;
+using System.Data.SqlClient;
 using Nest;
 using Photo.Domain.Settings;
 using Photo.Domain.BlobModels;
@@ -15,7 +16,7 @@ using Photo.DataAccess.Implementation;
 using Photo.DataAccess.Interfaces;
 using Photo.Infrastructure;
 using AutoMapper;
-
+using Microsoft.Azure.Storage;
 using NestConnectionSettings = Nest.ConnectionSettings;
 using QueueConnectionSettings = Services.Models.ConnectionSettings;
 
@@ -50,12 +51,21 @@ namespace Photo.Infrastructure
 
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
+            var blobEndpointUrl =
+                CloudStorageAccount.Parse(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")
+                    .ConnectionString).BlobEndpoint.ToString();
             services.AddScoped<IMessageService, MessageService>(serviceProvider => MessageServiceFactory(serviceProvider, configuration));
 
             services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
                 f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
             
-            services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IPhotoService, PhotoService>(serviceProvider => 
+                new PhotoService(
+                    serviceProvider.GetService<IElasticStorage>(),
+                    serviceProvider.GetService<IPhotoBlobStorage>(),
+                    serviceProvider.GetService<IMessageService>(),
+                    serviceProvider.GetService<IMapper>(),
+                    blobEndpointUrl));
         }
         private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
         {

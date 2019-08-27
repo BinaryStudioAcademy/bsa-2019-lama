@@ -15,6 +15,7 @@ namespace Lama.Domain.DTO.Photo
         public string OriginalBlobId { get; set; }
         public string SharedLink { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsDuplicate { get; set; }
         public DateTime UploadDate { get; set; }
         public string Description { get; set; }
         public string Location { get; set; }
