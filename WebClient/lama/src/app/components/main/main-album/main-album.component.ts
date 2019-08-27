@@ -140,17 +140,25 @@ export class MainAlbumComponent implements OnInit {
     this.deleteAlbumEvent.emit(this.album);
   }
 
-  removeDuplicates() {
+  private removeDuplicates() {
     const deletingArray = [];
     this.fileService.getDuplicates(this.currentUser.id).subscribe(duplicates => {
       this.album.photoAlbums.forEach(photo => {
         if (duplicates.map(x => x.name).includes(photo.name)) {
-          deletingArray.push(new PhotoToDeleteRestoreDTO(photo.id));
+          deletingArray.push(photo.id);
         }
       });
-      this.fileService.deletePhotosPermanently(deletingArray).subscribe(x => {
-        this.notifier.notify('success', 'successssss');
+      deletingArray.forEach(id => {
+        this.fileService.markPhotoAsDeleted(id).subscribe(x => x);
+        this.notifier.notify('success', 'Duplicates removed to the bin');
       });
+      if (this.album.photoAlbums.length === 0) {
+        this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+      }
+
+      // this.fileService.deletePhotosPermanently(deletingArray).subscribe(x => {
+      //   this.notifier.notify('success', 'successssss');
+      // });
     });
   }
 }
