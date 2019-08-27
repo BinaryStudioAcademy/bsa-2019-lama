@@ -350,6 +350,7 @@ export class PhotoModalComponent implements OnInit {
     for (const p of photos) {
       this.deletePhotoEvenet.emit(p);
     }
+    this.closeModal();
   }
 
   ReactionPhoto() {
