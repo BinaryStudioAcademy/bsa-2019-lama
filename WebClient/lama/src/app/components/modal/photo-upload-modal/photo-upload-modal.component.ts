@@ -45,6 +45,7 @@ export class PhotoUploadModalComponent implements OnInit {
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
   >();
+  loaded = true;
 
 
   constructor(
@@ -129,6 +130,7 @@ export class PhotoUploadModalComponent implements OnInit {
   }
 
   async onFileDropped(files: File[]) {
+    this.loaded = false;
     this.showSpinner = true;
     this.photos = [];
     let latitude;
@@ -179,6 +181,7 @@ export class PhotoUploadModalComponent implements OnInit {
         });
       }
     }
+    this.loaded = true;
   }
 
   toBase64(file): Promise<string> {
