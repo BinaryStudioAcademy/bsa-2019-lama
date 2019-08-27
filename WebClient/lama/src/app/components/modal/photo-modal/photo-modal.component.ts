@@ -9,7 +9,7 @@ import {
   NgZone
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
-import { UpdatePhotoDTO, ImageEditedArgs, MenuItem } from 'src/app/models';
+import { UpdatePhotoDTO, ImageEditedArgs, MenuItem, Photo } from 'src/app/models';
 import { FileService, AuthService, UserService } from 'src/app/services';
 import { User } from 'src/app/models/User/user';
 import { NewLike } from 'src/app/models/Reaction/NewLike';
@@ -37,27 +37,29 @@ import { PhotodetailsService } from 'src/app/services/photodetails.service';
 export class PhotoModalComponent implements OnInit {
   // properties
   @Input()
-  public photo: PhotoRaw;
-  public isShown: boolean;
-  public isInfoShown = false;
-  public imageUrl: string;
-  public userId: number;
-  public showSharedModal = false;
-  public showSharedByLinkModal = false;
-  public showSharedByEmailModal = false;
+  photo: PhotoRaw;
+  photos: PhotoRaw[];
+  isShown: boolean;
+  isInfoShown = false;
+  imageUrl: string;
+  userId: number;
+  showSharedModal = false;
+  showSharedByLinkModal = false;
+  showSharedByEmailModal = false;
   albums: PhotoDetailsAlbum[] = [];
   isShowSpinner = true;
-  public clickedMenuItem: MenuItem;
-  public shownMenuItems: MenuItem[];
-  public isEditing: boolean;
+  clickedMenuItem: MenuItem;
+  shownMenuItems: MenuItem[];
+  isEditing: boolean;
+  isDeleting: boolean;
   showEditModal: boolean;
 
   // events
   @Output()
   deletePhotoEvent = new EventEmitter<number>();
   @Output()
-  public updatePhotoEvent = new EventEmitter<PhotoRaw>();
-  public hasUserReaction: boolean;
+  updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  hasUserReaction: boolean;
 
   // fields
   private fileService: FileService;
@@ -78,7 +80,7 @@ export class PhotoModalComponent implements OnInit {
   private geoCoder;
   GPS: any;
   @ViewChild('search', { static: true })
-  public searchElementRef: ElementRef;
+  searchElementRef: ElementRef;
 
   // constructors
   constructor(
@@ -217,7 +219,9 @@ export class PhotoModalComponent implements OnInit {
     ];
     this.deletingMenuItem = [
       { title: 'yes', icon: 'done' },
-      { title: 'no', icon: 'remove' }
+      { title: 'no', icon: 'remove' },
+      { title: 'info', icon: 'info' },
+      { title: 'save', icon: 'save' }
     ];
   }
 
@@ -236,7 +240,8 @@ export class PhotoModalComponent implements OnInit {
     }
 
     if (clickedMenuItem === this.deletingMenuItem[0]) {
-      this.deleteImage();
+      this.photos.push(this.photo);
+      this.isDeleting = true;
     }
 
     if (clickedMenuItem === this.deletingMenuItem[1]) {
@@ -248,6 +253,10 @@ export class PhotoModalComponent implements OnInit {
     // edit
     if (clickedMenuItem === this.defaultMenuItem[3]) {
       this.isEditing = true;
+    }
+
+    if (clickedMenuItem === this.defaultMenuItem[5]) {
+      this.saveMe();
     }
 
     // info
@@ -269,6 +278,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+    this.isShowSpinner = true;
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -284,6 +294,7 @@ export class PhotoModalComponent implements OnInit {
         this.updatePhotoEvent.emit(this.photo);
         this.goBackToImageView();
         this.notifier.notify('success', 'Photo updated');
+        this.isShowSpinner = false;
       },
       error => this.notifier.notify('error', 'Error updating photo')
     );
@@ -328,7 +339,9 @@ export class PhotoModalComponent implements OnInit {
 
   goBackToImageView(): void {
     this.isEditing = false;
+    this.isDeleting = false;
   }
+
   closeModal(): void {
     this.isShown = false;
   }
@@ -443,7 +456,24 @@ export class PhotoModalComponent implements OnInit {
     this.isInfoShown = !this.isInfoShown;
   }
 
-  public isBlockById(): boolean {
+  isBlockById() {
     return this.photo.userId !== this.userId;
+  }
+
+  saveMe() {
+    const photos: Photo[] = [{
+      imageUrl: this.imageUrl,
+      description: this.photo.description,
+      authorId: this.userId,
+      filename: this.photo.name,
+      location: this.photo.location
+    }];
+
+    this.fileService.sendPhotos(photos).subscribe(
+      uploadedPhotos => {
+        this.notifier.notify('success', 'Photo saved');
+      },
+        error => this.notifier.notify('error', 'Error saving photo')
+    );
   }
 }
