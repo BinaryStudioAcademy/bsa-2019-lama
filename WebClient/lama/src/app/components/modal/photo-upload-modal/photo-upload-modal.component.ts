@@ -12,7 +12,7 @@ import {
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
 import { Photo } from 'src/app/models';
-import imageCompression from 'browser-image-compression';
+import { Ng2ImgToolsService } from 'ng2-img-tools';
 import { environment } from '../../../../environments/environment';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
@@ -50,7 +50,8 @@ export class PhotoUploadModalComponent implements OnInit {
     private fileService: FileService,
     private notifier: NotifierService,
     private mapsAPILoader: MapsAPILoader,
-    private router: Router
+    private router: Router,
+    private ng2ImgToolsService: Ng2ImgToolsService
   ) {}
 
   ngOnInit() {
@@ -134,7 +135,7 @@ export class PhotoUploadModalComponent implements OnInit {
     }
   }
 
-  async onFileDropped(files: File[]) {
+  async onFileDropped(files) {
     this.showSpinner = true;
     let latitude;
     let longitude;
@@ -147,41 +148,41 @@ export class PhotoUploadModalComponent implements OnInit {
         console.log(latitude);
         console.log(longitude);
         const d = dump(exifObj);
-        const compressedFile = await imageCompression(
-          file,
-          environment.compressionOptions
-        );
-        const base64 = await this.toBase64(compressedFile);
-        remove(base64);
-        const modifiedObject = insert(d, base64);
-        this.showSpinner = false;
-        if (latitude && longitude) {
-          getLocation(latitude, longitude, this.geoCoder).then(location => {
-            this.address = location;
+        const compressedFile = await this.ng2ImgToolsService
+          .compress([file], environment.compressionOptions.maxSizeMB)
+          .subscribe(async result => {
+            const base64 = await this.toBase64(result);
+            remove(base64);
+            const modifiedObject = insert(d, base64);
+            this.showSpinner = false;
+            if (latitude && longitude) {
+              getLocation(latitude, longitude, this.geoCoder).then(location => {
+                this.address = location;
+                this.photos.push({
+                  imageUrl: modifiedObject,
+                  filename: file.name,
+                  location: this.address
+                });
+              });
+            } else {
+              this.photos.push({
+                imageUrl: modifiedObject,
+                filename: file.name,
+                location: this.address
+              });
+            }
+          });
+      } else {
+        const compressedFile = this.ng2ImgToolsService
+          .compress([file], environment.compressionOptions.maxSizeMB)
+          .subscribe(async result => {
+            this.showSpinner = false;
             this.photos.push({
-              imageUrl: modifiedObject,
+              imageUrl: await this.toBase64(result),
               filename: file.name,
               location: this.address
             });
           });
-        } else {
-          this.photos.push({
-            imageUrl: modifiedObject,
-            filename: file.name,
-            location: this.address
-          });
-        }
-      } else {
-        const compressedFile = await imageCompression(
-          file,
-          environment.compressionOptions
-        );
-        this.showSpinner = false;
-        this.photos.push({
-          imageUrl: await this.toBase64(compressedFile),
-          filename: file.name,
-          location: this.address
-        });
       }
     }
   }
