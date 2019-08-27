@@ -54,19 +54,17 @@ export class DeletedPhotosComponent implements OnInit {
   }
 
   public restoreSelectedPhoto(): void {
-    const photosToRestore: PhotoToDeleteRestoreDTO[] = this.getSelectedItem();
-
+    const photosToRestore: PhotoToDeleteRestoreDTO[] = this.getPhotos();
     this.fileService
-      .restoresDeletedPhotos(photosToRestore)
-      .subscribe(
-        response => this.removeSelectedPhotoFromView(),
-        error => this.notifier.notify('error', 'Error restoring photo')
-      );
+        .restoresDeletedPhotos(photosToRestore)
+        .subscribe(
+          response => this.removeSelectedPhotoFromView(),
+          error => this.notifier.notify('error', 'Error restoring photo')
+        );
   }
 
   public deleteSelectedPhoto(): void {
-    const photosToDelete: PhotoToDeleteRestoreDTO[] = this.getSelectedItem();
-
+    const photosToDelete: PhotoToDeleteRestoreDTO[] = this.getPhotos();
     this.fileService
       .deletePhotosPermanently(photosToDelete)
       .subscribe(
@@ -75,11 +73,24 @@ export class DeletedPhotosComponent implements OnInit {
       );
   }
 
+  private getPhotos() {
+    if (this.countSelectedPhtoto) {
+     return this.getSelectedItem();
+    } else {
+      return this.deletedPhotos;
+    }
+  }
+
   private getSelectedItem(): PhotoToDeleteRestoreDTO[] {
     return this.deletedPhotos.filter(p => p.isMarked);
   }
+
   private removeSelectedPhotoFromView(): void {
-    this.deletedPhotos = this.deletedPhotos.filter(p => !p.isMarked);
+    if (!this.countSelectedPhtoto) {
+      this.deletedPhotos = this.deletedPhotos.filter(p => p.isMarked);
+    } else {
+      this.deletedPhotos = this.deletedPhotos.filter(p => !p.isMarked);
+    }
     this.countSelectedPhtoto = 0;
   }
 }
