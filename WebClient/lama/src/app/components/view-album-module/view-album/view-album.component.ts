@@ -232,10 +232,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
         photoIds: ids
       });
     }
-	
-	if(!ids.length) {
-		this.album.photo = null;
-	}
+
+    if (!ids.length) {
+      this.album.photo = null;
+    }
   }
 
   downloadImages() {
