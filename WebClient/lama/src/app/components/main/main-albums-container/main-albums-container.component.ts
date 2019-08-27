@@ -126,13 +126,17 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
 
   ArchiveAlbum(event: ViewAlbum) {
-    this.albumService.ArchiveAlbum(event.photoAlbums).subscribe(
-      x => {
-        this.ArchivePhotos = x;
-        this.ConvertToImage(event.title);
-      },
-      error => this.notifier.notify('error', 'Error archive album')
-    );
+    if (event.photoAlbums) {
+      this.albumService.ArchiveAlbum(event.photoAlbums).subscribe(
+        x => {
+          this.ArchivePhotos = x;
+          this.ConvertToImage(event.title);
+        },
+        error => this.notifier.notify('error', 'Error archive album')
+      );
+    } else {
+      this.notifier.notify('error', 'Cannot download the empty album');
+    }
   }
 
   ConvertToImage(name) {

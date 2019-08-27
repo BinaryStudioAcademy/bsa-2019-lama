@@ -52,9 +52,9 @@
                             </div>
                           </ng-template>
                           <ng-template ngSwitchCase="save">
-                            <div [appIsBlocked]="!isBlockById()">
+                            <div class="tooltip" [appIsBlocked]="!isBlockById()">
                               <i class="material-icons is-block">{{ item.icon }}</i>
-                              <span> {{ item.title }} </span>
+                              <span class="tooltiptext"> {{ item.title }} </span>
                             </div>
                           </ng-template>
                           <ng-template ngSwitchCase="download">
