@@ -12,7 +12,7 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" (click)="deleteImages()">
+        <div class="dropdown-item" (click)="deleteWindow()">
           <p>Delete</p>
         </div>
         <div class="dropdown-item" (click)="downloadImages()">
@@ -26,6 +26,11 @@
   </div>
 
 </div>
+
+<ng-template [ngIf]="isDeleting">
+  <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
+  </app-delete-modal>
+</ng-template>
 
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
   [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">

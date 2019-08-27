@@ -242,7 +242,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     this.isDeleting = true;
   }
 
-  public goBackToImageView(): void {
+  goBackToImageView(): void {
     this.isDeleting = false;
   }
 

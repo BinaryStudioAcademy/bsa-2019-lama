@@ -39,6 +39,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   isHaveAnyPhotos = false;
   duplicatesFound = false;
   numberLoadPhoto = 30;
+  isDeleting: boolean;
 
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
@@ -268,5 +269,19 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.photos.length,
       this.numberLoadPhoto
     );
+  }
+
+  deleteWindow() {
+    this.isDeleting = true;
+  }
+
+  goBackToImageView(): void {
+    this.isDeleting = false;
+  }
+
+  deletePhotosHandler(photosToDelete: number[]) {
+    for (const p of photosToDelete) {
+      this.deletePhotoHandler(p);
+    }
   }
 }

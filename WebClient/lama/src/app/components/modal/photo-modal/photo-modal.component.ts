@@ -355,7 +355,15 @@ export class PhotoModalComponent implements OnInit {
       error => this.notifier.notify('error', 'Error deleting image')
     );
   }
-  public ReactionPhoto() {
+
+  deleteImages(photos: number[]) {
+    for (const p of photos) {
+      this.deletePhotoEvenet.emit(p);
+    }
+    this.closeModal();
+  }
+
+  ReactionPhoto() {
     // TODO: you can not like your own photos
     // but currently we are testing
     // so lets suppose you can like any photos
