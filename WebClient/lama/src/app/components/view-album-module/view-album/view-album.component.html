@@ -13,24 +13,23 @@
       </button>
     </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-            <div class="dropdown-content">
-                <div class="dropdown-item" (click)="deleteWindow()">
-                    <p>Delete</p>
-                </div>
-                <div class="dropdown-item" (click)="downloadImages()">
-                    <p>Download</p>
-                </div>
-            </div>
-
-        </div>
+          <div class="dropdown-content">
+              <div class="dropdown-item" (click)="deleteWindow()">
+                <p>Delete</p>
+              </div>
+              <div class="dropdown-item" (click)="downloadImages()">
+                <p>Download</p>
+              </div>
+          </div>  
       </div>
     </div>
-  <div *ngIf="!isFavorite" class="photos">
-    <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
+    <div *ngIf="!isFavorite()" class="photos">
+      <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
+  </div>
 </div>
 <ng-template [ngIf]="isDeleting">
-<app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
-</app-delete-modal>
+  <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
+  </app-delete-modal>
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
   <div class="title">
