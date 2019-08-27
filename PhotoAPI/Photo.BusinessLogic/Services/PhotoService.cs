@@ -305,7 +305,7 @@ namespace Photo.BusinessLogic.Services
             var newItemBlob = Convert.FromBase64String(newItemBase64);
             using (var webClient = new WebClient())
             {
-                return  photoDocumentsCollection.Select(element => $"{_blobUrl}/{element.BlobId}")
+                return  photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
                     .Select(existingUrl => webClient.DownloadData(existingUrl))
                     .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
             }
