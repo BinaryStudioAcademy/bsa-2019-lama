@@ -63,7 +63,6 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
     componentRef.instance.currentUser = this.currentUser;
-
   }
 
   ngDoCheck() {

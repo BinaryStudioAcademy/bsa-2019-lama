@@ -10,6 +10,7 @@ export interface PhotoRaw {
     originalBlobId?: string;
     sharedLink?: string;
     isDeleted?: boolean;
+    isDuplicate?: boolean;
     uploadDate?: Date;
     description?: string;
     location?: string;

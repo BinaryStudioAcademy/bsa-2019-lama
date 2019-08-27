@@ -15,5 +15,6 @@ namespace Lama.Domain.DTO.Photo
         public bool IsDeleted { get; set; }
         public string Description { get; set; }
         public Like[] Reactions { set; get; }
+        public bool IsDuplicate { get; set; }
     }
 }

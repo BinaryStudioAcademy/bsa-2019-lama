@@ -2,6 +2,7 @@ import { LikeDTO } from '../Reaction/LikeDTO';
 
 export interface UploadPhotoResultDTO {
   id: number;
+  name: string;
   blobId: string;
   blob64Id: string;
   blob256Id: string;
@@ -11,4 +12,5 @@ export interface UploadPhotoResultDTO {
   isDeleted: boolean;
   description: string;
   reactions: LikeDTO[];
+  isDuplicate: boolean;
 }

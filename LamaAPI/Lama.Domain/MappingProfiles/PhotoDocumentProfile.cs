@@ -10,6 +10,7 @@ namespace Lama.Domain.MappingProfiles
         {
             CreateMap<PhotoDocument, PhotoDocumentDTO>().ReverseMap();
             CreateMap<UpdatedPhotoResultDTO, PhotoDocumentDTO>().ReverseMap();
+            CreateMap<UploadPhotoResultDTO, PhotoDocumentDTO>().ReverseMap();
         }
     }
 }

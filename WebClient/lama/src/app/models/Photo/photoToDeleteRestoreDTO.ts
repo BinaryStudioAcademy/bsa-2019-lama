@@ -1,5 +1,9 @@
 // use this to send to server
 // which photo should be delted or restored
-export interface PhotoToDeleteRestoreDTO {
+export class PhotoToDeleteRestoreDTO {
     id: number;
+
+    constructor(receivedId: number) {
+      this.id = receivedId;
+    }
 }
