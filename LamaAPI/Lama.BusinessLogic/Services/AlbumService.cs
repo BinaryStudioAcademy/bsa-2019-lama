@@ -49,6 +49,7 @@ namespace Lama.BusinessLogic.Services
             var removedPhotoAlbums = removedIds.Select(item => photoAlbums.FirstOrDefault(i => i.PhotoId == item)).ToList();
             Context.PhotoAlbums.RemoveRange(removedPhotoAlbums);
             await Context.SaveChangesAsync();
+            
         }
 
         public async Task<int?> UpdateCover(UpdateAlbumDTO album)
@@ -497,6 +498,16 @@ namespace Lama.BusinessLogic.Services
             {
                 album.SharedAlbums.Remove(sharedAlbum);
             }
+        }
+        
+        public async Task<int> RemovePhotosFromAlbum(int albumId, int[] photos)
+        {
+            foreach(var p in photos)
+            {
+                var photoAlbum = await Context.PhotoAlbums.FirstOrDefaultAsync(pa => pa.AlbumId == albumId && pa.PhotoId == p);
+                Context.PhotoAlbums.Remove(photoAlbum);
+            }
+            return await Context.SaveChangesAsync();
         }
     }
 }
