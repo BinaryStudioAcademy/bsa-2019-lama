@@ -54,7 +54,7 @@ export class PhotoModalComponent implements OnInit {
 
   // events
   @Output()
-  deletePhotoEvenet = new EventEmitter<number>();
+  deletePhotoEvent = new EventEmitter<number>();
   @Output()
   public updatePhotoEvent = new EventEmitter<PhotoRaw>();
   public hasUserReaction: boolean;
@@ -102,6 +102,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -134,6 +135,7 @@ export class PhotoModalComponent implements OnInit {
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
+
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
       location => (this.address = location)
@@ -220,7 +222,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   // methods
-  public menuClickHandler(clickedMenuItem: MenuItem): void {
+  menuClickHandler(clickedMenuItem: MenuItem): void {
     this.clickedMenuItem = clickedMenuItem;
 
     // share
@@ -262,11 +264,11 @@ export class PhotoModalComponent implements OnInit {
     }
   }
 
-  public mouseLeftOverlayHandler(): void {
+  mouseLeftOverlayHandler(): void {
     this.shownMenuItems = this.defaultMenuItem;
   }
 
-  public saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+  saveEditedImageHandler(editedImage: ImageEditedArgs): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
       blobId: editedImage.originalImageUrl,
@@ -286,6 +288,7 @@ export class PhotoModalComponent implements OnInit {
       error => this.notifier.notify('error', 'Error updating photo')
     );
   }
+
   ChangeDescription(desc) {
     if (this.lastDescription === this.photo.description) {
       return;
@@ -323,10 +326,10 @@ export class PhotoModalComponent implements OnInit {
     );
   }
 
-  public goBackToImageView(): void {
+  goBackToImageView(): void {
     this.isEditing = false;
   }
-  public closeModal(): void {
+  closeModal(): void {
     this.isShown = false;
   }
 
@@ -346,7 +349,7 @@ export class PhotoModalComponent implements OnInit {
     this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
       res => {
         this.closeModal();
-        this.deletePhotoEvenet.emit(this.photo.id);
+        this.deletePhotoEvent.emit(this.photo.id);
         this.notifier.notify('success', 'Photo deleted');
       },
       error => this.notifier.notify('error', 'Error deleting image')

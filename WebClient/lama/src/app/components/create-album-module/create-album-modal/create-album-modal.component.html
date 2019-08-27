@@ -42,7 +42,7 @@
                 </div>
                 <div class="photos" [style.display]="this.photos.length==0 ? 'none' : 'block'">
                     <div class="photo" *ngFor="let photo of photos; let i = index">
-                        <div class="uploaded-image">
+                        <div class="uploaded-image" [ngStyle]="{'opacity': isDuplicate(photo)? '0.3': '1'}">
                             <img src="{{ photo.imageUrl }}" class="image"/>
                             <div class="overlay" (mouseenter)="mouseEnterOverlayHandler()" (mouseleave)="mouseLeftOverlayHandler()">
                               <div *ngIf="showRemoveButton" (click)="removePhoto(i)" class="remove-button">
@@ -60,7 +60,8 @@
 
         <!--footer-->
         <footer class="modal-card-foot buttons is-right">
-            <a [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="CreateAlbum()">Save Changes</a>
+            <a  *ngIf="!duplicatesFound || photos.length === 0" [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="CreateAlbum()">Save Changes</a>
+            <a  *ngIf="duplicatesFound" [className]="loaded ? 'button is-primary' : 'button is-primary is-loading'" (click)="createWithDuplicates()">Proceed with duplicates</a>
             <a class="button" (click)="toggleModal()">Cancel</a>
         </footer>
     </div>

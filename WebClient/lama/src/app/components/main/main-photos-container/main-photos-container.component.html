@@ -17,6 +17,10 @@
       </div>
     </div>
   </div>
+  <div *ngIf="!isAtLeastOnePhotoSelected" class="align-right">
+    <a class="button is-primary" (click)="findDuplicates()">Find Duplicates</a>
+  </div>
+
 </div>
 
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
@@ -40,6 +44,7 @@
   <spinner *ngIf="showSpinner"></spinner>
 
   <!--modal-->
+  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deletePhotoHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
   <template #modalPhotoContainer></template>
   <template #modalUploadPhoto></template>
 </div>

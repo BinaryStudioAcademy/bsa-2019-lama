@@ -1,0 +1,24 @@
+<div class="modal" id="duplicates-modal" [class.is-active]="isActive">
+  <div class="modal-background" (click)="toggleModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Duplicates found</p>
+      <button (click)="toggleModal()" class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div *ngFor="let photo of duplicatesUrls; let i = index">
+        <div class="uploaded-image">
+          <img src="{{ photo }}" class="image"/>
+        </div>
+      </div>
+      <!-- Content ... -->
+    </section>
+    <footer class="modal-card-foot buttons is-right">
+      <button class="button is-success" (click)="removeDuplicates()">
+        Remove duplicates
+      </button>
+      <button class="button" (click)="toggleModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+<notifier-container></notifier-container>

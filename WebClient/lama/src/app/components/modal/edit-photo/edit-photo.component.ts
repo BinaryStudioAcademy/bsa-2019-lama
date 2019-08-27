@@ -64,7 +64,7 @@ export class EditPhotoComponent {
     this.imageService = imageService;
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
-    this.colorPicker = '#000000';
+    this.colorPicker = '#ffffff';
   }
 
   // methods

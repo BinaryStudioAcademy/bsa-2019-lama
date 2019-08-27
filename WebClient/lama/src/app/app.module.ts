@@ -36,6 +36,7 @@ import { CheckFavoriteDirective } from './directives/check-favorite.directive';
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 import { SetAlbumCoverModalComponent } from './components/modal/set-album-cover-modal/set-album-cover-modal.component';
 import { ChooseAlbumCoverComponent } from './components/choose-album-cover/choose-album-cover.component';
+import { DuplicatesModalComponent } from './components/modal/duplicates-modal/duplicates-modal.component';
 import { NotificationModule } from './notification/notification.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
@@ -63,7 +64,8 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     CheckFavoriteDirective,
     SharedPageAlbumComponent,
     SetAlbumCoverModalComponent,
-    ChooseAlbumCoverComponent
+    ChooseAlbumCoverComponent,
+    DuplicatesModalComponent
   ],
   imports: [
     SharedModule,
