@@ -3,29 +3,56 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Upload photo</p>
-      <button (click)="toggleModal()" class="delete" aria-label="close"></button>
+      <button
+        (click)="toggleModal()"
+        class="delete"
+        aria-label="close"
+      ></button>
     </header>
     <section class="modal-card-body">
       <spinner *ngIf="showSpinner"></spinner>
-      <figure *ngIf="!showSpinner" id="modal-image-container" class="images" fileDrop
-        (fileDropped)="onFileDropped($event)">
+      <figure
+        id="modal-image-container"
+        class="images"
+        fileDrop
+        *ngIf="!showSpinner"
+        (fileDropped)="onFileDropped($event)"
+      >
         <img *ngIf="photos.length === 0" src="assets/your_photo_here.png" />
         <div class="image" *ngFor="let photo of photos; let i = index">
-          <div class="uploaded-image" [ngStyle]="{'opacity': isDuplicate(photo)? '0.3': '1'}">
+          <div
+            class="uploaded-image"
+            [ngStyle]="{ opacity: isDuplicate(photo) ? '0.3' : '1' }"
+          >
             <img src="{{ photo.imageUrl }}" />
-            <div class="overlay" (mouseenter)="mouseEnterOverlayHandler()" (mouseleave)="mouseLeftOverlayHandler()">
+            <div
+              class="overlay"
+              (mouseenter)="mouseEnterOverlayHandler()"
+              (mouseleave)="mouseLeftOverlayHandler()"
+            >
               <div (click)="removePhoto(i)" class="remove-button">
                 <i class="material-icons is-block">clear</i>
               </div>
             </div>
           </div>
 
-          <textarea class="textarea" placeholder="Description" id="{{ i }}" [(ngModel)]="desc[i]"></textarea>
+          <textarea
+            class="textarea"
+            placeholder="Description"
+            id="{{ i }}"
+            [(ngModel)]="desc[i]"
+          ></textarea>
         </div>
       </figure>
       <div class="file" *ngIf="!showSpinner">
         <label class="file-label">
-          <input (change)="onFileSelected($event)" class="file-input" type="file" accept="image/*" multiple />
+          <input
+            (change)="onFileSelected($event)"
+            class="file-input"
+            type="file"
+            accept="image/*"
+            multiple
+          />
           <span class="file-cta">
             <span class="file-icon">
               <i class="material-icons">cloud_upload</i>
@@ -39,10 +66,14 @@
       <!-- Content ... -->
     </section>
     <footer class="modal-card-foot buttons is-right">
-      <button *ngIf="!duplicatesFound" class="button is-success" (click)="saveChanges()">
+      <button *ngIf="!duplicatesFound" [className]="loaded ? 'button is-success' : 'button is-success is-loading'" (click)="saveChanges()">
         Save changes
       </button>
-      <button *ngIf="duplicatesFound" class="button is-success" (click)="uploadDuplicates()">
+      <button
+        *ngIf="duplicatesFound"
+        class="button is-success"
+        (click)="uploadDuplicates()"
+      >
         Proceed with duplicates
       </button>
       <button class="button" (click)="toggleModal()">Cancel</button>

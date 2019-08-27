@@ -45,7 +45,7 @@ export class PhotoUploadModalComponent implements OnInit {
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
   >();
-
+  loaded = true;
 
   constructor(
     private fileService: FileService,
@@ -87,7 +87,10 @@ export class PhotoUploadModalComponent implements OnInit {
         } else {
           this.removeUploaded(filteredPhotos);
           this.showSpinner = false;
-          this.notifier.notify('warning', 'This photos appear to be duplicates. Upload them anyway?');
+          this.notifier.notify(
+            'warning',
+            'This photos appear to be duplicates. Upload them anyway?'
+          );
         }
       },
       error => this.notifier.notify('error', 'Error sending photos')
@@ -107,7 +110,9 @@ export class PhotoUploadModalComponent implements OnInit {
 
   removeUploaded(filteredPhotos: UploadPhotoResultDTO[]) {
     filteredPhotos.forEach(filtered => {
-      const index = this.photos.findIndex(photo => photo.filename === filtered.name);
+      const index = this.photos.findIndex(
+        photo => photo.filename === filtered.name
+      );
       this.photos.splice(index, 1);
     });
   }
@@ -115,7 +120,9 @@ export class PhotoUploadModalComponent implements OnInit {
   resolveDuplicates(uploadedPhotos: UploadPhotoResultDTO[]) {
     if (uploadedPhotos.some(photo => photo.isDuplicate)) {
       this.duplicates = uploadedPhotos.filter(photo => photo.isDuplicate);
-      uploadedPhotos = uploadedPhotos.filter((photo) => !this.duplicates.includes(photo));
+      uploadedPhotos = uploadedPhotos.filter(
+        photo => !this.duplicates.includes(photo)
+      );
       this.duplicatesFound = true;
     }
     return uploadedPhotos;
@@ -129,8 +136,8 @@ export class PhotoUploadModalComponent implements OnInit {
   }
 
   async onFileDropped(files: File[]) {
+    this.loaded = false;
     this.showSpinner = true;
-    this.photos = [];
     let latitude;
     let longitude;
     for (const file of files) {
@@ -179,6 +186,7 @@ export class PhotoUploadModalComponent implements OnInit {
         });
       }
     }
+    this.loaded = true;
   }
 
   toBase64(file): Promise<string> {

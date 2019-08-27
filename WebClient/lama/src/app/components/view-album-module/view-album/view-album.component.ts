@@ -178,7 +178,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     ) {
       if (this.isFavorite()) {
         localStorage.removeItem('favoriteCover');
-      } else {
+      } else if (this.album.photo) {
         this.albumService
           .removeAlbumCover(this.album.id)
           .subscribe(
@@ -231,6 +231,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
         id: this.album.id,
         photoIds: ids
       });
+    }
+
+    if (!ids.length) {
+      this.album.photo = null;
     }
   }
 
