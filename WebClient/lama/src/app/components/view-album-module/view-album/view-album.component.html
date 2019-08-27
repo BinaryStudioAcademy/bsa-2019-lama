@@ -1,4 +1,4 @@
-<div class="photos">
+<div *ngIf="!isFavorite()" class="photos">
     <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
 </div>
 <div class="navigation">
