@@ -29,9 +29,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  public avatarUrl;
-  public searchCriteria = '';
-  public isActive = false;
+  avatarUrl;
+  searchCriteria = '';
+  isActive = false;
   searchHistory: string[];
   searchSuggestions: { [name: string]: string[] } = {};
   id: number;
@@ -39,10 +39,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   objectKeys = Object.keys;
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
+  auth: any; // TODO: Add type!
+  isSearchDropdownExpanded: boolean;
 
   // constructors
   constructor(
-    public auth: AuthService,
+    auth: AuthService,
     private router: Router,
     resolver: ComponentFactoryResolver,
     private shared: SharedService,
@@ -108,6 +110,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     }
   }
 
+  showSearchDropdown() {
+    this.isSearchDropdownExpanded = true;
+  }
+
+  hideSearchDropdown() {
+    this.isSearchDropdownExpanded = false;
+  }
+
   getSearchSuggestions(id: number, criteria: string) {
     if (this.isActive) {
       this.file
@@ -119,7 +129,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     }
   }
 
-  public logOut() {
+  logOut() {
     this.auth
       .doLogout()
       .then((this.auth.token = null))
@@ -143,7 +153,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     });
   }
 
-  public find() {
+  find() {
     this.searchHistory.unshift(this.searchCriteria);
     if (this.searchHistory.length > 5) {
       this.searchHistory.pop();
@@ -160,7 +170,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     this.searchCriteria = '';
   }
 
-  public restore() {
+  restore() {
     this.file.receivePhoto().subscribe(
       p => {
         this.shared.foundedPhotos = p;
@@ -169,7 +179,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
     );
   }
 
-  public openModalClicked() {
+  openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(
       PhotoUploadModalComponent
