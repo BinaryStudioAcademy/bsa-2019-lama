@@ -315,7 +315,7 @@ namespace Photo.BusinessLogic.Services
         {
             using (var webClient = new WebClient())
             {
-                var newPhotoBlob = webClient.DownloadData($"{_blobUrl}/{photo.BlobId}");
+                var newPhotoBlob = webClient.DownloadData($"{_blobUrl}{photo.BlobId}");
                 return photoDocumentsCollection.Select(photoDocument => $"{_blobUrl}{photoDocument.BlobId}")
                     .Select(photoUrl => webClient.DownloadData(photoUrl)).Any(photoDocumentBlob =>
                         photoDocumentBlob.SequenceEqual(newPhotoBlob));

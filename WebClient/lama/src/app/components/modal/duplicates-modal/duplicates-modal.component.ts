@@ -27,6 +27,7 @@ export class DuplicatesModalComponent implements OnInit {
 
   toggleModal() {
     this.isActive = !this.isActive;
+    this.Click.emit(false);
   }
 
   removeDuplicates() {
