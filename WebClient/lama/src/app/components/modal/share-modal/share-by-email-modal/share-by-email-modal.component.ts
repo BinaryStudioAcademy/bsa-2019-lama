@@ -5,6 +5,7 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
+import { SharingService } from 'src/app/services/sharing.service';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -22,6 +23,7 @@ export class ShareByEmailModalComponent implements OnInit {
   imageUrl: string;
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userEmails: Array<string> = [];
+  userIds: number[] = [];
   sharingRoute = 'main/shared';
   wrongInput = false;
   showAvailable = false;
@@ -29,7 +31,8 @@ export class ShareByEmailModalComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private sharingService: SharingService
   ) {}
 
   ngOnInit() {}
@@ -44,6 +47,7 @@ export class ShareByEmailModalComponent implements OnInit {
         user => {
           if (user) {
             this.userEmails.push(user.email);
+            this.userIds.push(user.id);
             this.wrongInput = false;
             this.clearInput();
           } else {
@@ -104,6 +108,15 @@ export class ShareByEmailModalComponent implements OnInit {
     this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+      this.userIds.forEach(item => {
+        this.sharingService
+          .sendSharedPhoto({
+            photoId: this.sharedPhoto.photoId,
+            userId: item,
+            sharedImageUrl: this.sharedPhoto.sharedImageUrl
+          })
+          .subscribe(e => console.log(e));
+      });
     } else {
       this.availableAll = true;
     }
@@ -113,6 +126,7 @@ export class ShareByEmailModalComponent implements OnInit {
       this.notifier.notify('success', 'Link is sent to specified users');
     }
     this.userEmails = [];
+    this.userIds = [];
   }
 
   clearInput() {

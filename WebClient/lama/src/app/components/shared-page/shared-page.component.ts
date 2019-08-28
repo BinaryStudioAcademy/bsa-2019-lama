@@ -35,7 +35,6 @@ export class SharedPageComponent implements OnInit {
 
   ngOnInit() {
     this.decodeUserData();
-    this.sendSharingData();
     this.sharingService
       .updatePhotoEntityWithSharedLink(
         this.sharedPhoto.photoId,

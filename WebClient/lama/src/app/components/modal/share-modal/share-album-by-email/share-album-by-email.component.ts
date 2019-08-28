@@ -8,6 +8,7 @@ import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
+import { SharingService } from 'src/app/services/sharing.service';
 
 @Component({
   selector: 'app-share-album-by-email',
@@ -25,6 +26,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   imageUrl: string;
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
   userEmails: Array<string> = [];
+  userIds: number[] = [];
   sharingRoute = 'main/shared/album';
   wrongInput = false;
   availableAll = true;
@@ -32,7 +34,8 @@ export class ShareAlbumByEmailComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private sharingService: SharingService
   ) {}
 
   ngOnInit() {}
@@ -47,6 +50,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
         user => {
           if (user) {
             this.userEmails.push(user.email);
+            this.userIds.push(user.id);
             this.wrongInput = false;
             this.clearInput();
           } else {
@@ -105,6 +109,14 @@ export class ShareAlbumByEmailComponent implements OnInit {
     this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+      this.userIds.forEach(item => {
+        this.sharingService
+          .sendSharedAlbum({
+            albumId: this.sharedAlbum.albumId,
+            userId: item
+          })
+          .subscribe(e => console.log(e));
+      });
     } else {
       this.availableAll = true;
     }
@@ -114,6 +126,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
       this.notifier.notify('success', 'Link is sent to specified users');
     }
     this.userEmails = [];
+    this.userIds = [];
   }
 
   clearInput() {
