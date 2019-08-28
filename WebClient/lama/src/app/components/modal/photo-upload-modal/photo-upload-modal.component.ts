@@ -77,7 +77,6 @@ export class PhotoUploadModalComponent implements OnInit {
         location: this.photos[i].location
       };
     }
-
     this.fileService.sendPhotos(this.photos).subscribe(
       uploadedPhotos => {
         const filteredPhotos = this.resolveDuplicates(uploadedPhotos);

@@ -42,5 +42,35 @@ namespace Lama.BusinessLogic.Services
 
             return JsonConvert.SerializeObject(doc.Description);
         }
+
+        public async Task<string> UpdateLocation(NewLocation newLocation)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/{newLocation.Id}");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var doc = JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+
+            string uri = $"{url}api/photos/document";
+            doc.Location = newLocation.Location;
+            StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
+            await httpClient.PutAsync(uri, content);
+
+            return JsonConvert.SerializeObject(doc.Location);
+        }
+
+        public async Task DeleteLocation(int id)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/{id}");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var doc = JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+
+            string uri = $"{url}api/photos/document";
+            doc.Location = String.Empty;
+            StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
+            await httpClient.PutAsync(uri, content);
+        }
     }
 }

@@ -28,6 +28,7 @@ export class FileService {
   };
 
   sendPhotos(photos: Photo[]): Observable<UploadPhotoResultDTO[]> {
+    console.log(photos);
     return this.client.post<UploadPhotoResultDTO[]>(
       `${environment.lamaApiUrl}/api/photo`,
       photos,
@@ -36,7 +37,11 @@ export class FileService {
   }
 
   uploadDuplicates(duplicates: UploadPhotoResultDTO[]) {
-    return this.client.post<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates`, duplicates, this.httpOptions);
+    return this.client.post<UploadPhotoResultDTO[]>(
+      `${environment.lamaApiUrl}/api/photo/duplicates`,
+      duplicates,
+      this.httpOptions
+    );
   }
 
   getSearchHistory(id: number) {
@@ -78,9 +83,7 @@ export class FileService {
     return modified;
   }
 
-  update(
-    photoToUpdate: UpdatePhotoDTO
-  ): Observable<UpdatedPhotoResultDTO> {
+  update(photoToUpdate: UpdatePhotoDTO): Observable<UpdatedPhotoResultDTO> {
     return this.client
       .put(`${environment.lamaApiUrl}/api/photo`, photoToUpdate)
       .pipe(map(res => res as UpdatedPhotoResultDTO));
@@ -107,7 +110,9 @@ export class FileService {
   }
 
   getDuplicates(id: number) {
-    return this.client.get<UploadPhotoResultDTO[]>(`${environment.lamaApiUrl}/api/photo/duplicates/${id}`);
+    return this.client.get<UploadPhotoResultDTO[]>(
+      `${environment.lamaApiUrl}/api/photo/duplicates/${id}`
+    );
   }
 
   receivePhoto(): Observable<PhotoRaw[]> {
