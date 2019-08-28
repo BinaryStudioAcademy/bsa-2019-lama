@@ -32,7 +32,7 @@ namespace Photo.BusinessLogic.Services
         }
         public void SendPhotoToThumbnailProcessor(long imageId)
         {
-            this.SendToThumbnailProcessor(new MakePhotoThumbnailDTO
+            SendToThumbnailProcessor(new MakePhotoThumbnailDTO
             {
                 ImageId = imageId,
                 ImageType = Domain.Enums.ImageType.Photo
@@ -40,7 +40,7 @@ namespace Photo.BusinessLogic.Services
         }
         public void SendAvatarToThumbnailProcessor(long imageId)
         {
-            this.SendToThumbnailProcessor(new MakePhotoThumbnailDTO
+            SendToThumbnailProcessor(new MakePhotoThumbnailDTO
             {
                 ImageId = imageId,
                 ImageType = Domain.Enums.ImageType.Avatar

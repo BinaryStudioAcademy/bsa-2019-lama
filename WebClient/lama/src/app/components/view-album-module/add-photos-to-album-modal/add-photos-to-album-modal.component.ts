@@ -87,7 +87,11 @@ export class AddPhotosToAlbumModalComponent {
   }
 
   async LoadFile(files) {
+    if (this.LoadNewImage === false) {
+      this.photos = [];
+    }
     this.LoadNewImage = true;
+
     for (const file of files) {
       this.loaded = false;
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
@@ -127,7 +131,9 @@ export class AddPhotosToAlbumModalComponent {
 
   ChoosePhoto() {
     this.ExistPhotosId = [];
+    this.photos = [];
     this.ExistPhotos = [];
+
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(
       ChooseStoragePhotosComponent
@@ -141,6 +147,9 @@ export class AddPhotosToAlbumModalComponent {
     );
   }
   onChange(photo: PhotoRaw) {
+    if (this.LoadNewImage === true) {
+      this.photos = [];
+    }
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);

@@ -47,7 +47,7 @@
   <spinner *ngIf="showSpinner"></spinner>
 
   <!--modal-->
-  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deletePhotoHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
+  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deleteDuplicatesHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
   <template #modalPhotoContainer></template>
   <template #modalUploadPhoto></template>
 </div>

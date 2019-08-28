@@ -194,6 +194,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
     componentRef.instance.toggleModal();
   }
+
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
     this.photos.push(...uploadedPhotos);
   }
@@ -221,8 +222,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
   }
 
-  deletePhotoHandler(photoToDeleteId: number): void {
+  deletePhotoHandler(photoToDeleteId: number) {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  deleteDuplicatesHandler(event: number[]) {
+    this.photos = this.photos.filter(photo => !event.includes(photo.id));
   }
 
   modalHandler(duplicatesRemoved: boolean) {
