@@ -225,6 +225,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
+  deleteDuplicatesHandler(event: number[]) {
+    this.photos = this.photos.filter(photo => !event.includes(photo.id));
+  }
+
   modalHandler(duplicatesRemoved: boolean) {
     this.duplicatesFound = duplicatesRemoved;
   }
