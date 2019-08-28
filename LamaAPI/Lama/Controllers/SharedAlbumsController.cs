@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO.Album;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,12 @@ namespace Lama.Controllers
         public async Task<Album> GetSharedPhoto(int id)
         {
             return await _sharingAlbumService.Get(id);
+        }
+
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<ReturnAlbumDTO>> GetSharedUserAlbums(int id)
+        {
+            return await _sharingAlbumService.GetSharedAlbums(id);
         }
 
         [HttpPost]

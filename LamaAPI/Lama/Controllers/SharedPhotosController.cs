@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,13 @@ namespace Lama.Controllers
         {
             return await _sharingPhotoService.Get(id);
         }
-		
+
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<SharedPhotoDTO>> GetUsersSharedPhoto(int id)
+        {
+            return await _sharingPhotoService.GetUsersSharedPhoto(id);
+        }
+
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
         {

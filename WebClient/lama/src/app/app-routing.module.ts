@@ -11,39 +11,46 @@ import { DeletedPhotosComponent } from './components/removed-photos/deleted-phot
 import { SharedPageAlbumComponent } from './components/shared-page/shared-page-album/shared-page-album.component';
 
 import { LoggedInGuard, AuthGuard } from './guards';
+import { SharingPageComponent } from './components/shared-page/sharing-page/sharing-page.component';
 
-const routes: Routes =
-[
+const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
-  { path: 'main', redirectTo: 'main/photos', pathMatch: 'full'},
-
-  { path: 'landing', component: MainLandingPageComponent, canActivate: [LoggedInGuard] },
+  { path: 'main', redirectTo: 'main/photos', pathMatch: 'full' },
 
   {
-    path: 'main', component: MainPageComponent, canActivate: [AuthGuard],
-    children:
-    [
+    path: 'landing',
+    component: MainLandingPageComponent,
+    canActivate: [LoggedInGuard]
+  },
+
+  {
+    path: 'main',
+    component: MainPageComponent,
+    canActivate: [AuthGuard],
+    children: [
       {
         path: '',
         canActivateChild: [AuthGuard],
         children: [
-
-          { path: 'photos', component:  MainPhotosContainerComponent },
+          { path: 'photos', component: MainPhotosContainerComponent },
           { path: 'albums', component: MainAlbumsContainerComponent },
           { path: 'album/:id', component: ViewAlbumComponent },
           { path: 'profile', component: ProfileComponent },
+          { path: 'sharing', component: SharingPageComponent },
           { path: 'shared/:userdata', component: SharedPageComponent },
-          { path: 'shared/album/:userdata', component: SharedPageAlbumComponent },
-          { path: 'bin', component: DeletedPhotosComponent },
+          {
+            path: 'shared/album/:userdata',
+            component: SharedPageAlbumComponent
+          },
+          { path: 'bin', component: DeletedPhotosComponent }
         ]
       }
     ]
-  },
-
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

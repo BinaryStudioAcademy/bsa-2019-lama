@@ -15,6 +15,7 @@ using Lama.Domain.DTO;
 using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services
@@ -61,6 +62,38 @@ namespace Lama.BusinessLogic.Services
             mappedResponse.User.PhotoUrl = url;
 
             return mappedResponse;
+        }
+
+        public async Task<IEnumerable<SharedPhotoDTO>> GetUsersSharedPhoto(int id)
+        {
+            var sharedPhotoData = await Context.SharedPhotos
+                .Include(sharedPhoto => sharedPhoto.User)
+                .ThenInclude(user => user.Photo)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                .ThenInclude(photo => photo.Likes)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                .ThenInclude(photo => photo.Comments)
+                .Where(sharedPhoto => sharedPhoto.UserId == id).ToListAsync();
+
+            if (sharedPhotoData == null)
+            {
+                throw new NotFoundException(nameof(SharedPhoto), id);
+            }
+            IEnumerable<SharedPhotoDTO> result = new List<SharedPhotoDTO>();
+            string url = String.Empty;
+            foreach (var sharedPhoto in sharedPhotoData)
+            {
+                if (sharedPhoto.User.Photo != null)
+                {
+                    url = (await _photoService.Get(sharedPhoto.User.Photo.Id)).Blob256Id;
+                }
+
+                var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
+                mappedResponse.User.PhotoUrl = url;
+                result.Append(mappedResponse);
+            }
+
+            return result;
         }
 
         public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)

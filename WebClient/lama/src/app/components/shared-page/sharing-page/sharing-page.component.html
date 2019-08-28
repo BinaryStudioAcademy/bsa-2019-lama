@@ -1,0 +1,23 @@
+<h2>Recent shared items:</h2>
+<div class="items-container-left">
+  <a class="album">
+    <div class="new-album">
+      <a><img src="assets/plus.svg" alt=""/></a>
+    </div>
+    <div class="description has-text-centered">
+      <p>New shared album</p>
+    </div>
+  </a>
+  <div *ngFor="let item of albums">
+    <main-album
+      [_album]="item"
+      [currentUser]="currentUser"
+      [_isFavorite]="false"
+      (Click)="albumClicked($event)"
+      (ClickDownload)="ArchiveAlbum($event)"
+      (deleteAlbumEvent)="deleteAlbumHandler($event)"
+    >
+    </main-album>
+  </div>
+</div>
+<notifier-container></notifier-container>

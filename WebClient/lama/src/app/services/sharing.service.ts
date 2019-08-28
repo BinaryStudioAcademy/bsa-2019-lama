@@ -6,6 +6,7 @@ import { PhotoRaw } from '../models/Photo/photoRaw';
 import { SharedPhoto } from '../models/Photo/sharedPhoto';
 import { SharedPageDataset } from '../models/sharedPageDataset';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
+import { ViewAlbum } from '../models/Album/ViewAlbum';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,12 @@ export class SharingService {
     return this.httpClient.post<SharedAlbum>(
       `${this.lamaApiUrl}/api/sharedalbums`,
       sharedAlbum
+    );
+  }
+
+  getSharedAlbums(userId: number) {
+    return this.httpClient.get<ViewAlbum[]>(
+      `${this.lamaApiUrl}/api/sharedalbums/user/${userId}`
     );
   }
 
