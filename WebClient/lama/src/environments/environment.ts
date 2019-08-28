@@ -22,8 +22,7 @@ export const environment = {
     }
   },
   compressionOptions: {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1920
+    maxSizeMB: 1
   },
   production: false
 };
