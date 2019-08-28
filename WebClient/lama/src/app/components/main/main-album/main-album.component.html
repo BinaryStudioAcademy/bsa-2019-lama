@@ -5,12 +5,12 @@
             <img src="assets/three-dots-menu.svg" alt="">
         </div>
         <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
-            <a class="dropdown-item" (click)="openShareModal()">Share Album</a>
-            <a class="dropdown-item" (click)="toggleSetCoverModal()">Set Album cover</a>
-            <a class="dropdown-item" (click)="DownloadAlbum($event)">Download Album</a>
+            <a class="dropdown-item" (click)="openShareModal()">Share</a>
+            <a class="dropdown-item" (click)="toggleSetCoverModal()">Set cover</a>
+            <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
             <a class="dropdown-item" (click)="addPhotos($event)">Add Photos</a>
             <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
-            <a class="dropdown-item" (click)="removeAlbum()">Remove Album</a>
+            <a class="dropdown-item" (click)="removeAlbum()">Remove</a>
 
         </div>
         <img src="{{ imageUrl || imgname}}" (click)="clickPerformed()">

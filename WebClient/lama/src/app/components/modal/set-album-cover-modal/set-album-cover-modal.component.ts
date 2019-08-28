@@ -40,7 +40,6 @@ export class SetAlbumCoverModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.receivedAlbum.photoAlbums.forEach(x => console.log(x.blobId));
   }
 
   clickPerformed(eventArgs: PhotoRaw) {
