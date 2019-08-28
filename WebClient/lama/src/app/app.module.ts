@@ -40,6 +40,7 @@ import { DuplicatesModalComponent } from './components/modal/duplicates-modal/du
 import { NotificationModule } from './notification/notification.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ViewAlbumComponent } from './components/view-album-module/view-album/view-album.component';
+import { Ng2ImgToolsModule } from 'ng2-img-tools';
 // tslint:disable-next-line:max-line-length
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 
@@ -68,6 +69,7 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     DuplicatesModalComponent
   ],
   imports: [
+    Ng2ImgToolsModule,
     SharedModule,
     LandingModule,
     AppRoutingModule,

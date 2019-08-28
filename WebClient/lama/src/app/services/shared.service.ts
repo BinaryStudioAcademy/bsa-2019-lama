@@ -9,7 +9,7 @@ import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
 })
 export class SharedService {
   photos: UploadPhotoResultDTO[] = [];
-  foundedPhotos: PhotoRaw[] = [];
+  foundPhotos: PhotoRaw[] = [];
   avatar: Photo;
   isSearchTriggered: boolean;
   isSearchTriggeredAtLeastOnce: boolean;

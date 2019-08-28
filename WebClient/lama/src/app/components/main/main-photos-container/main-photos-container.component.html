@@ -1,5 +1,8 @@
 <div class="content-header">
   <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
+    <a (click)="GetPhotos(this.currentUser.id)" class="button is-primary" *ngIf="isSearchTriggered">
+      Show all photos?
+  </a>
   <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
     <div class="dropdown-trigger">
       <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
@@ -8,7 +11,7 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" (click)="deleteImages()">
+        <div class="dropdown-item" (click)="deleteWindow()">
           <p>Delete</p>
         </div>
         <div class="dropdown-item" (click)="downloadImages()">
@@ -17,17 +20,21 @@
       </div>
     </div>
   </div>
-  <div *ngIf="!isAtLeastOnePhotoSelected" class="align-right">
+  <div *ngIf="(!isAtLeastOnePhotoSelected && isHaveAnyPhotos) && !isSearchTriggered" class="align-right">
     <a class="button is-primary" (click)="findDuplicates()">Find Duplicates</a>
   </div>
-
 </div>
+
+<ng-template [ngIf]="isDeleting">
+  <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
+  </app-delete-modal>
+</ng-template>
 
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
   [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
   <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
     <h2 *ngIf="!isSearchTriggered">Nothing here yet..</h2>
-    <h2 *ngIf="isNothingFounded">Nothing found..</h2>
+    <h2 *ngIf="isNothingFound">Nothing found..</h2>
     <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary"
       *ngIf="isSearchTriggered">
       Show all photos?
@@ -44,7 +51,7 @@
   <spinner *ngIf="showSpinner"></spinner>
 
   <!--modal-->
-  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deletePhotoHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
+  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deleteDuplicatesHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
   <template #modalPhotoContainer></template>
   <template #modalUploadPhoto></template>
 </div>

@@ -39,12 +39,11 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   objectKeys = Object.keys;
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
-  auth: any; // TODO: Add type!
   isSearchDropdownExpanded: boolean;
 
   // constructors
   constructor(
-    auth: AuthService,
+    public auth: AuthService,
     private router: Router,
     resolver: ComponentFactoryResolver,
     private shared: SharedService,
@@ -163,7 +162,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
-        this.shared.foundedPhotos = p;
+        this.shared.foundPhotos = p;
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
@@ -173,7 +172,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   restore() {
     this.file.receivePhoto().subscribe(
       p => {
-        this.shared.foundedPhotos = p;
+        this.shared.foundPhotos = p;
       },
       error => this.notifier.notify('error', 'Error restoring')
     );

@@ -50,7 +50,6 @@ export class SharedPageComponent implements OnInit {
               this.sharedPhotoUrl = url;
               this.isShowSpinner = false;
             });
-          console.log(this.updatedPhoto.sharedLink);
         },
         error =>
           this.notifier.notify(
