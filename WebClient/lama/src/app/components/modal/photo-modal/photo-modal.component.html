@@ -113,10 +113,8 @@
                                     </div>
                                     <div class="item-date">
                                         <h4 class="subtitle is-5 submarg">Date Upload</h4>
-                                        <div class="datetimepicker-dummy is-primary">
-                                            <div class="datetimepicker-dummy-wrapper">
-                                                <input placeholder="" readonly="readonly" [ngModel]="photo.uploadDate | date:'MM/dd/yyyy'" class="datetimepicker-dummy-input size" type="text">
-                                            </div>
+                                        <div class="mat-app-background basic-container">
+                                            <app-date-picker [date]="photo.uploadDate" (UpdateTime)="UpdateDate($event)">Loading</app-date-picker>
                                         </div>
                                         <div class="modal-date">
                                             <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input" type="date" value="09/25/2018" size="395px">

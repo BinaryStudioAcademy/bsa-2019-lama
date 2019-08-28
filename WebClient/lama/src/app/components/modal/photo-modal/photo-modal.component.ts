@@ -34,6 +34,7 @@ import {
 import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
 import { NewLocation } from 'src/app/models/Photo/NewLocation';
+import { NewPhotoDate } from 'src/app/models/Photo/NewPhotoDate';
 
 @Component({
   selector: 'app-photo-modal',
@@ -107,7 +108,6 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -141,6 +141,19 @@ export class PhotoModalComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
 
+  UpdateDate(e: Date) {
+    const date: NewPhotoDate = {
+      id: this.photo.id,
+      date: e
+    };
+    this.photodetailsService.UpdateDate(date).subscribe(
+      a => {
+        this.photo.uploadDate = a;
+        this.notifier.notify('success', 'Date updated');
+      },
+      error => this.notifier.notify('error', 'Error updating date')
+    );
+  }
   UpdateLocation(e) {
     const location: NewLocation = {
       id: this.photo.id,
@@ -151,8 +164,12 @@ export class PhotoModalComponent implements OnInit {
         this.address = a;
         this.photo.location = a;
         this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
       },
-      error => this.notifier.notify('error', 'Error updating location')
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
     );
   }
   DeleteLocation(e) {
@@ -161,8 +178,12 @@ export class PhotoModalComponent implements OnInit {
         this.address = '';
         this.photo.location = '';
         this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
       },
-      error => this.notifier.notify('error', 'Error updating location')
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
     );
   }
   getAddress(latitude, longitude) {

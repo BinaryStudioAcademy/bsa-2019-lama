@@ -18,21 +18,36 @@ export class DeleteModalComponent implements OnInit {
   @Output() deleteEvent = new EventEmitter<number[]>();
   userId: number;
   albumId = -1;
-  constructor(private router: Router, private favoriteService: FavoriteService,
-              private albumService: AlbumService, private fileService: FileService,
-              private notifier: NotifierService) { }
+  constructor(
+    private router: Router,
+    private favoriteService: FavoriteService,
+    private albumService: AlbumService,
+    private fileService: FileService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {
     this.userId = parseInt(localStorage.getItem('userId'), 10);
     if (this.permitDeleteFromAlbum()) {
-      this.albumId = parseInt(this.router.url.slice(this.router.url.lastIndexOf('/') + 1), 10);
+      this.albumId = parseInt(
+        this.router.url.slice(this.router.url.lastIndexOf('/') + 1),
+        10
+      );
     }
   }
 
   toBin() {
     const photos = this.photos.filter(p => p.userId === this.userId);
+    if (photos.length === 0) {
+      return;
+    }
     for (const p of photos) {
       this.fileService.markPhotoAsDeleted(p.id).subscribe(fs => fs);
+    }
+    if (photos.length === 1) {
+      this.notifier.notify('success', 'Photo removed to bin');
+    } else {
+      this.notifier.notify('success', 'Photos removed to bin');
     }
     if (this.isFavorite()) {
       const ph2 = this.photos.filter(p => p.userId !== this.userId);
@@ -40,7 +55,9 @@ export class DeleteModalComponent implements OnInit {
       for (const p of ph2) {
         ids.push(p.id);
       }
-      this.favoriteService.removeSelectedFavorites(this.userId, ids).subscribe();
+      this.favoriteService
+        .removeSelectedFavorites(this.userId, ids)
+        .subscribe();
     }
     this.emitToUp(this.photos.map(i => i.id));
     this.cancel();
@@ -49,15 +66,29 @@ export class DeleteModalComponent implements OnInit {
   fromAlbum() {
     const photos = this.photos.map(i => i.id);
     if (this.isFavorite()) {
-      this.favoriteService.removeSelectedFavorites(this.userId, photos).subscribe(fs => {
-        this.notifier.notify('success', 'Favorites photos deleted from favorite album');
-      },
-      error => this.notifier.notify('error', 'Error deleting favorites from favorite album'));
+      this.favoriteService
+        .removeSelectedFavorites(this.userId, photos)
+        .subscribe(
+          fs => {
+            this.notifier.notify(
+              'success',
+              'Favorites photos deleted from favorite album'
+            );
+          },
+          error =>
+            this.notifier.notify(
+              'error',
+              'Error deleting favorites from favorite album'
+            )
+        );
     } else {
-      this.albumService.removePhotosFromAlbum(this.albumId, photos).subscribe(as => {
-        this.notifier.notify('success', 'Photos deleted from album');
-      },
-      error => this.notifier.notify('error', 'Error deleting photos from album'));
+      this.albumService.removePhotosFromAlbum(this.albumId, photos).subscribe(
+        as => {
+          this.notifier.notify('success', 'Photos deleted from album');
+        },
+        error =>
+          this.notifier.notify('error', 'Error deleting photos from album')
+      );
     }
     this.emitToUp(photos);
     this.cancel();
@@ -78,5 +109,4 @@ export class DeleteModalComponent implements OnInit {
   cancel() {
     this.cancelClickedEvent.emit(null);
   }
-
 }

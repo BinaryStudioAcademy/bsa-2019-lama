@@ -72,5 +72,21 @@ namespace Lama.BusinessLogic.Services
             StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
             await httpClient.PutAsync(uri, content);
         }
+
+        public async Task<DateTime> UpdatePhotoDate(NewDatePhoto time)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await httpClient.GetAsync($"{url}api/photos/{time.Id}");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var doc = JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+
+            string uri = $"{url}api/photos/document";
+            doc.UploadDate = time.Date;
+            StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
+            await httpClient.PutAsync(uri, content);
+
+            return doc.UploadDate;
+        }
     }
 }

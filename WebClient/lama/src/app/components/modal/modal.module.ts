@@ -23,12 +23,17 @@ import { IsBlockedDirective } from 'src/app/directives/is-blocked.directive';
 import { MemeColorDirective } from 'src/app/directives/meme-color.directive';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { GoogleMapComponent } from './google-map/google-map.component';
+import { DatePickerComponent } from '../date-picker/date-picker.component';
+import { CalendarModule } from '../../calendar.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
     SharedModule,
     ImageCropperModule,
     UiModule,
+    BrowserAnimationsModule,
+    CalendarModule,
     NotificationModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
@@ -52,6 +57,7 @@ import { GoogleMapComponent } from './google-map/google-map.component';
     ShareAlbumByEmailComponent,
     CommentsListComponent,
     EditPhotoComponent,
+    DatePickerComponent,
     IsBlockedDirective,
     MemeColorDirective,
     DeleteModalComponent,
@@ -78,7 +84,9 @@ import { GoogleMapComponent } from './google-map/google-map.component';
     ShareByLinkModalComponent,
     ShareAlbumComponent,
     ShareAlbumByLinkComponent,
-    ShareAlbumByEmailComponent
-  ]
+    ShareAlbumByEmailComponent,
+    DatePickerComponent
+  ],
+  bootstrap: [DatePickerComponent]
 })
 export class ModalModule {}
