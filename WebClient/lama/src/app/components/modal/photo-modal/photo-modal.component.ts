@@ -148,6 +148,7 @@ export class PhotoModalComponent implements OnInit {
     };
     this.photodetailsService.updateLocation(location).subscribe(
       a => {
+        this.address = a;
         this.photo.location = a;
         this.notifier.notify('success', 'Location updated');
       },
@@ -157,6 +158,7 @@ export class PhotoModalComponent implements OnInit {
   DeleteLocation(e) {
     this.photodetailsService.DeleteLocation(this.photo.id).subscribe(
       a => {
+        this.address = '';
         this.photo.location = '';
         this.notifier.notify('success', 'Location updated');
       },
@@ -187,13 +189,10 @@ export class PhotoModalComponent implements OnInit {
   // GET EXIF
   GetFile() {
     console.log(this.photo.location);
-    if (this.photo.name.endsWith('.png')) {
-      return;
-    } else if (
-      this.photo.location !== null &&
-      this.photo.location !== undefined
-    ) {
+    if (this.photo.location !== null && this.photo.location !== undefined) {
       this.address = this.photo.location;
+    } else if (this.photo.name.endsWith('.png')) {
+      return;
     } else {
       const src = this.imageUrl;
       const exifObj = load(src);

@@ -211,6 +211,7 @@ namespace Photo.BusinessLogic.Services
                         Blob256Id = blobId,
                         OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
                         UserId = item.AuthorId,
+                        Location = item.Location,
                         Description = item.Description
                     };
 

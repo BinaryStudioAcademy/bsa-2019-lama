@@ -127,6 +127,9 @@
                                         <h4 class="subtitle is-5 submarg">Location</h4>
                                         <div class="adress" (click)=openModalForPicklocation($event)>
                                             <h4 class="title is-6">{{address}}</h4>
+                                            <div class="location-icon">
+                                                <img src="assets/pin.svg" alt="">
+                                            </div>
                                         </div>
                                         <div class="modal-location">
                                             <app-google-map (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
@@ -134,8 +137,11 @@
                                         <div class="overlay-location" (click)="CloseModalForPicklocation($event)"></div>
                                     </div>
                                     <div class="item-find-location" *ngIf="address == ''">
-                                        <div class="adress">
+                                        <div class="adress" (click)=openModalForPicklocation($event)>
                                             <h4 class="title is-6">Add Location</h4>
+                                            <div class="location-icon">
+                                                <img src="assets/pin.svg" alt="">
+                                            </div>
                                         </div>
                                         <div class="modal-location">
                                             <app-google-map (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
