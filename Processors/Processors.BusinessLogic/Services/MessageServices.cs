@@ -5,6 +5,7 @@ using Processors.Domain;
 using Processors.Domain.DTO;
 using Services.Interfaces;
 using Services.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace Processors.BusinessLogic.Services
@@ -48,7 +49,14 @@ namespace Processors.BusinessLogic.Services
         }
         private async Task HandleReceivedDataAsync(MakePhotoThumbnailDTO makePhotoThumbnailDTO)
         {
-            var address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
+            string address;
+            try
+            {
+                address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
+            }catch(Exception e) // FIX
+            {
+                return;
+            }
             var fileName = address.Substring(address.LastIndexOf('/') + 1);
             var currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
 
