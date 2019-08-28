@@ -150,14 +150,14 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       });
     }
     if (
-      this.shared.foundedPhotos.length !== 0 &&
+      this.shared.foundPhotos.length !== 0 &&
       this.shared.isSearchTriggered
     ) {
-      this.photos = this.shared.foundedPhotos;
+      this.photos = this.shared.foundPhotos;
       this.isNothingFounded = false;
     }
     if (
-      this.shared.foundedPhotos.length === 0 &&
+      this.shared.foundPhotos.length === 0 &&
       this.shared.isSearchTriggered
     ) {
       this.photos = [];
@@ -168,7 +168,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.selectedPhotos = [];
     }
     this.shared.isSearchTriggered = false;
-    this.shared.foundedPhotos = [];
+    this.shared.foundPhotos = [];
     this.shared.photos = [];
     if (this.selectedPhotos && this.selectedPhotos.length > 0) {
       this.isAtLeastOnePhotoSelected = true;
@@ -221,8 +221,12 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
   }
 
-  deletePhotoHandler(photoToDeleteId: number): void {
-    this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  deletePhotoHandler(photoToDeleteId: number) {
+   this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  deleteDuplicatesHandler(event: number[]) {
+    this.photos = this.photos.filter(photo => !event.includes(photo.id));
   }
 
   modalHandler(duplicatesRemoved: boolean) {

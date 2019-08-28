@@ -163,7 +163,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
-        this.shared.foundedPhotos = p;
+        this.shared.foundPhotos = p;
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
@@ -173,7 +173,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   restore() {
     this.file.receivePhoto().subscribe(
       p => {
-        this.shared.foundedPhotos = p;
+        this.shared.foundPhotos = p;
       },
       error => this.notifier.notify('error', 'Error restoring')
     );
