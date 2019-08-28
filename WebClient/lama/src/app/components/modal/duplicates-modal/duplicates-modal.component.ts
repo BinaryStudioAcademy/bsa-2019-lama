@@ -13,7 +13,7 @@ import { NotifierService } from 'angular-notifier';
 export class DuplicatesModalComponent implements OnInit {
 
   @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
-  @Output() Change = new EventEmitter<number>();
+  @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
   isActive = true;
@@ -31,15 +31,13 @@ export class DuplicatesModalComponent implements OnInit {
   }
 
   removeDuplicates() {
-    this.toggleModal();
     const toDelete = this.receivedDuplicates.map(photo => new PhotoToDeleteRestoreDTO(photo.id));
     this.fileService.deletePhotosPermanently(toDelete).subscribe(response => {
-      toDelete.forEach(photo => {
-        this.Change.emit(photo.id);
-        this.Click.emit(false);
-      });
       this.notifier.notify('success', 'Duplicates removed successfully');
-    });
+    },
+    error => this.notifier.notify('error', 'Error occured while removing duplicates'));
+    this.Change.emit(toDelete.map(x => x.id));
+    this.toggleModal();
   }
 
   getDuplicatesUrls() {
