@@ -67,9 +67,6 @@ export class PhotoModalComponent implements OnInit {
   private userService: UserService;
   private lastDescription: string;
   private defaultMenuItem: MenuItem[];
-  private editingMenuItem: MenuItem[];
-  private deletingMenuItem: MenuItem[];
-
   currentUser: User;
 
   // location
@@ -211,15 +208,6 @@ export class PhotoModalComponent implements OnInit {
       { title: 'remove', icon: 'clear' },
       { title: 'download', icon: 'cloud_download' },
       { title: 'edit', icon: 'edit' },
-      { title: 'info', icon: 'info' }
-    ];
-    this.editingMenuItem = [
-      { title: 'crop', icon: 'crop' },
-      { title: 'rotate', icon: 'rotate_left' }
-    ];
-    this.deletingMenuItem = [
-      { title: 'yes', icon: 'done' },
-      { title: 'no', icon: 'remove' },
       { title: 'info', icon: 'info' },
       { title: 'save', icon: 'save' }
     ];
@@ -236,16 +224,8 @@ export class PhotoModalComponent implements OnInit {
 
     // remove
     if (clickedMenuItem === this.defaultMenuItem[1]) {
-      this.shownMenuItems = this.deletingMenuItem;
-    }
-
-    if (clickedMenuItem === this.deletingMenuItem[0]) {
       this.photos.push(this.photo);
       this.isDeleting = true;
-    }
-
-    if (clickedMenuItem === this.deletingMenuItem[1]) {
-      this.shownMenuItems = this.defaultMenuItem;
     }
 
     // download

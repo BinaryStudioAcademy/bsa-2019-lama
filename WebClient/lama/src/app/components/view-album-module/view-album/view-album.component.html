@@ -1,17 +1,16 @@
+<div *ngIf="!isFavorite()" class="photos">
+    <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
+</div>
 <div class="navigation">
-  <div class="image">
-    <a routerLink="/main/albums"><img src="assets/back.svg" alt=""/></a>
-  </div>
-  <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
-    <div class="dropdown-trigger">
-      <button
-        class="button"
-        aria-haspopup="true"
-        aria-controls="dropdown-menu4"
-      >
+    <div class="image">
+        <a routerLink="/main/albums"><img src="assets/back.svg" alt="" /></a>
+    </div>
+    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
       </button>
-    </div>
+        </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
             <div class="dropdown-content">
                 <div class="dropdown-item" (click)="deleteWindow()">
@@ -21,32 +20,23 @@
                     <p>Download</p>
                 </div>
             </div>
-
         </div>
-      </div>
     </div>
-  <div *ngIf="!isFavorite" class="photos">
-    <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
 </div>
 <ng-template [ngIf]="isDeleting">
-<app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
-</app-delete-modal>
+    <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
+    </app-delete-modal>
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
-  <div class="title">
-    <h2 class="title is-2">{{ album.title }}</h2>
-  </div>
-  <div *ngIf="loading" class="items-container-centered">
-    <div *ngFor="let item of album.photoAlbums">
-      <main-photo
-        [_photo]="item"
-        [_id]="favorites.has(item.id) == true ? item.id : -1"
-        (Click)="photoClicked($event)"
-        (Select)="photoSelected($event)"
-      ></main-photo>
+    <div class="title">
+        <h2 class="title is-2">{{ album.title }}</h2>
     </div>
-  </div>
-  <template #modalPhotoContainer></template>
-  <template #AddPhotosToAlbum></template>
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums">
+            <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)" (Select)="photoSelected($event)"></main-photo>
+        </div>
+    </div>
+    <template #modalPhotoContainer></template>
+    <template #AddPhotosToAlbum></template>
 </div>
 <notifier-container></notifier-container>

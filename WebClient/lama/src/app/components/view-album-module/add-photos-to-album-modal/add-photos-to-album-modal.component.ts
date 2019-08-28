@@ -87,6 +87,9 @@ export class AddPhotosToAlbumModalComponent {
   }
 
   async LoadFile(files) {
+    if (files.type === 'click') {
+      return;
+    }
     if (this.LoadNewImage === false) {
       this.photos = [];
     }

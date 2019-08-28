@@ -52,7 +52,7 @@ export class MainAlbumComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.album.photo !== null) {
+    if (this.album.photo) {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .subscribe(url => (this.imageUrl = url));
