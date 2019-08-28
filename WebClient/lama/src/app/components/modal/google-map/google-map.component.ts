@@ -21,7 +21,7 @@ export class GoogleMapComponent implements OnInit {
   zoom: number;
   address: string;
   private geoCoder;
-
+  displaymap = false;
   @Output() Deletelocation = new EventEmitter();
   @Output() Updatelocation = new EventEmitter<string>();
 
@@ -33,7 +33,6 @@ export class GoogleMapComponent implements OnInit {
   ngOnInit() {
     // load Places Autocomplete
     this.mapsAPILoader.load().then(() => {
-      this.setCurrentLocation();
       this.geoCoder = new google.maps.Geocoder();
       const autocomplete = new google.maps.places.Autocomplete(
         this.searchElementRef.nativeElement,
@@ -44,6 +43,7 @@ export class GoogleMapComponent implements OnInit {
       autocomplete.addListener('place_changed', () => {
         this.ngZone.run(() => {
           // get the place result
+          this.displaymap = true;
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
           this.address = place.formatted_address;
           // verify result
@@ -59,20 +59,10 @@ export class GoogleMapComponent implements OnInit {
       });
     });
   }
-
-  // Get Current Location Coordinates
-  private setCurrentLocation() {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(position => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-        this.zoom = 8;
-        this.getAddress(this.latitude, this.longitude);
-      });
-    }
+  Change() {
+    const input = document.getElementById('Input') as HTMLInputElement;
+    input.value = '';
   }
-
-  Changes($event) {}
   markerDragEnd($event: MouseEvent) {
     console.log($event);
     this.latitude = $event.coords.lat;

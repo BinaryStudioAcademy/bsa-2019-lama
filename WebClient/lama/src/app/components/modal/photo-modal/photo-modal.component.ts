@@ -151,8 +151,12 @@ export class PhotoModalComponent implements OnInit {
         this.address = a;
         this.photo.location = a;
         this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
       },
-      error => this.notifier.notify('error', 'Error updating location')
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
     );
   }
   DeleteLocation(e) {
@@ -161,8 +165,12 @@ export class PhotoModalComponent implements OnInit {
         this.address = '';
         this.photo.location = '';
         this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
       },
-      error => this.notifier.notify('error', 'Error updating location')
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
     );
   }
   getAddress(latitude, longitude) {

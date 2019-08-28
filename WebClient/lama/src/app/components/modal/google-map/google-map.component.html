@@ -2,11 +2,11 @@
     <div class="form-group">
         <div class="field">
             <div class="control">
-                <input class="input is-primary form-control" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
+                <input id="Input" class="input is-primary form-control" (click)="Change()" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
             </div>
         </div>
     </div>
-    <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
+    <agm-map *ngIf='displaymap' [latitude]="latitude" [longitude]="longitude" [zoom]="zoom">
         <agm-marker [latitude]="latitude" [longitude]="longitude" [markerDraggable]="true" (dragEnd)="markerDragEnd($event)"></agm-marker>
     </agm-map>
     <div class="address">
