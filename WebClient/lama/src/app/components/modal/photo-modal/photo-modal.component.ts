@@ -33,6 +33,7 @@ import {
 } from 'src/app/export-functions/exif';
 import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
+import { NewLocation } from 'src/app/models/Photo/NewLocation';
 
 @Component({
   selector: 'app-photo-modal',
@@ -109,6 +110,7 @@ export class PhotoModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.photo);
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -142,6 +144,28 @@ export class PhotoModalComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
 
+  UpdateLocation(e) {
+    const location: NewLocation = {
+      id: this.photo.id,
+      location: e
+    };
+    this.photodetailsService.updateLocation(location).subscribe(
+      a => {
+        this.photo.location = a;
+        this.notifier.notify('success', 'Location updated');
+      },
+      error => this.notifier.notify('error', 'Error updating location')
+    );
+  }
+  DeleteLocation(e) {
+    this.photodetailsService.DeleteLocation(this.photo.id).subscribe(
+      a => {
+        this.photo.location = '';
+        this.notifier.notify('success', 'Location updated');
+      },
+      error => this.notifier.notify('error', 'Error updating location')
+    );
+  }
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
       location => (this.address = location)
@@ -165,49 +189,25 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
+    console.log(this.photo.location);
     if (this.photo.name.endsWith('.png')) {
       return;
+    } else if (
+      this.photo.location !== null &&
+      this.photo.location !== undefined
+    ) {
+      this.address = this.photo.location;
+    } else {
+      const src = this.imageUrl;
+      const exifObj = load(src);
+      this.latitude = getLatitude(exifObj);
+      this.longitude = getLongitude(exifObj);
+      if (this.latitude && this.longitude) {
+        getLocation(this.latitude, this.longitude, this.geoCoder).then(
+          location => (this.address = location)
+        );
+      }
     }
-    const src = this.imageUrl;
-    const exifObj = load(src);
-    this.latitude = getLatitude(exifObj);
-    this.longitude = getLongitude(exifObj);
-    if (this.latitude && this.longitude) {
-      getLocation(this.latitude, this.longitude, this.geoCoder).then(
-        location => (this.address = location)
-      );
-    }
-    // load Places Autocomplete
-    // this.mapsAPILoader.load().then(() => {
-    //   if ('geolocation' in navigator) {
-    //     navigator.geolocation.getCurrentPosition(position => {
-    //       // this.latitude = position.coords.latitude;
-    //       // this.longitude = position.coords.longitude;
-    //       this.zoom = 8;
-    //       this.getAddress(this.latitude, this.longitude);
-    //     });
-    //   }
-    //   // tslint:disable-next-line: new-parent
-
-    /*
-          let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-            types: ['address']
-          });
-          autocomplete.addListener('place_changed', () => {
-            this.ngZone.run(() => {
-              // get the place result
-              let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-              // verify result
-              if (place.geometry === undefined || place.geometry === null) {
-                return;
-              }
-              // set latitude, longitude and zoom
-              this.latitude = place.geometry.location.lat();
-              this.longitude = place.geometry.location.lng();
-              this.zoom = 12;
-            });
-          });*/
-    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -458,6 +458,19 @@ export class PhotoModalComponent implements OnInit {
 
   CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
+  }
+
+  openModalForPicklocation(event) {
+    const overlay = document.getElementsByClassName('overlay-location')[0];
+    const modalElem = document.getElementsByClassName('modal-location')[0];
+    modalElem.classList.add('active');
+    overlay.classList.add('active');
+  }
+  CloseModalForPicklocation(event) {
+    const overlay = document.getElementsByClassName('overlay-location')[0];
+    const modalElem = document.getElementsByClassName('modal-location')[0];
+    modalElem.classList.remove('active');
+    overlay.classList.remove('active');
   }
 
   isBlockById() {

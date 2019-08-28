@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
-import {CreateAlbumModule} from '../create-album-module/create-album.module';
+import { CreateAlbumModule } from '../create-album-module/create-album.module';
 import { PhotoModalComponent } from './photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from './photo-upload-modal/photo-upload-modal.component';
 import { SharedModule } from '../shared.module';
@@ -18,15 +18,14 @@ import { CommentService } from 'src/app/services';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
-import {NotificationModule} from '../../notification/notification.module';
+import { NotificationModule } from '../../notification/notification.module';
 import { IsBlockedDirective } from 'src/app/directives/is-blocked.directive';
 import { MemeColorDirective } from 'src/app/directives/meme-color.directive';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
+import { GoogleMapComponent } from './google-map/google-map.component';
 
-@NgModule(
-{
-  imports:
-  [
+@NgModule({
+  imports: [
     SharedModule,
     ImageCropperModule,
     UiModule,
@@ -34,36 +33,52 @@ import { DeleteModalComponent } from './delete-modal/delete-modal.component';
     CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
-      libraries: ['places']
+      libraries: ['places'],
+      language: 'en'
     })
   ],
-  providers:
-  [
-    CommentService,
-  ],
-  declarations:
-  [
-    PhotoModalComponent, PhotoUploadModalComponent, EditModalComponent,
-    CropImageComponent, RotateImageComponent,
-    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
-    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
+  providers: [CommentService],
+  declarations: [
+    PhotoModalComponent,
+    PhotoUploadModalComponent,
+    EditModalComponent,
+    CropImageComponent,
+    RotateImageComponent,
+    ShareModalComponent,
+    ShareByEmailModalComponent,
+    ShareByLinkModalComponent,
+    ShareAlbumComponent,
+    ShareAlbumByLinkComponent,
+    ShareAlbumByEmailComponent,
     CommentsListComponent,
     EditPhotoComponent,
-    IsBlockedDirective, MemeColorDirective, DeleteModalComponent
+    IsBlockedDirective,
+    MemeColorDirective,
+    DeleteModalComponent,
+    GoogleMapComponent
   ],
-  exports:
-  [
-    PhotoModalComponent, PhotoUploadModalComponent, EditModalComponent,
-    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
-    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent,
+  exports: [
+    PhotoModalComponent,
+    PhotoUploadModalComponent,
+    EditModalComponent,
+    ShareModalComponent,
+    ShareByEmailModalComponent,
+    ShareByLinkModalComponent,
+    ShareAlbumComponent,
+    ShareAlbumByLinkComponent,
+    ShareAlbumByEmailComponent,
     DeleteModalComponent
   ],
-  entryComponents:
-  [
-    PhotoUploadModalComponent, PhotoModalComponent, EditModalComponent,
-    ShareModalComponent, ShareByEmailModalComponent, ShareByLinkModalComponent,
-    ShareAlbumComponent, ShareAlbumByLinkComponent, ShareAlbumByEmailComponent
-
+  entryComponents: [
+    PhotoUploadModalComponent,
+    PhotoModalComponent,
+    EditModalComponent,
+    ShareModalComponent,
+    ShareByEmailModalComponent,
+    ShareByLinkModalComponent,
+    ShareAlbumComponent,
+    ShareAlbumByLinkComponent,
+    ShareAlbumByEmailComponent
   ]
 })
-export class ModalModule { }
+export class ModalModule {}
