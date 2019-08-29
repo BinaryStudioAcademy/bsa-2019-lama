@@ -116,10 +116,6 @@
                                         <div class="mat-app-background basic-container">
                                             <app-date-picker [date]="photo.uploadDate" (UpdateTime)="UpdateDate($event)">Loading</app-date-picker>
                                         </div>
-                                        <div class="modal-date">
-                                            <input placeholder="" readonly="readonly" class="datetimepicker-dummy-input" type="date" value="09/25/2018" size="395px">
-                                        </div>
-                                        <div class="overlay-date" (click)="CloseModalForPickDate($event)"></div>
                                     </div>
                                     <div class="item-location" *ngIf="address != ''">
                                         <h4 class="subtitle is-5 submarg">Location</h4>
@@ -130,7 +126,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-location">
-                                            <app-google-map (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
+                                            <app-google-map [photo]="photo" (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
                                         </div>
                                         <div class="overlay-location" (click)="CloseModalForPicklocation($event)"></div>
                                     </div>
@@ -142,7 +138,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-location">
-                                            <app-google-map (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
+                                            <app-google-map [photo]="photo" (Deletelocation)="DeleteLocation($event)" (Updatelocation)="UpdateLocation($event)"></app-google-map>
                                         </div>
                                         <div class="overlay-location" (click)="CloseModalForPicklocation($event)"></div>
                                     </div>
