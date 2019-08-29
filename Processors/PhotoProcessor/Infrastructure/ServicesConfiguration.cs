@@ -1,20 +1,13 @@
 ﻿using Unity;
-
 using Nest;
-
 using System;
-
 using Microsoft.Extensions.Configuration;
-
 using Processors.Domain.BlobModel;
 using Processors.Domain.Settings;
-
 using Processors.DataAccess.Implementation;
 using Processors.DataAccess.Interfaces;
-
 using Processors.BusinessLogic.Interfaces;
 using Processors.BusinessLogic.Services;
-
 using Services.Models;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
@@ -30,8 +23,8 @@ namespace PhotoProcessor.Infrastructure
     {
         static readonly ServicesConfiguration instance;
 
-        readonly IUnityContainer _container;
-        readonly IConfiguration _configuration;
+        private readonly IUnityContainer _container;
+        private readonly IConfiguration _configuration;
 
         private ServicesConfiguration()
         {
@@ -51,12 +44,14 @@ namespace PhotoProcessor.Infrastructure
 
         private void Configure()
         {
+            
             _container.RegisterFactory<IConnectionFactory>(f => new DefaultConnectionFactory(_configuration.Bind<QueueConnection>("Queues:ConnectionSettings")));
             _container.RegisterType<IConnectionProvider, ConnectionProvider>();
 
             _container.RegisterFactory<IElasticStorage>(ElasticStorageFactory);
             _container.RegisterFactory<IPhotoBlobStorage>(f => new PhotoBlobStore(_configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
-
+            
+            _container.RegisterFactory<ICognitiveService>(CognitiveServiceFactory);
             _container.RegisterType<IImageProcessingService, ImageProcessingService>();
             _container.RegisterFactory<IMessageService>(MessageServiceFactory);
         }
@@ -78,12 +73,21 @@ namespace PhotoProcessor.Infrastructure
             var elasticStorage = unityContainer.Resolve<IElasticStorage>();
             var photoBlobStorage = unityContainer.Resolve<IPhotoBlobStorage>();
 
+            var cognitiveService = unityContainer.Resolve<ICognitiveService>();
             var imageProcessingService = unityContainer.Resolve<IImageProcessingService>();
                         
             var consumer = unityContainer.Resolve<IConnectionProvider>().Connect
                 (_configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"));
 
-            return new MessageServices(imageProcessingService, elasticStorage, photoBlobStorage, consumer);
+            return new MessageServices(imageProcessingService, cognitiveService, elasticStorage, photoBlobStorage, consumer);
+        }
+
+        private ICognitiveService CognitiveServiceFactory(IUnityContainer unityContainer)
+        {
+            var url = _configuration["cognitiveServiceEndpoint"];
+            var key = _configuration["cognitive2EndpointKey"];
+            
+            return new CognitiveService(url,key);
         }
 
         public IUnityContainer Container => _container;
