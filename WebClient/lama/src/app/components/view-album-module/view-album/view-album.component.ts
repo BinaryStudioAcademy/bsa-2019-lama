@@ -35,6 +35,7 @@ import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.compone
 })
 export class ViewAlbumComponent implements OnInit, DoCheck {
   @Input() album: ViewAlbum = {} as ViewAlbum;
+  @Input() isShared = false;
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
@@ -46,6 +47,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
   currentUser: User;
+  isFakeAlbum = false;
+  returnPath = '/main/albums';
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -85,7 +88,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       error => this.notifier.notify('error', 'Error loading user')
     );
     this.selectedPhotos = [];
-    if (this.loading === false && this.AlbumId !== 0) {
+    if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
       this.albumService.getAlbum(this.AlbumId).subscribe(
         x => {
           this.album = x.body;
@@ -93,6 +96,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
         },
         error => this.notifier.notify('error', 'Error loading album')
       );
+    } else if (this.AlbumId === -1) {
+      this.isFakeAlbum = true;
     } else if (this.AlbumId === 0) {
       this.favoriteService.getFavoritesPhotos(userId).subscribe(
         data => {

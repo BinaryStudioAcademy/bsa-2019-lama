@@ -33,6 +33,7 @@ export class MainAlbumComponent implements OnInit {
   @Output() Click = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
   @Input() currentUser: User;
+  @Input() isShared = false;
   @ViewChild('AddPhotosToAlbum', { static: true, read: ViewContainerRef })
   private modaladdPhoto: ViewContainerRef;
 
@@ -41,6 +42,7 @@ export class MainAlbumComponent implements OnInit {
   showSharedModal = false;
   showSetCoverModal = false;
   imageUrl: string;
+  isFake = false;
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(
@@ -56,6 +58,9 @@ export class MainAlbumComponent implements OnInit {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .subscribe(url => (this.imageUrl = url));
+    }
+    if (this.album.id === -1) {
+      this.isFake = true;
     }
   }
 

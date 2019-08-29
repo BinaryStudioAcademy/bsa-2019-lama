@@ -1,26 +1,48 @@
 <a class="link_album">
-    <div class="album">
-
-        <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu()">
-            <img src="assets/three-dots-menu.svg" alt="">
-        </div>
-        <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
-            <a class="dropdown-item" (click)="openShareModal()">Share</a>
-            <a class="dropdown-item" (click)="toggleSetCoverModal()">Set cover</a>
-            <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
-            <a class="dropdown-item" (click)="addPhotos($event)">Add Photos</a>
-            <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
-            <a class="dropdown-item" (click)="removeAlbum()">Remove</a>
-
-        </div>
-        <img src="{{ imageUrl || imgname}}" (click)="clickPerformed()">
+  <div class="album">
+    <div
+      [style.display]="isMenu ? 'block' : 'none'"
+      class="menu"
+      (click)="clickMenu()"
+    >
+      <img src="assets/three-dots-menu.svg" alt="" />
     </div>
-    <div class="description has-text-centered">
-        <p>{{album.title}}</p>
+    <div
+      [style.visibility]="isContent ? 'visible' : 'hidden'"
+      class="dropdown-content"
+      (mouseleave)="leave($event)"
+    >
+      <a *ngIf="!isShared" class="dropdown-item" (click)="openShareModal()"
+        >Share</a
+      >
+      <a *ngIf="!isFake" class="dropdown-item" (click)="toggleSetCoverModal()"
+        >Set cover</a
+      >
+      <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
+      <a *ngIf="!isFake" class="dropdown-item" (click)="addPhotos($event)"
+        >Add Photos</a
+      >
+      <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
+      <a class="dropdown-item" (click)="removeAlbum()">Remove</a>
     </div>
-    <app-share-album-by-email [receivedAlbum]='album' *ngIf="showSharedModal" (Close)="showSharedModal=false"></app-share-album-by-email>
+    <img src="{{ imageUrl || imgname }}" (click)="clickPerformed()" />
+  </div>
+  <div class="description has-text-centered">
+    <p>{{ album.title }}</p>
+  </div>
+  <app-share-album-by-email
+    [receivedAlbum]="album"
+    *ngIf="showSharedModal"
+    (Close)="showSharedModal = false"
+  ></app-share-album-by-email>
 
-    <app-set-album-cover-modal [receivedAlbum]='album' [_isFavorite]="isFavorite" (Change)="receiveUpdatedCover($event)" *ngIf="showSetCoverModal" (Close)="showSetCoverModal=false"></app-set-album-cover-modal>
+  <app-set-album-cover-modal
+    [receivedAlbum]="album"
+    [_isFavorite]="isFavorite"
+    (Change)="receiveUpdatedCover($event)"
+    *ngIf="showSetCoverModal"
+    (Close)="showSetCoverModal = false"
+  ></app-set-album-cover-modal>
 </a>
 <template #AddPhotosToAlbum></template>
 <notifier-container></notifier-container>

@@ -35,7 +35,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<ReturnAlbumDTO>> GetSharedAlbums(int userId)
         {
-            var results = await Context.SharedAlbums.Where(item => item.UserId == userId).Select(item => item.Album)
+            var results = await Context.SharedAlbums.Where(item => item.UserId == userId || item.Album.UserId == userId).Select(item => item.Album)
                 .Include(t => t.PhotoAlbums)
                 .Include(x => x.Photo)
                 .ToListAsync();

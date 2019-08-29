@@ -73,7 +73,7 @@ namespace Lama.BusinessLogic.Services
                 .ThenInclude(photo => photo.Likes)
                 .Include(sharedPhoto => sharedPhoto.Photo)
                 .ThenInclude(photo => photo.Comments)
-                .Where(sharedPhoto => sharedPhoto.UserId == id).ToListAsync();
+                .Where(sharedPhoto => sharedPhoto.UserId == id || sharedPhoto.Photo.User.Id == id).ToListAsync();
 
             if (sharedPhotoData == null)
             {
