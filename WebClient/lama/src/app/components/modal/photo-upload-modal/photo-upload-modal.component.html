@@ -10,6 +10,7 @@
       ></button>
     </header>
     <section class="modal-card-body">
+        <h2 class="dublicate-title" *ngIf="duplicatesFound">Dublicate(s) detected</h2>
       <spinner *ngIf="showSpinner"></spinner>
       <figure
         id="modal-image-container"
