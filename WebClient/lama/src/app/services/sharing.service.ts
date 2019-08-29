@@ -35,6 +35,12 @@ export class SharingService {
     );
   }
 
+  deleteSharedPhoto(id: number) {
+    return this.httpClient.delete(
+      `${this.lamaApiUrl}/${this.routePrefix}/${id}`
+    );
+  }
+
   deleteSharedAlbum(albumId: number) {
     return this.httpClient.delete(
       `${this.lamaApiUrl}/api/sharedalbums/${albumId}`

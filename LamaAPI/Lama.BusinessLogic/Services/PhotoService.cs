@@ -124,16 +124,17 @@ namespace Lama.BusinessLogic.Services
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos)
         {
             var savedPhotos = new Photo[photos.Length];
-
             for (int i = 0; i < photos.Length; ++i)
             {
                 savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(new Photo());
+                var user = await _context.GetRepository<User>().GetAsync(item => item.Id == photos[i].AuthorId);
+                savedPhotos[i].User = user.FirstOrDefault();
             }
             await _context.SaveAsync();
 
             // modify photos with ids
             for (int i = 0; i < photos.Length; ++i)
-            {
+            { 
                 photos[i].Id = savedPhotos[i].Id;
             }
 

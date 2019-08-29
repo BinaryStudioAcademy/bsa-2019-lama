@@ -36,7 +36,7 @@ namespace Lama.BusinessLogic.Services
             _mapper = mapper;
             _photoService = photoService;
         }
-        
+
 
         public async Task<SharedPhotoDTO> Get(int id)
         {
@@ -115,9 +115,11 @@ namespace Lama.BusinessLogic.Services
             return photoDocumentWithSharedLink;
         }
 		
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var entity = await Context.SharedPhotos.FirstOrDefaultAsync(i => i.PhotoId == id);
+            Context.SharedPhotos.Remove(entity);
+            await Context.SaveChangesAsync();
         }
 
         public async Task ProcessSharedPhoto(SharedPhoto sharedPhoto)

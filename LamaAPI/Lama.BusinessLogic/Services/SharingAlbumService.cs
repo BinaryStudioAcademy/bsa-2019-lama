@@ -51,7 +51,7 @@ namespace Lama.BusinessLogic.Services
                 })
                 .ToListAsync();
 
-            var photoIds = await Context.SharedPhotos.Where(item => item.UserId == userId).Select(item => item.Photo.Id).ToListAsync();
+            var photoIds = await Context.SharedPhotos.Where(item => item.UserId == userId || item.Photo.User.Id == userId).Select(item => item.Photo.Id).ToListAsync();
             List<PhotoDocument> photosList = new List<PhotoDocument>();
             foreach (var id in photoIds)
             {

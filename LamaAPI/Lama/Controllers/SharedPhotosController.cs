@@ -22,7 +22,13 @@ namespace Lama.Controllers
         {
             _sharingPhotoService = sharingPhotoService;
         }
-        
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _sharingPhotoService.Delete(id);
+        }
+
         [HttpGet("{id}")]
         public async Task<SharedPhotoDTO> GetSharedPhoto(int id)
         {

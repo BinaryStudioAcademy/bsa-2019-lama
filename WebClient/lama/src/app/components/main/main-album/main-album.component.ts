@@ -85,6 +85,11 @@ export class MainAlbumComponent implements OnInit {
       .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
+  removeFakeSharedAlbum() {
+    this.sharingService
+      .deleteSharedPhoto(this.album.photo.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
+  }
 
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
