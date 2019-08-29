@@ -5,6 +5,7 @@ using Processors.Domain;
 using Processors.Domain.DTO;
 using Services.Interfaces;
 using Services.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace Processors.BusinessLogic.Services
@@ -17,11 +18,13 @@ namespace Processors.BusinessLogic.Services
         private readonly IPhotoBlobStorage _photoBlobStore;
 
         private readonly IConsumer _consumer;
+        private readonly ICognitiveService _cognitiveService;
 
         // CONSTRUCTORS
-        public MessageServices(IImageProcessingService imageProcessingService, IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer)
+        public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService, IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer)
         {
             _imageProcessingService = imageProcessingService;
+            _cognitiveService = cognitiveService;
 
             _elasticStorage = elasticStorage;
             _photoBlobStore = photoBlobStore;
@@ -48,17 +51,28 @@ namespace Processors.BusinessLogic.Services
         }
         private async Task HandleReceivedDataAsync(MakePhotoThumbnailDTO makePhotoThumbnailDTO)
         {
-            var address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
+            string address;
+            try
+            {
+                address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
+            }catch(Exception e) // FIX
+            {
+                return;
+            }
             var fileName = address.Substring(address.LastIndexOf('/') + 1);
             var currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
 
             var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
             var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
+            var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
+            var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
 
             if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
             {
                 var thumbnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
+                var imageTagsDTO = new ImageTagsDTO{Tags = imageTagsAsRawString};
 
+                await _elasticStorage.UpdateImageTagsAsync(makePhotoThumbnailDTO.ImageId, imageTagsDTO);
                 await _elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thumbnailUpdateDTO);
             }
         }
@@ -72,11 +86,11 @@ namespace Processors.BusinessLogic.Services
                 default: throw new System.ArgumentException("Unexpected image type");
             }
         }
-        private async Task<ThubnailUpdateDTO> LoadImageToBlob(ImageType imageType, byte[] image64, byte[] image256)
+        private async Task<ThumbnailUpdateDTO> LoadImageToBlob(ImageType imageType, byte[] image64, byte[] image256)
         {
             if (ImageType.Avatar == imageType)
             {
-                return new ThubnailUpdateDTO
+                return new ThumbnailUpdateDTO
                 {
                     Blob64Id = await _photoBlobStore.LoadAvatarToBlob(image64),
                     Blob256Id = await _photoBlobStore.LoadAvatarToBlob(image256),
@@ -84,7 +98,7 @@ namespace Processors.BusinessLogic.Services
             }
             else if (ImageType.Photo == imageType)
             {
-                return new ThubnailUpdateDTO
+                return new ThumbnailUpdateDTO
                 {
                     Blob64Id = await _photoBlobStore.LoadPhotoToBlob(image64),
                     Blob256Id = await _photoBlobStore.LoadPhotoToBlob(image256),

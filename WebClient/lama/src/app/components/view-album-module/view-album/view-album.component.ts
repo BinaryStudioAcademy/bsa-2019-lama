@@ -89,6 +89,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       this.albumService.getAlbum(this.AlbumId).subscribe(
         x => {
           this.album = x.body;
+          this.album.photoAlbums = this.album.photoAlbums.reverse();
         },
         error => this.notifier.notify('error', 'Error loading album')
       );
@@ -167,7 +168,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
     }
-    this.album.photoAlbums.push(...photos);
+    this.album.photoAlbums.unshift(...photos);
   }
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
@@ -179,6 +180,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       if (this.isFavorite()) {
         localStorage.removeItem('favoriteCover');
       } else if (this.album.photo) {
+        this.album.photo = null;
         this.albumService
           .removeAlbumCover(this.album.id)
           .subscribe(

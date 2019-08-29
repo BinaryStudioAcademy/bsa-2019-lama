@@ -9,5 +9,8 @@ namespace Lama.BusinessLogic.Interfaces
     public interface IPhotoDetailsService
     {
         Task<string> UpdateDescription(NewDescription newDescription);
+        Task<string> UpdateLocation(NewLocation newLocation);
+        Task<DateTime> UpdatePhotoDate(NewDatePhoto time);
+        Task DeleteLocation(int id);
     }
 }

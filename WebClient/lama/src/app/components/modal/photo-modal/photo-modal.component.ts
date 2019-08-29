@@ -33,6 +33,8 @@ import {
 } from 'src/app/export-functions/exif';
 import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
+import { NewLocation } from 'src/app/models/Photo/NewLocation';
+import { NewPhotoDate } from 'src/app/models/Photo/NewPhotoDate';
 
 @Component({
   selector: 'app-photo-modal',
@@ -139,6 +141,51 @@ export class PhotoModalComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
 
+  UpdateDate(e: Date) {
+    const date: NewPhotoDate = {
+      id: this.photo.id,
+      date: e
+    };
+    this.photodetailsService.UpdateDate(date).subscribe(
+      a => {
+        this.photo.uploadDate = a;
+        this.notifier.notify('success', 'Date updated');
+      },
+      error => this.notifier.notify('error', 'Error updating date')
+    );
+  }
+  UpdateLocation(e) {
+    const location: NewLocation = {
+      id: this.photo.id,
+      location: e
+    };
+    this.photodetailsService.updateLocation(location).subscribe(
+      a => {
+        this.address = a;
+        this.photo.location = a;
+        this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
+      },
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
+    );
+  }
+  DeleteLocation(e) {
+    this.photodetailsService.DeleteLocation(this.photo.id).subscribe(
+      a => {
+        this.address = '';
+        this.photo.location = '';
+        this.notifier.notify('success', 'Location updated');
+        this.CloseModalForPicklocation(e);
+      },
+      error => {
+        this.notifier.notify('error', 'Error updating location');
+        this.CloseModalForPicklocation(e);
+      }
+    );
+  }
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
       location => (this.address = location)
@@ -162,49 +209,22 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    if (this.photo.name.endsWith('.png')) {
+    console.log(this.photo.location);
+    if (this.photo.location !== null && this.photo.location !== undefined) {
+      this.address = this.photo.location;
+    } else if (this.photo.name.endsWith('.png')) {
       return;
+    } else {
+      const src = this.imageUrl;
+      const exifObj = load(src);
+      this.latitude = getLatitude(exifObj);
+      this.longitude = getLongitude(exifObj);
+      if (this.latitude && this.longitude) {
+        getLocation(this.latitude, this.longitude, this.geoCoder).then(
+          location => (this.address = location)
+        );
+      }
     }
-    const src = this.imageUrl;
-    const exifObj = load(src);
-    this.latitude = getLatitude(exifObj);
-    this.longitude = getLongitude(exifObj);
-    if (this.latitude && this.longitude) {
-      getLocation(this.latitude, this.longitude, this.geoCoder).then(
-        location => (this.address = location)
-      );
-    }
-    // load Places Autocomplete
-    // this.mapsAPILoader.load().then(() => {
-    //   if ('geolocation' in navigator) {
-    //     navigator.geolocation.getCurrentPosition(position => {
-    //       // this.latitude = position.coords.latitude;
-    //       // this.longitude = position.coords.longitude;
-    //       this.zoom = 8;
-    //       this.getAddress(this.latitude, this.longitude);
-    //     });
-    //   }
-    //   // tslint:disable-next-line: new-parent
-
-    /*
-          let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-            types: ['address']
-          });
-          autocomplete.addListener('place_changed', () => {
-            this.ngZone.run(() => {
-              // get the place result
-              let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-              // verify result
-              if (place.geometry === undefined || place.geometry === null) {
-                return;
-              }
-              // set latitude, longitude and zoom
-              this.latitude = place.geometry.location.lat();
-              this.longitude = place.geometry.location.lng();
-              this.zoom = 12;
-            });
-          });*/
-    // });
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
@@ -438,6 +458,19 @@ export class PhotoModalComponent implements OnInit {
 
   CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
+  }
+
+  openModalForPicklocation(event) {
+    const overlay = document.getElementsByClassName('overlay-location')[0];
+    const modalElem = document.getElementsByClassName('modal-location')[0];
+    modalElem.classList.add('active');
+    overlay.classList.add('active');
+  }
+  CloseModalForPicklocation(event) {
+    const overlay = document.getElementsByClassName('overlay-location')[0];
+    const modalElem = document.getElementsByClassName('modal-location')[0];
+    modalElem.classList.remove('active');
+    overlay.classList.remove('active');
   }
 
   isBlockById() {

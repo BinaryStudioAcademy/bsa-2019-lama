@@ -24,5 +24,22 @@ namespace Lama.Controllers
         {
             return await _service.UpdateDescription(newDescription);
         }
+        [HttpPut("location")]
+        public async Task<string> UpdateLocation([FromBody] NewLocation newLocation)
+        {
+            return await _service.UpdateLocation(newLocation);
+        }
+
+        [HttpDelete("location/{Id}")]
+        public async Task DeleteLocation(int Id)
+        {
+           await _service.DeleteLocation(Id);
+        }
+
+        [HttpPut("date")]
+        public async Task<DateTime> UpdatePhotoDate([FromBody] NewDatePhoto time)
+        {
+            return await _service.UpdatePhotoDate(time);
+        }
     }
 }

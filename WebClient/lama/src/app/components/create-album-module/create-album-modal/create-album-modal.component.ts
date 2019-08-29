@@ -16,7 +16,7 @@ import { User } from 'src/app/models/User/user';
 import { NewAlbum } from 'src/app/models/Album/NewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
-import { load, dump, insert,  remove } from 'piexifjs';
+import { load, dump, insert, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
@@ -56,6 +56,7 @@ export class CreateAlbumModalComponent implements OnInit {
   createdAlbum: ViewAlbum;
 
   ExistPhotos: PhotoRaw[] = [];
+  isUniqueName = true;
 
   @Output()
   createdAlbumEvent = new EventEmitter<CreatedAlbumsArgs>();
@@ -145,6 +146,9 @@ export class CreateAlbumModalComponent implements OnInit {
   CreateAlbum() {
     if (this.albumName === '') {
       this.checkForm = false;
+    } else if (this.albumsTitles.includes(this.albumName)) {
+      this.isUniqueName = false;
+      this.checkForm = false;
     } else {
       if (this.photos.length === 0) {
         this.album = {
@@ -158,10 +162,11 @@ export class CreateAlbumModalComponent implements OnInit {
             this.createdAlbumEvent.emit({
               id: createdAlbum.id,
               name: createdAlbum.title,
-              photoUrl: null,
+              photo: null,
               title: createdAlbum.title
             });
             this.notifier.notify('success', 'Empty Album created');
+            this.toggleModal();
           },
           error => this.notifier.notify('error', 'Error creating the album')
         );
@@ -174,28 +179,26 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
           returnedAlbum => {
-            const filteredPhotos = this.resolveDuplicates(returnedAlbum.photoAlbums);
-            this.albumService.getAlbum(returnedAlbum.id).subscribe(
-              x => {
-                const album = x.body;
-                this.createdAlbum = album;
-                if (album.photo !== null) {
-                  this.createdAlbumEvent.emit({
-                    id: album.id,
-                    name: album.title,
-                    photoUrl: album.photo.blob256Id || album.photo.blobId,
-                    title: album.title
-                  });
-                }
-              },
-              error => this.notifier.notify('error', 'Error loading the album')
+            const filteredPhotos = this.resolveDuplicates(
+              returnedAlbum.photoAlbums
             );
+            if (returnedAlbum.photo !== null) {
+              this.createdAlbumEvent.emit({
+                id: returnedAlbum.id,
+                name: returnedAlbum.title,
+                photo: returnedAlbum.photo,
+                title: returnedAlbum.title
+              });
+            }
             if (!this.duplicatesFound) {
               this.notifier.notify('success', 'Album created');
               this.toggleModal();
             } else {
               this.removeUploaded(filteredPhotos);
-              this.notifier.notify('warning', 'This photos appear to be duplicates. Upload them anyway?');
+              this.notifier.notify(
+                'warning',
+                'This photos appear to be duplicates. Upload them anyway?'
+              );
             }
           },
           error => this.notifier.notify('error', 'Error creating the album')
@@ -213,27 +216,31 @@ export class CreateAlbumModalComponent implements OnInit {
               this.createdAlbumEvent.emit({
                 id: createdAlbum.id,
                 name: createdAlbum.title,
-                photoUrl:
-                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+                photo: createdAlbum.photo || createdAlbum.photo,
                 title: createdAlbum.title
               });
               this.notifier.notify('success', 'Album created');
+              this.toggleModal();
             },
             error => this.notifier.notify('error', 'Error creating the album')
           );
-        }
+      }
     }
   }
   removeUploaded(filteredPhotos: PhotoRaw[]) {
     filteredPhotos.forEach(filtered => {
-      const index = this.photos.findIndex(photo => photo.filename === filtered.name);
+      const index = this.photos.findIndex(
+        photo => photo.filename === filtered.name
+      );
       this.photos.splice(index, 1);
     });
   }
   resolveDuplicates(uploadedPhotos: PhotoRaw[]) {
     if (uploadedPhotos.some(photo => photo.isDuplicate)) {
       this.duplicates = uploadedPhotos.filter(photo => photo.isDuplicate);
-      uploadedPhotos = uploadedPhotos.filter((photo) => !this.duplicates.includes(photo));
+      uploadedPhotos = uploadedPhotos.filter(
+        photo => !this.duplicates.includes(photo)
+      );
       this.duplicatesFound = true;
     }
     return uploadedPhotos;
@@ -297,13 +304,19 @@ export class CreateAlbumModalComponent implements OnInit {
   }
 
   createWithDuplicates() {
-    this.fileService.uploadDuplicates(this.duplicates as UploadPhotoResultDTO[]).subscribe(
-      uploadedDuplicates => {
-        this.albumService.addNewPhotosToAlbum({AlbumId: this.createdAlbum.id, UserId: this.album.authorId, photos: this.photos});
-        this.notifier.notify('success', 'Duplicates uploaded');
-        this.toggleModal();
-      },
-      error => this.notifier.notify('error', 'Error sending photos')
-    );
+    this.fileService
+      .uploadDuplicates(this.duplicates as UploadPhotoResultDTO[])
+      .subscribe(
+        uploadedDuplicates => {
+          this.albumService.addNewPhotosToAlbum({
+            AlbumId: this.createdAlbum.id,
+            UserId: this.album.authorId,
+            photos: this.photos
+          });
+          this.notifier.notify('success', 'Duplicates uploaded');
+          this.toggleModal();
+        },
+        error => this.notifier.notify('error', 'Error sending photos')
+      );
   }
 }
