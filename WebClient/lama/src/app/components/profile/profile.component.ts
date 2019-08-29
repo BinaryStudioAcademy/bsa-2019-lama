@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/models/User/user';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -7,13 +7,15 @@ import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.sass']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     public authService: AuthService,
     private httpService: HttpService,
@@ -41,10 +43,12 @@ export class ProfileComponent implements OnInit {
   showSpinner = true;
   isPhotoLoaded = false;
   isSaved = false;
+  unsubscribe = new Subject();
 
   ngOnInit() {
     this.httpService
       .getData(`users/${localStorage.getItem('userId')}`)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         u => {
           this.isSuccesfull = true;
@@ -53,6 +57,7 @@ export class ProfileComponent implements OnInit {
             this.showSpinner = false;
             this.fileService
               .getPhoto(u.photoUrl)
+              .pipe(takeUntil(this.unsubscribe))
               .subscribe(url => (this.photoUrl = url));
           } else {
             this.showSpinner = false;
@@ -104,7 +109,9 @@ export class ProfileComponent implements OnInit {
     }
 
     this.defaultImageUrl = this.photoUrl;
-    this.httpService.putData(`users`, this.user).subscribe(
+    this.httpService.putData(`users`, this.user)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       (data: User) => {
         this.testReceivedUser = data;
         this.notifier.notify('success', 'Changes Saved');
@@ -139,5 +146,10 @@ export class ProfileComponent implements OnInit {
     this.photoUrl = null;
     this.user.photo = null;
     this.sharedService.avatar = { imageUrl: 'deleted' };
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

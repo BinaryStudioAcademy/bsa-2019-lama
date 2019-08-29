@@ -6,7 +6,8 @@ import {
   ViewContainerRef,
   ComponentFactoryResolver,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
@@ -21,13 +22,15 @@ import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
   styleUrls: ['./create-album-modal.component.sass']
 })
-export class CreateAlbumModalComponent implements OnInit {
+export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
 
@@ -66,6 +69,7 @@ export class CreateAlbumModalComponent implements OnInit {
   @Input()
   public isShown: boolean;
   albumsTitles: string[];
+  unsubscribe = new Subject();
 
   constructor(
     resolver: ComponentFactoryResolver,
@@ -153,7 +157,9 @@ export class CreateAlbumModalComponent implements OnInit {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createEmptyAlbum(this.album).subscribe(
+        this.albumService.createEmptyAlbum(this.album)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
           createdAlbum => {
             this.createdAlbumEvent.emit({
               id: createdAlbum.id,
@@ -172,7 +178,9 @@ export class CreateAlbumModalComponent implements OnInit {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
+        this.albumService.createAlbumWithNewPhotos(this.album)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
           returnedAlbum => {
             const filteredPhotos = this.resolveDuplicates(returnedAlbum.photoAlbums);
             this.albumService.getAlbum(returnedAlbum.id).subscribe(
@@ -208,6 +216,7 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(
             createdAlbum => {
               this.createdAlbumEvent.emit({
@@ -271,7 +280,9 @@ export class CreateAlbumModalComponent implements OnInit {
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.fileService.getPhoto(photo.blob256Id).subscribe(url => {
+      this.fileService.getPhoto(photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => {
         this.photos.push({ imageUrl: url });
         this.ExistPhotos.push(photo);
       });
@@ -297,13 +308,25 @@ export class CreateAlbumModalComponent implements OnInit {
   }
 
   createWithDuplicates() {
-    this.fileService.uploadDuplicates(this.duplicates as UploadPhotoResultDTO[]).subscribe(
-      uploadedDuplicates => {
-        this.albumService.addNewPhotosToAlbum({AlbumId: this.createdAlbum.id, UserId: this.album.authorId, photos: this.photos});
-        this.notifier.notify('success', 'Duplicates uploaded');
-        this.toggleModal();
-      },
-      error => this.notifier.notify('error', 'Error sending photos')
-    );
+    this.fileService
+      .uploadDuplicates(this.duplicates as UploadPhotoResultDTO[])
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+        uploadedDuplicates => {
+          this.albumService.addNewPhotosToAlbum({
+            AlbumId: this.createdAlbum.id,
+            UserId: this.album.authorId,
+            photos: this.photos
+          });
+          this.notifier.notify('success', 'Duplicates uploaded');
+          this.toggleModal();
+        },
+        error => this.notifier.notify('error', 'Error sending photos')
+      );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

@@ -4,7 +4,8 @@ import {
   Input,
   ViewChild,
   ViewContainerRef,
-  ComponentFactoryResolver
+  ComponentFactoryResolver,
+  OnDestroy
 } from '@angular/core';
 import { Album } from 'src/app/models/Album/album';
 import { CreateAlbumModalComponent } from '../../create-album-module/create-album-modal/create-album-modal.component';
@@ -19,6 +20,8 @@ import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-main-albums-container',
@@ -26,7 +29,7 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-albums-container.component.sass'],
   providers: [FavoriteService]
 })
-export class MainAlbumsContainerComponent implements OnInit {
+export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
   @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
@@ -37,9 +40,12 @@ export class MainAlbumsContainerComponent implements OnInit {
   showFavorite = false;
 
   ArchivePhotos = [];
+  unsubscribe = new Subject();
   ngOnInit() {
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId).subscribe(
+    this.httpService.getData('users/' + userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       u => {
         this.currentUser = u;
         this.GetFavoriteAlbum(this.currentUser.id);
@@ -61,7 +67,9 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   GetAlbums() {
     const id = this.currentUser.id;
-    this.albumService.getAlbums(id).subscribe(
+    this.albumService.getAlbums(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       albums => {
         this.albums = albums.body;
         this.albums.forEach(a => {
@@ -79,7 +87,9 @@ export class MainAlbumsContainerComponent implements OnInit {
   }
 
   GetFavoriteAlbum(userId: number) {
-    this.favoriteService.getFavoritesPhotos(userId).subscribe(
+    this.favoriteService.getFavoritesPhotos(userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       data => {
         if (data.length !== 0) {
           this.showFavorite = true;
@@ -118,7 +128,8 @@ export class MainAlbumsContainerComponent implements OnInit {
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.albumsTitles = this.albums.map(item => item.title);
-    componentRef.instance.createdAlbumEvent.subscribe(
+    componentRef.instance.createdAlbumEvent
+      .subscribe(
       (createdAlbum: ViewAlbum) => {
         this.albums.push(createdAlbum);
       }
@@ -127,7 +138,9 @@ export class MainAlbumsContainerComponent implements OnInit {
 
   ArchiveAlbum(event: ViewAlbum) {
     if (event.photoAlbums) {
-      this.albumService.ArchiveAlbum(event.photoAlbums).subscribe(
+      this.albumService.ArchiveAlbum(event.photoAlbums)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         x => {
           this.ArchivePhotos = x;
           this.ConvertToImage(event.title);
@@ -165,5 +178,10 @@ export class MainAlbumsContainerComponent implements OnInit {
     } else {
       this.albums = this.albums.filter(a => a !== albumToDelete);
     }
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

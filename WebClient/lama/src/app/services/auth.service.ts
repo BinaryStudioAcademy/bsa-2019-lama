@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -6,18 +6,21 @@ import { environment } from '../../environments/environment';
 import { UserService } from './user.service';
 import { UserCreate } from '../models/User/userCreate';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   token: string;
   user: UserCreate;
   httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
   isUserExisted = true;
+  unsubscribe = new Subject();
 
   constructor(public afAuth: AngularFireAuth,
               private httpClient: HttpClient,
@@ -127,7 +130,9 @@ export class AuthService {
           photo: { imageUrl: img}
         };
 
-        this.registerUser(this.user).subscribe(id => {
+        this.registerUser(this.user)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(id => {
           console.log(id);
           localStorage.setItem('userId', id.toString());
         });
@@ -150,5 +155,10 @@ export class AuthService {
 
   registerUser(user: UserCreate) {
     return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
@@ -8,13 +8,15 @@ import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-share-album-by-email',
   templateUrl: './share-album-by-email.component.html',
   styleUrls: ['./share-album-by-email.component.sass']
 })
-export class ShareAlbumByEmailComponent implements OnInit {
+export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
   @Input() receivedAlbum: ViewAlbum;
 
   @Output() Close = new EventEmitter();
@@ -29,6 +31,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   wrongInput = false;
   availableAll = true;
   showAvailable = false;
+  unsubscribe = new Subject();
 
   constructor(
     private userService: UserService,
@@ -43,7 +46,9 @@ export class ShareAlbumByEmailComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(
+      this.userService.getUserByEmail(this.sharedEmail)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         user => {
           if (user) {
             this.userEmails.push(user.email);
@@ -130,5 +135,10 @@ export class ShareAlbumByEmailComponent implements OnInit {
     serchfind = regexp.test(search);
 
     return serchfind;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

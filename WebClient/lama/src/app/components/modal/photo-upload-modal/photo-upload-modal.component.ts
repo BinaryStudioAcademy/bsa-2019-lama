@@ -7,7 +7,8 @@ import {
   ViewContainerRef,
   ViewChild,
   ComponentRef,
-  AfterViewInit
+  AfterViewInit,
+  OnDestroy
 } from '@angular/core';
 import { read } from 'fs';
 import { FileService } from 'src/app/services/file.service';
@@ -24,6 +25,8 @@ import {
   getLatitude,
   getLongitude
 } from 'src/app/export-functions/exif';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -31,7 +34,7 @@ import {
   templateUrl: './photo-upload-modal.component.html',
   styleUrls: ['./photo-upload-modal.component.sass']
 })
-export class PhotoUploadModalComponent implements OnInit {
+export class PhotoUploadModalComponent implements OnInit, OnDestroy {
   isActive: boolean;
   photos: Photo[] = [];
   desc: string[] = [];
@@ -41,6 +44,7 @@ export class PhotoUploadModalComponent implements OnInit {
   address: string;
   showRemoveButton = false;
   duplicatesFound = false;
+  unsubscribe = new Subject();
   @Output()
   addToListEvent: EventEmitter<UploadPhotoResultDTO[]> = new EventEmitter<
     UploadPhotoResultDTO[]
@@ -77,36 +81,41 @@ export class PhotoUploadModalComponent implements OnInit {
         location: this.photos[i].location
       };
     }
-
-    this.fileService.sendPhotos(this.photos).subscribe(
-      uploadedPhotos => {
-        const filteredPhotos = this.resolveDuplicates(uploadedPhotos);
-        this.addToListEvent.emit(filteredPhotos);
-        if (!this.duplicatesFound) {
-          this.notifier.notify('success', 'Uploaded');
-          this.toggleModal();
-        } else {
-          this.removeUploaded(filteredPhotos);
-          this.showSpinner = false;
-          this.notifier.notify(
-            'warning',
-            'This photos appear to be duplicates. Upload them anyway?'
-          );
-        }
-      },
-      error => this.notifier.notify('error', 'Error sending photos')
-    );
+    this.fileService
+      .sendPhotos(this.photos)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        uploadedPhotos => {
+          const filteredPhotos = this.resolveDuplicates(uploadedPhotos);
+          this.addToListEvent.emit(filteredPhotos);
+          if (!this.duplicatesFound) {
+            this.notifier.notify('success', 'Uploaded');
+            this.toggleModal();
+          } else {
+            this.removeUploaded(filteredPhotos);
+            this.showSpinner = false;
+            this.notifier.notify(
+              'warning',
+              'This photos appear to be duplicates. Upload them anyway?'
+            );
+          }
+        },
+        error => this.notifier.notify('error', 'Error sending photos')
+      );
   }
 
   uploadDuplicates() {
-    this.fileService.uploadDuplicates(this.duplicates).subscribe(
-      uploadedDuplicates => {
-        this.addToListEvent.emit(uploadedDuplicates);
-        this.notifier.notify('success', 'Duplicates uploaded');
-        this.toggleModal();
-      },
-      error => this.notifier.notify('error', 'Error sending photos')
-    );
+    this.fileService
+      .uploadDuplicates(this.duplicates)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        uploadedDuplicates => {
+          this.addToListEvent.emit(uploadedDuplicates);
+          this.notifier.notify('success', 'Duplicates uploaded');
+          this.toggleModal();
+        },
+        error => this.notifier.notify('error', 'Error sending photos')
+      );
   }
 
   removeUploaded(filteredPhotos: UploadPhotoResultDTO[]) {
@@ -177,6 +186,7 @@ export class PhotoUploadModalComponent implements OnInit {
       } else {
         const compressedFile = this.ng2ImgToolsService
           .compress([file], environment.compressionOptions.maxSizeMB)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(async result => {
             this.showSpinner = false;
             this.photos.push({
@@ -223,5 +233,10 @@ export class PhotoUploadModalComponent implements OnInit {
 
   isDuplicate(photo: Photo) {
     return this.duplicates.some(duplicate => duplicate.name === photo.filename);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }
