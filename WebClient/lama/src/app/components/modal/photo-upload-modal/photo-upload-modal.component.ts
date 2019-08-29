@@ -162,7 +162,8 @@ export class PhotoUploadModalComponent implements OnInit {
                 this.photos.push({
                   imageUrl: modifiedObject,
                   filename: file.name,
-                  location: this.address
+                  location: this.address,
+                  coordinates: latitude + ',' + longitude
                 });
               });
             } else {

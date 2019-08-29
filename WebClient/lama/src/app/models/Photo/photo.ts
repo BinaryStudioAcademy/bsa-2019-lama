@@ -5,6 +5,7 @@ export class Photo {
   description?: string;
   filename?: string;
   location?: string;
+  coordinates?: string;
   // tslint:disable-next-line: whitespace
   isDuplicate? = false;
 }
