@@ -36,17 +36,13 @@
   </app-delete-modal>
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
-  <div class="title">
-    <h2 class="title is-2">{{ album.title }}</h2>
-  </div>
-  <div *ngIf="loading" class="items-container-centered">
-    <div *ngFor="let item of album.photoAlbums.reverse()">
-      <main-photo
-        [_photo]="item"
-        [_id]="favorites.has(item.id) == true ? item.id : -1"
-        (Click)="photoClicked($event)"
-        (Select)="photoSelected($event)"
-      ></main-photo>
+    <div class="title">
+        <h2 class="title is-2">{{ album.title }}</h2>
+    </div>
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums?.reverse()">
+            <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)" (Select)="photoSelected($event)"></main-photo>
+        </div>
     </div>
   </div>
   <template #modalPhotoContainer></template>
