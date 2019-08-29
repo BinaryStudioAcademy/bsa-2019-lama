@@ -74,7 +74,8 @@ export class PhotoUploadModalComponent implements OnInit {
         description: this.desc[i],
         authorId: parseInt(userId, 10),
         filename: this.photos[i].filename,
-        location: this.photos[i].location
+        location: this.photos[i].location,
+        coordinates: this.photos[i].coordinates
       };
     }
     this.fileService.sendPhotos(this.photos).subscribe(
@@ -146,8 +147,6 @@ export class PhotoUploadModalComponent implements OnInit {
         const field = 'GPS';
         latitude = getLatitude(exifObj);
         longitude = getLongitude(exifObj);
-        console.log(latitude);
-        console.log(longitude);
         const d = dump(exifObj);
         const compressedFile = await this.ng2ImgToolsService
           .compress([file], environment.compressionOptions.maxSizeMB)

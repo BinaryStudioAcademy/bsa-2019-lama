@@ -154,15 +154,12 @@ export class PhotoModalComponent implements OnInit {
       error => this.notifier.notify('error', 'Error updating date')
     );
   }
-  UpdateLocation(e) {
-    const location: NewLocation = {
-      id: this.photo.id,
-      location: e
-    };
-    this.photodetailsService.updateLocation(location).subscribe(
+  UpdateLocation(e: NewLocation) {
+    this.photodetailsService.updateLocation(e).subscribe(
       a => {
         this.address = a;
         this.photo.location = a;
+        this.photo.coordinates = e.coordinates;
         this.notifier.notify('success', 'Location updated');
         this.CloseModalForPicklocation(e);
       },
@@ -177,6 +174,7 @@ export class PhotoModalComponent implements OnInit {
       a => {
         this.address = '';
         this.photo.location = '';
+        this.photo.coordinates = '';
         this.notifier.notify('success', 'Location updated');
         this.CloseModalForPicklocation(e);
       },
@@ -209,7 +207,6 @@ export class PhotoModalComponent implements OnInit {
 
   // GET EXIF
   GetFile() {
-    console.log(this.photo.location);
     if (this.photo.location !== null && this.photo.location !== undefined) {
       this.address = this.photo.location;
     } else if (this.photo.name.endsWith('.png')) {

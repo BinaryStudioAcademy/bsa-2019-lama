@@ -53,6 +53,7 @@ namespace Lama.BusinessLogic.Services
 
             string uri = $"{url}api/photos/document";
             doc.Location = newLocation.Location;
+            doc.Coordinates = newLocation.Coordinates;
             StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
             await httpClient.PutAsync(uri, content);
 
@@ -69,6 +70,7 @@ namespace Lama.BusinessLogic.Services
 
             string uri = $"{url}api/photos/document";
             doc.Location = String.Empty;
+            doc.Coordinates = string.Empty;
             StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
             await httpClient.PutAsync(uri, content);
         }
