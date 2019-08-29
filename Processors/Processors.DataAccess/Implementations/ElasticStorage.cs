@@ -32,9 +32,9 @@ namespace Processors.DataAccess.Implementation
             return (await _elasticClient.DocumentExistsAsync<PhotoDocument>(id)).Exists;
         }
 
-        public Task UpdateImageTagsAsync(long imageId, ImageTagsDTO imageTagsDto)
+        public Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRaw)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsDto));
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsAsRaw));
         }
     }
 }

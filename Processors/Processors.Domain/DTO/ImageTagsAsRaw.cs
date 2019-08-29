@@ -1,6 +1,6 @@
 namespace Processors.Domain.DTO
 {
-    public class ImageTagsDTO
+    public class ImageTagsAsRaw
     {
         public string Tags { get; set; }
     }

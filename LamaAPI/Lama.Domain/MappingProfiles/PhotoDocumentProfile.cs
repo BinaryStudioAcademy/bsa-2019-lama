@@ -11,8 +11,10 @@ namespace Lama.Domain.MappingProfiles
     {
         public PhotoDocumentProfile()
         {
-            CreateMap<PhotoDocument, PhotoDocumentDTO>().ForMember(photoDoc => photoDoc.Tags,
-                dto => dto.MapFrom(data => JsonConvert.DeserializeObject<IEnumerable<ImageTag>>(data.Tags))).ReverseMap();
+            CreateMap<PhotoDocument, PhotoDocumentDTO>().ForMember(dto => dto.Tags,
+                photoDoc => photoDoc.MapFrom(data => JsonConvert.DeserializeObject<IEnumerable<ImageTag>>(data.Tags)));
+            CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.Tags,
+                dto => dto.MapFrom(data => JsonConvert.SerializeObject(data.Tags)));
             CreateMap<UpdatedPhotoResultDTO, PhotoDocumentDTO>().ReverseMap();
             CreateMap<UploadPhotoResultDTO, PhotoDocumentDTO>().ReverseMap();
         }
