@@ -48,7 +48,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   private querySubscription: Subscription;
   currentUser: User;
   isFakeAlbum = false;
-  returnPath = '/main/albums';
+  returnPath: string;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -80,6 +80,11 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   }
 
   ngOnInit() {
+    console.log(this.router.url);
+    this.returnPath = this.router.url.substr(
+      0,
+      this.router.url.lastIndexOf('/') + 1
+    );
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.httpService.getData('users/' + userId).subscribe(
       u => {

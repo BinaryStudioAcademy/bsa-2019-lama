@@ -30,7 +30,7 @@
         >Remove</a
       >
       <a
-        *ngIf="isOwners && isShared"
+        *ngIf="isOwners && isShared && !isFake"
         class="dropdown-item"
         (click)="removeSharedAlbum()"
         >Remove</a
