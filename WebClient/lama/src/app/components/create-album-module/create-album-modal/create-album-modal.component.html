@@ -26,6 +26,9 @@
                                 Enter Album name
                             </div>
                         </div>
+                        <div *ngIf="!isUniqueName">
+                            The name is already in use. Choose another album name
+                        </div>
                     </div>
 
                     <div class="storage">
