@@ -29,7 +29,7 @@ import { NotifierService } from 'angular-notifier';
 export class MainPhotosContainerComponent implements OnInit, DoCheck {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
-  isNothingFounded: boolean;
+  isNothingFound: boolean;
   isSearchTriggered: boolean;
   currentUser: User;
   selectedPhotos: PhotoRaw[];
@@ -40,7 +40,6 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   duplicatesFound = false;
   numberLoadPhoto = 30;
   isDeleting: boolean;
-
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -96,7 +95,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   public GetUserPhotos(userId: number) {
-    this.isNothingFounded = false;
+    this.isNothingFound = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
@@ -111,7 +110,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
     if (startId === 0) {
-      this.isNothingFounded = false;
+      this.isNothingFound = false;
       this.shared.isSearchTriggeredAtLeastOnce = false;
       this.showSpinner = true;
       this.photos = [];
@@ -126,7 +125,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   GetPhotos() {
-    this.isNothingFounded = false;
+    this.isNothingFound = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
@@ -138,7 +137,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       err => {
         this.notifier.notify('error', 'Error getting photos');
         this.showSpinner = false;
-        this.isNothingFounded = true;
+        this.isNothingFound = true;
       }
     );
   }
@@ -149,19 +148,13 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         this.photos.unshift(element);
       });
     }
-    if (
-      this.shared.foundPhotos.length !== 0 &&
-      this.shared.isSearchTriggered
-    ) {
+    if (this.shared.foundPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundPhotos;
-      this.isNothingFounded = false;
+      this.isNothingFound = false;
     }
-    if (
-      this.shared.foundPhotos.length === 0 &&
-      this.shared.isSearchTriggered
-    ) {
+    if (this.shared.foundPhotos.length === 0 && this.shared.isSearchTriggered) {
       this.photos = [];
-      this.isNothingFounded = true;
+      this.isNothingFound = true;
     }
     this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
     if (this.isSearchTriggered) {
@@ -222,7 +215,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
-   this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+    this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -255,14 +248,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   findDuplicates() {
-    this.fileService.getDuplicates(this.currentUser.id).subscribe(duplicates => {
-      this.duplicates = duplicates;
-      if (this.duplicates.length > 0) {
-        this.duplicatesFound = true;
-      } else {
-        this.notifier.notify('success', 'No duplicates found');
-      }
-    });
+    this.fileService
+      .getDuplicates(this.currentUser.id)
+      .subscribe(duplicates => {
+        this.duplicates = duplicates;
+        if (this.duplicates.length > 0) {
+          this.duplicatesFound = true;
+        } else {
+          this.notifier.notify('success', 'No duplicates found');
+        }
+      });
   }
 
   onScroll() {
