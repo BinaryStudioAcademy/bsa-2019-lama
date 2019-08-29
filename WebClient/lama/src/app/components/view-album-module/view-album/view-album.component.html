@@ -2,7 +2,7 @@
     <div class="image">
         <a routerLink="/main/albums"><img src="assets/back-2.svg" alt="" /></a>
     </div>
-    <div *ngIf="!isFavorite() || isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+    <div *ngIf="(!isFavorite() || isAtLeastOnePhotoSelected) && album?.photoAlbums?.length" class="dropdown is-hoverable">
         <div class="dropdown-trigger">
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>

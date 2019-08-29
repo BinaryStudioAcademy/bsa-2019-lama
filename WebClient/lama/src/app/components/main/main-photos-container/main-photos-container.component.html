@@ -1,6 +1,6 @@
 <div class="content-header">
   <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
-  <div  class="dropdown is-hoverable">
+  <div  class="dropdown is-hoverable" *ngIf="photos?.length">
     <div class="dropdown-trigger">
       <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
