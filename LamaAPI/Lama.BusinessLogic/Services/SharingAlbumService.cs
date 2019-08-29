@@ -37,7 +37,18 @@ namespace Lama.BusinessLogic.Services
         {
             var results = await Context.SharedAlbums.Where(item => item.UserId == userId || item.Album.UserId == userId).Select(item => item.Album)
                 .Include(t => t.PhotoAlbums)
-                .Include(x => x.Photo)
+                .Include(x => x.Photo).GroupBy(x => x.Id, (x, y) => new Album()
+                {
+                     Id = y.FirstOrDefault().Id,
+                     UserId = y.FirstOrDefault().UserId,
+                     SharedAlbums = y.FirstOrDefault().SharedAlbums,
+                     Photo = y.FirstOrDefault().Photo,
+                     PhotoAlbums = y.FirstOrDefault().PhotoAlbums,
+                     Title = y.FirstOrDefault().Title,
+                     User = y.FirstOrDefault().User,
+                     CoverId = y.FirstOrDefault().CoverId,
+                     SharedLink = y.FirstOrDefault().SharedLink
+                })
                 .ToListAsync();
 
             var photoIds = await Context.SharedPhotos.Where(item => item.UserId == userId).Select(item => item.Photo.Id).ToListAsync();
@@ -130,9 +141,18 @@ namespace Lama.BusinessLogic.Services
             
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int albumId)
         {
-            throw new System.NotImplementedException();
+            var entites = Context.SharedAlbums.Where(a => a.AlbumId == albumId);
+            Context.SharedAlbums.RemoveRange(entites);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task DeleteForUser(int albumId, int userId)
+        {
+            var entity = Context.SharedAlbums.Where(a => a.AlbumId == albumId).FirstOrDefault(i => i.UserId == userId);
+            Context.SharedAlbums.Remove(entity);
+            await Context.SaveChangesAsync();
         }
 
         public async Task SharingAlbum(SharedAlbum sharedAlbum)

@@ -41,7 +41,6 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   numberLoadPhoto = 30;
   isDeleting: boolean;
 
-
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef })
@@ -119,6 +118,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.fileService.receiveUsersPhotosRange(userId, startId, count).subscribe(
       info => {
         this.photos.push(...info);
+        console.log(this.photos);
         this.showSpinner = false;
       },
       error => this.notifier.notify('error', 'Error getting photos')
@@ -149,17 +149,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
         this.photos.unshift(element);
       });
     }
-    if (
-      this.shared.foundPhotos.length !== 0 &&
-      this.shared.isSearchTriggered
-    ) {
+    if (this.shared.foundPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundPhotos;
       this.isNothingFounded = false;
     }
-    if (
-      this.shared.foundPhotos.length === 0 &&
-      this.shared.isSearchTriggered
-    ) {
+    if (this.shared.foundPhotos.length === 0 && this.shared.isSearchTriggered) {
       this.photos = [];
       this.isNothingFounded = true;
     }
@@ -222,7 +216,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
-   this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+    this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -255,14 +249,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   }
 
   findDuplicates() {
-    this.fileService.getDuplicates(this.currentUser.id).subscribe(duplicates => {
-      this.duplicates = duplicates;
-      if (this.duplicates.length > 0) {
-        this.duplicatesFound = true;
-      } else {
-        this.notifier.notify('success', 'No duplicates found');
-      }
-    });
+    this.fileService
+      .getDuplicates(this.currentUser.id)
+      .subscribe(duplicates => {
+        this.duplicates = duplicates;
+        if (this.duplicates.length > 0) {
+          this.duplicatesFound = true;
+        } else {
+          this.notifier.notify('success', 'No duplicates found');
+        }
+      });
   }
 
   onScroll() {

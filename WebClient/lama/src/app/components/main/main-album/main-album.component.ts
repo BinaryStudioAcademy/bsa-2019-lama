@@ -15,6 +15,7 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import { FileService } from 'src/app/services/file.service';
 import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../../view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
+import { SharingService } from 'src/app/services/sharing.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -43,6 +44,7 @@ export class MainAlbumComponent implements OnInit {
   showSetCoverModal = false;
   imageUrl: string;
   isFake = false;
+  isOwners = true;
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(
@@ -50,7 +52,8 @@ export class MainAlbumComponent implements OnInit {
     private favoriteService: FavoriteService,
     private fileService: FileService,
     private notifier: NotifierService,
-    private resolver: ComponentFactoryResolver
+    private resolver: ComponentFactoryResolver,
+    private sharingService: SharingService
   ) {}
 
   ngOnInit() {
@@ -62,10 +65,25 @@ export class MainAlbumComponent implements OnInit {
     if (this.album.id === -1) {
       this.isFake = true;
     }
+    console.log(this.album.photo.userId);
+    if (this.album.photo.userId !== this.currentUser.id) {
+      this.isOwners = false;
+    }
   }
 
   clickPerformed(): void {
     this.Click.emit(this.album);
+  }
+
+  removeSharedAlbum() {
+    this.sharingService
+      .deleteSharedAlbum(this.album.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
+  }
+  removeSharedAlbumForUser() {
+    this.sharingService
+      .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
 
   receiveUpdatedCover(event: PhotoRaw) {

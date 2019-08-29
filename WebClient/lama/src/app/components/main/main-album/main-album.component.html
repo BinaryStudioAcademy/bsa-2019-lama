@@ -23,7 +23,24 @@
         >Add Photos</a
       >
       <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
-      <a class="dropdown-item" (click)="removeAlbum()">Remove</a>
+      <a
+        *ngIf="isOwners && !isShared"
+        class="dropdown-item"
+        (click)="removeAlbum()"
+        >Remove</a
+      >
+      <a
+        *ngIf="isOwners && isShared"
+        class="dropdown-item"
+        (click)="removeSharedAlbum()"
+        >Remove</a
+      >
+      <a
+        *ngIf="!isOwners"
+        class="dropdown-item"
+        (click)="removeSharedAlbumForUser()"
+        >Exit</a
+      >
     </div>
     <img src="{{ imageUrl || imgname }}" (click)="clickPerformed()" />
   </div>

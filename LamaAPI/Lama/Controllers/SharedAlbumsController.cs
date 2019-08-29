@@ -42,5 +42,17 @@ namespace Lama.Controllers
         {
             await _sharingAlbumService.SharingAlbum(sharedAlbum);
         }
+
+        [HttpDelete("{id}")]
+        public async Task RemoveSharedAlbum(int id)
+        {
+            await _sharingAlbumService.Delete(id);
+        }
+
+        [HttpDelete("{id}/{userId}")]
+        public async Task RemoveSharedAlbum(int id, int userId)
+        {
+            await _sharingAlbumService.DeleteForUser(id, userId);
+        }
     }
 }

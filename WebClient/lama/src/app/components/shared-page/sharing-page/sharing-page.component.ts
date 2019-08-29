@@ -6,6 +6,9 @@ import { HttpService } from 'src/app/services/http.service';
 import { NotifierService } from 'angular-notifier';
 import { Album } from 'src/app/models/Album/album';
 import { Router, NavigationExtras } from '@angular/router';
+import { AlbumService } from 'src/app/services/album.service';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-sharing-page',
@@ -15,11 +18,13 @@ import { Router, NavigationExtras } from '@angular/router';
 export class SharingPageComponent implements OnInit {
   albums: ViewAlbum[];
   currentUser: User;
+  ArchivePhotos = [];
   constructor(
     private sharingService: SharingService,
     private httpService: HttpService,
     private notifier: NotifierService,
-    private router: Router
+    private router: Router,
+    private albumService: AlbumService
   ) {}
 
   ngOnInit() {
@@ -49,5 +54,35 @@ export class SharingPageComponent implements OnInit {
       }
     };
     this.router.navigate(['/main/sharing', eventArgs.id], navigationExtras);
+  }
+  public deleteAlbumHandler(albumToDelete: ViewAlbum) {
+    if (albumToDelete.id === 0) {
+      localStorage.removeItem('favoriteCover');
+    } else {
+      this.albums = this.albums.filter(a => a !== albumToDelete);
+    }
+  }
+  ArchiveAlbum(event: ViewAlbum) {
+    if (event.photoAlbums) {
+      this.albumService.ArchiveAlbum(event.photoAlbums).subscribe(
+        x => {
+          this.ArchivePhotos = x;
+          this.ConvertToImage(event.title);
+        },
+        error => this.notifier.notify('error', 'Error archive album')
+      );
+    } else {
+      this.notifier.notify('error', 'Cannot download the empty album');
+    }
+  }
+  ConvertToImage(name) {
+    const zip = new JSZip();
+    for (let i = 0; i < this.ArchivePhotos.length; i++) {
+      zip.file(`image${i + 1}.jpg`, this.ArchivePhotos[i], { base64: true });
+    }
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      saveAs(content, name);
+    });
   }
 }
