@@ -41,7 +41,7 @@
     </a>
     <a class="button is-large tooltip" >
       <i class="fa fa-sign-out"></i>
-      <span class="tooltiptext" (click)="logOut()"> Logout </span>
+      <span class="tooltiptext" (click)="logOut(); $event.preventDefault()"> Logout </span>
     </a>
   </div>
 </header>

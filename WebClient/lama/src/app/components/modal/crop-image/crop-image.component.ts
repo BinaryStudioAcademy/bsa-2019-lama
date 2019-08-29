@@ -4,24 +4,28 @@ import {
   OnInit,
   Input,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { FileService } from 'src/app/services/file.service';
 import { ImageEditedArgs } from 'src/app/models';
 import { load, dump, insert, TagValues, helper, remove } from 'piexifjs';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-crop-image',
   templateUrl: './crop-image.component.html',
   styleUrls: ['./crop-image.component.sass']
 })
-export class CropImageComponent implements OnInit {
+export class CropImageComponent implements OnInit, OnDestroy {
   // fields
   private imageUrl: string;
   public imageToCropBase64: string;
   private imageService: FileService;
+  unsubscribe = new Subject();
 
   // properties
   @Input()
@@ -47,7 +51,9 @@ export class CropImageComponent implements OnInit {
 
   // constructors
   constructor(imageService: FileService, fileService: FileService) {
-    fileService.getPhoto(this.imageUrl).subscribe(url => (this.imageUrl = url));
+    fileService.getPhoto(this.imageUrl)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(url => (this.imageUrl = url));
     this.imageService = imageService;
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
@@ -75,5 +81,10 @@ export class CropImageComponent implements OnInit {
   }
   public cancelClickHandler(): void {
     this.cancelClickedEvent.emit();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

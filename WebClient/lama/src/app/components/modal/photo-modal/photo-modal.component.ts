@@ -6,7 +6,8 @@ import {
   Output,
   ViewChild,
   ElementRef,
-  NgZone
+  NgZone,
+  OnDestroy
 } from '@angular/core';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import {
@@ -35,13 +36,15 @@ import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
 import { NewLocation } from 'src/app/models/Photo/NewLocation';
 import { NewPhotoDate } from 'src/app/models/Photo/NewPhotoDate';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-photo-modal',
   templateUrl: './photo-modal.component.html',
   styleUrls: ['./photo-modal.component.sass']
 })
-export class PhotoModalComponent implements OnInit {
+export class PhotoModalComponent implements OnInit, OnDestroy {
   // properties
   @Input()
   photo: PhotoRaw;
@@ -85,6 +88,7 @@ export class PhotoModalComponent implements OnInit {
   GPS: any;
   @ViewChild('search', { static: true })
   searchElementRef: ElementRef;
+  unsubscribe = new Subject();
 
   // constructors
   constructor(
@@ -112,27 +116,33 @@ export class PhotoModalComponent implements OnInit {
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
     });
-    this.fileService.getPhoto(this.photo.blobId).subscribe(data => {
-      this.imageUrl = data;
-      this.isShowSpinner = false;
-      this.GetFile();
-    });
+    this.fileService
+      .getPhoto(this.photo.blobId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(data => {
+        this.imageUrl = data;
+        this.isShowSpinner = false;
+        this.GetFile();
+      });
     this.userId = this.authService.getLoggedUserId();
-    this.userService.getUser(this.userId).subscribe(
-      user => {
-        this.currentUser = user;
-        let reactions = this.photo.reactions;
+    this.userService
+      .getUser(this.userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        user => {
+          this.currentUser = user;
+          let reactions = this.photo.reactions;
 
-        if (reactions === null) {
-          reactions = [];
-        } else {
-          this.hasUserReaction = reactions.some(
-            x => x.userId === this.currentUser.id
-          );
-        }
-      },
-      error => this.notifier.notify('error', 'Error getting user')
-    );
+          if (reactions === null) {
+            reactions = [];
+          } else {
+            this.hasUserReaction = reactions.some(
+              x => x.userId === this.currentUser.id
+            );
+          }
+        },
+        error => this.notifier.notify('error', 'Error getting user')
+      );
   }
 
   markerDragEnd($event: MouseEvent) {
@@ -146,7 +156,10 @@ export class PhotoModalComponent implements OnInit {
       id: this.photo.id,
       date: e
     };
-    this.photodetailsService.UpdateDate(date).subscribe(
+    this.photodetailsService
+    .UpdateDate(date)
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(
       a => {
         this.photo.uploadDate = a;
         this.notifier.notify('success', 'Date updated');
@@ -189,20 +202,23 @@ export class PhotoModalComponent implements OnInit {
       location => (this.address = location)
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
-    this.userService.getUser(loggedUserId).subscribe(
-      user => {
-        this.currentUser = user;
+    this.userService
+      .getUser(loggedUserId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        user => {
+          this.currentUser = user;
 
-        if (this.photo.reactions != null) {
-          this.hasUserReaction = this.photo.reactions.some(
-            x => x.userId === this.currentUser.id
-          );
-        } else {
-          this.hasUserReaction = false;
-        }
-      },
-      error => this.notifier.notify('error', 'Error getting user')
-    );
+          if (this.photo.reactions != null) {
+            this.hasUserReaction = this.photo.reactions.some(
+              x => x.userId === this.currentUser.id
+            );
+          } else {
+            this.hasUserReaction = false;
+          }
+        },
+        error => this.notifier.notify('error', 'Error getting user')
+      );
   }
 
   // GET EXIF
@@ -263,12 +279,16 @@ export class PhotoModalComponent implements OnInit {
     // info
     if (clickedMenuItem === this.defaultMenuItem[4]) {
       if (this.isInfoShown === false) {
-        this.albumService.GetPhotoDetailsAlbums(this.photo.id).subscribe(
-          e => {
-            this.albums = e.body;
-          },
-          error => this.notifier.notify('error', 'Error loading photo details')
-        );
+        this.albumService
+          .GetPhotoDetailsAlbums(this.photo.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            e => {
+              this.albums = e.body;
+            },
+            error =>
+              this.notifier.notify('error', 'Error loading photo details')
+          );
       }
       this.CloseInfo();
     }
@@ -286,19 +306,23 @@ export class PhotoModalComponent implements OnInit {
       imageBase64: editedImage.editedImageBase64
     };
 
-    this.fileService.update(updatePhotoDTO).subscribe(
-      updatedPhotoDTO => {
-        Object.assign(this.photo, updatedPhotoDTO);
-        this.fileService
-          .getPhoto(this.photo.blobId)
-          .subscribe(url => (this.imageUrl = url));
-        this.updatePhotoEvent.emit(this.photo);
-        this.goBackToImageView();
-        this.notifier.notify('success', 'Photo updated');
-        this.isShowSpinner = false;
-      },
-      error => this.notifier.notify('error', 'Error updating photo')
-    );
+    this.fileService
+      .update(updatePhotoDTO)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        updatedPhotoDTO => {
+          Object.assign(this.photo, updatedPhotoDTO);
+          this.fileService
+            .getPhoto(this.photo.blobId)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(url => (this.imageUrl = url));
+          this.updatePhotoEvent.emit(this.photo);
+          this.goBackToImageView();
+          this.notifier.notify('success', 'Photo updated');
+          this.isShowSpinner = false;
+        },
+        error => this.notifier.notify('error', 'Error updating photo')
+      );
   }
 
   ChangeDescription(desc) {
@@ -309,13 +333,16 @@ export class PhotoModalComponent implements OnInit {
       id: this.photo.id,
       description: desc
     };
-    this.photodetailsService.updateDescription(newdesc).subscribe(
-      descr => {
-        this.photo.description = descr;
-        this.notifier.notify('success', 'Description Updated');
-      },
-      error => this.notifier.notify('error', 'Error updating description')
-    );
+    this.photodetailsService
+      .updateDescription(newdesc)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        descr => {
+          this.photo.description = descr;
+          this.notifier.notify('success', 'Description Updated');
+        },
+        error => this.notifier.notify('error', 'Error updating description')
+      );
   }
   resetImageHandler(): void {
     const updatePhotoDTO: UpdatePhotoDTO = {
@@ -323,19 +350,25 @@ export class PhotoModalComponent implements OnInit {
       blobId: this.photo.blobId,
       imageBase64: ''
     };
-    this.fileService.getPhoto(this.photo.originalBlobId).subscribe(
-      url => {
-        this.imageUrl = url;
-        updatePhotoDTO.imageBase64 = url;
-        this.fileService.update(updatePhotoDTO).subscribe(updatedPhotoDTO => {
-          Object.assign(this.photo, updatedPhotoDTO);
-          this.updatePhotoEvent.emit(this.photo);
-          this.goBackToImageView();
-          this.notifier.notify('success', 'Photo reseted');
-        });
-      },
-      error => this.notifier.notify('error', 'Error reseting photo')
-    );
+    this.fileService
+      .getPhoto(this.photo.originalBlobId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        url => {
+          this.imageUrl = url;
+          updatePhotoDTO.imageBase64 = url;
+          this.fileService
+            .update(updatePhotoDTO)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(updatedPhotoDTO => {
+              Object.assign(this.photo, updatedPhotoDTO);
+              this.updatePhotoEvent.emit(this.photo);
+              this.goBackToImageView();
+              this.notifier.notify('success', 'Photo reseted');
+            });
+        },
+        error => this.notifier.notify('error', 'Error reseting photo')
+      );
   }
 
   goBackToImageView(): void {
@@ -360,14 +393,17 @@ export class PhotoModalComponent implements OnInit {
   }
 
   private deleteImage(): void {
-    this.fileService.markPhotoAsDeleted(this.photo.id).subscribe(
-      res => {
-        this.closeModal();
-        this.deletePhotoEvent.emit(this.photo.id);
-        this.notifier.notify('success', 'Photo deleted');
-      },
-      error => this.notifier.notify('error', 'Error deleting image')
-    );
+    this.fileService
+      .markPhotoAsDeleted(this.photo.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        res => {
+          this.closeModal();
+          this.deletePhotoEvent.emit(this.photo.id);
+          this.notifier.notify('success', 'Photo deleted');
+        },
+        error => this.notifier.notify('error', 'Error deleting image')
+      );
   }
 
   deleteImages(photos: number[]) {
@@ -395,29 +431,35 @@ export class PhotoModalComponent implements OnInit {
       userId: this.currentUser.id
     };
     if (hasreaction) {
-      this.fileService.RemoveReactionPhoto(newReaction).subscribe(
-        x => {
-          this.photo.reactions = this.photo.reactions.filter(
-            e => e.userId !== this.currentUser.id
-          );
-          this.hasUserReaction = false;
-        },
-        error => this.notifier.notify('error', 'Error removing reaction')
-      );
+      this.fileService
+        .RemoveReactionPhoto(newReaction)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          x => {
+            this.photo.reactions = this.photo.reactions.filter(
+              e => e.userId !== this.currentUser.id
+            );
+            this.hasUserReaction = false;
+          },
+          error => this.notifier.notify('error', 'Error removing reaction')
+        );
     } else {
-      this.fileService.ReactionPhoto(newReaction).subscribe(
-        newLikeId => {
-          this.photo.reactions.push({
-            id: newLikeId,
-            userId: this.currentUser.id,
-            photoId: this.photo.id,
-            user: { id: this.currentUser.id } as Entity,
-            photo: { id: this.photo.id } as Entity
-          });
-          this.hasUserReaction = true;
-        },
-        error => this.notifier.notify('error', 'Error creating reaction')
-      );
+      this.fileService
+        .ReactionPhoto(newReaction)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          newLikeId => {
+            this.photo.reactions.push({
+              id: newLikeId,
+              userId: this.currentUser.id,
+              photoId: this.photo.id,
+              user: { id: this.currentUser.id } as Entity,
+              photo: { id: this.photo.id } as Entity
+            });
+            this.hasUserReaction = true;
+          },
+          error => this.notifier.notify('error', 'Error creating reaction')
+        );
     }
   }
 
@@ -485,11 +527,19 @@ export class PhotoModalComponent implements OnInit {
       }
     ];
 
-    this.fileService.sendPhotos(photos).subscribe(
-      uploadedPhotos => {
-        this.notifier.notify('success', 'Photo saved');
-      },
-      error => this.notifier.notify('error', 'Error saving photo')
-    );
+    this.fileService
+      .sendPhotos(photos)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        uploadedPhotos => {
+          this.notifier.notify('success', 'Photo saved');
+        },
+        error => this.notifier.notify('error', 'Error saving photo')
+      );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

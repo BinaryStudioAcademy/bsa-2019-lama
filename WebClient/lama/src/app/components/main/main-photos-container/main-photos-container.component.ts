@@ -5,7 +5,8 @@ import {
   ComponentFactoryResolver,
   ViewContainerRef,
   ViewChild,
-  DoCheck
+  DoCheck,
+  OnDestroy
 } from '@angular/core';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
@@ -19,6 +20,8 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import { UserService } from 'src/app/services';
 import { ZipService } from 'src/app/services/zip.service';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-main-photos-container',
@@ -26,7 +29,7 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-photos-container.component.sass'],
   providers: [FavoriteService, ZipService, UserService]
 })
-export class MainPhotosContainerComponent implements OnInit, DoCheck {
+export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
   isNothingFound: boolean;
@@ -40,6 +43,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   duplicatesFound = false;
   numberLoadPhoto = 30;
   isDeleting: boolean;
+  unsubscribe = new Subject();
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -66,6 +70,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     }
     this.userService
       .getUser(parseInt(userId, 10))
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         user => this.initializeUserAndFavorites(user),
         error => this.notifier.notify('error', 'Error getting user')
@@ -86,6 +91,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.currentUser = user;
     this.favoriteService
       .getFavoritesIds(this.currentUser.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         data => (
           (this.favorites = new Set<number>(data)),
@@ -99,7 +105,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.fileService.receiveUsersPhotos(userId).subscribe(
+    this.fileService.receiveUsersPhotos(userId).pipe(takeUntil(this.unsubscribe)).subscribe(
       info => {
         this.photos = info as PhotoRaw[];
         this.showSpinner = false;
@@ -115,7 +121,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
       this.showSpinner = true;
       this.photos = [];
     }
-    this.fileService.receiveUsersPhotosRange(userId, startId, count).subscribe(
+    this.fileService.receiveUsersPhotosRange(userId, startId, count).pipe(takeUntil(this.unsubscribe)).subscribe(
       info => {
         this.photos.push(...info);
         this.showSpinner = false;
@@ -129,7 +135,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.fileService.receivePhoto().subscribe(
+    this.fileService.receivePhoto().pipe(takeUntil(this.unsubscribe)).subscribe(
       info => {
         this.photos = info as PhotoRaw[];
         this.showSpinner = false;
@@ -182,7 +188,9 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     );
     const componentRef = this.modalUploadPhotoEntry.createComponent(factory);
     componentRef.instance.onFileDropped(event);
-    componentRef.instance.addToListEvent.subscribe(
+    componentRef.instance.addToListEvent
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       this.uploadPhotoHandler.bind(this)
     );
     componentRef.instance.toggleModal();
@@ -205,11 +213,15 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
-    componentRef.instance.deletePhotoEvent.subscribe(
+    componentRef.instance.deletePhotoEvent
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       this.deletePhotoHandler.bind(this)
     );
     componentRef.instance.currentUser = this.currentUser;
-    componentRef.instance.updatePhotoEvent.subscribe(
+    componentRef.instance.updatePhotoEvent
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       this.updatePhotoHandler.bind(this)
     );
   }
@@ -233,7 +245,9 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
 
   private deleteImages(): void {
     this.selectedPhotos.forEach(element => {
-      this.fileService.markPhotoAsDeleted(element.id).subscribe(
+      this.fileService.markPhotoAsDeleted(element.id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         res => {
           this.deletePhotoHandler(element.id);
         },
@@ -250,6 +264,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
   findDuplicates() {
     this.fileService
       .getDuplicates(this.currentUser.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(duplicates => {
         this.duplicates = duplicates;
         if (this.duplicates.length > 0) {
@@ -282,5 +297,10 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck {
     for (const p of photosToDelete) {
       this.deletePhotoHandler(p);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

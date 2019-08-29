@@ -1,4 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  OnDestroy
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { FavoriteService } from 'src/app/services/favorite.service';
 import { AlbumService } from 'src/app/services/album.service';
@@ -6,18 +13,21 @@ import { FileService } from 'src/app/services';
 import { TouchSequence } from 'selenium-webdriver';
 import { PhotoRaw } from 'src/app/models';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-delete-modal',
   templateUrl: './delete-modal.component.html',
   styleUrls: ['./delete-modal.component.sass']
 })
-export class DeleteModalComponent implements OnInit {
+export class DeleteModalComponent implements OnInit, OnDestroy {
   @Input() photos: PhotoRaw[];
   @Output() cancelClickedEvent = new EventEmitter();
   @Output() deleteEvent = new EventEmitter<number[]>();
   userId: number;
   albumId = -1;
+  unsubscribe = new Subject();
   constructor(
     private router: Router,
     private favoriteService: FavoriteService,
@@ -42,7 +52,10 @@ export class DeleteModalComponent implements OnInit {
       return;
     }
     for (const p of photos) {
-      this.fileService.markPhotoAsDeleted(p.id).subscribe(fs => fs);
+      this.fileService
+        .markPhotoAsDeleted(p.id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(fs => fs);
     }
     if (photos.length === 1) {
       this.notifier.notify('success', 'Photo removed to bin');
@@ -57,6 +70,7 @@ export class DeleteModalComponent implements OnInit {
       }
       this.favoriteService
         .removeSelectedFavorites(this.userId, ids)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe();
     }
     this.emitToUp(this.photos.map(i => i.id));
@@ -68,6 +82,7 @@ export class DeleteModalComponent implements OnInit {
     if (this.isFavorite()) {
       this.favoriteService
         .removeSelectedFavorites(this.userId, photos)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           fs => {
             this.notifier.notify(
@@ -82,13 +97,16 @@ export class DeleteModalComponent implements OnInit {
             )
         );
     } else {
-      this.albumService.removePhotosFromAlbum(this.albumId, photos).subscribe(
-        as => {
-          this.notifier.notify('success', 'Photos deleted from album');
-        },
-        error =>
-          this.notifier.notify('error', 'Error deleting photos from album')
-      );
+      this.albumService
+        .removePhotosFromAlbum(this.albumId, photos)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          as => {
+            this.notifier.notify('success', 'Photos deleted from album');
+          },
+          error =>
+            this.notifier.notify('error', 'Error deleting photos from album')
+        );
     }
     this.emitToUp(photos);
     this.cancel();
@@ -108,5 +126,10 @@ export class DeleteModalComponent implements OnInit {
 
   cancel() {
     this.cancelClickedEvent.emit(null);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }
