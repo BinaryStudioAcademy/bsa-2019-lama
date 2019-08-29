@@ -52,7 +52,7 @@ export class MainAlbumComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.album.photo !== null) {
+    if (this.album.photo) {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .subscribe(url => (this.imageUrl = url));
@@ -155,10 +155,6 @@ export class MainAlbumComponent implements OnInit {
       if (this.album.photoAlbums.length === 0) {
         this.albumService.removeAlbum(this.album.id).subscribe(x => x);
       }
-
-      // this.fileService.deletePhotosPermanently(deletingArray).subscribe(x => {
-      //   this.notifier.notify('success', 'successssss');
-      // });
     });
   }
 }

@@ -179,6 +179,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       if (this.isFavorite()) {
         localStorage.removeItem('favoriteCover');
       } else if (this.album.photo) {
+        this.album.photo = null;
         this.albumService
           .removeAlbumCover(this.album.id)
           .subscribe(

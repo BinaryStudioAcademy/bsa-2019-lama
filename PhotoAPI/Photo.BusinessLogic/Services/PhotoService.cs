@@ -211,6 +211,7 @@ namespace Photo.BusinessLogic.Services
                         Blob256Id = blobId,
                         OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
                         UserId = item.AuthorId,
+                        Location = item.Location,
                         Description = item.Description
                     };
 
@@ -305,9 +306,18 @@ namespace Photo.BusinessLogic.Services
             var newItemBlob = Convert.FromBase64String(newItemBase64);
             using (var webClient = new WebClient())
             {
-                return  photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
-                    .Select(existingUrl => webClient.DownloadData(existingUrl))
-                    .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
+                bool doc = false;
+                try
+                {
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
+                        .Select(existingUrl => webClient.DownloadData(existingUrl))
+                        .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
+                }
+                catch(Exception e)
+                {
+    
+                }
+                return doc;
             }
         }
 
