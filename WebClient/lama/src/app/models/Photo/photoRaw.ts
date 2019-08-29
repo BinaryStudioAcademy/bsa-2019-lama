@@ -1,5 +1,6 @@
 import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
+import { ImageTagDTO } from './imageTagDTO';
 
 export interface PhotoRaw {
   id?: number;
@@ -18,4 +19,5 @@ export interface PhotoRaw {
   categoryId?: number;
   coordinates?: string;
   reactions: LikeDTO[];
+  tags: ImageTagDTO[];
 }
