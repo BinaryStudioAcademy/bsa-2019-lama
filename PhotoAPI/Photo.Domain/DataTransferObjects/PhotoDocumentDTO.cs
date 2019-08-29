@@ -1,7 +1,7 @@
 ﻿using Photo.Domain.DataTransferObjects.Reaction;
 using System;
 using System.Collections.Generic;
-using System.Text;
+
 
 namespace Photo.Domain.DataTransferObjects
 {
@@ -20,5 +20,6 @@ namespace Photo.Domain.DataTransferObjects
         public int UserId { get; set; }
         public int CategoryId { get; set; }
         public ReactionDTO[] Reactions { set; get; }
+        public IEnumerable<ImageTagDTO> Tags { get; set; }
     }
 }

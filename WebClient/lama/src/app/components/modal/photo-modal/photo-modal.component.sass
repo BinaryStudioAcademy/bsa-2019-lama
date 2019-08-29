@@ -39,7 +39,7 @@
   width: auto
 
 agm-map 
-    height: 100px
+    height: 200px
 
 .reactions
     margin-top: 10px
@@ -144,6 +144,12 @@ article
 .item-location
     margin-top: 15px
 
+.item-find-location
+    margin-top: 15px
+
+.item-find-location:hover
+    margin-top: 15px
+
 .photo-profile
     width: 100%
 
@@ -173,9 +179,22 @@ article
 .adress
     overflow: hidden
     max-height: 54px
-    max-width: 150px
+    display: flex
+    flex-direction: row
 
-// MODAL
+.adress h4
+    margin-top: 1px
+    width: 100%
+
+.adress:hover
+    background: #EDEDED
+.location-icon
+    height: 54px
+    width: 50px
+
+.location-icon img
+    height: 54px
+    width: 54px
 
 .modal-content
     width: 90%
@@ -194,6 +213,18 @@ article
    z-index: 30
    transition: .3s all
 
+.overlay-location  
+   opacity: 0
+   visibility: hidden   
+   position: fixed
+   top: 0
+   left: 0
+   width: 100%
+   height: 100%
+   background-color: rgba(0, 0, 0, .5)
+   z-index: 30
+   transition: .3s all
+    
 .size
     min-width: 100%
 
@@ -216,6 +247,22 @@ article
    background-color: #fff
    transition: 0.3s all
 
+.modal-location
+   opacity: 0
+   visibility: hidden
+   width: 700px
+   height: 700px
+   margin: -350px 0 0 -350px
+   position: fixed
+   background: black
+   top: 50%
+   left: 50%
+   z-index: 40
+   
+   text-align: center
+   border-radius: 3px
+   background-color: #fff
+   transition: 0.3s all
 
 .active
    opacity: 1
@@ -228,3 +275,5 @@ article
    position: absolute
    top: -100%
    left: -100%
+
+

@@ -95,6 +95,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         .subscribe(
         x => {
           this.album = x.body;
+          this.album.photoAlbums = this.album.photoAlbums.reverse();
         },
         error => this.notifier.notify('error', 'Error loading album')
       );
@@ -177,7 +178,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
     }
-    this.album.photoAlbums.push(...photos);
+    this.album.photoAlbums.unshift(...photos);
   }
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;

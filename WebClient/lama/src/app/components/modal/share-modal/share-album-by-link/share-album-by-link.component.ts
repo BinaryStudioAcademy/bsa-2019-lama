@@ -24,9 +24,7 @@ export class ShareAlbumByLinkComponent implements OnInit {
   sharingRoute = 'main/shared/album';
   showSuccessIcon = false;
 
-  constructor(private notifier: NotifierService) {
-
-  }
+  constructor(private notifier: NotifierService) {}
 
   ngOnInit() {
     this.createShareableLink();
@@ -37,9 +35,9 @@ export class ShareAlbumByLinkComponent implements OnInit {
   }
 
   public createShareableLink() {
-      this.initInvariableFields();
-      const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
-      this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
+    this.initInvariableFields();
+    const encodedAlbumData = this.encodeAlbumData(this.sharedAlbum);
+    this.sharedLink = `${environment.clientApiUrl}/${this.sharingRoute}/${encodedAlbumData}`;
   }
 
   public copyShareableLink() {
@@ -56,16 +54,16 @@ export class ShareAlbumByLinkComponent implements OnInit {
     document.body.removeChild(selBox);
     console.log(`${this.sharedLink} was copied`);
     this.notifier.notify('success', 'Link is now in your clipboard');
-    }
+  }
 
-    public encodeAlbumData(album: SharedAlbum): string {
-      const encoded = btoa(JSON.stringify(album)).replace('/', '___');
-      console.log(encoded);
-      return encoded;
-    }
+  public encodeAlbumData(album: SharedAlbum): string {
+    const encoded = btoa(JSON.stringify(album)).replace('/', '___');
+    console.log(encoded);
+    return encoded;
+  }
 
-    private initInvariableFields() {
-      this.sharedAlbum.albumId = this.receivedAlbum.id;
-      this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
-    }
+  private initInvariableFields() {
+    this.sharedAlbum.albumId = this.receivedAlbum.id;
+    this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+  }
 }

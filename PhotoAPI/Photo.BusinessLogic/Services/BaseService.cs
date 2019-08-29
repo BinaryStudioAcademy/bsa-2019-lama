@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Photo.Domain.BlobModels;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -19,12 +21,12 @@ namespace Photo.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<T>> Get()
+        public Task<IEnumerable<PhotoDocument>> Get()
         {
             throw new NotImplementedException();
         }
 
-        public Task<T> Get(int id)
+        public Task<PhotoDocument> Get(int id)
         {
             throw new NotImplementedException();
         }

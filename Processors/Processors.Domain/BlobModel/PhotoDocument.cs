@@ -1,4 +1,6 @@
-﻿namespace Processors.Domain.BlobModel
+﻿using System.Collections.Generic;
+
+namespace Processors.Domain.BlobModel
 {
     public class PhotoDocument
     {
@@ -15,5 +17,7 @@
         public string Location { get; set; }
         public int UserId { get; set; }
         public int CategoryId { get; set; }
+        public string Coordinates { set; get; }
+        public string ImageTags { get; set; }
     }
 }

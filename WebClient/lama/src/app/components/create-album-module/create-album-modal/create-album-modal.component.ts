@@ -17,7 +17,7 @@ import { User } from 'src/app/models/User/user';
 import { NewAlbum } from 'src/app/models/Album/NewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { NewAlbumWithExistPhotos } from 'src/app/models/Album/NewAlbumWithExistPhotos';
-import { load, dump, insert,  remove } from 'piexifjs';
+import { load, dump, insert, remove } from 'piexifjs';
 import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
@@ -59,6 +59,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   createdAlbum: ViewAlbum;
 
   ExistPhotos: PhotoRaw[] = [];
+  isUniqueName = true;
 
   @Output()
   createdAlbumEvent = new EventEmitter<CreatedAlbumsArgs>();
@@ -149,6 +150,9 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   CreateAlbum() {
     if (this.albumName === '') {
       this.checkForm = false;
+    } else if (this.albumsTitles.includes(this.albumName)) {
+      this.isUniqueName = false;
+      this.checkForm = false;
     } else {
       if (this.photos.length === 0) {
         this.album = {
@@ -157,20 +161,22 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createEmptyAlbum(this.album)
+        this.albumService
+          .createEmptyAlbum(this.album)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(
-          createdAlbum => {
-            this.createdAlbumEvent.emit({
-              id: createdAlbum.id,
-              name: createdAlbum.title,
-              photoUrl: null,
-              title: createdAlbum.title
-            });
-            this.notifier.notify('success', 'Empty Album created');
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
+            createdAlbum => {
+              this.createdAlbumEvent.emit({
+                id: createdAlbum.id,
+                name: createdAlbum.title,
+                photo: null,
+                title: createdAlbum.title
+              });
+              this.notifier.notify('success', 'Empty Album created');
+              this.toggleModal();
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       } else if (this.LoadNewImage === true) {
         this.album = {
           title: this.albumName,
@@ -178,36 +184,35 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createAlbumWithNewPhotos(this.album)
+        this.albumService
+          .createAlbumWithNewPhotos(this.album)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(
-          returnedAlbum => {
-            const filteredPhotos = this.resolveDuplicates(returnedAlbum.photoAlbums);
-            this.albumService.getAlbum(returnedAlbum.id).subscribe(
-              x => {
-                const album = x.body;
-                this.createdAlbum = album;
-                if (album.photo !== null) {
-                  this.createdAlbumEvent.emit({
-                    id: album.id,
-                    name: album.title,
-                    photoUrl: album.photo.blob256Id || album.photo.blobId,
-                    title: album.title
-                  });
-                }
-              },
-              error => this.notifier.notify('error', 'Error loading the album')
-            );
-            if (!this.duplicatesFound) {
-              this.notifier.notify('success', 'Album created');
-              this.toggleModal();
-            } else {
-              this.removeUploaded(filteredPhotos);
-              this.notifier.notify('warning', 'This photos appear to be duplicates. Upload them anyway?');
-            }
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
+            returnedAlbum => {
+              const filteredPhotos = this.resolveDuplicates(
+                returnedAlbum.photoAlbums
+              );
+              if (returnedAlbum.photo !== null) {
+                this.createdAlbumEvent.emit({
+                  id: returnedAlbum.id,
+                  name: returnedAlbum.title,
+                  photo: returnedAlbum.photo,
+                  title: returnedAlbum.title
+                });
+              }
+              if (!this.duplicatesFound) {
+                this.notifier.notify('success', 'Album created');
+                this.toggleModal();
+              } else {
+                this.removeUploaded(filteredPhotos);
+                this.notifier.notify(
+                  'warning',
+                  'This photos appear to be duplicates. Upload them anyway?'
+                );
+              }
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       } else {
         this.albumWithExistPhotos = {
           title: this.albumName,
@@ -222,27 +227,31 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
               this.createdAlbumEvent.emit({
                 id: createdAlbum.id,
                 name: createdAlbum.title,
-                photoUrl:
-                  createdAlbum.photo.blob256Id || createdAlbum.photo.blobId,
+                photo: createdAlbum.photo || createdAlbum.photo,
                 title: createdAlbum.title
               });
               this.notifier.notify('success', 'Album created');
+              this.toggleModal();
             },
             error => this.notifier.notify('error', 'Error creating the album')
           );
-        }
+      }
     }
   }
   removeUploaded(filteredPhotos: PhotoRaw[]) {
     filteredPhotos.forEach(filtered => {
-      const index = this.photos.findIndex(photo => photo.filename === filtered.name);
+      const index = this.photos.findIndex(
+        photo => photo.filename === filtered.name
+      );
       this.photos.splice(index, 1);
     });
   }
   resolveDuplicates(uploadedPhotos: PhotoRaw[]) {
     if (uploadedPhotos.some(photo => photo.isDuplicate)) {
       this.duplicates = uploadedPhotos.filter(photo => photo.isDuplicate);
-      uploadedPhotos = uploadedPhotos.filter((photo) => !this.duplicates.includes(photo));
+      uploadedPhotos = uploadedPhotos.filter(
+        photo => !this.duplicates.includes(photo)
+      );
       this.duplicatesFound = true;
     }
     return uploadedPhotos;
@@ -280,12 +289,13 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.fileService.getPhoto(photo.blob256Id)
+      this.fileService
+        .getPhoto(photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-        this.photos.push({ imageUrl: url });
-        this.ExistPhotos.push(photo);
-      });
+          this.photos.push({ imageUrl: url });
+          this.ExistPhotos.push(photo);
+        });
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
@@ -310,8 +320,8 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   createWithDuplicates() {
     this.fileService
       .uploadDuplicates(this.duplicates as UploadPhotoResultDTO[])
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
         uploadedDuplicates => {
           this.albumService.addNewPhotosToAlbum({
             AlbumId: this.createdAlbum.id,

@@ -32,7 +32,7 @@ import { takeUntil } from 'rxjs/operators';
 export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
-  isNothingFounded: boolean;
+  isNothingFound: boolean;
   isSearchTriggered: boolean;
   currentUser: User;
   selectedPhotos: PhotoRaw[];
@@ -101,7 +101,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
   }
 
   public GetUserPhotos(userId: number) {
-    this.isNothingFounded = false;
+    this.isNothingFound = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
@@ -116,7 +116,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
     if (startId === 0) {
-      this.isNothingFounded = false;
+      this.isNothingFound = false;
       this.shared.isSearchTriggeredAtLeastOnce = false;
       this.showSpinner = true;
       this.photos = [];
@@ -131,7 +131,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
   }
 
   GetPhotos() {
-    this.isNothingFounded = false;
+    this.isNothingFound = false;
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
@@ -143,7 +143,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
       err => {
         this.notifier.notify('error', 'Error getting photos');
         this.showSpinner = false;
-        this.isNothingFounded = true;
+        this.isNothingFound = true;
       }
     );
   }
@@ -156,11 +156,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
     }
     if (this.shared.foundPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundPhotos;
-      this.isNothingFounded = false;
+      this.isNothingFound = false;
     }
     if (this.shared.foundPhotos.length === 0 && this.shared.isSearchTriggered) {
       this.photos = [];
-      this.isNothingFounded = true;
+      this.isNothingFound = true;
     }
     this.isSearchTriggered = this.shared.isSearchTriggeredAtLeastOnce;
     if (this.isSearchTriggered) {

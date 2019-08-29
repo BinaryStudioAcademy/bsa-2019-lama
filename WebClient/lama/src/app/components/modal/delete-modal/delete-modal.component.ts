@@ -48,11 +48,19 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
 
   toBin() {
     const photos = this.photos.filter(p => p.userId === this.userId);
+    if (photos.length === 0) {
+      return;
+    }
     for (const p of photos) {
       this.fileService
         .markPhotoAsDeleted(p.id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(fs => fs);
+    }
+    if (photos.length === 1) {
+      this.notifier.notify('success', 'Photo removed to bin');
+    } else {
+      this.notifier.notify('success', 'Photos removed to bin');
     }
     if (this.isFavorite()) {
       const ph2 = this.photos.filter(p => p.userId !== this.userId);
