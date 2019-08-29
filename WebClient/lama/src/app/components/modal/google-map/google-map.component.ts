@@ -5,9 +5,12 @@ import {
   ElementRef,
   NgZone,
   Output,
-  EventEmitter
+  EventEmitter,
+  Input
 } from '@angular/core';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
+import { PhotoRaw } from 'src/app/models';
+import { NewLocation } from 'src/app/models/Photo/NewLocation';
 
 @Component({
   selector: 'app-google-map',
@@ -15,7 +18,6 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
   styleUrls: ['./google-map.component.sass']
 })
 export class GoogleMapComponent implements OnInit {
-  title = 'AGM project';
   latitude: number;
   longitude: number;
   zoom: number;
@@ -23,7 +25,9 @@ export class GoogleMapComponent implements OnInit {
   private geoCoder;
   displaymap = false;
   @Output() Deletelocation = new EventEmitter();
-  @Output() Updatelocation = new EventEmitter<string>();
+  @Output() Updatelocation = new EventEmitter<NewLocation>();
+
+  @Input() photo: PhotoRaw;
 
   @ViewChild('search', { static: true })
   public searchElementRef: ElementRef;
@@ -34,6 +38,12 @@ export class GoogleMapComponent implements OnInit {
     // load Places Autocomplete
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
+      if (
+        this.photo.coordinates !== undefined &&
+        this.photo.coordinates !== null
+      ) {
+        this.setCurrentLocation();
+      }
       const autocomplete = new google.maps.places.Autocomplete(
         this.searchElementRef.nativeElement,
         {
@@ -59,18 +69,34 @@ export class GoogleMapComponent implements OnInit {
       });
     });
   }
+  private setCurrentLocation() {
+    const coord = this.photo.coordinates.split(',');
+    if (coord[0] && coord[1]) {
+      const lat = parseFloat(coord[0]);
+      const long = parseFloat(coord[1]);
+      this.latitude = lat;
+      this.longitude = long;
+      this.zoom = 8;
+      this.displaymap = true;
+      this.getAddress(this.latitude, this.longitude);
+    }
+  }
   Change() {
     const input = document.getElementById('Input') as HTMLInputElement;
     input.value = '';
   }
   markerDragEnd($event: MouseEvent) {
-    console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
   }
   ChangeLocation() {
-    this.Updatelocation.emit(this.address);
+    const newLoc: NewLocation = {
+      id: this.photo.id,
+      location: this.address,
+      coordinates: `${this.latitude},${this.longitude}`
+    };
+    this.Updatelocation.emit(newLoc);
   }
   DeleteLocation() {
     this.Deletelocation.emit();
@@ -79,8 +105,6 @@ export class GoogleMapComponent implements OnInit {
     this.geoCoder.geocode(
       { location: { lat: latitude, lng: longitude } },
       (results, status) => {
-        console.log(results);
-        console.log(status);
         if (status === 'OK') {
           if (results[0]) {
             this.zoom = 12;
