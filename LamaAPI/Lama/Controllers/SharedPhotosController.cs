@@ -30,7 +30,7 @@ namespace Lama.Controllers
         }
 
         [HttpGet("user/{id}")]
-        public async Task<IEnumerable<SharedPhotoDTO>> GetUsersSharedPhoto(int id)
+        public async Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id)
         {
             return await _sharingPhotoService.GetUsersSharedPhoto(id);
         }

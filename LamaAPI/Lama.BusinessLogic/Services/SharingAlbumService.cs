@@ -13,6 +13,7 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Reaction;
+using Remotion.Linq.Utilities;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -39,9 +40,43 @@ namespace Lama.BusinessLogic.Services
                 .Include(x => x.Photo)
                 .ToListAsync();
 
+            var photoIds = await Context.SharedPhotos.Where(item => item.UserId == userId).Select(item => item.Photo.Id).ToListAsync();
+            List<PhotoDocument> photosList = new List<PhotoDocument>();
+            foreach (var id in photoIds)
+            {
+                var item = await _photoService.Get(id);
+                photosList.Add(item);
+            }
+
+            IEnumerable<PhotoDocumentDTO> photosDto = _mapper.Map<PhotoDocumentDTO[]>(photosList);
+
             var elasticPhotos = await _photoService.GetAll();
 
             List<ReturnAlbumDTO> albums = new List<ReturnAlbumDTO>();
+            foreach (PhotoDocumentDTO photoDto in photosDto)
+            {
+                photoDto.Reactions =
+                    _mapper.Map<LikeDTO[]>(
+                        Context.Likes
+                            .Where(l => l.PhotoId == photoDto.Id)
+                            .ToArray());
+
+                foreach (LikeDTO like in photoDto.Reactions)
+                {
+                    if (like.Photo != null)
+                    {
+                        like.Photo.Likes = null;
+                    }
+                }
+                var fakeAlbum = new ReturnAlbumDTO
+                {
+                    Id = -1,
+                    Title = photoDto.UploadDate.ToShortDateString(),
+                    Photo = photoDto,
+                    PhotoAlbums = new List<PhotoDocumentDTO>() { photoDto}
+                };
+                albums.Add(fakeAlbum);
+            }
             foreach (var result in results)
             {
                 IEnumerable<PhotoDocument> ListOfPhotos;
@@ -92,8 +127,7 @@ namespace Lama.BusinessLogic.Services
             }
 
             return albums;
-            //var sharedAlbums = Context.SharedAlbums.Where(a => a.UserId == userId).Select(item => item.Album);
-            //return sharedAlbums;
+            
         }
 
         public Task Delete(int id)

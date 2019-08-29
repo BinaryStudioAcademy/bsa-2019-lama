@@ -64,7 +64,7 @@ namespace Lama.BusinessLogic.Services
             return mappedResponse;
         }
 
-        public async Task<IEnumerable<SharedPhotoDTO>> GetUsersSharedPhoto(int id)
+        public async Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id)
         {
             var sharedPhotoData = await Context.SharedPhotos
                 .Include(sharedPhoto => sharedPhoto.User)
@@ -92,8 +92,8 @@ namespace Lama.BusinessLogic.Services
                 mappedResponse.User.PhotoUrl = url;
                 result.Append(mappedResponse);
             }
-
-            return result;
+            return new List<PhotoAlbumDTO>();
+            //return result;
         }
 
         public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)

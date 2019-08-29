@@ -4,6 +4,8 @@ import { User } from 'src/app/models/User/user';
 import { SharingService } from 'src/app/services/sharing.service';
 import { HttpService } from 'src/app/services/http.service';
 import { NotifierService } from 'angular-notifier';
+import { Album } from 'src/app/models/Album/album';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-sharing-page',
@@ -16,7 +18,8 @@ export class SharingPageComponent implements OnInit {
   constructor(
     private sharingService: SharingService,
     private httpService: HttpService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -37,5 +40,14 @@ export class SharingPageComponent implements OnInit {
         this.albums = albums;
         console.log(this.albums);
       });
+  }
+
+  public albumClicked(eventArgs: Album) {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        album: eventArgs
+      }
+    };
+    this.router.navigate(['/main/sharing', eventArgs.id], navigationExtras);
   }
 }

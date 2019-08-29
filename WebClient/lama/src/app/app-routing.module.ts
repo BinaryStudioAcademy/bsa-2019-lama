@@ -35,6 +35,7 @@ const routes: Routes = [
           { path: 'photos', component: MainPhotosContainerComponent },
           { path: 'albums', component: MainAlbumsContainerComponent },
           { path: 'album/:id', component: ViewAlbumComponent },
+          { path: 'sharing/:id', component: ViewAlbumComponent },
           { path: 'profile', component: ProfileComponent },
           { path: 'sharing', component: SharingPageComponent },
           { path: 'shared/:userdata', component: SharedPageComponent },
