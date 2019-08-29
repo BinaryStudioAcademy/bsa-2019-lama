@@ -96,7 +96,7 @@ namespace PhotoProcessor.Infrastructure
         private ICognitiveService CognitiveServiceFactory(IUnityContainer unityContainer)
         {
             var url = _configuration["cognitiveServiceEndpoint"];
-            var key = _configuration["cognitiveEndpointKey"];
+            var key = _configuration["CognitiveEndpointKey"];
             Log.Logger.Error(key);
             
             return new CognitiveService(url,key);
