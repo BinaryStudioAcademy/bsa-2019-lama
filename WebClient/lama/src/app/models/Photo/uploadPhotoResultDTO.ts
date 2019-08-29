@@ -1,4 +1,5 @@
 import { LikeDTO } from '../Reaction/LikeDTO';
+import { ImageTagDTO } from './imageTagDTO';
 
 export interface UploadPhotoResultDTO {
   id: number;
@@ -13,4 +14,5 @@ export interface UploadPhotoResultDTO {
   description: string;
   reactions: LikeDTO[];
   isDuplicate: boolean;
+  tags: ImageTagDTO[];
 }

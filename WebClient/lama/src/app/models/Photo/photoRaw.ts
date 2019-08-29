@@ -1,5 +1,6 @@
 import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
+import { ImageTagDTO } from './imageTagDTO';
 
 export interface PhotoRaw {
     id?: number;
@@ -17,4 +18,5 @@ export interface PhotoRaw {
     userId?: number;
     categoryId?: number;
     reactions: LikeDTO[];
+    tags: ImageTagDTO[];
 }

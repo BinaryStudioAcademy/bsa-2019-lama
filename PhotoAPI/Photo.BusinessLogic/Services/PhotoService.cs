@@ -57,17 +57,17 @@ namespace Photo.BusinessLogic.Services
             return await _storage.GetAvatar(blobId);
         }
         
-        public Task<IEnumerable<PhotoDocument>> Get()
+        public async Task<IEnumerable<PhotoDocument>> Get()
         {
-            return _elasticStorage.Get();
+            return await _elasticStorage.Get();
         }
         public Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
         {
             return _elasticStorage.GetUserPhotos(userId);
         }
-        public Task<PhotoDocument> Get(int elasticId)
+        public async Task<PhotoDocument> Get(int elasticId)
         {
-            return _elasticStorage.Get(elasticId);
+            return await _elasticStorage.Get(elasticId);
         }
         public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
         {

@@ -23,7 +23,7 @@ namespace Lama.BusinessLogic.Services
 
     public class SharingPhotoService: BaseService<Photo>, ISharingPhotoService
     {
-        private string _photoApiUrl;
+        private readonly string _photoApiUrl;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
 
@@ -52,7 +52,7 @@ namespace Lama.BusinessLogic.Services
             {
                 throw new NotFoundException(nameof(SharedPhoto), id);
             }
-            string url = String.Empty;
+            var url = string.Empty;
             if (sharedPhotoData.User.Photo != null)
             {
                 url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
@@ -66,11 +66,11 @@ namespace Lama.BusinessLogic.Services
         public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)
         {
             PhotoDocument photoDocumentWithSharedLink;
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(_photoApiUrl);
                 
-                StringContent content = new StringContent(sharedLink);
+                var content = new StringContent(sharedLink);
                 
                 var httpResponse = await (client.PutAsync($"{_photoApiUrl}api/photos/shared/{id}", content));
                 
