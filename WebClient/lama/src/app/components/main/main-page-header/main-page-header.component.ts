@@ -158,11 +158,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   getSearchHistory(id: number) {
-    this.file.getSearchHistory(id)
+    this.file
+      .getSearchHistory(id)
       .pipe(takeUntil(this.unsubscribe))
-	  .subscribe(history => {
-      this.searchHistory = history;
-    });
+      .subscribe(history => {
+        this.searchHistory = history;
+      });
   }
 
   find() {
