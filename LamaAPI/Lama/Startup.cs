@@ -24,8 +24,6 @@ namespace Lama
         private static string Connection;
         public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
-            //Configuration = configuration;
-            Connection = configuration["ConnectionStrings:ConnectionLocal"];
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
@@ -51,12 +49,13 @@ namespace Lama
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var origins = Configuration["AllowedOrigin"];
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyMethod()
                        .AllowAnyHeader()
                        .AllowCredentials()
-                       .WithOrigins("http://localhost:4200");
+                       .WithOrigins("http://localhost:4200", "http://bsa2019-lama.westeurope.cloudapp.azure.com");
             }));
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

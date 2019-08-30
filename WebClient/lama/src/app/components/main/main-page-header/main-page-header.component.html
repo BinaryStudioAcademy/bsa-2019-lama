@@ -37,7 +37,7 @@
     <div class="align-right">
         <!--notification-->
         <a class="image is-48x48 notific" (click)="ShowHideNotification()">
-            <img [src]="newNotify ? 'assets/notification.svg' : 'assets/notification.svg'" />
+            <img [src]="newNotify ? 'assets/notifications.svg' : 'assets/nonotifications.svg'" />
         </a>
         <a class="image is-48x48 profile">
             <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
@@ -59,12 +59,9 @@
             <h6 class="subtitle is-6">Mark All as read</h6>
         </a>
     </div>
-    <app-main-notification></app-main-notification>
-    <app-main-notification></app-main-notification>
-    <app-main-notification></app-main-notification>
-    <app-main-notification></app-main-notification>
-    <app-main-notification></app-main-notification>
-    <app-main-notification></app-main-notification>
+    <div *ngFor="let item of notification">
+        <app-main-notification (id)="sendIsRead($event)" [notification]="item"></app-main-notification>
+    </div>
 </aside>
 <template #photoUploadModal></template>
 <notifier-container></notifier-container>

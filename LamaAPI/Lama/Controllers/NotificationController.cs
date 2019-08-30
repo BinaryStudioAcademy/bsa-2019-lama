@@ -28,6 +28,11 @@ namespace Lama.Controllers
             return await this.notificationService.GetNotification(id);
         }
 
+        [HttpPost]
+        public async Task UpdateIsRead([FromBody] int id)
+        {
+            await notificationService.SendIsRead(id);
+        }
 
 
     }

@@ -132,7 +132,6 @@ export class MainPhotosContainerComponent
       .subscribe(
         info => {
           this.photos.push(...info);
-          console.log(this.photos);
           this.showSpinner = false;
         },
         error => this.notifier.notify('error', 'Error getting photos')

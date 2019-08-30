@@ -39,7 +39,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   avatarUrl;
   searchCriteria = '';
   isActive = false;
-  newNotify = true;
+  newNotify = false;
   IsShowNotify = false;
   searchHistory: string[];
   searchSuggestions: { [name: string]: string[] } = {};
@@ -79,8 +79,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         u => {
-          this.notification = u;
-          console.log(u);
+          this.notification = u.reverse();
+          this.checkNotification(this.notification);
         },
         error => this.notifier.notify('error', 'Error loading nofitications')
       );
@@ -104,8 +104,18 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading user')
       );
   }
+  sendIsRead(id) {
+    this.notificationService
+      .sendIsRead(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        x => {
+          this.checkNotification(this.notification);
+        },
+        error => this.notifier.notify('error', 'Error update notification')
+      );
+  }
   public registerHub() {
-    console.log(this.auth.token);
     const stringConnection = environment.lamaApiUrl + environment.hub;
     this.Hub = new HubConnectionBuilder()
       .withUrl('http://localhost:5000/NotificationHub', {
@@ -122,9 +132,17 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     });
   }
   addNotification(notification) {
-    console.log(notification);
+    this.notification.unshift(notification);
+    this.checkNotification(this.notification);
   }
-
+  checkNotification(notification: NotificationDTO[]) {
+    const check = notification.some(x => x.isRead === false);
+    if (check) {
+      this.newNotify = true;
+    } else {
+      this.newNotify = false;
+    }
+  }
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }

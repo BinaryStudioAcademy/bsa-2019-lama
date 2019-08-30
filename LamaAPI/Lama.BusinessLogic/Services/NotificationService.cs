@@ -82,5 +82,13 @@ namespace Lama.BusinessLogic.Services
             }
             return returnList;
         }
+
+        public async Task SendIsRead(int id)
+        {
+            var notification = await Context.Notifications.FirstOrDefaultAsync(x => x.Id == id);
+            notification.IsRead = true;
+            Context.Notifications.Update(notification);
+            await Context.SaveChangesAsync();
+        }
     }
 }
