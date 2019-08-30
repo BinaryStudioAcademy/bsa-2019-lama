@@ -115,6 +115,19 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error update notification')
       );
   }
+  MarkAllAsRead() {
+    this.notificationService
+      .MarkAllAsRead(this.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        x => {
+          this.notification.forEach(y => (y.isRead = true));
+          this.checkNotification(this.notification);
+        },
+        error =>
+          this.notifier.notify('error', 'Error mark as all read notification')
+      );
+  }
   public registerHub() {
     const stringConnection = environment.lamaApiUrl + environment.hub;
     this.Hub = new HubConnectionBuilder()

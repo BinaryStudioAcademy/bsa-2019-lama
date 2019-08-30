@@ -49,18 +49,21 @@
     </div>
 </header>
 <aside *ngIf="IsShowNotify" class="notif-panel">
-    <div class="notification border">
-        <a class="delete is-medium" (click)="ShowHideNotification()"></a>
-        <h4 class="subtitle is-4 center">Notifications</h4>
+    <div class="main-header">
+        <div class="notification border">
+            <a class="delete is-medium" (click)="ShowHideNotification()"></a>
+            <h4 class="subtitle is-4 center">Notifications</h4>
+        </div>
+        <div class="sub-header">
+            <a (click)="MarkAllAsRead()">
+                <h6 class="subtitle is-6">Mark All as read</h6>
+            </a>
+        </div>
     </div>
-
-    <div class="sub-header">
-        <a>
-            <h6 class="subtitle is-6">Mark All as read</h6>
-        </a>
-    </div>
-    <div *ngFor="let item of notification">
-        <app-main-notification (id)="sendIsRead($event)" [notification]="item"></app-main-notification>
+    <div class="notification-conten">
+        <div *ngFor="let item of notification">
+            <app-main-notification (id)="sendIsRead($event)" [notification]="item"></app-main-notification>
+        </div>
     </div>
 </aside>
 <template #photoUploadModal></template>

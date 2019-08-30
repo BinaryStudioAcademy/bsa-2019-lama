@@ -21,4 +21,10 @@ export class NotificationService {
   sendIsRead(id: number) {
     return this.client.post(`${environment.lamaApiUrl}/api/notification`, id);
   }
+  MarkAllAsRead(id: number) {
+    return this.client.post(
+      `${environment.lamaApiUrl}/api/notification/markAll`,
+      id
+    );
+  }
 }

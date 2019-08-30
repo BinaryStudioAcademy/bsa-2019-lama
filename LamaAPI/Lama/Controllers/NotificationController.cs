@@ -33,7 +33,11 @@ namespace Lama.Controllers
         {
             await notificationService.SendIsRead(id);
         }
-
+        [HttpPost("markAll")]
+        public async Task MarkAllIsARead([FromBody] int id)
+        {
+            await notificationService.MarkAllIsARead(id);
+        }
 
     }
 }
