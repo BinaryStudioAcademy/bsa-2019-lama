@@ -1,5 +1,6 @@
 ﻿using Nest;
 using Photo.Domain.BlobModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,5 +25,6 @@ namespace Photo.DataAccess.Interfaces
         Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startIndex, int count);
+        Task<int> CheckUserPhoto(Tuple<int, int> tuple);
     }
 }

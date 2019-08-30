@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -17,13 +19,16 @@ namespace Lama.BusinessLogic.Services
         IUnitOfWork unitOfWork;
         IPhotoService photoService;
         IMapper mapper;
-
+        ApplicationDbContext Context;
+        INotificationService notificationService;
         // CONSTRUCTORS
-        public CommentService(IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper)
+        public CommentService(ApplicationDbContext Context,IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper, INotificationService notificationService)
         {
             this.unitOfWork = unitOfWork;
             this.photoService = photoService;
             this.mapper = mapper;
+            this.Context = Context;
+            this.notificationService = notificationService;
         }
 
         // METHODS
@@ -58,6 +63,14 @@ namespace Lama.BusinessLogic.Services
             await unitOfWork.GetRepository<Comment>().InsertAsync(comment);
             await unitOfWork.SaveAsync();
 
+            var photo  = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == createCommentDTO.PhotoId);
+            
+            var user = photo.User;
+            if(user.Id != createCommentDTO.UserId)
+            {
+                string noti = "Commented your photo";
+                await notificationService.SendNotification(user.Id, user, noti);
+            }
             return comment.Id;
         }
         public async Task DeleteAsync(int commentId)
