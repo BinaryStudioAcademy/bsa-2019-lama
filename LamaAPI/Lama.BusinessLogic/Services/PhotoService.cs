@@ -13,6 +13,10 @@ using System.Linq;
 using Lama.Domain.DTO.Photo;
 using AutoMapper;
 using Lama.Domain.DTO.Reaction;
+using Microsoft.AspNetCore.SignalR;
+using Lama.BusinessLogic.Hubs;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -23,12 +27,16 @@ namespace Lama.BusinessLogic.Services
         private IUnitOfWork _context;
         private HttpClient httpClient;
         private readonly IMapper _mapper;
-        public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
+        INotificationService notificationService;
+        ApplicationDbContext Context;
+        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
             this._mapper = _mapper;
+            this.Context = Context;
+            this.notificationService = notificationService;
         }
 
 
@@ -110,6 +118,21 @@ namespace Lama.BusinessLogic.Services
             var like = _mapper.Map<Like>(newLike);
             await _context.GetRepository<Like>().InsertAsync(like);
             await _context.SaveAsync();
+
+            var tuple = Tuple.Create<int, int>(newLike.UserId, newLike.PhotoId);
+
+            var content = new StringContent(JsonConvert.SerializeObject(tuple), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{url}api/photos/checkuser", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var id = JsonConvert.DeserializeObject<int>(responseContent);
+
+        
+            if (id != newLike.UserId)
+            {
+                var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
+                var Name = user.FirstName + " " + user.LastName;
+                await notificationService.SendNotificationAboutLike(id, Name);
+            }
 
             return like.Id;
         }

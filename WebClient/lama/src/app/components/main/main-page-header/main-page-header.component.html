@@ -1,49 +1,51 @@
 <header class="navbar is-fixed-top">
-  <div class="align-right">
-    <main-left-actions-sidebar style="height: 100%">
-    </main-left-actions-sidebar>
-    <div class="logo" routerLink="/main/photos">
-      <img src="assets/lama.jpg"/>
-      <p>Lama</p>
-    </div>
-  </div>
-
-  <!--search-->
-  <div class="search-bar is-hidden-mobile">
-    <div class="field has-addons">
-      <div class="control input-form">
-        <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo"
-          [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()"/>
-        <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
-          <div class="row" *ngFor="let item of searchHistory">
-              <i class="material-icons">youtube_searched_for</i> {{ item }}
-          </div>
+    <div class="align-right">
+        <main-left-actions-sidebar style="height: 100%">
+        </main-left-actions-sidebar>
+        <div class="logo" routerLink="/main/photos">
+            <img src="assets/lama.jpg" />
+            <p>Lama</p>
         </div>
-      </div>
-      <div class="control">
-        <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{ 'not-active': !isActive }">
+    </div>
+
+    <!--search-->
+    <div class="search-bar is-hidden-mobile">
+        <div class="field has-addons">
+            <div class="control input-form">
+                <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo" [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
+                <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
+                    <div class="row" *ngFor="let item of searchHistory">
+                        <i class="material-icons">youtube_searched_for</i> {{ item }}
+                    </div>
+                </div>
+            </div>
+            <div class="control">
+                <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{ 'not-active': !isActive }">
           Search
         </a>
-      </div>
+            </div>
 
-      <!--upload-->
-      <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
-        <i class="material-icons">cloud_upload</i>
-        <p>Add</p>
-      </a>
+            <!--upload-->
+            <a (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
+                <i class="material-icons">cloud_upload</i>
+                <p>Add</p>
+            </a>
+        </div>
     </div>
-  </div>
 
-  <!--profile-->
-  <div class="align-right">
-    <a class="image is-48x48 profile">
-      <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
-    </a>
-    <a class="button is-large tooltip" >
-      <i class="fa fa-sign-out"></i>
-      <span class="tooltiptext" (click)="logOut()"> Logout </span>
-    </a>
-  </div>
+    <!--profile-->
+    <div class="align-right">
+        <a class="image is-48x48 profile">
+            <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
+        </a>
+        <!--notification-->
+
+        <!--log-out-->
+        <a class="button is-large tooltip">
+            <i class="fa fa-sign-out"></i>
+            <span class="tooltiptext" (click)="logOut()"> Logout </span>
+        </a>
+    </div>
 </header>
 
 <template #photoUploadModal></template>

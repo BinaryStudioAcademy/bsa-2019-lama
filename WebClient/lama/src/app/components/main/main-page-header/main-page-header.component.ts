@@ -1,5 +1,6 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
   Component,
   OnInit,
@@ -17,6 +18,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
+import { environment } from '../../../../environments/environment';
+import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -40,7 +43,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
   isSearchDropdownExpanded: boolean;
-
+  public Hub: HubConnection;
   // constructors
   constructor(
     public auth: AuthService,
@@ -55,6 +58,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   async ngOnInit() {
+    this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
       await this.delay(500);
@@ -75,6 +79,26 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       },
       error => this.notifier.notify('error', 'Error loading user')
     );
+  }
+  public registerHub() {
+    console.log(this.auth.token);
+    const stringConnection = environment.lamaApiUrl + environment.hub;
+    this.Hub = new HubConnectionBuilder()
+      .withUrl('http://localhost:5000/NotificationHub', {
+        accessTokenFactory: () => this.auth.token,
+        transport: 4
+      })
+      .build();
+    this.Hub.start().catch(error => console.log(error));
+
+    this.Hub.on('Notification', (notification: NotificationDTO) => {
+      if (notification) {
+        this.addNotification(notification);
+      }
+    });
+  }
+  addNotification(notification) {
+    console.log(notification);
   }
 
   delay(ms: number) {
