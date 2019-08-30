@@ -3,7 +3,7 @@
     <main-left-actions-sidebar style="height: 100%">
     </main-left-actions-sidebar>
     <div class="logo" routerLink="/main/photos">
-      <img src="assets/lama.jpg"/>
+      <img src="assets/lama.jpg" />
       <p>Lama</p>
     </div>
   </div>
@@ -13,10 +13,10 @@
     <div class="field has-addons">
       <div class="control input-form">
         <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo"
-          [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()"/>
+          [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
         <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
           <div class="row" *ngFor="let item of searchHistory">
-              <i class="material-icons">youtube_searched_for</i> {{ item }}
+            <i class="material-icons">youtube_searched_for</i> {{ item }}
           </div>
         </div>
       </div>
@@ -39,9 +39,8 @@
     <a class="image is-48x48 profile">
       <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
     </a>
-    <a class="button is-large tooltip" >
+    <a class="logout" (click)="logOut(); $event.preventDefault()">
       <i class="fa fa-sign-out"></i>
-      <span class="tooltiptext" (click)="logOut(); $event.preventDefault()"> Logout </span>
     </a>
   </div>
 </header>

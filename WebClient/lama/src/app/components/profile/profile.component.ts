@@ -109,15 +109,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.defaultImageUrl = this.photoUrl;
-    this.httpService.putData(`users`, this.user)
+    this.httpService
+      .putData(`users`, this.user)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      (data: User) => {
-        this.testReceivedUser = data;
-        this.notifier.notify('success', 'Changes Saved');
-      },
-      error => this.notifier.notify('error', 'Error saving')
-    );
+        (data: User) => {
+          this.testReceivedUser = data;
+          this.notifier.notify('success', 'Changes Saved');
+        },
+        error => this.notifier.notify('error', 'Error saving')
+      );
     if (this.isPhotoLoaded) {
       this.sharedService.avatar = { imageUrl: this.photoUrl };
     }
@@ -133,13 +134,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isSaved = false;
   }
 
-  refresh() {
-    this.userForm.setValue({
-      firstName: this.defaultFirstName,
-      lastName: this.defaultLastName,
-      email: this.defaultEmail
-    });
-    this.photoUrl = this.defaultImageUrl;
+  goBack() {
+    window.history.back();
   }
 
   removeProfilePhoto() {
