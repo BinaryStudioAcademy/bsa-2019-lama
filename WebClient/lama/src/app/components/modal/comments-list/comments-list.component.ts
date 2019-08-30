@@ -51,27 +51,33 @@ export class CommentsListComponent implements OnInit, OnDestroy {
   }
 
   private getComments() {
-    this.commentService.getComments(this.photoId)
+    this.commentService
+      .getComments(this.photoId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      comments => {
-        this.commentList = comments;
-        this.commentList.forEach(c => {
-          if (c.authorAvatar64Id) {
-            this.fileService
-              .getPhoto(c.authorAvatar64Id)
-              .pipe(takeUntil(this.unsubscribe))
-              .subscribe(url => (c.authorAvatar64Url = url));
-          } else {
-            c.authorAvatar64Url = 'assets/default_avatar.png';
-          }
-        });
-      },
-      err => {
-        this.commentList = [];
-        this.notifier.notify('error', 'Error saving');
-      }
-    );
+        comments => {
+          this.commentList = comments;
+          this.commentList.forEach(c => {
+            if (
+              c.authorAvatar64Id &&
+              c.authorAvatar64Id.indexOf('base64') === -1
+            ) {
+              this.fileService
+                .getPhoto(c.authorAvatar64Id)
+                .pipe(takeUntil(this.unsubscribe))
+                .subscribe(url => (c.authorAvatar64Url = url));
+            } else if (c.authorAvatar64Id.indexOf('base64') !== -1) {
+              c.authorAvatar64Url = c.authorAvatar64Id;
+            } else {
+              c.authorAvatar64Url = 'assets/default_avatar.png';
+            }
+          });
+        },
+        err => {
+          this.commentList = [];
+          this.notifier.notify('error', 'Error saving');
+        }
+      );
   }
 
   // methods
@@ -89,32 +95,32 @@ export class CommentsListComponent implements OnInit, OnDestroy {
       .create(commentToCreate)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      commentId => {
-        this.newCommentText = '';
+        commentId => {
+          this.newCommentText = '';
 
-        const commentToShow: CommentListDto = {
-          commentId,
-          authorId: commentToCreate.userId,
-          authorAvatar64Id: this.loggedUser.photoUrl,
-          authorFirstName: this.loggedUser.firstName,
-          authorLastName: this.loggedUser.lastName,
-          commentText: commentToCreate.text
-        };
-        if (commentToShow.authorAvatar64Id) {
-          this.fileService
-            .getPhoto(commentToShow.authorAvatar64Id)
-            .pipe(takeUntil(this.unsubscribe))
-            .subscribe(url => {
-              commentToShow.authorAvatar64Url = url;
-              this.commentList.push(commentToShow);
-            });
-        } else {
-          commentToShow.authorAvatar64Url = 'assets/default_avatar.png';
-          this.commentList.push(commentToShow);
-        }
-      },
-      error => this.notifier.notify('error', 'Error creating comments')
-    );
+          const commentToShow: CommentListDto = {
+            commentId,
+            authorId: commentToCreate.userId,
+            authorAvatar64Id: this.loggedUser.photoUrl,
+            authorFirstName: this.loggedUser.firstName,
+            authorLastName: this.loggedUser.lastName,
+            commentText: commentToCreate.text
+          };
+          if (commentToShow.authorAvatar64Id) {
+            this.fileService
+              .getPhoto(commentToShow.authorAvatar64Id)
+              .pipe(takeUntil(this.unsubscribe))
+              .subscribe(url => {
+                commentToShow.authorAvatar64Url = url;
+                this.commentList.push(commentToShow);
+              });
+          } else {
+            commentToShow.authorAvatar64Url = 'assets/default_avatar.png';
+            this.commentList.push(commentToShow);
+          }
+        },
+        error => this.notifier.notify('error', 'Error creating comments')
+      );
   }
   public deleteCommentHandler(commentId: number): void {
     this.commentService
