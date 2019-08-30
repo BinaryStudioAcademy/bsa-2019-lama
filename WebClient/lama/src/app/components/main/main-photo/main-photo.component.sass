@@ -6,7 +6,7 @@
     background-repeat: no-repeat
     overflow: hidden
     border-radius: .3rem
-    transition: ease-in-out .6s
+    transition: ease-in-out .1s
 
 .photo
     margin: .5rem
@@ -18,7 +18,8 @@
 
 .overlay
     width: 100%
-    transition: .7s ease
+    height: 100%
+    transition: .4s ease
     opacity: 0
     position: absolute
     bottom: 0
@@ -26,34 +27,57 @@
     flex-direction: column
     justify-content: space-between
 
-.top 
-    display: flex
-    flex-direction: row
-    justify-content: space-between
-
-.top i:first-of-type
-    width: 30px
-
-.bottom
-    display: flex
-    flex-direction: row
-    justify-content: space-between
-
 .photo:hover
     cursor: pointer
     
 .overlay i
     margin: .3rem
+
 .photo:hover img 
-    opacity: .5
+    opacity: .9
 
 .photo:hover .overlay
-    background: rgba(0,0,0,0.2)
     opacity: 1
 
-i, p
+.check-mark
+    position: absolute
+    top: 0
+    left: 0
+
+.star-mark
+    position: absolute
+    bottom: 0
+    left: 0
+
+.heart-mark
+    position: absolute
+    bottom: 0
+    right: 0    
+    color: black
+    i
+        height: 30px
+        width: 30px
+        min-width: 30px
+        min-height: 30px
+        font-size: 30px
+        color: white
+
+.description
+    font-size: 11pt
+    left: 35px
+    text-align: center
+    position: absolute
+    width: calc(100% - 80px)
+    bottom: 5px
     color: white
-    font-size: 20px
+    p
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+
+i
+    color: white
+    font-size: 25px
 
 .favorite
     font-size: 60px
@@ -64,45 +88,15 @@ i, p
     visibility: hidden
     z-index: 2
 
-.bottom a, .top a
-    min-width: 30px
-
-.like-block
+.count
     position: absolute
-
-.heart-block
-    position: relative
-
-.heart
-  background-color: white
-  display: inline-block
-  height: 20px
-  margin: 0 10px
-  position: relative
-  top: 10px
-  transform: rotate(-45deg)
-  width: 20px
-
-.heart:before,
-.heart:after
-  content: ""
-  background-color: white
-  border-radius: 50%
-  height: 20px
-  position: absolute
-  width: 20px
-
-.heart:before
-  top: -12px
-  left: 0
-
-.heart:after
-  left: 12px
-  top: 0
-
-.like-count
-    position: absolute
-    top: 5px
-    width: 100%
-    text-align: center
+    top: 36%
     left: 0
+    width: 40px
+    font-size: 11px
+    padding-left: 11px
+    padding-right: 10px
+    overflow: hidden
+    white-space: nowrap
+    text-overflow: ellipsis
+    text-align: center
