@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -42,7 +43,6 @@ namespace Lama.BusinessLogic.Services
         {
             var sharedPhotoData = await Context.SharedPhotos
                 .Include(sharedPhoto => sharedPhoto.User)
-                .ThenInclude(user => user.Photo)
                 .Include(sharedPhoto => sharedPhoto.Photo)
                     .ThenInclude(photo => photo.Likes)
                 .Include(sharedPhoto => sharedPhoto.Photo)
@@ -54,9 +54,9 @@ namespace Lama.BusinessLogic.Services
                 throw new NotFoundException(nameof(SharedPhoto), id);
             }
             var url = string.Empty;
-            if (sharedPhotoData.User.Photo != null)
+            if (sharedPhotoData.Photo.User != null)
             {
-                url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
+                url = (await _photoService.Get(sharedPhotoData.Photo.User.Id)).Blob256Id;
             }
             var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
             mappedResponse.User.PhotoUrl = url;
@@ -68,7 +68,6 @@ namespace Lama.BusinessLogic.Services
         {
             var sharedPhotoData = await Context.SharedPhotos
                 .Include(sharedPhoto => sharedPhoto.User)
-                .ThenInclude(user => user.Photo)
                 .Include(sharedPhoto => sharedPhoto.Photo)
                 .ThenInclude(photo => photo.Likes)
                 .Include(sharedPhoto => sharedPhoto.Photo)
@@ -83,9 +82,9 @@ namespace Lama.BusinessLogic.Services
             string url = String.Empty;
             foreach (var sharedPhoto in sharedPhotoData)
             {
-                if (sharedPhoto.User.Photo != null)
+                if (sharedPhoto.User != null)
                 {
-                    url = (await _photoService.Get(sharedPhoto.User.Photo.Id)).Blob256Id;
+                    url = (await _photoService.GetAvatar(Path.GetFileName(sharedPhoto.User.AvatarUrl)));
                 }
 
                 var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);

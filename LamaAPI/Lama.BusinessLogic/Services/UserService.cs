@@ -38,7 +38,7 @@ namespace Lama.BusinessLogic.Services
                 if (item.Photo != null)
                 {
                     var avatar = await _photoService.CreateAvatar(item.Photo);
-                    user.AvatarId = avatar.Id;
+                    user.AvatarUrl = avatar;
                     Context.Users.Update(user);
                 }
                 await Context.SaveChangesAsync();
@@ -54,14 +54,14 @@ namespace Lama.BusinessLogic.Services
         public async Task<int> UpdateUser(UserDTO user)
         {
             var newUser = await Context.Users.FirstOrDefaultAsync(u => u.Id== user.Id);
-            if (newUser.AvatarId != null && user.Photo == null)
+            if (newUser.AvatarUrl != null && user.Photo == null)
             {
-                newUser.AvatarId = null;
+                newUser.AvatarUrl = null;
             }
             else if (user.Photo?.ImageUrl != null)
             {
                 var newAvatar = await _photoService.CreateAvatar(user.Photo);
-                newUser.AvatarId = newAvatar.Id;
+                newUser.AvatarUrl = newAvatar;
             }
             newUser.FirstName = user.FirstName;
             newUser.LastName = user.LastName;
@@ -76,10 +76,9 @@ namespace Lama.BusinessLogic.Services
             var user = (await Context.Users.FirstOrDefaultAsync(u => u.Email == email));
             Photo avatar = null;
             string url = "";
-            if (user != null && user.AvatarId != null)
+            if (user != null && user.AvatarUrl != null)
             {
-                avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-                url = (await _photoService.Get(avatar.Id))?.Blob256Id;
+                url = user.AvatarUrl;
             }
             var dto = _mapper.Map<UserDTO>(user);
             if (user != null)
@@ -90,11 +89,10 @@ namespace Lama.BusinessLogic.Services
         public async Task<UserDTO> Get(int id)
         {
             var user = await Context.Users.SingleAsync(u => u.Id == id);
-            var avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
             string url = null;
-            if (avatar != null)
+            if (user.AvatarUrl != null)
             {
-                url = (await _photoService.Get(avatar.Id))?.Blob256Id;
+                url = user.AvatarUrl;
             }
             var dto = _mapper.Map<UserDTO>(user);
             dto.PhotoUrl = url;
@@ -104,8 +102,7 @@ namespace Lama.BusinessLogic.Services
         public async Task<GetUserDTO> GetUser(int id)
         {
             User user = await Context.Users.FindAsync(id);
-            Photo avatar = await Context.Photos.FirstOrDefaultAsync(p => p.Id == user.AvatarId);
-            string url = (await _photoService.Get(avatar.Id))?.Blob256Id;
+            string url = user.AvatarUrl;
 
             GetUserDTO dto = _mapper.Map<GetUserDTO>(user);
             dto.Avatar = url;

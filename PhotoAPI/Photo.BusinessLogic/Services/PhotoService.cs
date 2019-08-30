@@ -234,24 +234,12 @@ namespace Photo.BusinessLogic.Services
             return createdPhotos;
         }
 
-        public async Task<int> CreateAvatar(CreatePhotoDTO item)
+        public async Task<string> CreateAvatar(CreatePhotoDTO item)
         {
             var base64 = ConvertToBase64(item.ImageUrl);
             var blob = Convert.FromBase64String(base64);
             var blobId = await _storage.LoadAvatarToBlob(blob);
-            await Create(new PhotoDocument
-            {
-                Id = item.Id,
-                Name = Guid.NewGuid().ToString(),
-                BlobId = blobId,
-                Blob64Id = blobId,
-                Blob256Id = blobId,
-                OriginalBlobId = await _storage.LoadAvatarToBlob(blob),
-                UserId = item.AuthorId,
-                Description = item.Description
-            });
-            _messageService.SendAvatarToThumbnailProcessor(item.Id);
-            return item.Id;
+            return blobId;
         }
         private static string ConvertToBase64(string imageUrl)
         {

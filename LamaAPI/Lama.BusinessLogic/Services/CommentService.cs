@@ -5,6 +5,7 @@ using Lama.Domain.DTO.Comments;
 
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
 
@@ -40,10 +41,10 @@ namespace Lama.BusinessLogic.Services
             {
                 commentLists[i] = mapper.Map<CommentListDTO>(comments[i]);
 
-                if (comments[i].User.AvatarId.HasValue)
+                if (comments[i].User.AvatarUrl != null)
                 {
-                    commentLists[i].AuthorAvatar64Id = 
-                        (await photoService.Get(comments[i].User.AvatarId.Value)).Blob64Id;
+                    commentLists[i].AuthorAvatar64Id =
+                        (await photoService.GetAvatar(Path.GetFileName(comments[i].User.AvatarUrl)));
                 }
             }
 

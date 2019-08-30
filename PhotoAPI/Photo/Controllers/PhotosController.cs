@@ -98,7 +98,7 @@ namespace Photo.Controllers
             return await _photoService.GetPhotos(values);
         }
         [HttpPost("avatar")]
-        public async Task<int> PostAvatar([FromBody] CreatePhotoDTO value)
+        public async Task<string> PostAvatar([FromBody] CreatePhotoDTO value)
         {
             return await _photoService.CreateAvatar(value);
         }
