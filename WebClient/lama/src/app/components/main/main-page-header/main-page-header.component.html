@@ -35,11 +35,13 @@
 
     <!--profile-->
     <div class="align-right">
+        <!--notification-->
+        <a class="image is-48x48 notific">
+            <img [src]="newNotify ? 'assets/notification.svg' : 'assets/notification.svg'" />
+        </a>
         <a class="image is-48x48 profile">
             <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
         </a>
-        <!--notification-->
-
         <!--log-out-->
         <a class="button is-large tooltip">
             <i class="fa fa-sign-out"></i>
@@ -47,6 +49,23 @@
         </a>
     </div>
 </header>
+<aside class="notif-panel">
+    <div class="notification border">
+        <a class="delete is-medium"></a>
+        <h4 class="subtitle is-4 center">Notifications</h4>
+    </div>
 
+    <div class="sub-header">
+        <a>
+            <h6 class="subtitle is-6">Mark All as read</h6>
+        </a>
+    </div>
+    <app-main-notification></app-main-notification>
+    <app-main-notification></app-main-notification>
+    <app-main-notification></app-main-notification>
+    <app-main-notification></app-main-notification>
+    <app-main-notification></app-main-notification>
+    <app-main-notification></app-main-notification>
+</aside>
 <template #photoUploadModal></template>
 <notifier-container></notifier-container>

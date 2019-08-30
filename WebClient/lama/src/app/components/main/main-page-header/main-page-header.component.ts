@@ -35,6 +35,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   avatarUrl;
   searchCriteria = '';
   isActive = false;
+  newNotify = true;
   searchHistory: string[];
   searchSuggestions: { [name: string]: string[] } = {};
   id: number;
@@ -44,6 +45,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   unicodeLocation = '\u2316';
   isSearchDropdownExpanded: boolean;
   public Hub: HubConnection;
+  notification: NotificationDTO[];
   // constructors
   constructor(
     public auth: AuthService,
