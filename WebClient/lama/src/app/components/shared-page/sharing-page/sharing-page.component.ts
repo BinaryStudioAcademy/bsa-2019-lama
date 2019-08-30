@@ -9,6 +9,8 @@ import { Router, NavigationExtras } from '@angular/router';
 import { AlbumService } from 'src/app/services/album.service';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-sharing-page',
@@ -19,6 +21,7 @@ export class SharingPageComponent implements OnInit {
   albums: ViewAlbum[];
   currentUser: User;
   ArchivePhotos = [];
+  unsubscribe = new Subject();
   constructor(
     private sharingService: SharingService,
     private httpService: HttpService,
@@ -41,6 +44,7 @@ export class SharingPageComponent implements OnInit {
   getSharedAlbums() {
     this.sharingService
       .getSharedAlbums(this.currentUser.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(albums => {
         this.albums = albums;
         console.log(this.albums);

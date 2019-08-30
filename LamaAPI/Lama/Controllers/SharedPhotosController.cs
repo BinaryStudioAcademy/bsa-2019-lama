@@ -46,10 +46,7 @@ namespace Lama.Controllers
 
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
-        {
-            var currentUserEmail = this.GetUserEmail();
-            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
-            sharedPhoto.UserId = currentUserId;
+        { 
             await _sharingPhotoService.ProcessSharedPhoto(sharedPhoto);
 		}
 		
