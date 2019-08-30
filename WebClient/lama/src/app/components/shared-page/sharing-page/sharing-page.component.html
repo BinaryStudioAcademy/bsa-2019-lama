@@ -1,5 +1,9 @@
 <h2>Recent shared items:</h2>
 <div class="items-container-left">
+  <div class="no-content" *ngIf="!isAnyItems">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="" />
+  </div>
   <div *ngFor="let item of albums">
     <main-album
       [isShared]="true"

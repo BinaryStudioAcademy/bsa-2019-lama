@@ -18,10 +18,11 @@ import { Subject } from 'rxjs';
   styleUrls: ['./sharing-page.component.sass']
 })
 export class SharingPageComponent implements OnInit {
-  albums: ViewAlbum[];
+  albums: ViewAlbum[] = [];
   currentUser: User;
   ArchivePhotos = [];
   unsubscribe = new Subject();
+  isAnyItems = true;
   constructor(
     private sharingService: SharingService,
     private httpService: HttpService,
@@ -47,6 +48,9 @@ export class SharingPageComponent implements OnInit {
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(albums => {
         this.albums = albums;
+        if (!this.albums.length) {
+          this.isAnyItems = false;
+        }
         console.log(this.albums);
       });
   }
