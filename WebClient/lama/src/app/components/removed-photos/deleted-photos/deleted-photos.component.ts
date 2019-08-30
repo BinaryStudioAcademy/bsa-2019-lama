@@ -1,22 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { FileService } from 'src/app/services';
 
 import { DeletedPhotoList, PhotoToDeleteRestoreDTO } from 'src/app/models';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-deleted-photos',
   templateUrl: './deleted-photos.component.html',
   styleUrls: ['./deleted-photos.component.sass']
 })
-export class DeletedPhotosComponent implements OnInit {
+export class DeletedPhotosComponent implements OnInit, OnDestroy {
   // properties
   public countSelectedPhtoto: number;
   public deletedPhotos: DeletedPhotoList[];
   isShowSpinner = true;
+  unsubscribe = new Subject();
 
   // fields
   constructor(
@@ -29,13 +31,16 @@ export class DeletedPhotosComponent implements OnInit {
     const userId = parseInt(localStorage.getItem('userId'), 10);
     this.fileService
       .getDeletedPhotos(userId)
-      .pipe(map(dto => dto as DeletedPhotoList[]))
+      .pipe(map(dto => dto as DeletedPhotoList[]),
+        takeUntil(this.unsubscribe))
       .subscribe(
         items => {
           this.deletedPhotos = items;
           if (this.deletedPhotos) {
             this.deletedPhotos.forEach(item => {
-              this.fileService.getPhoto(item.blob256Id).subscribe(url => {
+              this.fileService.getPhoto(item.blob256Id)
+                .pipe(takeUntil(this.unsubscribe))
+                .subscribe(url => {
                 item.imageUrl = url;
                 this.isShowSpinner = false;
               });
@@ -67,6 +72,7 @@ export class DeletedPhotosComponent implements OnInit {
     const photosToDelete: PhotoToDeleteRestoreDTO[] = this.getPhotos();
     this.fileService
       .deletePhotosPermanently(photosToDelete)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         response => this.removeSelectedPhotoFromView(),
         error => this.notifier.notify('error', 'Error deleting photo')
@@ -92,5 +98,10 @@ export class DeletedPhotosComponent implements OnInit {
       this.deletedPhotos = this.deletedPhotos.filter(p => !p.isMarked);
     }
     this.countSelectedPhtoto = 0;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

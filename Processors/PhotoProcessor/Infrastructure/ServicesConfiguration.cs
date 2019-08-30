@@ -2,6 +2,7 @@
 using Nest;
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Processors.Domain.BlobModel;
 using Processors.Domain.Settings;
 using Processors.DataAccess.Implementation;
@@ -12,8 +13,9 @@ using Services.Models;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;
 using RabbitMQ.Client;
-
-
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 using NestConnection = Nest.ConnectionSettings;
 using QueueConnection = Services.Models.ConnectionSettings;
 
@@ -34,6 +36,16 @@ namespace PhotoProcessor.Infrastructure
                                 .AddJsonFile("appsettings.json")
                                 .AddEnvironmentVariables()
                                 .Build();
+            var elasticUri = _configuration["elasticsearch:url"];
+
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                })
+                .CreateLogger();
 
             Configure();
         }
@@ -44,7 +56,6 @@ namespace PhotoProcessor.Infrastructure
 
         private void Configure()
         {
-            
             _container.RegisterFactory<IConnectionFactory>(f => new DefaultConnectionFactory(_configuration.Bind<QueueConnection>("Queues:ConnectionSettings")));
             _container.RegisterType<IConnectionProvider, ConnectionProvider>();
 
@@ -86,6 +97,7 @@ namespace PhotoProcessor.Infrastructure
         {
             var url = _configuration["cognitiveServiceEndpoint"];
             var key = _configuration["cognitiveEndpointKey"];
+            Log.Logger.Error(key);
             
             return new CognitiveService(url,key);
         }

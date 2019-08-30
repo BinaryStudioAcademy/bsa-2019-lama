@@ -1,17 +1,27 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  OnDestroy
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
+import { SharingService } from 'src/app/services/sharing.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-by-email-modal',
   templateUrl: './share-by-email-modal.component.html',
   styleUrls: ['./share-by-email-modal.component.sass']
 })
-export class ShareByEmailModalComponent implements OnInit {
+export class ShareByEmailModalComponent implements OnInit, OnDestroy {
   @Input() receivedPhoto: PhotoRaw;
 
   @Output() Close = new EventEmitter();
@@ -22,14 +32,17 @@ export class ShareByEmailModalComponent implements OnInit {
   imageUrl: string;
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userEmails: Array<string> = [];
+  userIds: number[] = [];
   sharingRoute = 'main/shared';
   wrongInput = false;
   showAvailable = false;
   availableAll = true;
+  unsubscribe = new Subject();
 
   constructor(
     private userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private sharingService: SharingService
   ) {}
 
   ngOnInit() {}
@@ -40,19 +53,23 @@ export class ShareByEmailModalComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(
-        user => {
-          if (user) {
-            this.userEmails.push(user.email);
-            this.wrongInput = false;
-            this.clearInput();
-          } else {
-            this.wrongInput = true;
-            this.notifier.notify('error', 'Error getting email');
-          }
-        },
-        error => this.notifier.notify('error', 'Error getting email')
-      );
+      this.userService
+        .getUserByEmail(this.sharedEmail)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          user => {
+            if (user) {
+              this.userEmails.push(user.email);
+              this.userIds.push(user.id);
+              this.wrongInput = false;
+              this.clearInput();
+            } else {
+              this.wrongInput = true;
+              this.notifier.notify('error', 'Error getting email');
+            }
+          },
+          error => this.notifier.notify('error', 'Error getting email')
+        );
     } else {
       this.wrongInput = true;
       this.notifier.notify('error', 'Incorrect input');
@@ -104,6 +121,16 @@ export class ShareByEmailModalComponent implements OnInit {
     this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
+      this.userIds.forEach(item => {
+        this.sharingService
+          .sendSharedPhoto({
+            photoId: this.sharedPhoto.photoId,
+            userId: item,
+            sharedImageUrl: this.sharedPhoto.sharedImageUrl
+          })
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(e => console.log(e));
+      });
     } else {
       this.availableAll = true;
     }
@@ -113,6 +140,7 @@ export class ShareByEmailModalComponent implements OnInit {
       this.notifier.notify('success', 'Link is sent to specified users');
     }
     this.userEmails = [];
+    this.userIds = [];
   }
 
   clearInput() {
@@ -129,5 +157,10 @@ export class ShareByEmailModalComponent implements OnInit {
     serchfind = regexp.test(search);
 
     return serchfind;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

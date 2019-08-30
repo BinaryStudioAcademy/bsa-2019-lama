@@ -70,9 +70,9 @@ namespace Processors.BusinessLogic.Services
             if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
             {
                 var thumbnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
-                var imageTagsDTO = new ImageTagsDTO{Tags = imageTagsAsRawString};
+                var imageTagsAsRaw = new ImageTagsAsRaw{Tags = imageTagsAsRawString};
 
-                await _elasticStorage.UpdateImageTagsAsync(makePhotoThumbnailDTO.ImageId, imageTagsDTO);
+                await _elasticStorage.UpdateImageTagsAsync(makePhotoThumbnailDTO.ImageId, imageTagsAsRaw);
                 await _elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thumbnailUpdateDTO);
             }
         }

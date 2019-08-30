@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
@@ -9,13 +9,14 @@ import { UserService } from 'src/app/services/user.service';
 import { Subject } from 'rxjs';
 import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-shared-page',
   templateUrl: './shared-page.component.html',
   styleUrls: ['./shared-page.component.sass']
 })
-export class SharedPageComponent implements OnInit {
+export class SharedPageComponent implements OnInit, OnDestroy {
   sharedPhoto: SharedPhoto = {} as SharedPhoto;
   userSubject: Subject<any> = new Subject<any>();
   authenticatedUser: User;
@@ -25,6 +26,7 @@ export class SharedPageComponent implements OnInit {
   sharedPhotoUrl: string;
   userAvatarUrl: string;
   isShowSpinner = true;
+  unsubscribe = new Subject();
 
   constructor(
     private route: ActivatedRoute,
@@ -35,17 +37,18 @@ export class SharedPageComponent implements OnInit {
 
   ngOnInit() {
     this.decodeUserData();
-    this.sendSharingData();
     this.sharingService
       .updatePhotoEntityWithSharedLink(
         this.sharedPhoto.photoId,
         this.sharedLinkData
       )
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         updated => {
           this.updatedPhoto = updated;
           this.fileService
             .getPhoto(this.sharedPhoto.sharedImageUrl)
+            .pipe(takeUntil(this.unsubscribe))
             .subscribe(url => {
               this.sharedPhotoUrl = url;
               this.isShowSpinner = false;
@@ -63,6 +66,7 @@ export class SharedPageComponent implements OnInit {
   private getUserData() {
     this.sharingService
       .getSharingPageUserData(this.sharedPhoto.photoId)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         shareData => {
           this.userSubject.next(shareData);
@@ -78,6 +82,7 @@ export class SharedPageComponent implements OnInit {
         if (this.userData.photo.imageUrl) {
           this.fileService
             .getPhoto(this.userData.user.photoUrl)
+            .pipe(takeUntil(this.unsubscribe))
             .subscribe(url => (this.userAvatarUrl = url));
         } else {
           this.userAvatarUrl = 'assets/default_avatar.png';
@@ -90,6 +95,7 @@ export class SharedPageComponent implements OnInit {
   private sendSharingData() {
     this.sharingService
       .sendSharedPhoto(this.sharedPhoto)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         x => x,
         error => this.notifier.notify('error', 'Error sending sharing data')
@@ -102,5 +108,10 @@ export class SharedPageComponent implements OnInit {
     let jsonData = atob(encodedData.replace('___', '/'));
     jsonData = jsonData.replace('[]', '');
     this.sharedPhoto = JSON.parse(jsonData);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

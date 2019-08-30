@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Serilog.Exceptions;
 using Lama.BusinessLogic.Hubs;
 using Microsoft.AspNetCore.SignalR;

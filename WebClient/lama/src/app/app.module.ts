@@ -44,6 +44,7 @@ import { ViewAlbumComponent } from './components/view-album-module/view-album/vi
 import { Ng2ImgToolsModule } from 'ng2-img-tools';
 // tslint:disable-next-line:max-line-length
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
+import { SharingPageComponent } from './components/shared-page/sharing-page//sharing-page.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { AddPhotosToAlbumModalComponent } from './components/view-album-module/a
     MainContentContainerComponent,
     MainPhotosContainerComponent,
     MainPhotoComponent,
+    SharingPageComponent,
     ProfileComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,

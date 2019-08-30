@@ -8,6 +8,9 @@ header
     height: 70px
     border-bottom: 1px solid #f5f5f5
 
+img
+    outline: none
+
 .button
     height: 35px
 
@@ -19,9 +22,7 @@ datalist div
 .align-right
     display: flex
     align-items: center
-    justify-content: center
-    & a
-        margin-left: 18px
+    justify-content: center    
     .button
         margin-right: 10px
 
@@ -85,9 +86,10 @@ input::-webkit-calendar-picker-indicator
 
 .profile img
     height: 100%
-    max-height: 48px
-    max-width: 48px
+    height: 48px
+    width: 48px
     margin: auto
+    object-fit: cover
 
 .notific img
     max-height: 48px
@@ -153,21 +155,13 @@ input::-webkit-calendar-picker-indicator
             font-size: 20px
             vertical-align: top
 
-a.button.is-large
-    background-color: #00d1b2
-    width: 85px
-    .fa
-        color: white
-    &:hover .fa
+.logout
+    margin-left: 10px
+    margin-right: 10px
+    i
+        font-size: 20pt
+    &:hover
         color: #00d1b2
-    .tooltiptext
-        bottom: 0
-        color: white
-        height: 35px
-        left: inherit
-        right: 0
-        width: 85px
-
 
 @media screen and (max-width: 768px)
     .logo

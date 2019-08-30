@@ -43,9 +43,8 @@
             <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
         </a>
         <!--log-out-->
-        <a class="button is-large tooltip">
+        <a class="logout" (click)="logOut(); $event.preventDefault()">
             <i class="fa fa-sign-out"></i>
-            <span class="tooltiptext" (click)="logOut()"> Logout </span>
         </a>
     </div>
 </header>

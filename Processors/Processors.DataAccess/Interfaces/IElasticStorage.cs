@@ -8,6 +8,6 @@ namespace Processors.DataAccess.Interfaces
         Task<string> GetBlobId(long documentId);
         Task UpdateThumbnailsAsync(long id, Processors.Domain.ThumbnailUpdateDTO thumbnailUpdate);
         Task<bool> ExistAsync(long id);
-        Task UpdateImageTagsAsync(long imageId, ImageTagsDTO imageTagsAsRawString);
+        Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRawString);
     }
 }

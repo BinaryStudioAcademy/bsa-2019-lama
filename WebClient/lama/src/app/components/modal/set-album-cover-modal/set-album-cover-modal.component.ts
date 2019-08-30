@@ -6,7 +6,8 @@ import {
   EventEmitter,
   DoCheck,
   ViewChildren,
-  QueryList
+  QueryList,
+  OnDestroy
 } from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw, Photo } from 'src/app/models';
@@ -14,13 +15,15 @@ import { ChooseAlbumCoverComponent } from '../../choose-album-cover/choose-album
 import { AlbumService } from 'src/app/services/album.service';
 import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-set-album-cover-modal',
   templateUrl: './set-album-cover-modal.component.html',
   styleUrls: ['./set-album-cover-modal.component.sass']
 })
-export class SetAlbumCoverModalComponent implements OnInit {
+export class SetAlbumCoverModalComponent implements OnInit, OnDestroy {
   @ViewChildren(ChooseAlbumCoverComponent) components: QueryList<
     ChooseAlbumCoverComponent
   >;
@@ -31,6 +34,7 @@ export class SetAlbumCoverModalComponent implements OnInit {
   @Input() isShown: boolean;
   selectedPhoto?: PhotoRaw = null;
   updatedAlbum: UpdateAlbum = {} as UpdateAlbum;
+  unsubscribe = new Subject();
 
   constructor(
     private albumService: AlbumService,
@@ -59,6 +63,7 @@ export class SetAlbumCoverModalComponent implements OnInit {
       } else {
         this.albumService
           .updateAlbumCover(this.updatedAlbum)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(
             updatedAlbum =>
               (this.receivedAlbum.photo.id = updatedAlbum.coverId),
@@ -87,5 +92,10 @@ export class SetAlbumCoverModalComponent implements OnInit {
     } else {
       this.selectedPhoto = event;
     }
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

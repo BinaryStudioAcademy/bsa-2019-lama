@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,6 +16,7 @@ using Lama.Domain.DTO;
 using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services
@@ -35,13 +37,12 @@ namespace Lama.BusinessLogic.Services
             _mapper = mapper;
             _photoService = photoService;
         }
-        
+
 
         public async Task<SharedPhotoDTO> Get(int id)
         {
             var sharedPhotoData = await Context.SharedPhotos
                 .Include(sharedPhoto => sharedPhoto.User)
-                .ThenInclude(user => user.Photo)
                 .Include(sharedPhoto => sharedPhoto.Photo)
                     .ThenInclude(photo => photo.Likes)
                 .Include(sharedPhoto => sharedPhoto.Photo)
@@ -53,14 +54,45 @@ namespace Lama.BusinessLogic.Services
                 throw new NotFoundException(nameof(SharedPhoto), id);
             }
             var url = string.Empty;
-            if (sharedPhotoData.User.Photo != null)
+            if (sharedPhotoData.Photo.User != null)
             {
-                url = (await _photoService.Get(sharedPhotoData.User.Photo.Id)).Blob256Id;
+                url = (await _photoService.Get(sharedPhotoData.Photo.User.Id)).Blob256Id;
             }
             var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
             mappedResponse.User.PhotoUrl = url;
 
             return mappedResponse;
+        }
+
+        public async Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id)
+        {
+            var sharedPhotoData = await Context.SharedPhotos
+                .Include(sharedPhoto => sharedPhoto.User)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                .ThenInclude(photo => photo.Likes)
+                .Include(sharedPhoto => sharedPhoto.Photo)
+                .ThenInclude(photo => photo.Comments)
+                .Where(sharedPhoto => sharedPhoto.UserId == id || sharedPhoto.Photo.User.Id == id).ToListAsync();
+
+            if (sharedPhotoData == null)
+            {
+                throw new NotFoundException(nameof(SharedPhoto), id);
+            }
+            IEnumerable<SharedPhotoDTO> result = new List<SharedPhotoDTO>();
+            string url = String.Empty;
+            foreach (var sharedPhoto in sharedPhotoData)
+            {
+                if (sharedPhoto.User != null)
+                {
+                    url = (await _photoService.GetAvatar(Path.GetFileName(sharedPhoto.User.AvatarUrl)));
+                }
+
+                var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
+                mappedResponse.User.PhotoUrl = url;
+                result.Append(mappedResponse);
+            }
+            return new List<PhotoAlbumDTO>();
+            //return result;
         }
 
         public async Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink)
@@ -82,9 +114,11 @@ namespace Lama.BusinessLogic.Services
             return photoDocumentWithSharedLink;
         }
 		
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var entity = await Context.SharedPhotos.FirstOrDefaultAsync(i => i.PhotoId == id);
+            Context.SharedPhotos.Remove(entity);
+            await Context.SaveChangesAsync();
         }
 
         public async Task ProcessSharedPhoto(SharedPhoto sharedPhoto)

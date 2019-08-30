@@ -5,9 +5,10 @@ import {
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
-  DoCheck
+  DoCheck,
+  OnDestroy
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PhotoRaw } from 'src/app/models';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
@@ -17,13 +18,14 @@ import { ZipService } from 'src/app/services/zip.service';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { User } from 'src/app/models/User/user';
 import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-shared-page-album',
   templateUrl: './shared-page-album.component.html',
   styleUrls: ['./shared-page-album.component.sass']
 })
-export class SharedPageAlbumComponent implements OnInit, DoCheck {
+export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
   @Input() album: ViewAlbum = {} as ViewAlbum;
 
   sharedAlbum: SharedAlbum = {} as SharedAlbum;
@@ -34,6 +36,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
   private routeSubscription: Subscription;
   private querySubscription: Subscription;
   currentUser: User;
+  unsubscribe = new Subject();
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -51,7 +54,9 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
   ngOnInit() {
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.selectedPhotos = [];
-    this.albumService.getAlbum(this.sharedAlbum.albumId).subscribe(x => {
+    this.albumService.getAlbum(this.sharedAlbum.albumId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(x => {
       this.album = x.body;
     });
     this.loading = true;
@@ -87,5 +92,10 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck {
     let jsonData = atob(encodedData.replace('___', '/'));
     jsonData = jsonData.replace('[]', '');
     this.sharedAlbum = JSON.parse(jsonData);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

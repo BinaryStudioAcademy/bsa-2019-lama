@@ -4,7 +4,8 @@ import {
   EventEmitter,
   Output,
   OnChanges,
-  OnInit
+  OnInit,
+  OnDestroy
 } from '@angular/core';
 
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
@@ -14,6 +15,8 @@ import { Favorite } from 'src/app/models/favorite';
 import { FileService } from 'src/app/services';
 import { environment } from 'src/environments/environment';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -22,7 +25,7 @@ import { NotifierService } from 'angular-notifier';
   styleUrls: ['./main-photo.component.sass'],
   providers: [FavoriteService]
 })
-export class MainPhotoComponent implements OnInit, OnChanges {
+export class MainPhotoComponent implements OnInit, OnChanges, OnDestroy {
   @Input('_id') id = -1;
   @Input('_photo') photo: PhotoRaw;
   @Output() Click = new EventEmitter<PhotoRaw>();
@@ -32,6 +35,7 @@ export class MainPhotoComponent implements OnInit, OnChanges {
   isFavorite = false;
   isSelected = false;
   isShowSpinner = true;
+  unsubscribe = new Subject();
 
   constructor(
     private favoriteService: FavoriteService,
@@ -39,10 +43,13 @@ export class MainPhotoComponent implements OnInit, OnChanges {
     private notifier: NotifierService
   ) {}
   ngOnInit() {
-    this.fileService.getPhoto(this.photo.blob256Id).subscribe(url => {
-      this.imageUrl = url;
-      this.isShowSpinner = false;
-    });
+    this.fileService
+      .getPhoto(this.photo.blob256Id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(url => {
+        this.imageUrl = url;
+        this.isShowSpinner = false;
+      });
   }
 
   ngOnChanges() {
@@ -84,22 +91,33 @@ export class MainPhotoComponent implements OnInit, OnChanges {
 
   mark() {
     if (this.isFavorite) {
-      this.favoriteService.deleteFavorite(this.userId, this.photo.id).subscribe(
-        data => this.checkCorrectReturn(data),
-        err => {
-          this.changeFavorite();
-          this.notifier.notify('error', 'Error');
-        }
-      );
+      this.favoriteService
+        .deleteFavorite(this.userId, this.photo.id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          data => this.checkCorrectReturn(data),
+          err => {
+            this.changeFavorite();
+            this.notifier.notify('error', 'Error');
+          }
+        );
     } else {
       const favorite: Favorite = new Favorite(this.photo.id, this.userId);
-      this.favoriteService.createFavorite(favorite).subscribe(
-        data => this.checkCorrectReturn(data),
-        err => {
-          this.changeFavorite();
-          this.notifier.notify('error', 'Error loading');
-        }
-      );
+      this.favoriteService
+        .createFavorite(favorite)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          data => this.checkCorrectReturn(data),
+          err => {
+            this.changeFavorite();
+            this.notifier.notify('error', 'Error loading');
+          }
+        );
     }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }
