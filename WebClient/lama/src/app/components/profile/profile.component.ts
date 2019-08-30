@@ -53,12 +53,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
         u => {
           this.isSuccesfull = true;
           this.user = u;
-          if (u.photoUrl) {
+          if (u.photoUrl && u.photoUrl.indexOf('base64') === -1) {
             this.showSpinner = false;
             this.fileService
               .getPhoto(u.photoUrl)
               .pipe(takeUntil(this.unsubscribe))
               .subscribe(url => (this.photoUrl = url));
+          } else if (u.photoUrl) {
+            this.showSpinner = false;
+            this.photoUrl = u.photoUrl;
           } else {
             this.showSpinner = false;
             this.photoUrl = null;

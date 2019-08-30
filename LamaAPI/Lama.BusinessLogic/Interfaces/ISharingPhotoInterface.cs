@@ -10,6 +10,7 @@ namespace Lama.BusinessLogic.Interfaces
     public interface ISharingPhotoService
     {
         Task<SharedPhotoDTO> Get(int id);
+        Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id);
         Task<PhotoDocument> UpdatePhotoDocumentWithSharedLink(int id, string sharedLink);
         Task Delete(int id);
         Task ProcessSharedPhoto(SharedPhoto sharedPhoto);

@@ -14,6 +14,7 @@ import {
 import { FileUploadDirective } from '../directives';
 
 import { FileService } from '../services';
+import { SharingPageComponent } from './shared-page/sharing-page/sharing-page.component';
 
 @NgModule({
   declarations: [FileUploadDirective],

@@ -140,7 +140,7 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.Photo).WithOne(o => o.User).HasForeignKey<User>(fk => fk.AvatarId);
+                entity.HasMany(o => o.Photos).WithOne(o => o.User).HasForeignKey(fk => fk.UserId);
                 entity.Property(e => e.Email).IsRequired();
                 entity.Property(e => e.FirstName).IsRequired();
                 entity.Property(e => e.LastName).IsRequired();
