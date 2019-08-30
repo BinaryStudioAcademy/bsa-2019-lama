@@ -4,20 +4,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.DTO.PhotoDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lama.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PhotoDetailsController : ControllerBase
     {
         private readonly IPhotoDetailsService _service;
+        private readonly IUserProtectionService _userProtectionService;
 
-        public PhotoDetailsController(IPhotoDetailsService _service)
+        public PhotoDetailsController(IPhotoDetailsService service, IUserProtectionService userProtectionService)
         {
-            this._service = _service;
+            _service = service;
+            _userProtectionService = userProtectionService;
         }
         [HttpPost("description")]
         public async Task<string> UpdateDescription([FromBody] NewDescription newDescription)
