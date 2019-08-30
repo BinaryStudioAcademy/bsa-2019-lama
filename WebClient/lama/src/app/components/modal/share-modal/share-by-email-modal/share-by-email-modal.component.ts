@@ -1,17 +1,19 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { User } from 'src/app/models/User/user';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-share-by-email-modal',
   templateUrl: './share-by-email-modal.component.html',
   styleUrls: ['./share-by-email-modal.component.sass']
 })
-export class ShareByEmailModalComponent implements OnInit {
+export class ShareByEmailModalComponent implements OnInit, OnDestroy {
   @Input() receivedPhoto: PhotoRaw;
 
   @Output() Close = new EventEmitter();
@@ -26,6 +28,7 @@ export class ShareByEmailModalComponent implements OnInit {
   wrongInput = false;
   showAvailable = false;
   availableAll = true;
+  unsubscribe = new Subject();
 
   constructor(
     private userService: UserService,
@@ -40,7 +43,9 @@ export class ShareByEmailModalComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(
+      this.userService.getUserByEmail(this.sharedEmail)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         user => {
           if (user) {
             this.userEmails.push(user.email);
@@ -129,5 +134,10 @@ export class ShareByEmailModalComponent implements OnInit {
     serchfind = regexp.test(search);
 
     return serchfind;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

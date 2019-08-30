@@ -15,6 +15,14 @@
             >check_circle_outline</i
           ></a
         >
+        <a>
+          <div class="heart-block">
+          <span class="heart"></span>
+          <span class="like-count">
+            {{photo?.reactions?.length || 0}}
+          </span>
+      </div>         
+        </a>
       </div>
       <div class="bottom">
         <a (click)="$event.stopPropagation()" (click)="mark()"
@@ -25,7 +33,7 @@
         <a>
           <p>{{ photo.description }}</p>
         </a>
-        <a><i class="material-icons">comment</i></a>
+        <a></a>
       </div>
     </div>
   </div>

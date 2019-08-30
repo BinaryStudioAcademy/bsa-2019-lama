@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService, UserService } from 'src/app/services';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -10,9 +12,10 @@ import { NotifierService } from 'angular-notifier';
   templateUrl: './landing-login.component.html',
   styleUrls: ['./landing-login.component.sass']
 })
-export class LandingLoginComponent implements OnInit {
+export class LandingLoginComponent implements OnInit, OnDestroy {
   showAuthModal = false;
   private user: any;
+  unsubscribe = new Subject();
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -21,7 +24,9 @@ export class LandingLoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.afAuth.user.subscribe(
+    this.afAuth.user
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       user => (this.user = user),
       error => this.notifier.notify('error', 'Error loading')
     );
@@ -33,5 +38,10 @@ export class LandingLoginComponent implements OnInit {
       this.router.navigate(['/main']);
     }
     this.showAuthModal = true;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

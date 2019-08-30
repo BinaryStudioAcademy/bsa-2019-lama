@@ -6,7 +6,8 @@ import {
   ComponentFactoryResolver,
   Input,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
 import { Photo, PhotoRaw, User, CreatedAlbumsArgs } from 'src/app/models';
 import { NewAlbum } from 'src/app/models/Album/NewAlbum';
@@ -20,13 +21,15 @@ import { FileService } from 'src/app/services';
 import { AlbumService } from 'src/app/services/album.service';
 import { AlbumExistPhotos } from 'src/app/models/Album/AlbumExistPhotos';
 import { AlbumNewPhotos } from 'src/app/models/Album/AlbumNewPhotos';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-photos-to-album-modal',
   templateUrl: './add-photos-to-album-modal.component.html',
   styleUrls: ['./add-photos-to-album-modal.component.sass']
 })
-export class AddPhotosToAlbumModalComponent {
+export class AddPhotosToAlbumModalComponent implements OnDestroy {
   constructor(
     private resolver: ComponentFactoryResolver,
     private notifier: NotifierService,
@@ -65,6 +68,7 @@ export class AddPhotosToAlbumModalComponent {
   AlbumId: number;
 
   ExistPhotos: PhotoRaw[] = [];
+  unsubscribe = new Subject();
 
   handleDragEnter() {
     this.dragging = true;
@@ -150,7 +154,9 @@ export class AddPhotosToAlbumModalComponent {
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.fileService.getPhoto(photo.blob256Id).subscribe(url => {
+      this.fileService.getPhoto(photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => {
         this.photos.push({ imageUrl: url });
         this.ExistPhotos.push(photo);
       });
@@ -169,7 +175,9 @@ export class AddPhotosToAlbumModalComponent {
         photos: this.photos,
         UserId: this.currentUser.id
       };
-      this.albumService.addNewPhotosToAlbum(this.AlbumNewPhotos).subscribe(
+      this.albumService.addNewPhotosToAlbum(this.AlbumNewPhotos)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         photos => {
           this.AddingPhotosToAlbum.emit(photos);
           this.notifier.notify('success', 'Photos added');
@@ -182,7 +190,9 @@ export class AddPhotosToAlbumModalComponent {
         AlbumId: this.AlbumId,
         photosId: this.ExistPhotosId
       };
-      this.albumService.addExistPhotosToAlbum(this.AlbumExistPhotos).subscribe(
+      this.albumService.addExistPhotosToAlbum(this.AlbumExistPhotos)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         photos => {
           if (photos.length !== 0) {
             this.AddingPhotosToAlbum.emit(photos);
@@ -199,5 +209,10 @@ export class AddPhotosToAlbumModalComponent {
 
   toggleModal() {
     this.isShown = false;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

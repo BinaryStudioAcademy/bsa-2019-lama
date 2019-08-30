@@ -1,11 +1,8 @@
-<div *ngIf="!isFavorite()" class="photos">
-    <a class="button is-primary" (click)="addPhoto($event)">Add photos</a>
-</div>
 <div class="navigation">
     <div class="image">
-        <a routerLink="/main/albums"><img src="assets/back.svg" alt="" /></a>
+        <a routerLink="/main/albums"><img src="assets/back-2.svg" alt="" /></a>
     </div>
-    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+    <div *ngIf="(!isFavorite() || isAtLeastOnePhotoSelected) && album?.photoAlbums?.length" class="dropdown is-hoverable">
         <div class="dropdown-trigger">
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
@@ -13,10 +10,13 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
             <div class="dropdown-content">
-                <div class="dropdown-item" (click)="deleteWindow()">
+                <div class="dropdown-item" *ngIf="!isFavorite()" (click)="addPhoto($event)">
+                    <p>Add photos</p>
+                </div>
+                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteWindow()">
                     <p>Delete</p>
                 </div>
-                <div class="dropdown-item" (click)="downloadImages()">
+                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="downloadImages()">
                     <p>Download</p>
                 </div>
             </div>

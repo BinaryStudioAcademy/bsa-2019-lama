@@ -1,15 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { CommentListDto, User, CreateCommentDTO } from 'src/app/models';
 import { UserService, AuthService, CommentService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-comments-list',
   templateUrl: './comments-list.component.html',
   styleUrls: ['./comments-list.component.sass']
 })
-export class CommentsListComponent implements OnInit {
+export class CommentsListComponent implements OnInit, OnDestroy {
   // properties
   @Input()
   public photoId: number;
@@ -21,6 +23,7 @@ export class CommentsListComponent implements OnInit {
   public newCommentText: string;
 
   public loggedUser: User;
+  unsubscribe = new Subject();
 
   // fields
   constructor(
@@ -37,6 +40,7 @@ export class CommentsListComponent implements OnInit {
     if (userId) {
       this.userService
         .getUser(userId)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           user => (this.loggedUser = user),
           error => this.notifier.notify('error', 'Error saving')
@@ -47,13 +51,16 @@ export class CommentsListComponent implements OnInit {
   }
 
   private getComments() {
-    this.commentService.getComments(this.photoId).subscribe(
+    this.commentService.getComments(this.photoId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       comments => {
         this.commentList = comments;
         this.commentList.forEach(c => {
           if (c.authorAvatar64Id) {
             this.fileService
               .getPhoto(c.authorAvatar64Id)
+              .pipe(takeUntil(this.unsubscribe))
               .subscribe(url => (c.authorAvatar64Url = url));
           } else {
             c.authorAvatar64Url = 'assets/default_avatar.png';
@@ -78,7 +85,10 @@ export class CommentsListComponent implements OnInit {
       userId: this.loggedUser.id,
       text: this.newCommentText
     };
-    this.commentService.create(commentToCreate).subscribe(
+    this.commentService
+      .create(commentToCreate)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       commentId => {
         this.newCommentText = '';
 
@@ -93,6 +103,7 @@ export class CommentsListComponent implements OnInit {
         if (commentToShow.authorAvatar64Id) {
           this.fileService
             .getPhoto(commentToShow.authorAvatar64Id)
+            .pipe(takeUntil(this.unsubscribe))
             .subscribe(url => {
               commentToShow.authorAvatar64Url = url;
               this.commentList.push(commentToShow);
@@ -108,6 +119,7 @@ export class CommentsListComponent implements OnInit {
   public deleteCommentHandler(commentId: number): void {
     this.commentService
       .delete(commentId)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         r => (
           (this.commentList = this.commentList.filter(
@@ -126,5 +138,10 @@ export class CommentsListComponent implements OnInit {
       (comment.authorId === this.loggedUser.id ||
         this.photoAuthorId === this.loggedUser.id)
     );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }
