@@ -57,17 +57,18 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            IEnumerable<PhotoDocumentDTO> photoDocumentDTOs = JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(responseContent);
+            var photoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photoDocumentDTOs = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photoDocuments);
 
-            foreach (PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            foreach (var photoDocumentDto in photoDocumentDTOs)
             {
-                Like[] likes =  (await _context.GetRepository<Like>()
-                    .GetAsync(l => l.PhotoId == photoDocumentDTO.Id))
+                var likes =  (await _context.GetRepository<Like>()
+                    .GetAsync(l => l.PhotoId == photoDocumentDto.Id))
                     .ToArray();
 
-                photoDocumentDTO.Reactions = _mapper.Map<LikeDTO[]>(likes);
+                photoDocumentDto.Reactions = _mapper.Map<LikeDTO[]>(likes);
 
-                foreach (LikeDTO like in photoDocumentDTO.Reactions)
+                foreach (var like in photoDocumentDto.Reactions)
                 {
                     if (like.Photo != null)
                     {

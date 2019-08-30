@@ -44,6 +44,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unicodeLocation = '\u2316';
   isSearchDropdownExpanded: boolean;
   unsubscribe = new Subject();
+  latestSearchAttempt = 0;
 
   // constructors
   constructor(
@@ -107,13 +108,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.shared.avatar = null;
       }
     }
-    this.searchCriteria.length < 1
+    this.searchCriteria.length < 1 || this.searchCriteria.length === this.latestSearchAttempt
       ? (this.isActive = false)
       : (this.isActive = true);
     if (this.isActive) {
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-      }
       this.timeout = setTimeout(() => {
         this.getSearchSuggestions(this.id, this.searchCriteria);
       }, 300);
@@ -131,11 +129,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   getSearchSuggestions(id: number, criteria: string) {
     if (this.isActive) {
       this.file
-        .getSearchSuggestions(this.id, this.searchCriteria)
+        .getSearchSuggestions(this.id, criteria)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(items => {
           this.searchSuggestions = items;
+          this.latestSearchAttempt = criteria.length;
+          this.isActive = false;
         });
-      console.log(this.searchSuggestions);
     }
   }
 
@@ -192,6 +192,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     );
   }
 
+  sendToSearchbar(input: string) {
+    console.log(input);
+  }
+
   openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(
@@ -209,7 +213,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.toggleModal();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();
   }

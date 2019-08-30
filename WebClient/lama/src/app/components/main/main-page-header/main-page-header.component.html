@@ -16,6 +16,9 @@
           [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
         <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
           <div class="row" *ngFor="let item of searchHistory">
+            <div class="icons-wrapper" (click)="sendToSearchBar(item)">
+
+            </div>
             <i class="material-icons">youtube_searched_for</i> {{ item }}
           </div>
         </div>
