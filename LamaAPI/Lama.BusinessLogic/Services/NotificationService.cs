@@ -22,9 +22,8 @@ namespace Lama.BusinessLogic.Services
             this.Context = Context;
             this.Hub = Hub;
         }
-        public async Task SendNotificationAboutLike(int Id,User user)
+        public async Task SendNotification(int Id,User user,string noti)
         {
-            string noti = "Liked your photo";
             var model = await CreateNotification(noti, Id, user);
 
             var sender = new NotificationUserDTO()

@@ -120,22 +120,13 @@ namespace Lama.BusinessLogic.Services
             await _context.GetRepository<Like>().InsertAsync(like);
             await _context.SaveAsync();
 
-            var tuple = Tuple.Create<int, int>(newLike.UserId, newLike.PhotoId);
-
-
-            var content = new StringContent(JsonConvert.SerializeObject(tuple), Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync($"{url}api/photos/checkuser", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var id = JsonConvert.DeserializeObject<int>(responseContent);
-
-        
-            if (id != newLike.UserId)
+            var photo = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
+            var user = photo.User;
+            if (user.Id != newLike.UserId)
             {
-                var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
-                var Name = user.FirstName + " " + user.LastName;
-                await notificationService.SendNotificationAboutLike(id, user);
+                string noti = "Liked your photo";
+                await notificationService.SendNotification(user.Id, user, noti);
             }
-
             return like.Id;
         }
         public async Task RemoveReaction(NewLikeDTO removeLike)
