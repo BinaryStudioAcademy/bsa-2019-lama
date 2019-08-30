@@ -1,4 +1,6 @@
-﻿namespace Photo.Domain.BlobModels
+﻿using System.Collections.Generic;
+
+namespace Photo.Domain.BlobModels
 {
     public class PhotoDocument
     {
@@ -17,5 +19,6 @@
         public int CategoryId { get; set; }
         public string Coordinates { set; get; }
         public string Tags { get; set; }
+        public List<bool> Hash { get; set; }
     }
 }

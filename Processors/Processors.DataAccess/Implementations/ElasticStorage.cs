@@ -1,4 +1,5 @@
-﻿using Nest;
+﻿using System.Collections.Generic;
+using Nest;
 
 using Processors.Domain;
 using Processors.Domain.BlobModel;
@@ -26,6 +27,10 @@ namespace Processors.DataAccess.Implementation
         public Task UpdateThumbnailsAsync(long id, ThumbnailUpdateDTO thumbnailUpdate)
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
+        }
+        public Task UpdateHashAsync(long id, HashDTO hash)
+        {
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(hash));
         }
         public async Task<bool> ExistAsync(long id)
         {
