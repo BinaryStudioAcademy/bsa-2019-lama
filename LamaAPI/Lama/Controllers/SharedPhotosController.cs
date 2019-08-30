@@ -6,6 +6,7 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO;
+using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +18,12 @@ namespace Lama.Controllers
     public class SharedPhotosController: ControllerBase
     {
         private readonly ISharingPhotoService _sharingPhotoService;
+        private readonly IUserProtectionService _userProtectionService;
 
-        public SharedPhotosController(ISharingPhotoService sharingPhotoService)
+        public SharedPhotosController(ISharingPhotoService sharingPhotoService, IUserProtectionService userProtectionService)
         {
             _sharingPhotoService = sharingPhotoService;
+            _userProtectionService = userProtectionService;
         }
 
         [HttpDelete("{id}")]
@@ -44,6 +47,9 @@ namespace Lama.Controllers
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
         {
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            sharedPhoto.UserId = currentUserId;
             await _sharingPhotoService.ProcessSharedPhoto(sharedPhoto);
 		}
 		

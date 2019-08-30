@@ -1,4 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  OnDestroy
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedPhoto } from 'src/app/models/Photo/sharedPhoto';
 import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
@@ -9,13 +16,15 @@ import { SharedAlbum } from 'src/app/models/Album/SharedAlbum';
 import { UserService } from 'src/app/services/user.service';
 import { NotifierService } from 'angular-notifier';
 import { SharingService } from 'src/app/services/sharing.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-share-album-by-email',
   templateUrl: './share-album-by-email.component.html',
   styleUrls: ['./share-album-by-email.component.sass']
 })
-export class ShareAlbumByEmailComponent implements OnInit {
+export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
   @Input() receivedAlbum: ViewAlbum;
 
   @Output() Close = new EventEmitter();
@@ -31,6 +40,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
   wrongInput = false;
   availableAll = true;
   showAvailable = false;
+  unsubscribe = new Subject();
 
   constructor(
     private userService: UserService,
@@ -46,20 +56,23 @@ export class ShareAlbumByEmailComponent implements OnInit {
 
   public AddEmail() {
     if (this.sharedEmail && this.isEmail(this.sharedEmail)) {
-      this.userService.getUserByEmail(this.sharedEmail).subscribe(
-        user => {
-          if (user) {
-            this.userEmails.push(user.email);
-            this.userIds.push(user.id);
-            this.wrongInput = false;
-            this.clearInput();
-          } else {
-            this.wrongInput = true;
-            this.notifier.notify('error', 'Error getting email');
-          }
-        },
-        error => this.notifier.notify('error', 'Error getting email')
-      );
+      this.userService
+        .getUserByEmail(this.sharedEmail)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          user => {
+            if (user) {
+              this.userEmails.push(user.email);
+              this.userIds.push(user.id);
+              this.wrongInput = false;
+              this.clearInput();
+            } else {
+              this.wrongInput = true;
+              this.notifier.notify('error', 'Error getting email');
+            }
+          },
+          error => this.notifier.notify('error', 'Error getting email')
+        );
     } else {
       this.wrongInput = true;
       this.notifier.notify('error', 'Incorrect input');
@@ -115,6 +128,7 @@ export class ShareAlbumByEmailComponent implements OnInit {
             albumId: this.sharedAlbum.albumId,
             userId: item
           })
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(e => console.log(e));
       });
     } else {
@@ -143,5 +157,10 @@ export class ShareAlbumByEmailComponent implements OnInit {
     serchfind = regexp.test(search);
 
     return serchfind;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

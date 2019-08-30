@@ -9,7 +9,8 @@ import {
   ElementRef,
   Output,
   EventEmitter,
-  DoCheck
+  DoCheck,
+  OnDestroy
 } from '@angular/core';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
 import { SharedService } from 'src/app/services/shared.service';
@@ -17,6 +18,8 @@ import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -24,7 +27,7 @@ import { NotifierService } from 'angular-notifier';
   templateUrl: './main-page-header.component.html',
   styleUrls: ['./main-page-header.component.sass']
 })
-export class MainPageHeaderComponent implements OnInit, DoCheck {
+export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
@@ -40,6 +43,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
   isSearchDropdownExpanded: boolean;
+  unsubscribe = new Subject();
 
   // constructors
   constructor(
@@ -61,20 +65,24 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       this.id = parseInt(localStorage.getItem('userId'), 10);
     }
     this.getSearchHistory(this.id);
-    this.http.getData(`users/${this.id}`).subscribe(
-      u => {
-        if (u.photoUrl) {
-          if (u.photoUrl.indexOf('base64') === -1) {
-            this.file
-              .getPhoto(u.photoUrl)
-              .subscribe(url => (this.avatarUrl = url));
-          } else {
-            this.avatarUrl = u.photoUrl;
+    this.http
+      .getData(`users/${this.id}`)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        u => {
+          if (u.photoUrl) {
+            if (u.photoUrl.indexOf('base64') === -1) {
+              this.file
+                .getPhoto(u.photoUrl)
+                .pipe(takeUntil(this.unsubscribe))
+                .subscribe(url => (this.avatarUrl = url));
+            } else {
+              this.avatarUrl = u.photoUrl;
+            }
           }
-        }
-      },
-      error => this.notifier.notify('error', 'Error loading user')
-    );
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
   }
 
   delay(ms: number) {
@@ -87,9 +95,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
         this.avatarUrl = null;
       } else {
         if (this.shared.avatar.imageUrl.indexOf('base64') === -1) {
-          this.file.getPhoto(this.shared.avatar.imageUrl).subscribe(url => {
-            this.avatarUrl = url;
-          });
+          this.file
+            .getPhoto(this.shared.avatar.imageUrl)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(url => {
+              this.avatarUrl = url;
+            });
         } else {
           this.avatarUrl = this.shared.avatar.imageUrl;
         }
@@ -147,9 +158,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
   }
 
   getSearchHistory(id: number) {
-    this.file.getSearchHistory(id).subscribe(history => {
-      this.searchHistory = history;
-    });
+    this.file
+      .getSearchHistory(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(history => {
+        this.searchHistory = history;
+      });
   }
 
   find() {
@@ -193,5 +207,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck {
       }
     );
     componentRef.instance.toggleModal();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

@@ -6,7 +6,8 @@ import {
   ViewContainerRef,
   ComponentFactoryResolver,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
 import { ChooseStoragePhotosComponent } from '../choose-storage-photos/choose-storage-photos.component';
 import imageCompression from 'browser-image-compression';
@@ -21,13 +22,15 @@ import { NotifierService } from 'angular-notifier';
 import { FileService } from 'src/app/services/file.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
   styleUrls: ['./create-album-modal.component.sass']
 })
-export class CreateAlbumModalComponent implements OnInit {
+export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
 
@@ -67,6 +70,7 @@ export class CreateAlbumModalComponent implements OnInit {
   @Input()
   public isShown: boolean;
   albumsTitles: string[];
+  unsubscribe = new Subject();
 
   constructor(
     resolver: ComponentFactoryResolver,
@@ -157,19 +161,22 @@ export class CreateAlbumModalComponent implements OnInit {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createEmptyAlbum(this.album).subscribe(
-          createdAlbum => {
-            this.createdAlbumEvent.emit({
-              id: createdAlbum.id,
-              name: createdAlbum.title,
-              photo: null,
-              title: createdAlbum.title
-            });
-            this.notifier.notify('success', 'Empty Album created');
-            this.toggleModal();
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
+        this.albumService
+          .createEmptyAlbum(this.album)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            createdAlbum => {
+              this.createdAlbumEvent.emit({
+                id: createdAlbum.id,
+                name: createdAlbum.title,
+                photo: null,
+                title: createdAlbum.title
+              });
+              this.notifier.notify('success', 'Empty Album created');
+              this.toggleModal();
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       } else if (this.LoadNewImage === true) {
         this.album = {
           title: this.albumName,
@@ -177,32 +184,35 @@ export class CreateAlbumModalComponent implements OnInit {
           authorId: this.currentUser.id,
           photos: this.photos
         };
-        this.albumService.createAlbumWithNewPhotos(this.album).subscribe(
-          returnedAlbum => {
-            const filteredPhotos = this.resolveDuplicates(
-              returnedAlbum.photoAlbums
-            );
-            if (returnedAlbum.photo !== null) {
-              this.createdAlbumEvent.emit({
-                id: returnedAlbum.id,
-                name: returnedAlbum.title,
-                photo: returnedAlbum.photo,
-                title: returnedAlbum.title
-              });
-            }
-            if (!this.duplicatesFound) {
-              this.notifier.notify('success', 'Album created');
-              this.toggleModal();
-            } else {
-              this.removeUploaded(filteredPhotos);
-              this.notifier.notify(
-                'warning',
-                'This photos appear to be duplicates. Upload them anyway?'
+        this.albumService
+          .createAlbumWithNewPhotos(this.album)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            returnedAlbum => {
+              const filteredPhotos = this.resolveDuplicates(
+                returnedAlbum.photoAlbums
               );
-            }
-          },
-          error => this.notifier.notify('error', 'Error creating the album')
-        );
+              if (returnedAlbum.photo !== null) {
+                this.createdAlbumEvent.emit({
+                  id: returnedAlbum.id,
+                  name: returnedAlbum.title,
+                  photo: returnedAlbum.photo,
+                  title: returnedAlbum.title
+                });
+              }
+              if (!this.duplicatesFound) {
+                this.notifier.notify('success', 'Album created');
+                this.toggleModal();
+              } else {
+                this.removeUploaded(filteredPhotos);
+                this.notifier.notify(
+                  'warning',
+                  'This photos appear to be duplicates. Upload them anyway?'
+                );
+              }
+            },
+            error => this.notifier.notify('error', 'Error creating the album')
+          );
       } else {
         this.albumWithExistPhotos = {
           title: this.albumName,
@@ -211,6 +221,7 @@ export class CreateAlbumModalComponent implements OnInit {
         };
         this.albumService
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(
             createdAlbum => {
               this.createdAlbumEvent.emit({
@@ -278,10 +289,13 @@ export class CreateAlbumModalComponent implements OnInit {
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.fileService.getPhoto(photo.blob256Id).subscribe(url => {
-        this.photos.push({ imageUrl: url });
-        this.ExistPhotos.push(photo);
-      });
+      this.fileService
+        .getPhoto(photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => {
+          this.photos.push({ imageUrl: url });
+          this.ExistPhotos.push(photo);
+        });
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
@@ -306,6 +320,7 @@ export class CreateAlbumModalComponent implements OnInit {
   createWithDuplicates() {
     this.fileService
       .uploadDuplicates(this.duplicates as UploadPhotoResultDTO[])
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         uploadedDuplicates => {
           this.albumService.addNewPhotosToAlbum({
@@ -318,5 +333,10 @@ export class CreateAlbumModalComponent implements OnInit {
         },
         error => this.notifier.notify('error', 'Error sending photos')
       );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

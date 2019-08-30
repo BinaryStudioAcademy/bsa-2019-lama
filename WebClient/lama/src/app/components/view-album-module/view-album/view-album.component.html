@@ -5,7 +5,7 @@
 </div>
 <div class="navigation">
   <div class="image">
-    <a routerLink="{{ returnPath }}"><img src="assets/back.svg" alt=""/></a>
+    <a routerLink="{{ returnPath }}"><img src="assets/back-2.svg" alt=""/></a>
   </div>
   <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
     <div class="dropdown-trigger">
@@ -22,8 +22,30 @@
         <div class="dropdown-item" (click)="deleteWindow()">
           <p>Delete</p>
         </div>
-        <div class="dropdown-item" (click)="downloadImages()">
-          <p>Download</p>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+          <div class="dropdown-content">
+            <div
+              class="dropdown-item"
+              *ngIf="!isFavorite()"
+              (click)="addPhoto($event)"
+            >
+              <p>Add photos</p>
+            </div>
+            <div
+              class="dropdown-item"
+              *ngIf="isAtLeastOnePhotoSelected"
+              (click)="deleteWindow()"
+            >
+              <p>Delete</p>
+            </div>
+            <div
+              class="dropdown-item"
+              *ngIf="isAtLeastOnePhotoSelected"
+              (click)="downloadImages()"
+            >
+              <p>Download</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -6,7 +6,8 @@ import {
   EventEmitter,
   ViewChild,
   ViewContainerRef,
-  ComponentFactoryResolver
+  ComponentFactoryResolver,
+  OnDestroy
 } from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { PhotoRaw, User, PhotoToDeleteRestoreDTO } from 'src/app/models';
@@ -16,6 +17,8 @@ import { FileService } from 'src/app/services/file.service';
 import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../../view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { SharingService } from 'src/app/services/sharing.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -23,7 +26,7 @@ import { SharingService } from 'src/app/services/sharing.service';
   templateUrl: './main-album.component.html',
   styleUrls: ['./main-album.component.sass']
 })
-export class MainAlbumComponent implements OnInit {
+export class MainAlbumComponent implements OnInit, OnDestroy {
   @Output()
   public deleteAlbumEvent: EventEmitter<ViewAlbum> = new EventEmitter<
     ViewAlbum
@@ -45,6 +48,7 @@ export class MainAlbumComponent implements OnInit {
   imageUrl: string;
   isFake = false;
   isOwners = true;
+  unsubscribe = new Subject();
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(
@@ -60,6 +64,7 @@ export class MainAlbumComponent implements OnInit {
     if (this.album.photo) {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
     }
     if (this.album.id === -1) {
@@ -93,11 +98,14 @@ export class MainAlbumComponent implements OnInit {
 
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
-    this.fileService.getPhoto(event.blob256Id).subscribe(url => {
-      this.imageUrl = url;
-      this.toggleSetCoverModal();
-      this.notifier.notify('success', 'Cover Updated');
-    });
+    this.fileService
+      .getPhoto(event.blob256Id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(url => {
+        this.imageUrl = url;
+        this.toggleSetCoverModal();
+        this.notifier.notify('success', 'Cover Updated');
+      });
   }
 
   clickMenu() {
@@ -139,6 +147,7 @@ export class MainAlbumComponent implements OnInit {
       this.album.photo = photos[0];
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
     }
   }
@@ -152,6 +161,7 @@ export class MainAlbumComponent implements OnInit {
       const userId = localStorage.getItem('userId');
       this.favoriteService
         .deleteAllFavorites(parseInt(userId, 10))
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           x => this.notifier.notify('success', 'Album Deleted'),
           error => this.notifier.notify('error', 'Error deleting album')
@@ -160,6 +170,7 @@ export class MainAlbumComponent implements OnInit {
     } else {
       this.albumService
         .removeAlbum(this.album.id)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           x => this.notifier.notify('success', 'Album Deleted'),
           error => this.notifier.notify('error', 'Error deleting album')
@@ -172,6 +183,7 @@ export class MainAlbumComponent implements OnInit {
     const deletingArray = [];
     this.fileService
       .getDuplicates(this.currentUser.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(duplicates => {
         this.album.photoAlbums.forEach(photo => {
           if (duplicates.map(x => x.name).includes(photo.name)) {
@@ -179,19 +191,26 @@ export class MainAlbumComponent implements OnInit {
           }
         });
         deletingArray.forEach(id => {
-          this.fileService.markPhotoAsDeleted(id).subscribe(x => x);
+          this.fileService
+            .markPhotoAsDeleted(id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(x => x);
           this.notifier.notify('success', 'Duplicates removed to the bin');
         });
         if (this.album.photoAlbums.length === 0) {
-          this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+          this.albumService
+            .removeAlbum(this.album.id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(x => x);
         }
       });
-    deletingArray.forEach(id => {
-      this.fileService.markPhotoAsDeleted(id).subscribe(x => x);
-      this.notifier.notify('success', 'Duplicates removed to the bin');
-    });
     if (this.album.photoAlbums.length === 0) {
       this.albumService.removeAlbum(this.album.id).subscribe(x => x);
     }
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

@@ -45,13 +45,14 @@ namespace Lama.Infrastructure
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<SharingAlbumService>();
+            services.AddScoped<IUserProtectionService, UserProtectionService>();
 
             services.AddScoped<ISharingPhotoService, SharingPhotoService>(serviceProvider => 
                 new SharingPhotoService(
                     serviceProvider.GetService<ApplicationDbContext>(),
                     serviceProvider.GetService<IMapper>(),
                     serviceProvider.GetService<IPhotoService>(),
-                    configuration["PhotoApiUrl"]));;
+                    configuration["PhotoApiUrl"]));
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
         {

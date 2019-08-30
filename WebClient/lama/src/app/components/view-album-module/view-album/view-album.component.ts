@@ -5,7 +5,8 @@ import {
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
-  DoCheck
+  DoCheck,
+  OnDestroy
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,6 +27,8 @@ import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { HttpService } from 'src/app/services/http.service';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-view-album',
@@ -33,7 +36,7 @@ import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.compone
   styleUrls: ['./view-album.component.sass'],
   providers: [FavoriteService, ZipService]
 })
-export class ViewAlbumComponent implements OnInit, DoCheck {
+export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   @Input() album: ViewAlbum = {} as ViewAlbum;
   @Input() isShared = false;
 
@@ -49,6 +52,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
   currentUser: User;
   isFakeAlbum = false;
   returnPath: string;
+  unsubscribe = new Subject();
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -94,33 +98,42 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
     );
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
-      this.albumService.getAlbum(this.AlbumId).subscribe(
-        x => {
-          this.album = x.body;
-          this.album.photoAlbums = this.album.photoAlbums.reverse();
-        },
-        error => this.notifier.notify('error', 'Error loading album')
-      );
+      this.albumService
+        .getAlbum(this.AlbumId)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          x => {
+            this.album = x.body;
+            this.album.photoAlbums = this.album.photoAlbums.reverse();
+          },
+          error => this.notifier.notify('error', 'Error loading album')
+        );
     } else if (this.AlbumId === -1) {
       this.isFakeAlbum = true;
     } else if (this.AlbumId === 0) {
-      this.favoriteService.getFavoritesPhotos(userId).subscribe(
-        data => {
-          this.album.photoAlbums = data;
-          this.album.id = 0;
-          this.album.title = 'Favorite photos';
-        },
-        error =>
-          this.notifier.notify('error', 'Error loading favourites photos')
-      );
+      this.favoriteService
+        .getFavoritesPhotos(userId)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          data => {
+            this.album.photoAlbums = data;
+            this.album.id = 0;
+            this.album.title = 'Favorite photos';
+          },
+          error =>
+            this.notifier.notify('error', 'Error loading favourites photos')
+        );
     }
-    this.favoriteService.getFavoritesIds(userId).subscribe(
-      data => {
-        this.favorites = new Set<number>(data);
-        this.loading = true;
-      },
-      error => this.notifier.notify('error', 'Error loading favourites')
-    );
+    this.favoriteService
+      .getFavoritesIds(userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        data => {
+          this.favorites = new Set<number>(data);
+          this.loading = true;
+        },
+        error => this.notifier.notify('error', 'Error loading favourites')
+      );
     this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
   }
 
@@ -193,6 +206,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
         this.album.photo = null;
         this.albumService
           .removeAlbumCover(this.album.id)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(
             x => x,
             error => this.notifier.notify('error', 'Error removing cover')
@@ -226,6 +240,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
       this.selectedPhotos.forEach(item => {
         this.favoriteService
           .deleteFavorite(parseInt(localStorage.getItem('userId'), 10), item.id)
+          .pipe(takeUntil(this.unsubscribe))
           .subscribe(
             () => {
               this.favorites.delete(item.id);
@@ -264,5 +279,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck {
 
   isFavorite() {
     return this.AlbumId === 0;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

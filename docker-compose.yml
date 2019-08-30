@@ -42,6 +42,7 @@ services:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
       Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
+      cognitiveEndpointKey: ${cognitiveEndpointKey}
 
   lamaweb:
     image: krasnovnikita/bsa2019-lama:lama-web
