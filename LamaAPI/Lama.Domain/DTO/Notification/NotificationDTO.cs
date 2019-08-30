@@ -10,5 +10,6 @@ namespace Lama.Domain.DTO.Notification
         public string Text { set; get; }
         public DateTime Date { set; get; }
         public bool IsRead { set; get; }
+        public NotificationUserDTO Sender { set; get; }
     }
 }

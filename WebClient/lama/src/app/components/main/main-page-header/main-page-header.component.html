@@ -36,7 +36,7 @@
     <!--profile-->
     <div class="align-right">
         <!--notification-->
-        <a class="image is-48x48 notific">
+        <a class="image is-48x48 notific" (click)="ShowHideNotification()">
             <img [src]="newNotify ? 'assets/notification.svg' : 'assets/notification.svg'" />
         </a>
         <a class="image is-48x48 profile">
@@ -48,9 +48,9 @@
         </a>
     </div>
 </header>
-<aside class="notif-panel">
+<aside *ngIf="IsShowNotify" class="notif-panel">
     <div class="notification border">
-        <a class="delete is-medium"></a>
+        <a class="delete is-medium" (click)="ShowHideNotification()"></a>
         <h4 class="subtitle is-4 center">Notifications</h4>
     </div>
 

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lama.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190830170708_notificationSender")]
-    partial class notificationSender
+    [Migration("20190830190750_sender")]
+    partial class sender
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -150,8 +150,6 @@ namespace Lama.DataAccess.Migrations
 
                     b.Property<bool>("IsRead");
 
-                    b.Property<int?>("SendedId");
-
                     b.Property<int>("SenderId");
 
                     b.Property<string>("Text")
@@ -161,7 +159,7 @@ namespace Lama.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SendedId");
+                    b.HasIndex("SenderId");
 
                     b.HasIndex("UserId");
 
@@ -385,9 +383,10 @@ namespace Lama.DataAccess.Migrations
 
             modelBuilder.Entity("Lama.Domain.DbModels.Notification", b =>
                 {
-                    b.HasOne("Lama.Domain.DbModels.User", "Sended")
+                    b.HasOne("Lama.Domain.DbModels.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SendedId");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Notifications")

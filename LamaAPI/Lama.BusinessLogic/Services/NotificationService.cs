@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,34 +22,64 @@ namespace Lama.BusinessLogic.Services
             this.Context = Context;
             this.Hub = Hub;
         }
-        public async Task SendNotificationAboutLike(int Id,string name)
+        public async Task SendNotificationAboutLike(int Id,User user)
         {
-            string noti = $"{name} : Liked your photo";
-            var model = await CreateNotification(noti, Id);
+            string noti = "Liked your photo";
+            var model = await CreateNotification(noti, Id, user);
 
+            var sender = new NotificationUserDTO()
+            {
+                ImageUrl = user.AvatarUrl,
+                Name = user.FirstName + " " + user.LastName
+            };
             var message = new NotificationDTO()
             {
                 Id = model.Id,
                 Date = model.Date,
                 IsRead = model.IsRead,
-                Text = model.Text
+                Text = model.Text,
+                Sender = sender
             };
-            var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == Id);
-            var email = user.Email;
+            var user2 = await Context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            var email = user2.Email;
             await Hub.Clients.User(email).SendAsync("Notification", message);
         }
-        public async Task<Notification> CreateNotification(string Notification,int UserId)
+        public async Task<Notification> CreateNotification(string Notification,int UserId, User user)
         {
             var notification = new Notification()
             {
                 Text = Notification,
                 Date = DateTime.Now,
                 IsRead = false,
-                UserId = UserId
+                UserId = UserId,
+                Sender = user
             };
             var value = await Context.Notifications.AddAsync(notification);
             await Context.SaveChangesAsync();
             return value.Entity;
+        }
+
+        public async Task<List<NotificationDTO>> GetNotification(int userId)
+        {
+            var list = await Context.Notifications.Include(x=>x.Sender).Where(x => x.UserId == userId).ToListAsync();
+            List<NotificationDTO> returnList = new List<NotificationDTO>();
+            foreach(var item in list)
+            {
+                var user = new NotificationUserDTO()
+                {
+                    ImageUrl = item.Sender.AvatarUrl,
+                    Name = item.Sender.FirstName + " " + item.Sender.LastName
+                };
+                var notif = new NotificationDTO()
+                {
+                    Id = item.Id,
+                    Date = item.Date,
+                    IsRead = item.IsRead,
+                    Sender = user,
+                    Text = item.Text
+                };
+            }
+            return returnList;
         }
     }
 }

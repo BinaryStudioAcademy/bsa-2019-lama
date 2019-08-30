@@ -122,6 +122,7 @@ namespace Lama.BusinessLogic.Services
 
             var tuple = Tuple.Create<int, int>(newLike.UserId, newLike.PhotoId);
 
+
             var content = new StringContent(JsonConvert.SerializeObject(tuple), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"{url}api/photos/checkuser", content);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -132,7 +133,7 @@ namespace Lama.BusinessLogic.Services
             {
                 var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var Name = user.FirstName + " " + user.LastName;
-                await notificationService.SendNotificationAboutLike(id, Name);
+                await notificationService.SendNotificationAboutLike(id, user);
             }
 
             return like.Id;

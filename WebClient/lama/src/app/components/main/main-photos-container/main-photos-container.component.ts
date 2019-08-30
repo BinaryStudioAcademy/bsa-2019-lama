@@ -126,7 +126,8 @@ export class MainPhotosContainerComponent
       this.photos = [];
     }
     this.fileService
-      .receiveUsersPhotosRange(userId, startId, count)
+      .receivePhoto()
+      //.receiveUsersPhotosRange(userId, startId, count)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         info => {

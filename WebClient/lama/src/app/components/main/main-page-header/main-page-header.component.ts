@@ -39,6 +39,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   searchCriteria = '';
   isActive = false;
   newNotify = true;
+  IsShowNotify = false;
   searchHistory: string[];
   searchSuggestions: { [name: string]: string[] } = {};
   id: number;
@@ -183,7 +184,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         console.log('user is not signed in');
       });
   }
-
+  ShowHideNotification() {
+    this.IsShowNotify = !this.IsShowNotify;
+  }
   getSearchHistory(id: number) {
     this.file
       .getSearchHistory(id)

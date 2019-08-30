@@ -16,6 +16,6 @@ namespace Lama.Domain.DbModels
 
         public int SenderId { set; get; }
         [JsonIgnore]
-        public User Sended { set; get; }
+        public User Sender { set; get; }
     }
 }
