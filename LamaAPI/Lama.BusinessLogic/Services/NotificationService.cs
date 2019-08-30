@@ -78,6 +78,7 @@ namespace Lama.BusinessLogic.Services
                     Sender = user,
                     Text = item.Text
                 };
+                returnList.Add(notif);
             }
             return returnList;
         }

@@ -23,6 +23,7 @@ import { environment } from '../../../../environments/environment';
 import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -60,7 +61,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     private shared: SharedService,
     private http: HttpService,
     private file: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private notificationService: NotificationService
   ) {
     this.resolver = resolver;
   }
@@ -72,6 +74,16 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       await this.delay(500);
       this.id = parseInt(localStorage.getItem('userId'), 10);
     }
+    this.notificationService
+      .getNotifications(this.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        u => {
+          this.notification = u;
+          console.log(u);
+        },
+        error => this.notifier.notify('error', 'Error loading nofitications')
+      );
     this.getSearchHistory(this.id);
     this.http
       .getData(`users/${this.id}`)
