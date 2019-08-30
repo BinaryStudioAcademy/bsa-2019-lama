@@ -4,9 +4,6 @@
   >
 </div>
 <div class="navigation">
-  <div class="image">
-    <a routerLink="{{ returnPath }}"><img src="assets/back-2.svg" alt=""/></a>
-  </div>
   <div
     *ngIf="
       (!isFavorite() || isAtLeastOnePhotoSelected) && album?.photoAlbums?.length
