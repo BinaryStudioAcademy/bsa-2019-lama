@@ -185,8 +185,9 @@ namespace Photo.BusinessLogic.Services
                     var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
                     duplicates.Add(mappedPhoto);
                 }
+                duplicates.Remove(duplicates.LastOrDefault());
             }
-            return duplicates.Skip(1);
+            return duplicates;
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
