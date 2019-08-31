@@ -22,15 +22,17 @@ namespace Photo.BusinessLogic.Services
         private readonly IPhotoBlobStorage _storage;
         private readonly IMessageService _messageService;
         private readonly IMapper _mapper;
+        private readonly ImageCompareService _imageComporator;
         private readonly string _blobUrl;
 
-        public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, string blobUrl)
+        public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, ImageCompareService imageComporator, string blobUrl)
         {
             _elasticStorage = elasticStorage;
             _storage = storage;
             _messageService = messageService;
             _mapper = mapper;
             _blobUrl = blobUrl;
+            _imageComporator = imageComporator;
         }
 
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
@@ -79,9 +81,9 @@ namespace Photo.BusinessLogic.Services
             }
             return photos;
         }
-        public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
         {
-            return _elasticStorage.GetUserPhotosRange(userId, startId, count);
+            return await _elasticStorage.GetUserPhotosRange(userId, startId, count);
         }
 
         public async Task Delete(int id)
@@ -168,20 +170,23 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
         {
-            var foundDuplicates = new List<CreatePhotoResultDTO>();
-            var userPhotos = await GetUserPhotos(userId);
-            foreach (var photo in userPhotos)
+            var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
+            var duplicates = new List<CreatePhotoResultDTO>();
+            foreach (var item in comparisionResult)
             {
-                var photosWithSameName = await _elasticStorage.Find(userId, photo.Name);
-                var collectionWithSameNames = photosWithSameName.Where(element => element.IsDeleted == false).ToList();
-                if (collectionWithSameNames.Count <= 1 || !IsSameSized(collectionWithSameNames, photo)) continue;
-                
-                var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
-                foundDuplicates.Add(mappedPhoto);
+                if (item.Count == 1)
+                {
+                    continue;
+                }
+                else
+                {
+                    var duplicateId = item.FirstOrDefault().PhotoId;
+                    var photo = await _elasticStorage.Get((int)duplicateId);
+                    var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
+                    duplicates.Add(mappedPhoto);
+                }
             }
-
-            return foundDuplicates.GroupBy(x => x.Name).Where(g => g.Count() > 1)
-                .SelectMany(t => t.OrderByDescending(r => r.Id).Skip(1));
+            return duplicates;
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)

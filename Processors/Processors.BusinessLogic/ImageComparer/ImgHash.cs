@@ -15,33 +15,12 @@ namespace Processors.BusinessLogic.ImageComparer
         private readonly IElasticStorage _elasticStorage;
         private bool[] _hashData;
         private readonly int _photoId;
+
         public bool[] HashData
         {
             get { return _hashData; }
         }
-
-        public Image Img
-        {
-            get
-            {
-                return Bitmap.FromFile(FilePath);
-            }
-        }
-
-        public string FilePath { get; private set; }
-
-        public string FileName
-        {
-            get
-            {
-                return Path.GetFileName(FilePath);
-            }
-        }
-
-        public string FileLocation
-        {
-            get { return Path.GetDirectoryName(FilePath); }
-        }
+        
 
         private string _imgSize;
         public string ImgSize
@@ -80,18 +59,6 @@ namespace Processors.BusinessLogic.ImageComparer
             }
 
             return (HashData.Length - differenceCounter) / HashData.Length * 100;
-        }
-
-        public void GenerateFromPath(string path)
-        {
-            FilePath = path;
-            Bitmap image = (Bitmap)Image.FromFile(path, true);
-
-            _imgSize = $"{image.Size.Width}x{image.Size.Height}";
-
-            GenerateFromImage(image);
-
-            image.Dispose();
         }
 
         public void GenerateFromByteArray(Byte[] bytes)
