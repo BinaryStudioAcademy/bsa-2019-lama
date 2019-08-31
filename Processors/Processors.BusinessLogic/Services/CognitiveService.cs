@@ -40,7 +40,7 @@ namespace Processors.BusinessLogic.Services
                         return response.Tags;
 
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         return null;
                     }

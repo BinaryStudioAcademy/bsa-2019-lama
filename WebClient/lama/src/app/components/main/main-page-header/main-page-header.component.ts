@@ -7,7 +7,6 @@ import {
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
-  ElementRef,
   Output,
   EventEmitter,
   DoCheck,
@@ -17,13 +16,14 @@ import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
-import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
 import { environment } from '../../../../environments/environment';
 import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
+
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -32,17 +32,19 @@ import { NotificationService } from 'src/app/services/notification.service';
   styleUrls: ['./main-page-header.component.sass']
 })
 export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
+
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  avatarUrl;
-  searchCriteria = '';
+  avatarUrl: string;
   isActive = false;
   newNotify = false;
   IsShowNotify = false;
   searchHistory: string[];
-  searchSuggestions: { [name: string]: string[] } = {};
+  searchSuggestions: SearchSuggestionData;
+  searchSuggestionsEmpty = true;
+  searchCriteria = '';
   id: number;
   timeout = null;
   objectKeys = Object.keys;
@@ -52,6 +54,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   public Hub: HubConnection;
   notification: NotificationDTO[];
   unsubscribe = new Subject();
+  latestSearchAttempt = '';
+  tagNames = [];
 
   // constructors
   constructor(
@@ -178,7 +182,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.shared.avatar = null;
       }
     }
-    this.searchCriteria.length < 1
+    this.searchCriteria.length < 1 ||
+    this.searchCriteria === this.latestSearchAttempt
       ? (this.isActive = false)
       : (this.isActive = true);
     if (this.isActive) {
@@ -200,14 +205,27 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
-    if (this.isActive) {
+    if (this.searchCriteria.length > 0) {
       this.file
-        .getSearchSuggestions(this.id, this.searchCriteria)
+        .getSearchSuggestions(id, criteria)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(items => {
+          this.latestSearchAttempt = criteria;
           this.searchSuggestions = items;
-        });
-      console.log(this.searchSuggestions);
+          this.checkSearchSuggestions();
+          this.tagNames = this.extractTagNames(this.searchSuggestions)
+                            .filter((tagname: string) => tagname.includes(criteria))
+                            .filter((element, index, array) => index === array.indexOf(element));
+          this.isActive = false;
+      });
     }
+  }
+
+  extractTagNames(searchSuggestions: SearchSuggestionData) {
+    const temp = [];
+    searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));
+    this.tagNames = [].concat.apply([], temp);
+    return  this.tagNames.sort(x => x.confidence).map(tag => tag.name);
   }
 
   logOut() {
@@ -265,6 +283,18 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     );
   }
 
+  searchHistoryItemClicked() {
+    console.log('1');
+  }
+
+  checkSearchSuggestions() {
+    Object.values(this.searchSuggestions).forEach(field => {
+      if (field.length > 0) {
+        this.searchSuggestionsEmpty = false;
+      }
+    });
+  }
+
   openModalClicked() {
     this.entry.clear();
     const factory = this.resolver.resolveComponentFactory(
@@ -282,7 +312,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.toggleModal();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();
   }

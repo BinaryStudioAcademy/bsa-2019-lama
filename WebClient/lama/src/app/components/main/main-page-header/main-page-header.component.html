@@ -7,20 +7,51 @@
             <p>Lama</p>
         </div>
     </div>
-
-    <!--search-->
-    <div class="search-bar is-hidden-mobile">
-        <div class="field has-addons">
-            <div class="control input-form">
-                <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo" [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
-                <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
-                    <div class="row" *ngFor="let item of searchHistory">
-                        <i class="material-icons">youtube_searched_for</i> {{ item }}
-                    </div>
-                </div>
+  <!--search-->
+  <div class="search-bar is-hidden-mobile">
+    <div class="field has-addons">
+      <div class="control input-form">
+        <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo"
+          [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
+        <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
+        <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
+          <div class="row" *ngFor="let item of searchHistory" >
+              <a class="dropdown-item" (focus)="searchHistoryItemClicked()">
+                  <i class="material-icons">history</i> {{ item }}
+              </a>
             </div>
-            <div class="control">
-                <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{ 'not-active': !isActive }">
+          </div>
+          <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.names.length > 0)">
+              <div class="row" *ngFor="let item of searchSuggestions.names.slice(0,5)">
+                  <a class="dropdown-item" >
+                      <i class="material-icons">youtube_searched_for</i> {{ item }}
+                  </a>
+                </div>
+              </div>
+              <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.description.length > 0)">
+                  <div class="row" *ngFor="let item of searchSuggestions.description.slice(0,5)">
+                    <a class="dropdown-item">
+                        <i class="material-icons">text_format</i> {{ item }}
+                    </a>
+                 </div>
+              </div>
+              <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.locations.length > 0)">
+                  <div class="row" *ngFor="let item of searchSuggestions.locations.slice(0,5)">
+                    <a class="dropdown-item">
+                        <i class="material-icons" >room</i> {{ item }}
+                    </a>
+                 </div>
+              </div>
+              <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && tagNames.length > 0)">
+                  <div class="row" *ngFor="let item of tagNames.slice(0,5)">
+                      <i class="material-icons" >label</i> {{ item }}
+                 </div>
+              </div>
+        </div>
+      </div>
+      <div class="control">
+        <a (click)="find()" class="button is-primary" id="button-search" [ngClass]="{ 'not-active': !searchCriteria.length > 0 }">
+
           Search
         </a>
             </div>

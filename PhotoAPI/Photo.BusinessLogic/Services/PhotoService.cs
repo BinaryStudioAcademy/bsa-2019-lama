@@ -320,20 +320,10 @@ namespace Photo.BusinessLogic.Services
                 }
                 catch (Exception e)
                 {
-
+                    // ignored
                 }
-                return doc;
-            }
-        }
 
-        private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, PhotoDocument photo)
-        {
-            using (var webClient = new WebClient())
-            {
-                var newPhotoBlob = webClient.DownloadData($"{_blobUrl}{photo.BlobId}");
-                return photoDocumentsCollection.Select(photoDocument => $"{_blobUrl}{photoDocument.BlobId}")
-                    .Select(photoUrl => webClient.DownloadData(photoUrl)).Any(photoDocumentBlob =>
-                        photoDocumentBlob.SequenceEqual(newPhotoBlob));
+                return doc;
             }
         }
     }

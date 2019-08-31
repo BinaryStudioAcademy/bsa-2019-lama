@@ -9,6 +9,7 @@ using Processors.DataAccess.Implementation;
 using Processors.DataAccess.Interfaces;
 using Processors.BusinessLogic.Interfaces;
 using Processors.BusinessLogic.Services;
+using Processors.DataAccess.Implementations;
 using Services.Models;
 using Services.Interfaces;
 using Services.Implementation.RabbitMq;

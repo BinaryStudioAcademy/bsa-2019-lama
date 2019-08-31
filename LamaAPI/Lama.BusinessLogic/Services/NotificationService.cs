@@ -22,9 +22,9 @@ namespace Lama.BusinessLogic.Services
             this.Context = Context;
             this.Hub = Hub;
         }
-        public async Task SendNotification(int Id,User user,string noti)
+        public async Task SendNotification(int id, User user,string notification)
         {
-            var model = await CreateNotification(noti, Id, user);
+            var model = await CreateNotification(notification, id, user);
 
             var sender = new NotificationUserDTO()
             {
@@ -39,11 +39,12 @@ namespace Lama.BusinessLogic.Services
                 Text = model.Text,
                 Sender = sender
             };
-            var user2 = await Context.Users.FirstOrDefaultAsync(x => x.Id == Id);
+            var user2 = await Context.Users.FirstOrDefaultAsync(x => x.Id == id);
             var email = user2.Email;
             await Hub.Clients.User(email).SendAsync("Notification", message);
         }
-        public async Task<Notification> CreateNotification(string Notification,int UserId, User user)
+
+        private async Task<Notification> CreateNotification(string Notification,int UserId, User user)
         {
             var notification = new Notification()
             {
@@ -61,7 +62,7 @@ namespace Lama.BusinessLogic.Services
         public async Task<List<NotificationDTO>> GetNotification(int userId)
         {
             var list = await Context.Notifications.Include(x=>x.Sender).Where(x => x.UserId == userId).ToListAsync();
-            List<NotificationDTO> returnList = new List<NotificationDTO>();
+            var returnList = new List<NotificationDTO>();
             foreach(var item in list)
             {
                 var user = new NotificationUserDTO()
