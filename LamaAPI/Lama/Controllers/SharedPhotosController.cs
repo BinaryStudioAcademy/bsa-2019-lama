@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,19 +25,28 @@ namespace Lama.Controllers
             _sharingPhotoService = sharingPhotoService;
             _userProtectionService = userProtectionService;
         }
-        
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _sharingPhotoService.Delete(id);
+        }
+
         [HttpGet("{id}")]
         public async Task<SharedPhotoDTO> GetSharedPhoto(int id)
         {
             return await _sharingPhotoService.Get(id);
         }
-		
+
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id)
+        {
+            return await _sharingPhotoService.GetUsersSharedPhoto(id);
+        }
+
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedPhoto sharedPhoto)
-        {
-            var currentUserEmail = this.GetUserEmail();
-            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
-            sharedPhoto.UserId = currentUserId;
+        { 
             await _sharingPhotoService.ProcessSharedPhoto(sharedPhoto);
 		}
 		

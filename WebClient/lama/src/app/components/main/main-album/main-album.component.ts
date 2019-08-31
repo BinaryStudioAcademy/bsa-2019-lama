@@ -16,6 +16,7 @@ import { FavoriteService } from 'src/app/services/favorite.service';
 import { FileService } from 'src/app/services/file.service';
 import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../../view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
+import { SharingService } from 'src/app/services/sharing.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -36,6 +37,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   @Output() Click = new EventEmitter<ViewAlbum>();
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
   @Input() currentUser: User;
+  @Input() isShared = false;
   @ViewChild('AddPhotosToAlbum', { static: true, read: ViewContainerRef })
   private modaladdPhoto: ViewContainerRef;
 
@@ -44,6 +46,8 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   showSharedModal = false;
   showSetCoverModal = false;
   imageUrl: string;
+  isFake = false;
+  isOwners = true;
   unsubscribe = new Subject();
 
   imgname = require('../../../../assets/icon-no-image.svg');
@@ -52,7 +56,8 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
     private favoriteService: FavoriteService,
     private fileService: FileService,
     private notifier: NotifierService,
-    private resolver: ComponentFactoryResolver
+    private resolver: ComponentFactoryResolver,
+    private sharingService: SharingService
   ) {}
 
   ngOnInit() {
@@ -62,21 +67,45 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
     }
+    if (this.album.id === -1) {
+      this.isFake = true;
+    }
+    console.log(this.album.photo.userId);
+    if (this.album.photo.userId !== this.currentUser.id) {
+      this.isOwners = false;
+    }
   }
 
   clickPerformed(): void {
     this.Click.emit(this.album);
   }
 
+  removeSharedAlbum() {
+    this.sharingService
+      .deleteSharedAlbum(this.album.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
+  }
+  removeSharedAlbumForUser() {
+    this.sharingService
+      .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
+  }
+  removeFakeSharedAlbum() {
+    this.sharingService
+      .deleteSharedPhoto(this.album.photo.id)
+      .subscribe(() => this.deleteAlbumEvent.emit(this.album));
+  }
+
   receiveUpdatedCover(event: PhotoRaw) {
     this.album.photo = event;
-    this.fileService.getPhoto(event.blob256Id)
+    this.fileService
+      .getPhoto(event.blob256Id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(url => {
-      this.imageUrl = url;
-      this.toggleSetCoverModal();
-      this.notifier.notify('success', 'Cover Updated');
-    });
+        this.imageUrl = url;
+        this.toggleSetCoverModal();
+        this.notifier.notify('success', 'Cover Updated');
+      });
   }
 
   clickMenu() {
@@ -104,6 +133,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.album.id;
+    componentRef.instance.photoAlbums = this.album.photoAlbums;
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)
     );
@@ -112,14 +142,15 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
-    }
-    this.album.photoAlbums.push(...photos);
-    if (this.album.photo === null) {
-      this.album.photo = photos[0];
-      this.fileService
+    } else {
+      this.album.photoAlbums.push(...photos);
+      if (this.album.photo === null) {
+        this.album.photo = photos[0];
+        this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
+      }
     }
   }
 
@@ -142,36 +173,43 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       this.albumService
         .removeAlbum(this.album.id)
         .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          x => this.notifier.notify('success', 'Album Deleted'),
+        .subscribe(x => {
+          this.notifier.notify('success', 'Album Deleted');
+          this.deleteAlbumEvent.emit(this.album);
+        },
           error => this.notifier.notify('error', 'Error deleting album')
         );
     }
-    this.deleteAlbumEvent.emit(this.album);
   }
 
   private removeDuplicates() {
     const deletingArray = [];
-    this.fileService.getDuplicates(this.currentUser.id)
+    this.fileService
+      .getDuplicates(this.currentUser.id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(duplicates => {
-      this.album.photoAlbums.forEach(photo => {
-        if (duplicates.map(x => x.name).includes(photo.name)) {
-          deletingArray.push(photo.id);
+        this.album.photoAlbums.forEach(photo => {
+          if (duplicates.map(x => x.name).includes(photo.name)) {
+            deletingArray.push(photo.id);
+          }
+        });
+        deletingArray.forEach(id => {
+          this.fileService
+            .markPhotoAsDeleted(id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(x => x);
+          this.notifier.notify('success', 'Duplicates removed to the bin');
+        });
+        if (this.album.photoAlbums.length === 0) {
+          this.albumService
+            .removeAlbum(this.album.id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(x => x);
         }
       });
-      deletingArray.forEach(id => {
-        this.fileService.markPhotoAsDeleted(id)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(x => x);
-        this.notifier.notify('success', 'Duplicates removed to the bin');
-      });
-      if (this.album.photoAlbums.length === 0) {
-        this.albumService.removeAlbum(this.album.id)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(x => x);
-      }
-    });
+    if (this.album.photoAlbums.length === 0) {
+      this.albumService.removeAlbum(this.album.id).subscribe(x => x);
+    }
   }
 
   ngOnDestroy() {

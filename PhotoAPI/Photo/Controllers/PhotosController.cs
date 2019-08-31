@@ -55,7 +55,11 @@ namespace Photo.Controllers
         {
             return _photoService.Get(id);
         }
-
+        [HttpPost("checkuser")]
+        public async Task<int> CheckUserPhoto([FromBody] Tuple<int,int> s)
+        {
+           return await _photoService.CheckAuthorPhoto(s);
+        }
         [HttpGet("search/{id}/{criteria}")]
         public async Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
         {
@@ -98,7 +102,7 @@ namespace Photo.Controllers
             return await _photoService.GetPhotos(values);
         }
         [HttpPost("avatar")]
-        public async Task<int> PostAvatar([FromBody] CreatePhotoDTO value)
+        public async Task<string> PostAvatar([FromBody] CreatePhotoDTO value)
         {
             return await _photoService.CreateAvatar(value);
         }

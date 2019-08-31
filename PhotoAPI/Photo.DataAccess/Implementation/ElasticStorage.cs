@@ -5,6 +5,7 @@ using Photo.Domain.BlobModels;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace Photo.DataAccess.Implementation
 {
@@ -20,7 +21,37 @@ namespace Photo.DataAccess.Implementation
             this.indexName = indexName;
             this.elasticClient = elasticClient;
         }
+        public async Task<int> CheckUserPhoto(Tuple<int, int> tuple)
+        {
+            var mustClauses = new List<QueryContainer>();
 
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(t => t.Id),
+                Value = tuple.Item2,
+            });
+
+            mustClauses.Add(new TermQuery
+            {
+                Field = Infer.Field<PhotoDocument>(t => t.UserId),
+                Value = tuple.Item1,
+            });
+
+            var searchRequest = new SearchRequest<PhotoDocument>(indexName)
+            {
+                Size = 100,
+                From = 0,
+                Query = new BoolQuery { Must = mustClauses }
+            };
+
+            var s = (await elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
+            if(s.Count == 0)
+            {
+                var doc = await Get(tuple.Item2);
+                return doc.UserId;
+            }
+            return tuple.Item1;
+        }
         // METHODS
         public async Task<CreateResponse> CreateAsync(PhotoDocument item)
         {

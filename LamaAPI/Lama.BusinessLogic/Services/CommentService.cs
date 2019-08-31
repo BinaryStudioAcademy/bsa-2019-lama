@@ -5,8 +5,11 @@ using Lama.Domain.DTO.Comments;
 
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -16,13 +19,16 @@ namespace Lama.BusinessLogic.Services
         IUnitOfWork unitOfWork;
         IPhotoService photoService;
         IMapper mapper;
-
+        ApplicationDbContext Context;
+        INotificationService notificationService;
         // CONSTRUCTORS
-        public CommentService(IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper)
+        public CommentService(ApplicationDbContext Context,IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper, INotificationService notificationService)
         {
             this.unitOfWork = unitOfWork;
             this.photoService = photoService;
             this.mapper = mapper;
+            this.Context = Context;
+            this.notificationService = notificationService;
         }
 
         // METHODS
@@ -40,10 +46,10 @@ namespace Lama.BusinessLogic.Services
             {
                 commentLists[i] = mapper.Map<CommentListDTO>(comments[i]);
 
-                if (comments[i].User.AvatarId.HasValue)
+                if (comments[i].User.AvatarUrl != null)
                 {
-                    commentLists[i].AuthorAvatar64Id = 
-                        (await photoService.Get(comments[i].User.AvatarId.Value)).Blob64Id;
+                    commentLists[i].AuthorAvatar64Id =
+                        (await photoService.GetAvatar(Path.GetFileName(comments[i].User.AvatarUrl)));
                 }
             }
 
@@ -57,6 +63,15 @@ namespace Lama.BusinessLogic.Services
             await unitOfWork.GetRepository<Comment>().InsertAsync(comment);
             await unitOfWork.SaveAsync();
 
+            var photo  = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == createCommentDTO.PhotoId);          
+            var user = photo.User;
+            var ID = user.Id;
+            if(user.Id != createCommentDTO.UserId)
+            {
+                user = await Context.Users.FirstOrDefaultAsync(x => x.Id == createCommentDTO.UserId);
+                string noti = "Commented your photo";
+                await notificationService.SendNotification(ID, user, noti);
+            }
             return comment.Id;
         }
         public async Task DeleteAsync(int commentId)

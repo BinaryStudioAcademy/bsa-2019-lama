@@ -153,7 +153,7 @@ namespace Photo.DataAccess.Implementation
                     }
                 }
             }
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference($"{Guid.NewGuid().ToString()}{Path.GetFileName(contentType)}");
+            CloudBlockBlob cloudBlockBlob = cloudBlobContainerAvatars.GetBlockBlobReference($"{Guid.NewGuid().ToString()}.{Path.GetFileName(contentType)}");
             cloudBlockBlob.Properties.ContentType = contentType;
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";

@@ -29,7 +29,8 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./main-photos-container.component.sass'],
   providers: [FavoriteService, ZipService, UserService]
 })
-export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy {
+export class MainPhotosContainerComponent
+  implements OnInit, DoCheck, OnDestroy {
   @Input() photos: PhotoRaw[] = [];
   showSpinner = true;
   isNothingFound: boolean;
@@ -105,13 +106,16 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.fileService.receiveUsersPhotos(userId).pipe(takeUntil(this.unsubscribe)).subscribe(
-      info => {
-        this.photos = info as PhotoRaw[];
-        this.showSpinner = false;
-      },
-      error => this.notifier.notify('error', 'Error getting photos')
-    );
+    this.fileService
+      .receiveUsersPhotos(userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        info => {
+          this.photos = info as PhotoRaw[];
+          this.showSpinner = false;
+        },
+        error => this.notifier.notify('error', 'Error getting photos')
+      );
   }
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
@@ -121,13 +125,17 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
       this.showSpinner = true;
       this.photos = [];
     }
-    this.fileService.receiveUsersPhotosRange(userId, startId, count).pipe(takeUntil(this.unsubscribe)).subscribe(
-      info => {
-        this.photos.push(...info);
-        this.showSpinner = false;
-      },
-      error => this.notifier.notify('error', 'Error getting photos')
-    );
+    this.fileService
+      // .receivePhoto()
+      .receiveUsersPhotosRange(userId, startId, count)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        info => {
+          this.photos.push(...info);
+          this.showSpinner = false;
+        },
+        error => this.notifier.notify('error', 'Error getting photos')
+      );
   }
 
   GetPhotos() {
@@ -135,17 +143,20 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
     this.shared.isSearchTriggeredAtLeastOnce = false;
     this.showSpinner = true;
     this.photos = [];
-    this.fileService.receivePhoto().pipe(takeUntil(this.unsubscribe)).subscribe(
-      info => {
-        this.photos = info as PhotoRaw[];
-        this.showSpinner = false;
-      },
-      err => {
-        this.notifier.notify('error', 'Error getting photos');
-        this.showSpinner = false;
-        this.isNothingFound = true;
-      }
-    );
+    this.fileService
+      .receivePhoto()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        info => {
+          this.photos = info as PhotoRaw[];
+          this.showSpinner = false;
+        },
+        err => {
+          this.notifier.notify('error', 'Error getting photos');
+          this.showSpinner = false;
+          this.isNothingFound = true;
+        }
+      );
   }
 
   ngDoCheck() {
@@ -190,9 +201,7 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
     componentRef.instance.onFileDropped(event);
     componentRef.instance.addToListEvent
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(
-      this.uploadPhotoHandler.bind(this)
-    );
+      .subscribe(this.uploadPhotoHandler.bind(this));
     componentRef.instance.toggleModal();
   }
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
@@ -215,15 +224,11 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
     componentRef.instance.photo = eventArgs;
     componentRef.instance.deletePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(
-      this.deletePhotoHandler.bind(this)
-    );
+      .subscribe(this.deletePhotoHandler.bind(this));
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.updatePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(
-      this.updatePhotoHandler.bind(this)
-    );
+      .subscribe(this.updatePhotoHandler.bind(this));
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
@@ -245,14 +250,15 @@ export class MainPhotosContainerComponent implements OnInit, DoCheck, OnDestroy 
 
   private deleteImages(): void {
     this.selectedPhotos.forEach(element => {
-      this.fileService.markPhotoAsDeleted(element.id)
+      this.fileService
+        .markPhotoAsDeleted(element.id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
-        res => {
-          this.deletePhotoHandler(element.id);
-        },
-        error => this.notifier.notify('error', 'Error deleting images')
-      );
+          res => {
+            this.deletePhotoHandler(element.id);
+          },
+          error => this.notifier.notify('error', 'Error deleting images')
+        );
     });
     this.selectedPhotos = [];
   }

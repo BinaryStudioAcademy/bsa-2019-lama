@@ -25,7 +25,7 @@ namespace Lama.Domain.DbModels
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int? AvatarId { get; set; }
+        public string AvatarUrl { get; set; }
 
         [JsonIgnore]
         public ICollection<Category> Categories { get; set; }
@@ -50,6 +50,6 @@ namespace Lama.Domain.DbModels
         [JsonIgnore]
         public ICollection<SharedPhoto> SharedPhotos { get; set; }
         [JsonIgnore]
-        public Photo Photo { get; set; }
+        public ICollection<Photo> Photos { get; set; }
     }
 }
