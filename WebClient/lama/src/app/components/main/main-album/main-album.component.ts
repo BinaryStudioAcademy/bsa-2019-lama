@@ -133,6 +133,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.album.id;
+    componentRef.instance.photoAlbums = this.album.photoAlbums;
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)
     );
@@ -141,14 +142,15 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
-    }
-    this.album.photoAlbums.push(...photos);
-    if (this.album.photo === null) {
-      this.album.photo = photos[0];
-      this.fileService
+    } else {
+      this.album.photoAlbums.push(...photos);
+      if (this.album.photo === null) {
+        this.album.photo = photos[0];
+        this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
+      }
     }
   }
 
@@ -171,12 +173,13 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       this.albumService
         .removeAlbum(this.album.id)
         .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          x => this.notifier.notify('success', 'Album Deleted'),
+        .subscribe(x => {
+          this.notifier.notify('success', 'Album Deleted');
+          this.deleteAlbumEvent.emit(this.album);
+        },
           error => this.notifier.notify('error', 'Error deleting album')
         );
     }
-    this.deleteAlbumEvent.emit(this.album);
   }
 
   private removeDuplicates() {
