@@ -30,6 +30,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './create-album-modal.component.html',
   styleUrls: ['./create-album-modal.component.sass']
 })
+
 export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
@@ -217,7 +218,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
         this.albumWithExistPhotos = {
           title: this.albumName,
           photosId: this.ExistPhotosId,
-          authorId: this.currentUser.id
+          authorId: this.currentUser.id,
         };
         this.albumService
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
@@ -238,6 +239,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       }
     }
   }
+
   removeUploaded(filteredPhotos: PhotoRaw[]) {
     filteredPhotos.forEach(filtered => {
       const index = this.photos.findIndex(
@@ -246,6 +248,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       this.photos.splice(index, 1);
     });
   }
+
   resolveDuplicates(uploadedPhotos: PhotoRaw[]) {
     if (uploadedPhotos.some(photo => photo.isDuplicate)) {
       this.duplicates = uploadedPhotos.filter(photo => photo.isDuplicate);
@@ -282,6 +285,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       error => this.notifier.notify('error', 'Error downloading')
     );
   }
+
   onChange(photo: PhotoRaw) {
     if (this.LoadNewImage === true) {
       this.photos = [];
@@ -293,7 +297,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
         .getPhoto(photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-          this.photos.push({ imageUrl: url });
+          this.photos.push({ imageUrl: url, description: photo.description });
           this.ExistPhotos.push(photo);
         });
     } else {

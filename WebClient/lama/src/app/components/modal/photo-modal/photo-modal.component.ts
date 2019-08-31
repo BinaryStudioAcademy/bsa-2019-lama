@@ -38,6 +38,7 @@ import { NewLocation } from 'src/app/models/Photo/NewLocation';
 import { NewPhotoDate } from 'src/app/models/Photo/NewPhotoDate';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-photo-modal',
@@ -99,6 +100,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     authService: AuthService,
     userService: UserService,
     private notifier: NotifierService,
+    private router: Router,
     private photodetailsService: PhotodetailsService
   ) {
     this.isShown = true;
@@ -261,8 +263,12 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
 
     // remove
     if (clickedMenuItem === this.defaultMenuItem[1]) {
-      this.photos.push(this.photo);
-      this.isDeleting = true;
+      if (this.router.url.includes('album')) {
+        this.photos.push(this.photo);
+        this.isDeleting = true;
+      } else {
+        this.deleteImage();
+      }
     }
 
     // download
