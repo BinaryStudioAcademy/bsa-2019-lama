@@ -63,13 +63,14 @@ namespace Lama.BusinessLogic.Services
             await unitOfWork.GetRepository<Comment>().InsertAsync(comment);
             await unitOfWork.SaveAsync();
 
-            var photo  = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == createCommentDTO.PhotoId);
-            
+            var photo  = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == createCommentDTO.PhotoId);          
             var user = photo.User;
+            var ID = user.Id;
             if(user.Id != createCommentDTO.UserId)
             {
+                user = await Context.Users.FirstOrDefaultAsync(x => x.Id == createCommentDTO.UserId);
                 string noti = "Commented your photo";
-                await notificationService.SendNotification(user.Id, user, noti);
+                await notificationService.SendNotification(ID, user, noti);
             }
             return comment.Id;
         }

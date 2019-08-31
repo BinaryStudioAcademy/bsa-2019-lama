@@ -122,10 +122,12 @@ namespace Lama.BusinessLogic.Services
 
             var photo = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
             var user = photo.User;
+            var ID = user.Id;
             if (user.Id != newLike.UserId)
             {
+                user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 string noti = "Liked your photo";
-                await notificationService.SendNotification(user.Id, user, noti);
+                await notificationService.SendNotification(ID, user, noti);
             }
             return like.Id;
         }
