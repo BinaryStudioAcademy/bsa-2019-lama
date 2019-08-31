@@ -22,15 +22,17 @@ namespace Photo.BusinessLogic.Services
         private readonly IPhotoBlobStorage _storage;
         private readonly IMessageService _messageService;
         private readonly IMapper _mapper;
+        private readonly ImageCompareService _imageComporator;
         private readonly string _blobUrl;
 
-        public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, string blobUrl)
+        public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, ImageCompareService imageComporator, string blobUrl)
         {
             _elasticStorage = elasticStorage;
             _storage = storage;
             _messageService = messageService;
             _mapper = mapper;
             _blobUrl = blobUrl;
+            _imageComporator = imageComporator;
         }
 
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
@@ -47,7 +49,7 @@ namespace Photo.BusinessLogic.Services
         {
             return await _storage.GetPhotos(values);
         }
-        public async Task<string> GetPhoto (string blobId)
+        public async Task<string> GetPhoto(string blobId)
         {
             return await _storage.GetPhoto(blobId);
         }
@@ -56,7 +58,7 @@ namespace Photo.BusinessLogic.Services
         {
             return await _storage.GetAvatar(blobId);
         }
-        
+
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
             return await _elasticStorage.Get();
@@ -83,9 +85,9 @@ namespace Photo.BusinessLogic.Services
             }
             return photos;
         }
-        public Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
         {
-            return _elasticStorage.GetUserPhotosRange(userId, startId, count);
+            return await _elasticStorage.GetUserPhotosRange(userId, startId, count);
         }
 
         public async Task Delete(int id)
@@ -115,14 +117,14 @@ namespace Photo.BusinessLogic.Services
                 Blob256Id = blobId
             };
             await _elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-            _messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id); 
+            _messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
             return updatedPhoto;
         }
 
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             var photoDocument = await Get(elasticId);
-            
+
             await _storage.DeleteFileAsync(photoDocument.BlobId);
             await _storage.DeleteFileAsync(photoDocument.Blob64Id);
             await _storage.DeleteFileAsync(photoDocument.Blob256Id);
@@ -148,7 +150,7 @@ namespace Photo.BusinessLogic.Services
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
         {
             // TODO: figure out getting updated document without second request to elastic           
-            
+
             var updateLinkObject = new { SharedLink = sharedLink };
 
             await _elasticStorage.UpdatePartiallyAsync(id, updateLinkObject);
@@ -172,26 +174,26 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
         {
-            var foundDuplicates = new List<CreatePhotoResultDTO>();
-            var userPhotos = await GetUserPhotos(userId);
-            foreach (var photo in userPhotos)
+            var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
+            var duplicates = new List<CreatePhotoResultDTO>();
+            foreach (var item in comparisionResult)
             {
-                var photosWithSameName = await _elasticStorage.Find(userId, photo.Name);
-                var collectionWithSameNames = photosWithSameName.Where(element => element.IsDeleted == false).ToList();
-                if (collectionWithSameNames.Count <= 1 || !IsSameSized(collectionWithSameNames, photo)) continue;
-                
-                var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
-                foundDuplicates.Add(mappedPhoto);
+                if (item.Count <= 1) continue;
+                foreach (var id in item)
+                {
+                    var photo = await _elasticStorage.Get((int)id.PhotoId);
+                    var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
+                    duplicates.Add(mappedPhoto);
+                }
+                duplicates.Remove(duplicates.LastOrDefault());
             }
-
-            return foundDuplicates.GroupBy(x => x.Name).Where(g => g.Count() > 1)
-                .SelectMany(t => t.OrderByDescending(r => r.Id).Skip(1));
+            return duplicates;
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
         {
             var createdPhotos = new List<CreatePhotoResultDTO>();
-            foreach(var item in items)
+            foreach (var item in items)
             {
                 var base64 = ConvertToBase64(item.ImageUrl);
                 var blob = Convert.FromBase64String(base64);
@@ -264,8 +266,8 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            var searchResult = await _elasticStorage.GetDeletedPhoto(userId);            
-            
+            var searchResult = await _elasticStorage.GetDeletedPhoto(userId);
+
             return _mapper.Map<DeletedPhotoDTO[]>(searchResult);
         }
 
@@ -273,7 +275,7 @@ namespace Photo.BusinessLogic.Services
         {
             // TODO: make this in single request
             foreach (var deletePhoto in photosToDelete)
-            {       
+            {
                 await DeleteAllBlobsAsync(deletePhoto.Id);
 
                 await _elasticStorage.DeleteAsync(deletePhoto.Id);
@@ -302,7 +304,7 @@ namespace Photo.BusinessLogic.Services
             }
         }
         #endregion
-        
+
         private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, CreatePhotoDTO item)
         {
             var newItemBase64 = ConvertToBase64(item.ImageUrl);
@@ -316,9 +318,9 @@ namespace Photo.BusinessLogic.Services
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-    
+
                 }
                 return doc;
             }

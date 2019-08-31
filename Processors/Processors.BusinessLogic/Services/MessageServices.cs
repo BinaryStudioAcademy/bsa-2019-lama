@@ -7,6 +7,7 @@ using Services.Interfaces;
 using Services.Models;
 using System;
 using System.Threading.Tasks;
+using Processors.BusinessLogic.ImageComparer;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -66,6 +67,7 @@ namespace Processors.BusinessLogic.Services
             var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
             var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
             var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
+            new ImgHash((int)makePhotoThumbnailDTO.ImageId, _elasticStorage).GenerateFromByteArray(currentImg);
 
             if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
             {

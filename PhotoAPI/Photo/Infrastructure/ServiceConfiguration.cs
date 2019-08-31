@@ -58,14 +58,16 @@ namespace Photo.Infrastructure
 
             services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
                 f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
-            
+            services.AddScoped<ImageCompareService>();
             services.AddScoped<IPhotoService, PhotoService>(serviceProvider => 
                 new PhotoService(
                     serviceProvider.GetService<IElasticStorage>(),
                     serviceProvider.GetService<IPhotoBlobStorage>(),
                     serviceProvider.GetService<IMessageService>(),
                     serviceProvider.GetService<IMapper>(),
+                    serviceProvider.GetService<ImageCompareService>(),
                     blobEndpointUrl));
+           
         }
         private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
         {
