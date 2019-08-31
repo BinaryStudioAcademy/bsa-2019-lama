@@ -49,7 +49,7 @@ namespace Photo.BusinessLogic.Services
         {
             return await _storage.GetPhotos(values);
         }
-        public async Task<string> GetPhoto (string blobId)
+        public async Task<string> GetPhoto(string blobId)
         {
             return await _storage.GetPhoto(blobId);
         }
@@ -58,7 +58,7 @@ namespace Photo.BusinessLogic.Services
         {
             return await _storage.GetAvatar(blobId);
         }
-        
+
         public async Task<IEnumerable<PhotoDocument>> Get()
         {
             return await _elasticStorage.Get();
@@ -117,14 +117,14 @@ namespace Photo.BusinessLogic.Services
                 Blob256Id = blobId
             };
             await _elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-            _messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id); 
+            _messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
             return updatedPhoto;
         }
 
         private async Task DeleteOldBlobsAsync(int elasticId)
         {
             var photoDocument = await Get(elasticId);
-            
+
             await _storage.DeleteFileAsync(photoDocument.BlobId);
             await _storage.DeleteFileAsync(photoDocument.Blob64Id);
             await _storage.DeleteFileAsync(photoDocument.Blob256Id);
@@ -150,7 +150,7 @@ namespace Photo.BusinessLogic.Services
         public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
         {
             // TODO: figure out getting updated document without second request to elastic           
-            
+
             var updateLinkObject = new { SharedLink = sharedLink };
 
             await _elasticStorage.UpdatePartiallyAsync(id, updateLinkObject);
@@ -178,25 +178,21 @@ namespace Photo.BusinessLogic.Services
             var duplicates = new List<CreatePhotoResultDTO>();
             foreach (var item in comparisionResult)
             {
-                if (item.Count == 1)
+                if (item.Count <= 1) continue;
+                foreach (var id in item)
                 {
-                    continue;
-                }
-                else
-                {
-                    var duplicateId = item.FirstOrDefault().PhotoId;
-                    var photo = await _elasticStorage.Get((int)duplicateId);
+                    var photo = await _elasticStorage.Get((int)id.PhotoId);
                     var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
                     duplicates.Add(mappedPhoto);
                 }
             }
-            return duplicates;
+            return duplicates.Skip(1);
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
         {
             var createdPhotos = new List<CreatePhotoResultDTO>();
-            foreach(var item in items)
+            foreach (var item in items)
             {
                 var base64 = ConvertToBase64(item.ImageUrl);
                 var blob = Convert.FromBase64String(base64);
@@ -269,8 +265,8 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            var searchResult = await _elasticStorage.GetDeletedPhoto(userId);            
-            
+            var searchResult = await _elasticStorage.GetDeletedPhoto(userId);
+
             return _mapper.Map<DeletedPhotoDTO[]>(searchResult);
         }
 
@@ -278,7 +274,7 @@ namespace Photo.BusinessLogic.Services
         {
             // TODO: make this in single request
             foreach (var deletePhoto in photosToDelete)
-            {       
+            {
                 await DeleteAllBlobsAsync(deletePhoto.Id);
 
                 await _elasticStorage.DeleteAsync(deletePhoto.Id);
@@ -307,7 +303,7 @@ namespace Photo.BusinessLogic.Services
             }
         }
         #endregion
-        
+
         private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, CreatePhotoDTO item)
         {
             var newItemBase64 = ConvertToBase64(item.ImageUrl);
@@ -321,9 +317,9 @@ namespace Photo.BusinessLogic.Services
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-    
+
                 }
                 return doc;
             }
