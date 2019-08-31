@@ -15,7 +15,7 @@ export const environment = {
   clientApiUrl: 'http://localhost:4200',
   lamaApiUrl: 'http://localhost:5000',
   googleApiKey: 'AIzaSyDS2xm6IbqIv6HhO4oYfVtiIgZCVdWcDLE',
-  hub: '/notification',
+  hub: '/notificationHub',
   photoEditing: {
     crop: {
       cropMinWidth: 128,
