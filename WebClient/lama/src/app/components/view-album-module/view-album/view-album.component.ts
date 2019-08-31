@@ -90,37 +90,40 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     );
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !== 0) {
-      this.albumService.getAlbum(this.AlbumId)
+      this.albumService
+        .getAlbum(this.AlbumId)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
-        x => {
-          this.album = x.body;
-          this.album.photoAlbums = this.album.photoAlbums.reverse();
-        },
-        error => this.notifier.notify('error', 'Error loading album')
-      );
+          x => {
+            this.album = x.body;
+            this.album.photoAlbums = this.album.photoAlbums.reverse();
+          },
+          error => this.notifier.notify('error', 'Error loading album')
+        );
     } else if (this.AlbumId === 0) {
-      this.favoriteService.getFavoritesPhotos(userId)
+      this.favoriteService
+        .getFavoritesPhotos(userId)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
-        data => {
-          this.album.photoAlbums = data;
-          this.album.id = 0;
-          this.album.title = 'Favorite photos';
-        },
-        error =>
-          this.notifier.notify('error', 'Error loading favourites photos')
-      );
+          data => {
+            this.album.photoAlbums = data;
+            this.album.id = 0;
+            this.album.title = 'Favorite photos';
+          },
+          error =>
+            this.notifier.notify('error', 'Error loading favourites photos')
+        );
     }
-    this.favoriteService.getFavoritesIds(userId)
+    this.favoriteService
+      .getFavoritesIds(userId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      data => {
-        this.favorites = new Set<number>(data);
-        this.loading = true;
-      },
-      error => this.notifier.notify('error', 'Error loading favourites')
-    );
+        data => {
+          this.favorites = new Set<number>(data);
+          this.loading = true;
+        },
+        error => this.notifier.notify('error', 'Error loading favourites')
+      );
     this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
   }
 
@@ -169,6 +172,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.AlbumId;
+    componentRef.instance.photoAlbums = this.album.photoAlbums;
     componentRef.instance.LoadFile(files);
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)
