@@ -16,7 +16,6 @@ using Lama.Domain.DTO;
 using Lama.Domain.DTO.Photo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services

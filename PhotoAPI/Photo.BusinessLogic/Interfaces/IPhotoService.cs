@@ -28,5 +28,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count);
+        Task<int> CheckAuthorPhoto(Tuple<int, int> tuple);
     }
 }

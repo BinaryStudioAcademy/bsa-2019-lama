@@ -12,6 +12,8 @@ using Lama.BusinessLogic.Services;
 using Lama.BusinessLogic.Interfaces;
 using AutoMapper;
 using Lama.Domain.MappingProfiles;
+using Microsoft.AspNetCore.SignalR;
+using Lama.BusinessLogic.Hubs;
 
 namespace Lama.Infrastructure
 {
@@ -38,8 +40,9 @@ namespace Lama.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<UserService>();
-            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
+            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(f.GetService<ApplicationDbContext>(),configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(),f.GetService<INotificationService>()));
             services.AddScoped<IPhotoDetailsService, PhotoDetailsService>(f => new PhotoDetailsService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
             services.AddScoped<IAlbumService, AlbumService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
@@ -61,6 +64,7 @@ namespace Lama.Infrastructure
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
             })
                 .AddJwtBearer(options =>
                 {
@@ -78,6 +82,7 @@ namespace Lama.Infrastructure
                         ValidateLifetime = true
                     };
                 });
+            
         }
     }
 }

@@ -69,6 +69,7 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
 
   ExistPhotos: PhotoRaw[] = [];
   unsubscribe = new Subject();
+  photoAlbums: PhotoRaw[] = [];
 
   handleDragEnter() {
     this.dragging = true;
@@ -154,10 +155,11 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
     this.LoadNewImage = false;
     if (this.ExistPhotos.filter(x => x.id === photo.id)[0] === undefined) {
       this.ExistPhotosId.push(photo.id);
-      this.fileService.getPhoto(photo.blob256Id)
+      this.fileService
+        .getPhoto(photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-        this.photos.push({ imageUrl: url });
+        this.photos.push({ imageUrl: url, description: photo.description });
         this.ExistPhotos.push(photo);
       });
     } else {
@@ -170,39 +172,46 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
     if (this.photos.length === 0) {
       this.notifier.notify('error', 'Error no photos');
     } else if (this.LoadNewImage === true) {
-      this.AlbumNewPhotos = {
-        AlbumId: this.AlbumId,
-        photos: this.photos,
-        UserId: this.currentUser.id
-      };
-      this.albumService.addNewPhotosToAlbum(this.AlbumNewPhotos)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-        photos => {
-          this.AddingPhotosToAlbum.emit(photos);
-          this.notifier.notify('success', 'Photos added');
-        },
-        error => this.notifier.notify('error', 'Error adding photos')
-      );
-      this.toggleModal();
+      if (
+        this.photos.some(p => this.photoAlbums.some(x => x.name === p.filename))
+      ) {
+        this.notifier.notify('warning', 'This photos appear to be duplicates');
+      } else {
+        this.AlbumNewPhotos = {
+          AlbumId: this.AlbumId,
+          photos: this.photos,
+          UserId: this.currentUser.id
+        };
+        this.albumService
+          .addNewPhotosToAlbum(this.AlbumNewPhotos)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            photos => {
+              this.AddingPhotosToAlbum.emit(photos);
+            },
+            error => this.notifier.notify('error', 'Error adding photos')
+          );
+        this.toggleModal();
+      }
     } else {
       this.AlbumExistPhotos = {
         AlbumId: this.AlbumId,
         photosId: this.ExistPhotosId
       };
-      this.albumService.addExistPhotosToAlbum(this.AlbumExistPhotos)
+      this.albumService
+        .addExistPhotosToAlbum(this.AlbumExistPhotos)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
-        photos => {
-          if (photos.length !== 0) {
-            this.AddingPhotosToAlbum.emit(photos);
-            this.notifier.notify('success', 'Photos added');
-          } else {
-            this.notifier.notify('error', 'Photos already exist in album');
-          }
-        },
-        error => this.notifier.notify('error', 'Error adding photos')
-      );
+          photos => {
+            if (photos.length !== 0) {
+              this.AddingPhotosToAlbum.emit(photos);
+              this.notifier.notify('success', 'Photos added');
+            } else {
+              this.notifier.notify('error', 'Photos already exist in album');
+            }
+          },
+          error => this.notifier.notify('error', 'Error adding photos')
+        );
       this.toggleModal();
     }
   }

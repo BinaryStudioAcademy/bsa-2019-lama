@@ -67,6 +67,10 @@ namespace Photo.BusinessLogic.Services
         {
             return _elasticStorage.GetUserPhotos(userId);
         }
+        public async Task<int> CheckAuthorPhoto(Tuple<int, int> tuple)
+        {
+            return await _elasticStorage.CheckUserPhoto(tuple);
+        }
         public async Task<PhotoDocument> Get(int elasticId)
         {
             return await _elasticStorage.Get(elasticId);

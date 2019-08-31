@@ -182,6 +182,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     const componentRef = this.modaladdPhoto.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.AlbumId = this.AlbumId;
+    componentRef.instance.photoAlbums = this.album.photoAlbums;
     componentRef.instance.LoadFile(files);
     componentRef.instance.AddingPhotosToAlbum.subscribe(
       this.AddToAlbumNewPhotos.bind(this)

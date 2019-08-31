@@ -11,6 +11,7 @@ import { MainPhotosContainerComponent } from './components/main/main-photos-cont
 import { MainPhotoComponent } from './components/main/main-photo/main-photo.component';
 import { MainAlbumsContainerComponent } from './components/main/main-albums-container/main-albums-container.component';
 import { MainAlbumComponent } from './components/main/main-album/main-album.component';
+import { MainNotificationComponent } from '../app/components/main/main-notification/main-notification.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
@@ -59,6 +60,7 @@ import { SharingPageComponent } from './components/shared-page/sharing-page//sha
     ProfileComponent,
     MainAlbumsContainerComponent,
     MainAlbumComponent,
+    MainNotificationComponent,
     ViewAlbumComponent,
     AddPhotosToAlbumModalComponent,
     SharedPageComponent,

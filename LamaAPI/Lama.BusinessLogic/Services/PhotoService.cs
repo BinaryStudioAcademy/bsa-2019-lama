@@ -14,6 +14,10 @@ using System.Linq;
 using Lama.Domain.DTO.Photo;
 using AutoMapper;
 using Lama.Domain.DTO.Reaction;
+using Microsoft.AspNetCore.SignalR;
+using Lama.BusinessLogic.Hubs;
+using Lama.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -24,12 +28,16 @@ namespace Lama.BusinessLogic.Services
         private IUnitOfWork _context;
         private HttpClient httpClient;
         private readonly IMapper _mapper;
-        public PhotoService(string url, IUnitOfWork context, IMapper _mapper)
+        INotificationService notificationService;
+        ApplicationDbContext Context;
+        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
             this._mapper = _mapper;
+            this.Context = Context;
+            this.notificationService = notificationService;
         }
 
 
@@ -112,6 +120,15 @@ namespace Lama.BusinessLogic.Services
             await _context.GetRepository<Like>().InsertAsync(like);
             await _context.SaveAsync();
 
+            var photo = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
+            var user = photo.User;
+            var ID = user.Id;
+            if (user.Id != newLike.UserId)
+            {
+                user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
+                string noti = "Liked your photo";
+                await notificationService.SendNotification(ID, user, noti);
+            }
             return like.Id;
         }
         public async Task RemoveReaction(NewLikeDTO removeLike)
