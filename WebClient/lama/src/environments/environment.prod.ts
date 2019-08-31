@@ -10,7 +10,7 @@ export const environment = {
   },
   clientApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com',
   lamaApiUrl: 'http://bsa2019-lama.westeurope.cloudapp.azure.com:5000',
-  hub: '/notification',
+  hub: '/notificationHub',
   photoEditing: {
     crop: {
       cropMinWidth: 128,
