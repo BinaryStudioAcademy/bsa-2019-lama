@@ -148,12 +148,16 @@ namespace Lama.DataAccess.Migrations
 
                     b.Property<bool>("IsRead");
 
+                    b.Property<int>("SenderId");
+
                     b.Property<string>("Text")
                         .IsRequired();
 
                     b.Property<int>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SenderId");
 
                     b.HasIndex("UserId");
 
@@ -166,7 +170,11 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Photos");
                 });
@@ -263,7 +271,7 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AvatarId");
+                    b.Property<string>("AvatarUrl");
 
                     b.Property<string>("Email")
                         .IsRequired();
@@ -275,10 +283,6 @@ namespace Lama.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AvatarId")
-                        .IsUnique()
-                        .HasFilter("[AvatarId] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -377,9 +381,22 @@ namespace Lama.DataAccess.Migrations
 
             modelBuilder.Entity("Lama.Domain.DbModels.Notification", b =>
                 {
+                    b.HasOne("Lama.Domain.DbModels.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Lama.Domain.DbModels.Photo", b =>
+                {
+                    b.HasOne("Lama.Domain.DbModels.User", "User")
+                        .WithMany("Photos")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Lama.Domain.DbModels.PhotoAlbum", b =>
@@ -431,13 +448,6 @@ namespace Lama.DataAccess.Migrations
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("SharedPhotos")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Lama.Domain.DbModels.User", b =>
-                {
-                    b.HasOne("Lama.Domain.DbModels.Photo", "Photo")
-                        .WithOne("User")
-                        .HasForeignKey("Lama.Domain.DbModels.User", "AvatarId");
                 });
 
             modelBuilder.Entity("Lama.Domain.DbModels.Video", b =>

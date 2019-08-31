@@ -11,7 +11,11 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Serilog.Exceptions;
+using Lama.BusinessLogic.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Lama.BusinessLogic.HubProvider;
 
 namespace Lama
 {
@@ -20,8 +24,6 @@ namespace Lama
         private static string Connection;
         public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
-            //Configuration = configuration;
-            Connection = configuration["ConnectionStrings:ConnectionLocal"];
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
@@ -47,18 +49,23 @@ namespace Lama
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var origins = Configuration["AllowedOrigin"];
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                builder.AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .AllowCredentials()
+                       .WithOrigins("http://localhost:4200", "http://bsa2019-lama.westeurope.cloudapp.azure.com");
             }));
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDataAccessLayer(Configuration);
             services.AddMapper(Configuration);
             services.AddQueueService(Configuration);
             services.AddBusinessLogicServices(Configuration);
             services.AddSiteAuthentications(Configuration);
+            services.AddSignalR(opt =>
+            opt.EnableDetailedErrors = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,11 +84,16 @@ namespace Lama
                 app.UseHsts();
             }
 
+
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseCors("MyPolicy");
 
             app.UseMvc();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<NotificationHub>("/NotificationHub");
+            });
         }
 
         private static void UpdateDatabase(IApplicationBuilder app)

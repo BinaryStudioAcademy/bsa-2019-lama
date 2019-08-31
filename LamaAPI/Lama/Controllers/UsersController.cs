@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Lama.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.DTO.User;
+using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -13,9 +15,12 @@ namespace Lama.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserService _service;
-        public UsersController(UserService service)
+        private IUserProtectionService _userProtectionService;
+
+        public UsersController(UserService service, IUserProtectionService userProtectionService)
         {
             _service = service;
+            _userProtectionService = userProtectionService;
         }
 
         [HttpPost]
@@ -36,7 +41,9 @@ namespace Lama.Controllers
         [HttpGet("{id}")]
         public async Task<UserDTO> Get(int id)
         {
-            return await _service.Get(id);
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            return await _service.Get(currentUserId);
         }
 
         [HttpGet("email")]

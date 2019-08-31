@@ -27,7 +27,7 @@ export class MainLeftActionsSidebarComponent implements OnInit {
       {
         title: 'Sharing',
         icon: 'people',
-        route: ''
+        route: 'sharing'
       },
       {
         title: 'Places',

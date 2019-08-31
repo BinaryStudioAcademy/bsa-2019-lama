@@ -1,5 +1,6 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
   Component,
   OnInit,
@@ -18,8 +19,11 @@ import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
+import { environment } from '../../../../environments/environment';
+import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -35,6 +39,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   avatarUrl;
   searchCriteria = '';
   isActive = false;
+  newNotify = false;
+  IsShowNotify = false;
   searchHistory: string[];
   searchSuggestions: { [name: string]: string[] } = {};
   id: number;
@@ -43,6 +49,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unicodeSearch = '\u2315';
   unicodeLocation = '\u2316';
   isSearchDropdownExpanded: boolean;
+  public Hub: HubConnection;
+  notification: NotificationDTO[];
   unsubscribe = new Subject();
 
   // constructors
@@ -53,17 +61,29 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     private shared: SharedService,
     private http: HttpService,
     private file: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private notificationService: NotificationService
   ) {
     this.resolver = resolver;
   }
 
   async ngOnInit() {
+    this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
       await this.delay(500);
       this.id = parseInt(localStorage.getItem('userId'), 10);
     }
+    this.notificationService
+      .getNotifications(this.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        u => {
+          this.notification = u.reverse();
+          this.checkNotification(this.notification);
+        },
+        error => this.notifier.notify('error', 'Error loading nofitications')
+      );
     this.getSearchHistory(this.id);
     this.http
       .getData(`users/${this.id}`)
@@ -84,7 +104,58 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading user')
       );
   }
+  sendIsRead(id) {
+    this.notificationService
+      .sendIsRead(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        x => {
+          this.checkNotification(this.notification);
+        },
+        error => this.notifier.notify('error', 'Error update notification')
+      );
+  }
+  MarkAllAsRead() {
+    this.notificationService
+      .MarkAllAsRead(this.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        x => {
+          this.notification.forEach(y => (y.isRead = true));
+          this.checkNotification(this.notification);
+        },
+        error =>
+          this.notifier.notify('error', 'Error mark as all read notification')
+      );
+  }
+  public registerHub() {
+    const stringConnection = environment.lamaApiUrl + environment.hub;
+    this.Hub = new HubConnectionBuilder()
+      .withUrl(`${stringConnection}`, {
+        accessTokenFactory: () => this.auth.token,
+        transport: 4
+      })
+      .build();
+    this.Hub.start().catch(error => console.log(error));
 
+    this.Hub.on('Notification', (notification: NotificationDTO) => {
+      if (notification) {
+        this.addNotification(notification);
+      }
+    });
+  }
+  addNotification(notification) {
+    this.notification.unshift(notification);
+    this.checkNotification(this.notification);
+  }
+  checkNotification(notification: NotificationDTO[]) {
+    const check = notification.some(x => x.isRead === false);
+    if (check) {
+      this.newNotify = true;
+    } else {
+      this.newNotify = false;
+    }
+  }
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -156,7 +227,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         console.log('user is not signed in');
       });
   }
-
+  ShowHideNotification() {
+    this.IsShowNotify = !this.IsShowNotify;
+  }
   getSearchHistory(id: number) {
     this.file
       .getSearchHistory(id)

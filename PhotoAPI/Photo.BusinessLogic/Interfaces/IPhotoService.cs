@@ -11,9 +11,10 @@ namespace Photo.BusinessLogic.Interfaces
     {
 
         Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> item);
-        Task<int> CreateAvatar(CreatePhotoDTO item);
+        Task<string> CreateAvatar(CreatePhotoDTO item);
         Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
+        Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
         Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId);
         Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
@@ -27,5 +28,6 @@ namespace Photo.BusinessLogic.Interfaces
         Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
         Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count);
+        Task<int> CheckAuthorPhoto(Tuple<int, int> tuple);
     }
 }

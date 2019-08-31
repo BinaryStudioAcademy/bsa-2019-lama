@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.BlobModels;
-using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Photo;
+using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,25 +16,36 @@ namespace Lama.Controllers
     public class AlbumController : ControllerBase
     {
         private readonly IAlbumService _service;
+        private readonly IUserProtectionService _userProtectionService;
 
-        public AlbumController(IAlbumService AlbumService)
+        public AlbumController(IAlbumService albumService, IUserProtectionService userProtectionService)
         {
-            _service = AlbumService;
+            _service = albumService;
+            _userProtectionService = userProtectionService;
         }
 
         [HttpPost("CreateWithNewPhoto")]
         public async Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos([FromBody] NewAlbumDTO albumDto)
         {
+            var currentUserEmail = this.GetUserEmail();
+            var userId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            albumDto.AuthorId = userId;
             return await _service.CreateAlbumWithNewPhotos(albumDto);
         }
         [HttpPost("CreateWithExistPhoto")]
         public async Task<ReturnAlbumDTO> CreateAlbumWithExistPhotos([FromBody] AlbumWithExistPhotosDTO album)
         {
+            var currentUserEmail = this.GetUserEmail();
+            var userId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            album.AuthorId = userId;
             return await _service.CreateAlbumWithExistPhotos(album);
         }
         [HttpPost("CreateEmptyAlbum")]
         public async Task<ReturnAlbumDTO> CreateEmptyAlbum([FromBody] NewAlbumDTO album)
         {
+            var currentUserEmail = this.GetUserEmail();
+            var userId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            album.AuthorId = userId;
             var createdAlbumId = await _service.CreateEmptyAlbum(album);
             return await _service.FindAlbum(createdAlbumId);
         }
@@ -48,6 +58,9 @@ namespace Lama.Controllers
         [HttpPost("AlbumNewPhotos")]
         public async Task<List<PhotoDocumentDTO>> AddNewPhotosToAlbum([FromBody] NewPhotosAlbum newPhotosAlbum)
         {
+            var currentUserEmail = this.GetUserEmail();
+            var userId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            newPhotosAlbum.UserId = userId;
             return await _service.AddNewPhotosToAlbum(newPhotosAlbum);
         }
         [HttpPost("AlbumExistPhotos")]

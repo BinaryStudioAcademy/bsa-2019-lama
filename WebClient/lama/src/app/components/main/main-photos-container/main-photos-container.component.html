@@ -1,6 +1,6 @@
 <div class="content-header">
   <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
-  <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
+  <div  class="dropdown is-hoverable" *ngIf="photos?.length">
     <div class="dropdown-trigger">
       <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
@@ -8,17 +8,17 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" (click)="deleteWindow()">
+          <div class="dropdown-item" (click)="findDuplicates()">
+            <p>Find Duplicates</p>
+          </div>
+        <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteWindow()">
           <p>Delete</p>
         </div>
-        <div class="dropdown-item" (click)="downloadImages()">
+        <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="downloadImages()">
           <p>Download</p>
         </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="(!isAtLeastOnePhotoSelected && isHaveAnyPhotos) && !isSearchTriggered" class="align-right">
-    <a class="button is-primary" (click)="findDuplicates()">Find Duplicates</a>
   </div>
 </div>
 

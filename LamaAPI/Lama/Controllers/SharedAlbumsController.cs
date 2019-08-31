@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lama.BusinessLogic.Interfaces;
 using Lama.BusinessLogic.Services;
 using Lama.Domain.DbModels;
+using Lama.Domain.DTO.Album;
+using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +21,12 @@ namespace Lama.Controllers
     public class SharedAlbumsController : ControllerBase
     {
         private readonly SharingAlbumService _sharingAlbumService;
+        private readonly IUserProtectionService _userProtectionService;
 
-        public SharedAlbumsController(SharingAlbumService sharingAlbumService)
+        public SharedAlbumsController(SharingAlbumService sharingAlbumService, IUserProtectionService userProtectionService)
         {
             _sharingAlbumService = sharingAlbumService;
+            _userProtectionService = userProtectionService;
         }
 
         [HttpGet("{id}")]
@@ -30,10 +35,29 @@ namespace Lama.Controllers
             return await _sharingAlbumService.Get(id);
         }
 
+        [HttpGet("user/{id}")]
+        public async Task<IEnumerable<ReturnAlbumDTO>> GetSharedUserAlbums(int id)
+        {
+            return await _sharingAlbumService.GetSharedAlbums(id);
+        }
+
         [HttpPost]
         public async Task PostSharedPhoto([FromBody] SharedAlbum sharedAlbum)
         {
+            
             await _sharingAlbumService.SharingAlbum(sharedAlbum);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task RemoveSharedAlbum(int id)
+        {
+            await _sharingAlbumService.Delete(id);
+        }
+
+        [HttpDelete("{id}/{userId}")]
+        public async Task RemoveSharedAlbum(int id, int userId)
+        {
+            await _sharingAlbumService.DeleteForUser(id, userId);
         }
     }
 }

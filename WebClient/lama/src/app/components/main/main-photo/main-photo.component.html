@@ -1,31 +1,24 @@
-<div
-  [style.transform]="isSelected ? 'scale(0.9)' : 'scale(1)'"
-  class="photo"
-  (click)="clickPerformed()"
->
+<div [style.transform]="isSelected ? 'scale(0.9)' : 'scale(1)'" class="photo" (click)="clickPerformed()">
   <spinner *ngIf="isShowSpinner"></spinner>
   <div class="loading-wrapper" *ngIf="!isShowSpinner">
     <img src="{{ imageUrl }}" />
     <div class="overlay" [style.opacity]="isSelected ? '1' : ''">
-      <div class="top">
-        <a (click)="$event.stopPropagation()" (click)="selectItem()"
-          ><i
-            [ngStyle]="{ color: isSelected ? 'lightblue' : 'white' }"
-            class="material-icons"
-            >check_circle_outline</i
-          ></a
-        >
-      </div>
-      <div class="bottom">
-        <a (click)="$event.stopPropagation()" (click)="mark()"
-          ><i class="material-icons" [appFavorite]="isFavorite"
-            >star_border</i
-          ></a
-        >
-        <a>
-          <p>{{ photo.description }}</p>
+      <div class="check-mark">
+        <a (click)="$event.stopPropagation()" (click)="selectItem()">
+          <i [ngStyle]="{ color: isSelected ? '#00d1b2' : 'white' }" class="material-icons">check_circle_outline</i>
         </a>
-        <a><i class="material-icons">comment</i></a>
+      </div>
+      <div class="heart-mark">
+        <i class="material-icons">thumb_up_alt</i>
+        <span class="count">{{photo?.reactions?.length || 0}}</span>
+      </div>
+      <div class="star-mark" (click)="$event.stopPropagation()" (click)="mark()">
+        <a>
+          <i class="material-icons" [appFavorite]="isFavorite">star_border</i>
+        </a>
+      </div>
+      <div class="description">
+        <p>{{ photo.description }}</p>
       </div>
     </div>
   </div>

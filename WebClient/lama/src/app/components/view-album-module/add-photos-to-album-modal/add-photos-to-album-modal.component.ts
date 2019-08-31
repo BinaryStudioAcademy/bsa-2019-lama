@@ -159,9 +159,9 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
         .getPhoto(photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-          this.photos.push({ imageUrl: url });
-          this.ExistPhotos.push(photo);
-        });
+        this.photos.push({ imageUrl: url, description: photo.description });
+        this.ExistPhotos.push(photo);
+      });
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);
