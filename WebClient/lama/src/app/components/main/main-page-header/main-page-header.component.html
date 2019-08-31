@@ -36,7 +36,7 @@
     <!--profile-->
     <div class="align-right">
         <!--notification-->
-        <a class="image is-48x48 notific" (click)="ShowHideNotification()">
+        <a class="image is-48x48 notific is-rounded" (click)="ShowHideNotification()">
             <img [src]="newNotify ? 'assets/notifications.svg' : 'assets/nonotifications.svg'" />
         </a>
         <a class="image is-48x48 profile">
@@ -56,7 +56,7 @@
         </div>
         <div class="sub-header">
             <a (click)="MarkAllAsRead()">
-                <h6 class="subtitle is-6">Mark All as read</h6>
+                <h6 class="subtitle is-6 mark">Mark All as read</h6>
             </a>
         </div>
     </div>
