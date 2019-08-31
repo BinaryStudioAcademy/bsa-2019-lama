@@ -131,7 +131,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   public registerHub() {
     const stringConnection = environment.lamaApiUrl + environment.hub;
     this.Hub = new HubConnectionBuilder()
-      .withUrl('http://localhost:5000/NotificationHub', {
+      .withUrl(`${stringConnection}`, {
         accessTokenFactory: () => this.auth.token,
         transport: 4
       })
