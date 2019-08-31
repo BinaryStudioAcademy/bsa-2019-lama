@@ -16,6 +16,7 @@ import {
 } from '../models';
 import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
 import { NewLike } from '../models/Reaction/NewLike';
+import { SearchSuggestionData } from '../models/searchSuggestionData';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +52,7 @@ export class FileService {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
-    return this.client.get<{ [name: string]: string[] }>(
+    return this.client.get<SearchSuggestionData>(
       `${environment.lamaApiUrl}/api/photo/search/fields/${id}/${criteria}`
     );
   }

@@ -6,7 +6,6 @@ import {
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
-  ElementRef,
   Output,
   EventEmitter,
   DoCheck,
@@ -16,10 +15,11 @@ import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { FileService } from 'src/app/services';
-import { AngularFireAuth } from '@angular/fire/auth';
 import { NotifierService } from 'angular-notifier';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
+import { ImageTagDTO } from 'src/app/models/Photo/imageTagDTO';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -32,11 +32,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
-  avatarUrl;
+  avatarUrl: string;
   searchCriteria = '';
   isActive = false;
   searchHistory: string[];
-  searchSuggestions: { [name: string]: string[] } = {};
+  searchSuggestions: SearchSuggestionData;
+  searchSuggestionsEmpty = true;
   id: number;
   timeout = null;
   objectKeys = Object.keys;
@@ -45,6 +46,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   isSearchDropdownExpanded: boolean;
   unsubscribe = new Subject();
   latestSearchAttempt = 0;
+  tagNames = [];
 
   // constructors
   constructor(
@@ -127,16 +129,26 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
-    if (this.isActive) {
+    if (this.searchCriteria.length > 0) {
+      this.isActive = false;
       this.file
-        .getSearchSuggestions(this.id, criteria)
+        .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(items => {
-          this.searchSuggestions = items;
           this.latestSearchAttempt = criteria.length;
-          this.isActive = false;
-        });
+          this.searchSuggestions = items;
+          this.checkSearchSuggestions();
+          this.tagNames = this.extractTagNames(this.searchSuggestions)
+                            .filter((tagname: string) => tagname.includes(criteria));
+      });
     }
+  }
+
+  extractTagNames(searchSuggestions: SearchSuggestionData) {
+    const temp = [];
+    searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));
+    this.tagNames = [].concat.apply([], temp);
+    return  this.tagNames.sort(x => x.confidence).map(tag => tag.name);
   }
 
   logOut() {
@@ -192,8 +204,17 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     );
   }
 
-  sendToSearchbar(input: string) {
+  searchHistoryItemClicked(input: string) {
+    console.log('1');
     console.log(input);
+  }
+
+  checkSearchSuggestions() {
+    Object.values(this.searchSuggestions).forEach(field => {
+      if (field.length > 0) {
+        this.searchSuggestionsEmpty = false;
+      }
+    });
   }
 
   openModalClicked() {

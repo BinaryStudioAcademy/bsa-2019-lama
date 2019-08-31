@@ -15,12 +15,35 @@
         <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo"
           [(ngModel)]="searchCriteria" list="values" (focus)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
         <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}">
+        <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
           <div class="row" *ngFor="let item of searchHistory">
-            <div class="icons-wrapper" (click)="sendToSearchBar(item)">
-
+              <a class="dropdown-item">
+                  <i class="material-icons" >history</i> {{ item }}
+              </a>
             </div>
-            <i class="material-icons">youtube_searched_for</i> {{ item }}
           </div>
+          <div class="dropdown-content" *ngIf="!searchSuggestionsEmpty && !!searchSuggestions.names">
+              <div class="row" *ngFor="let item of searchSuggestions.names.slice(0,5)">
+                  <div class="dropdown-item" (click)="searchHistoryItemClicked(item)">
+                      <i class="material-icons" >youtube_searched_for</i> {{ item }}
+                  </div>
+                </div>
+              </div>
+              <div class="dropdown-content" *ngIf="!searchSuggestionsEmpty && !!searchSuggestions.description">
+                  <div class="row" *ngFor="let item of searchSuggestions.description.slice(0,5)">
+                      <i class="material-icons" >text_format</i> {{ item }}
+                 </div>
+              </div>
+              <div class="dropdown-content" *ngIf="!searchSuggestionsEmpty && !!searchSuggestions.locations">
+                  <div class="row" *ngFor="let item of searchSuggestions.locations.slice(0,5)" >
+                      <i class="material-icons" >room</i> {{ item }}
+                 </div>
+              </div>
+              <div class="dropdown-content" *ngIf="!searchSuggestionsEmpty && !!searchSuggestions.tags">
+                  <div class="row" *ngFor="let item of tagNames.slice(0,5)">
+                      <i class="material-icons" >label</i> {{ item }}
+                 </div>
+              </div>
         </div>
       </div>
       <div class="control">

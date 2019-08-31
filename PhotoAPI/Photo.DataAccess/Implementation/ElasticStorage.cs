@@ -146,6 +146,7 @@ namespace Photo.DataAccess.Implementation
                     .Field(f => f.Name)
                     .Field(f => f.Location)
                     .Field(f => f.Description)
+                    .Field(f => f.Tags)
                  )
               )
              .Query(q => q
@@ -178,9 +179,9 @@ namespace Photo.DataAccess.Implementation
                                     .Field(f => f.Location)
                                     .Query($"{criteria}")
                                  ), s => s
-                                    .MatchPhrasePrefix(w => w
-                                        .Field(f => f.Tags)
-                                        .Query($"{criteria}")
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Tags)
+                                     .Query($"{criteria}")
                                   )
                               )
                           )
