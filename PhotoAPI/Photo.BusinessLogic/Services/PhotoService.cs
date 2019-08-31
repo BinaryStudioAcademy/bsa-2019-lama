@@ -314,26 +314,16 @@ namespace Photo.BusinessLogic.Services
                 bool doc = false;
                 try
                 {
-                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}/{element.BlobId}")
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }
                 catch (Exception e)
                 {
-
+                    // ignored
                 }
-                return doc;
-            }
-        }
 
-        private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, PhotoDocument photo)
-        {
-            using (var webClient = new WebClient())
-            {
-                var newPhotoBlob = webClient.DownloadData($"{_blobUrl}{photo.BlobId}");
-                return photoDocumentsCollection.Select(photoDocument => $"{_blobUrl}{photoDocument.BlobId}")
-                    .Select(photoUrl => webClient.DownloadData(photoUrl)).Any(photoDocumentBlob =>
-                        photoDocumentBlob.SequenceEqual(newPhotoBlob));
+                return doc;
             }
         }
     }

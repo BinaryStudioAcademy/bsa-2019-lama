@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using Nest;
-
 using Processors.Domain;
 using Processors.Domain.BlobModel;
-
-using System.Threading.Tasks;
 using Processors.Domain.DTO;
 
-namespace Processors.DataAccess.Implementation
+namespace Processors.DataAccess.Implementations
 {
     public class ElasticStorage : Interfaces.IElasticStorage
     {
@@ -28,9 +25,9 @@ namespace Processors.DataAccess.Implementation
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
         }
-        public Task UpdateHashAsync(long id, HashDTO hash)
+        public Task UpdateHashAsync(long id, HasDTO has)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(hash));
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(has));
         }
         public async Task<bool> ExistAsync(long id)
         {
