@@ -8,6 +8,7 @@ using Services.Models;
 using System;
 using System.Threading.Tasks;
 using Processors.BusinessLogic.ImageComparer;
+using Services.Implementation.RabbitMq;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -17,19 +18,19 @@ namespace Processors.BusinessLogic.Services
 
         private readonly IElasticStorage _elasticStorage;
         private readonly IPhotoBlobStorage _photoBlobStore;
-
+        private readonly IProducer _producer;
         private readonly IConsumer _consumer;
         private readonly ICognitiveService _cognitiveService;
 
         // CONSTRUCTORS
-        public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService, IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer)
+        public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService,
+            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer)
         {
             _imageProcessingService = imageProcessingService;
             _cognitiveService = cognitiveService;
-
             _elasticStorage = elasticStorage;
             _photoBlobStore = photoBlobStore;
-
+            _producer = producer;
             _consumer = consumer;
         }
 
