@@ -24,7 +24,6 @@ import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
 
-
 @Component({
   // tslint:disable-next-line: component-selector
   selector: 'main-page-header',
@@ -32,7 +31,6 @@ import { NotificationService } from 'src/app/services/notification.service';
   styleUrls: ['./main-page-header.component.sass']
 })
 export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
-
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
@@ -214,10 +212,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.searchSuggestions = items;
           this.checkSearchSuggestions();
           this.tagNames = this.extractTagNames(this.searchSuggestions)
-                            .filter((tagname: string) => tagname.includes(criteria))
-                            .filter((element, index, array) => index === array.indexOf(element));
+            .filter((tagname: string) => tagname.includes(criteria))
+            .filter(
+              (element, index, array) => index === array.indexOf(element)
+            );
           this.isActive = false;
-      });
+        });
     }
   }
 
@@ -225,7 +225,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     const temp = [];
     searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));
     this.tagNames = [].concat.apply([], temp);
-    return  this.tagNames.sort(x => x.confidence).map(tag => tag.name);
+    return this.tagNames.sort(x => x.confidence).map(tag => tag.name);
   }
 
   logOut() {
@@ -310,6 +310,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }
     );
     componentRef.instance.toggleModal();
+  }
+
+  getCountOfUnreadNotifications() {
+    return this.notification.filter(x => !x.isRead).length;
   }
 
   ngOnDestroy() {

@@ -91,38 +91,42 @@ input::-webkit-calendar-picker-indicator
     margin: auto
     object-fit: cover
 
-
-
-.main-header
-    position: fixed
-    width: 433px
+.main-header    
+    width: 100%
     z-index: 5
     background: white
 
-.notification-conten
-    margin-top: 130px
-
-.notific
-    padding: 8px
-    background: #4a4a4a
-    border-radius: 100%
-    margin-right: 10px
-
-.notific img
-    max-height: 32px
-    max-width: 32px
-
+.notification-icon
+    margin-left: 10px
+    position: relative
+    i
+        font-size: 20pt      
+    .fa-bell
+        color: orangered
+    &:hover .fa-bell
+        color: #00d1b2
+    &:hover .notification-count
+        background: #00d1b2
 
 
-.notif-header
+.notification-count
+    position: absolute
+    top: -8px
+    right: -5px
+    background: orangered
+    color: white
+    border-radius: 50%
+    height: 15px
+    width: 15px
     text-align: center
-    padding: 10px
-    height: 50px
-    background-color: green
+    font-size: 6pt
+    line-height: 15px
+
 .sub-header
     padding: 10px
-    height: 50px
     border-bottom: 1px solid rgba(9,30,66,.13)
+    text-align: end
+
 .center
     text-align: center
 
@@ -132,22 +136,28 @@ input::-webkit-calendar-picker-indicator
     border-bottom: 1px solid rgba(9,30,66,.13)
     background: white
 
-.notif-panel
+.notification-panel
     box-shadow: 0 8px 16px -4px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)
     overflow: auto
-    position: absolute
-    margin-top: 80px
+    position: fixed
+    margin-top: 70px
     top:0
-    margin-right: 15px
-    max-height: 88%
-    width: 450px
+    max-height: 90%
+    width: 350px
     z-index: 1
     background: white
     right: 0
-    border-radius: 5px
+    border-radius: 0 0 5px 5px
+    border-top: 1px solid rgba(9, 30, 66, 0.08)
+    overflow-x: hidden
+
+.header-text
+    font-size: 15pt
+    text-align: center
 
 .mark
     display: inline
+
 .mark:hover
     border-bottom: 1px solid black
 
