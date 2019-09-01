@@ -17,6 +17,7 @@ namespace Lama.BusinessLogic.Services
     {
         private readonly IHubContext<NotificationHub> Hub;
         private readonly ApplicationDbContext Context;
+        
         public NotificationService(IHubContext<NotificationHub> Hub, ApplicationDbContext Context)
         {
             this.Context = Context;

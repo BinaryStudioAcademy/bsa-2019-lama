@@ -1,4 +1,7 @@
-﻿namespace Services.Interfaces
+﻿using System;
+using RabbitMQ.Client.Events;
+
+namespace Services.Interfaces
 {
     public interface IConsumer : System.IDisposable
     {

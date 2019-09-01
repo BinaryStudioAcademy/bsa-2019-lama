@@ -1,4 +1,7 @@
-﻿using Photo.Domain.DataTransferObjects;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Timers;
+using Photo.Domain.DataTransferObjects;
 
 namespace Photo.BusinessLogic.Interfaces
 {
@@ -8,5 +11,8 @@ namespace Photo.BusinessLogic.Interfaces
 
         void SendPhotoToThumbnailProcessor(long imageId);
         void SendAvatarToThumbnailProcessor(long imageId);
+        Task ReceiveDuplicates(bool isDuplicates);
+        //Task RunAsync(int timeout);
+        void RunAsync(object sender, ElapsedEventArgs e);
     }
 }

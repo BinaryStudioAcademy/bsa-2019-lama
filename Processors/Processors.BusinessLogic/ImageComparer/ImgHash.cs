@@ -14,7 +14,7 @@ namespace Processors.BusinessLogic.ImageComparer
         private readonly int _hashSide;
         private readonly IElasticStorage _elasticStorage;
         private bool[] _hashData;
-        private readonly int _photoId;
+        public int PhotoId { get; set; }
 
         public bool[] HashData
         {
@@ -29,12 +29,19 @@ namespace Processors.BusinessLogic.ImageComparer
         }
 
 
-        public ImgHash(int photoId, IElasticStorage elasticStorage, int hashSideSize = 16)
+        public ImgHash(int photoId, IElasticStorage elasticStorage, List<bool> hash = null, int hashSideSize = 16)
         {
             _hashSide = hashSideSize;
             _elasticStorage = elasticStorage;
-            _hashData = new bool[hashSideSize * hashSideSize];
-            _photoId = photoId;
+            if (hash == null)
+            {
+                _hashData = new bool[hashSideSize * hashSideSize];
+            }
+            else
+            {
+                _hashData = hash.ToArray();
+            }
+            PhotoId = photoId;
         }
 
         /// <summary>
@@ -61,18 +68,18 @@ namespace Processors.BusinessLogic.ImageComparer
             return (HashData.Length - differenceCounter) / HashData.Length * 100;
         }
 
-        public void GenerateFromByteArray(Byte[] bytes)
+        public List<bool> GenerateFromByteArray(Byte[] bytes)
         {
             Bitmap image = (Bitmap)Image.FromStream(new MemoryStream(bytes), true);
 
             _imgSize = $"{image.Size.Width}x{image.Size.Height}";
 
-            GenerateFromImage(image);
+            return GenerateFromImage(image);
 
             image.Dispose();
         }
 
-        private void GenerateFromImage(Bitmap img)
+        private List<bool> GenerateFromImage(Bitmap img)
         {
             List<bool> lResult = new List<bool>();
 
@@ -90,9 +97,8 @@ namespace Processors.BusinessLogic.ImageComparer
 
             _hashData = lResult.ToArray();
 
-            _elasticStorage.UpdateHashAsync(_photoId, new HasDTO{Hash = new List<bool>(_hashData)});
-
             bmpMin.Dispose();
+            return new List<bool>(_hashData);
         }
     }
 }

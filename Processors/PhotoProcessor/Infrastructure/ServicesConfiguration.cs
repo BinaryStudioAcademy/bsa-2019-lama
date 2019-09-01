@@ -62,7 +62,8 @@ namespace PhotoProcessor.Infrastructure
 
             _container.RegisterFactory<IElasticStorage>(ElasticStorageFactory);
             _container.RegisterFactory<IPhotoBlobStorage>(f => new PhotoBlobStore(_configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
-            
+            _container.RegisterFactory<ImageCompareService>(f =>
+                new ImageCompareService(_container.Resolve<IElasticStorage>()));
             _container.RegisterFactory<ICognitiveService>(CognitiveServiceFactory);
             _container.RegisterType<IImageProcessingService, ImageProcessingService>();
             _container.RegisterFactory<IMessageService>(MessageServiceFactory);
@@ -90,8 +91,11 @@ namespace PhotoProcessor.Infrastructure
                         
             var consumer = unityContainer.Resolve<IConnectionProvider>().Connect
                 (_configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"));
+            var producer = unityContainer.Resolve<IConnectionProvider>().Open
+                (_configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI"));
 
-            return new MessageServices(imageProcessingService, cognitiveService, elasticStorage, photoBlobStorage, consumer);
+            var comparer = unityContainer.Resolve<ImageCompareService>();
+            return new MessageServices(imageProcessingService, cognitiveService, elasticStorage, photoBlobStorage, consumer, producer, comparer);
         }
 
         private ICognitiveService CognitiveServiceFactory(IUnityContainer unityContainer)

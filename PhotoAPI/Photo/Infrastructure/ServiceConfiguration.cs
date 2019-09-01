@@ -75,7 +75,9 @@ namespace Photo.Infrastructure
 
             MessageServiceSettings messageServiceSettings = new MessageServiceSettings()
             {
+                PhotoProcessorConsumer = connectionProvider.Connect(configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI")),
                 PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
+                
             };
 
             return new MessageService(messageServiceSettings);

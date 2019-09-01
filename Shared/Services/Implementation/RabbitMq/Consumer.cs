@@ -4,6 +4,7 @@ using Services.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
+using System;
 
 namespace Services.Implementation.RabbitMq
 {
@@ -12,12 +13,14 @@ namespace Services.Implementation.RabbitMq
         private readonly IBroker _broker;
         private readonly ISubscription _subscription;
 
+
+
         public Consumer(IConnectionFactory connectionFactory, Settings settings)
         {
             _broker = new Broker(connectionFactory, settings);
-
             _subscription = new Subscription(_broker.Channel, settings.QueueName, autoAck: false);
         }
+
 
         public void Dispose()
         {

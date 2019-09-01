@@ -6,8 +6,11 @@ using Processors.Domain.DTO;
 using Services.Interfaces;
 using Services.Models;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Processors.BusinessLogic.ImageComparer;
+using RabbitMQ.Client.Events;
 using Services.Implementation.RabbitMq;
 
 namespace Processors.BusinessLogic.Services
@@ -21,10 +24,11 @@ namespace Processors.BusinessLogic.Services
         private readonly IProducer _producer;
         private readonly IConsumer _consumer;
         private readonly ICognitiveService _cognitiveService;
+        private readonly ImageCompareService _comparer;
 
         // CONSTRUCTORS
         public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService,
-            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer)
+            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer, ImageCompareService comparer)
         {
             _imageProcessingService = imageProcessingService;
             _cognitiveService = cognitiveService;
@@ -32,6 +36,7 @@ namespace Processors.BusinessLogic.Services
             _photoBlobStore = photoBlobStore;
             _producer = producer;
             _consumer = consumer;
+            _comparer = comparer;
         }
 
         public void Dispose()
@@ -41,6 +46,7 @@ namespace Processors.BusinessLogic.Services
 
         public async Task RunAsync(int millisecondsTimeout)
         {
+            Console.WriteLine("running");
             while (true)
             {
                 var receiveData = _consumer.Receive(millisecondsTimeout);
@@ -49,8 +55,9 @@ namespace Processors.BusinessLogic.Services
                 await HandleReceivedDataAsync(JsonConvert.DeserializeObject<MakePhotoThumbnailDTO>(receiveData.Message));
                 _consumer.SetAcknowledge(receiveData.DeliveryTag, true);
             }
-
         }
+
+
         private async Task HandleReceivedDataAsync(MakePhotoThumbnailDTO makePhotoThumbnailDTO)
         {
             string address;
@@ -68,7 +75,25 @@ namespace Processors.BusinessLogic.Services
             var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
             var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
             var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
-            new ImgHash((int)makePhotoThumbnailDTO.ImageId, _elasticStorage).GenerateFromByteArray(currentImg);
+            var hash = new ImgHash((int)makePhotoThumbnailDTO.ImageId, _elasticStorage);
+            hash.GenerateFromByteArray(currentImg);
+            await _elasticStorage.UpdateHashAsync(makePhotoThumbnailDTO.ImageId, new HasDTO { Hash = new List<bool>(hash.HashData) });
+            var comparison_result = await _comparer.FindDuplicatesWithTollerance(1);
+            var isDuplicate = false;
+            foreach (var item in comparison_result)
+            {
+                if (item.Count <= 1) continue;
+                foreach (var itm in item)
+                {
+                    if (itm.PhotoId == makePhotoThumbnailDTO.ImageId)
+                    {
+                        isDuplicate = true;
+                    } 
+                }
+            }
+
+            var bytes = BitConverter.GetBytes(isDuplicate);
+            _producer.Send(bytes);
 
             if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
             {

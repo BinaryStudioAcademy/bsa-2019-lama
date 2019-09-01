@@ -6,5 +6,6 @@ namespace Photo.Domain.Settings
     public class MessageServiceSettings
     {
         public IProducer PhotoProcessorProducer { get; set; }
+        public IConsumer PhotoProcessorConsumer { get; set; }
     }
 }
