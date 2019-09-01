@@ -317,6 +317,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.toggleModal();
   }
 
+  getCountOfUnreadNotifications() {
+    return this.notification.filter(x => !x.isRead).length;
+  }
+
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();
