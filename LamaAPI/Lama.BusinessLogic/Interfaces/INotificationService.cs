@@ -13,5 +13,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<List<NotificationDTO>> GetNotification(int userId);
         Task SendIsRead(int id);
         Task MarkAllIsARead(int id);
+        Task DeleteNotification(int id);
     }
 }

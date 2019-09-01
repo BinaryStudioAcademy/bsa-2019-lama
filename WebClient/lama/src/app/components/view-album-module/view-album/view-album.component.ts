@@ -84,7 +84,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   ngOnInit() {
-    console.log(this.router.url);
     this.returnPath = this.router.url.substr(
       0,
       this.router.url.lastIndexOf('/') + 1
@@ -104,7 +103,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         .subscribe(
           x => {
             this.album = x.body;
-            this.album.photoAlbums = this.album.photoAlbums.reverse();
+            if (this.album.photoAlbums !== null) {
+              this.album.photoAlbums = this.album.photoAlbums.reverse();
+            }
           },
           error => this.notifier.notify('error', 'Error loading album')
         );

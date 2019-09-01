@@ -70,8 +70,10 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
     if (this.album.id === -1) {
       this.isFake = true;
     }
-    console.log(this.album.photo.userId);
-    if (this.album.photo.userId !== this.currentUser.id) {
+    if (
+      this.album.photo !== null &&
+      this.album.photo.userId !== this.currentUser.id
+    ) {
       this.isOwners = false;
     }
   }
@@ -147,9 +149,9 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       if (this.album.photo === null) {
         this.album.photo = photos[0];
         this.fileService
-        .getPhoto(this.album.photo.blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.imageUrl = url));
+          .getPhoto(this.album.photo.blob256Id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => (this.imageUrl = url));
       }
     }
   }
@@ -173,10 +175,11 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       this.albumService
         .removeAlbum(this.album.id)
         .pipe(takeUntil(this.unsubscribe))
-        .subscribe(x => {
-          this.notifier.notify('success', 'Album Deleted');
-          this.deleteAlbumEvent.emit(this.album);
-        },
+        .subscribe(
+          x => {
+            this.notifier.notify('success', 'Album Deleted');
+            this.deleteAlbumEvent.emit(this.album);
+          },
           error => this.notifier.notify('error', 'Error deleting album')
         );
     }

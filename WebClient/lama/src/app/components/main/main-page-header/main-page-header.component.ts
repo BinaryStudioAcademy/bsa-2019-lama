@@ -24,7 +24,6 @@ import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
 
-
 @Component({
   // tslint:disable-next-line: component-selector
   selector: 'main-page-header',
@@ -32,7 +31,6 @@ import { NotificationService } from 'src/app/services/notification.service';
   styleUrls: ['./main-page-header.component.sass']
 })
 export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
-
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
@@ -57,7 +55,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   latestSearchAttempt = '';
   tagNames = [];
 
-  // constructors
   constructor(
     public auth: AuthService,
     private router: Router,
@@ -119,6 +116,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error update notification')
       );
   }
+  sendDelete(id) {
+    this.notificationService.DeleteNotfication(id).subscribe(
+      x => {
+        this.notification = this.notification.filter(z => z.id !== id);
+      },
+      error => this.notifier.notify('error', 'Error deleting notification')
+    );
+  }
   MarkAllAsRead() {
     this.notificationService
       .MarkAllAsRead(this.id)
@@ -132,7 +137,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.notifier.notify('error', 'Error mark as all read notification')
       );
   }
-  public registerHub() {
+
+  registerHub() {
     const stringConnection = environment.lamaApiUrl + environment.hub;
     this.Hub = new HubConnectionBuilder()
       .withUrl(`${stringConnection}`, {
@@ -148,10 +154,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }
     });
   }
+
   addNotification(notification) {
     this.notification.unshift(notification);
     this.checkNotification(this.notification);
   }
+  DeleteNotification() {}
   checkNotification(notification: NotificationDTO[]) {
     const check = notification.some(x => x.isRead === false);
     if (check) {
@@ -214,10 +222,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.searchSuggestions = items;
           this.checkSearchSuggestions();
           this.tagNames = this.extractTagNames(this.searchSuggestions)
-                            .filter((tagname: string) => tagname.includes(criteria))
-                            .filter((element, index, array) => index === array.indexOf(element));
+            .filter((tagname: string) => tagname.includes(criteria))
+            .filter(
+              (element, index, array) => index === array.indexOf(element)
+            );
           this.isActive = false;
-      });
+        });
     }
   }
 
@@ -225,7 +235,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     const temp = [];
     searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));
     this.tagNames = [].concat.apply([], temp);
-    return  this.tagNames.sort(x => x.confidence).map(tag => tag.name);
+    return this.tagNames.sort(x => x.confidence).map(tag => tag.name);
   }
 
   logOut() {
@@ -245,9 +255,11 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         console.log('user is not signed in');
       });
   }
+
   ShowHideNotification() {
     this.IsShowNotify = !this.IsShowNotify;
   }
+
   getSearchHistory(id: number) {
     this.file
       .getSearchHistory(id)
@@ -271,7 +283,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
-    this.searchCriteria = '';
   }
 
   restore() {
@@ -283,8 +294,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     );
   }
 
-  searchHistoryItemClicked() {
-    console.log('1');
+  sendItemToSearchbar(item: string) {
+    this.searchCriteria = item;
+    this.find();
+    this.isSearchDropdownExpanded = false;
   }
 
   checkSearchSuggestions() {
@@ -310,6 +323,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }
     );
     componentRef.instance.toggleModal();
+  }
+
+  getCountOfUnreadNotifications() {
+    return this.notification.filter(x => !x.isRead).length;
   }
 
   ngOnDestroy() {

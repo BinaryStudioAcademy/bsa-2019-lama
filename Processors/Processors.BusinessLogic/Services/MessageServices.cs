@@ -116,23 +116,23 @@ namespace Processors.BusinessLogic.Services
         }
         private async Task<ThumbnailUpdateDTO> LoadImageToBlob(ImageType imageType, byte[] image64, byte[] image256)
         {
-            if (ImageType.Avatar == imageType)
+            switch (imageType)
             {
-                return new ThumbnailUpdateDTO
-                {
-                    Blob64Id = await _photoBlobStore.LoadAvatarToBlob(image64),
-                    Blob256Id = await _photoBlobStore.LoadAvatarToBlob(image256),
-                };
+                case ImageType.Avatar:
+                    return new ThumbnailUpdateDTO
+                    {
+                        Blob64Id = await _photoBlobStore.LoadAvatarToBlob(image64),
+                        Blob256Id = await _photoBlobStore.LoadAvatarToBlob(image256),
+                    };
+                case ImageType.Photo:
+                    return new ThumbnailUpdateDTO
+                    {
+                        Blob64Id = await _photoBlobStore.LoadPhotoToBlob(image64),
+                        Blob256Id = await _photoBlobStore.LoadPhotoToBlob(image256),
+                    };
+                default:
+                    throw new ArgumentException("Unexpected image type");
             }
-            else if (ImageType.Photo == imageType)
-            {
-                return new ThumbnailUpdateDTO
-                {
-                    Blob64Id = await _photoBlobStore.LoadPhotoToBlob(image64),
-                    Blob256Id = await _photoBlobStore.LoadPhotoToBlob(image256),
-                };
-            }
-            else throw new System.ArgumentException("Unexpected image type");
         }
     }
 }
