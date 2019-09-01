@@ -9,7 +9,7 @@ namespace Lama.BusinessLogic.Interfaces
 {
     public interface INotificationService
     {
-        Task SendNotification(int Id,User name,string noti);
+        Task SendNotification(int Id,User name,string notification);
         Task<List<NotificationDTO>> GetNotification(int userId);
         Task SendIsRead(int id);
         Task MarkAllIsARead(int id);

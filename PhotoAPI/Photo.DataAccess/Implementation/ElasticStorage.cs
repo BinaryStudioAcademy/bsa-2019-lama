@@ -157,12 +157,15 @@ namespace Photo.DataAccess.Implementation
                                  .MatchPhrasePrefix(w => w
                                     .Field(f => f.Location)
                                     .Query($"{criteria}")
-                                 )
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Tags)
+                                     .Query($"{criteria}")
                               )
                           )
                      )
                 )
-            ));
+            )));
             return requestResult.Documents;
         }
 
@@ -174,6 +177,7 @@ namespace Photo.DataAccess.Implementation
                     .Field(f => f.Name)
                     .Field(f => f.Location)
                     .Field(f => f.Description)
+                    .Field(f => f.Tags)
                  )
               )
              .Query(q => q
@@ -205,7 +209,11 @@ namespace Photo.DataAccess.Implementation
                                  .MatchPhrasePrefix(w => w
                                     .Field(f => f.Location)
                                     .Query($"{criteria}")
-                                 )
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Tags)
+                                     .Query($"{criteria}")
+                                  )
                               )
                           )
                      )
@@ -213,49 +221,50 @@ namespace Photo.DataAccess.Implementation
             )
         );
             //TODO - rewrite this awful code
-            List<string> names = requestResult.Documents
+            var names = requestResult.Documents
                 .Where(p => p.Name.ToLower()
                     .Contains(criteria.ToLower()))
                     .Select(m => m.Name)
                     .Distinct()
                     .ToList();
-            List<string> description = requestResult.Documents
+            var description = requestResult.Documents
                 .Where(p => p.Description != null &&  p.Description.ToLower()
                     .Contains(criteria.ToLower()))
                     .Select(m => m.Description)
                     .Distinct()
                     .ToList();
-            List<string> locations = requestResult.Documents
+            var locations = requestResult.Documents
                 .Where(p => p.Location != null && p.Location.ToLower()
                     .Contains(criteria.ToLower()))
                     .Select(m => m.Location)
                     .Distinct()
                     .ToList();
+            var tags = requestResult.Documents
+                .Where(p => p.Tags != null && p.Tags.ToLower()
+                        .Contains(criteria.ToLower()))
+                        .Select(m => m.Tags)
+                        .Distinct()
+                        .ToList();
 
             var dict = new Dictionary<string, List<string>>()
             {
                 {"names", names },
-                {"desription", description },
-                {"locations", locations }
+                {"description", description },
+                {"locations", locations },
+                {"tags", tags}
             };
             return dict;
         }
 
         public async Task<IEnumerable<PhotoDocument>> GetDeletedPhoto(int userId)
         {
-            var mustClauses = new List<QueryContainer>();
-
-            mustClauses.Add(new TermQuery
+            var mustClauses = new List<QueryContainer>
             {
-                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
-                Value = true
-            });
+                new TermQuery {Field = Infer.Field<PhotoDocument>(p => p.IsDeleted), Value = true},
+                new TermQuery {Field = Infer.Field<PhotoDocument>(t => t.UserId), Value = userId,}
+            };
 
-            mustClauses.Add(new TermQuery
-            {
-                Field = Infer.Field<PhotoDocument>(t => t.UserId),
-                Value = userId,
-            });
+
 
             var searchRequest = new SearchRequest<PhotoDocument>(indexName)
             {
@@ -269,25 +278,15 @@ namespace Photo.DataAccess.Implementation
 
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
         {
-            var mustClauses = new List<QueryContainer>();
-
-            mustClauses.Add(new TermQuery
+            var mustClauses = new List<QueryContainer>
             {
-                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
-                Value = false
-            });
+                new TermQuery {Field = Infer.Field<PhotoDocument>(p => p.IsDeleted), Value = false},
+                new TermQuery {Field = Infer.Field<PhotoDocument>(t => t.UserId), Value = userId,},
+                new MatchQuery {Field = Infer.Field<PhotoDocument>(p => p.BlobId), Query = ".*images.*"}
+            };
 
-            mustClauses.Add(new TermQuery
-            {
-                Field = Infer.Field<PhotoDocument>(t => t.UserId),
-                Value = userId,
-            });
 
-            mustClauses.Add(new MatchQuery
-            {
-                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
-                Query = ".*images.*"
-            });
+
 
             var searchRequest = new SearchRequest<PhotoDocument>(indexName)
             {
@@ -300,25 +299,12 @@ namespace Photo.DataAccess.Implementation
 
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startIndex, int count)
         {
-            var mustClauses = new List<QueryContainer>();
-
-            mustClauses.Add(new TermQuery
+            var mustClauses = new List<QueryContainer>
             {
-                Field = Infer.Field<PhotoDocument>(p => p.IsDeleted),
-                Value = false
-            });
-
-            mustClauses.Add(new TermQuery
-            {
-                Field = Infer.Field<PhotoDocument>(t => t.UserId),
-                Value = userId,
-            });
-
-            mustClauses.Add(new MatchQuery
-            {
-                Field = Infer.Field<PhotoDocument>(p => p.BlobId),
-                Query = ".*images.*"
-            });
+                new TermQuery {Field = Infer.Field<PhotoDocument>(p => p.IsDeleted), Value = false},
+                new TermQuery {Field = Infer.Field<PhotoDocument>(t => t.UserId), Value = userId,},
+                new MatchQuery {Field = Infer.Field<PhotoDocument>(p => p.BlobId), Query = ".*images.*"}
+            };
 
             var searchRequest = new SearchRequest<PhotoDocument>(indexName)
             {

@@ -24,12 +24,12 @@ namespace Lama.BusinessLogic.Services
     public class PhotoService : IPhotoService, IDisposable
     {
         // FIELDS
-        private string url;
-        private IUnitOfWork _context;
-        private HttpClient httpClient;
+        private readonly string url;
+        private readonly IUnitOfWork _context;
+        private readonly HttpClient httpClient;
         private readonly IMapper _mapper;
-        INotificationService notificationService;
-        ApplicationDbContext Context;
+        readonly INotificationService notificationService;
+        readonly ApplicationDbContext Context;
         public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
         {
             this.url = url;
@@ -66,17 +66,20 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            IEnumerable<PhotoDocumentDTO> photoDocumentDTOs = JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(responseContent);
+            var photoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photoDocumentDTOs = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photoDocuments);
 
-            foreach (PhotoDocumentDTO photoDocumentDTO in photoDocumentDTOs)
+            foreach (var photoDocumentDto in photoDocumentDTOs)
             {
-                Like[] likes = (await _context.GetRepository<Like>()
-                    .GetAsync(l => l.PhotoId == photoDocumentDTO.Id))
+                var likes =  (await _context.GetRepository<Like>()
+                    .GetAsync(l => l.PhotoId == photoDocumentDto.Id))
+
+
                     .ToArray();
 
-                photoDocumentDTO.Reactions = _mapper.Map<LikeDTO[]>(likes);
+                photoDocumentDto.Reactions = _mapper.Map<LikeDTO[]>(likes);
 
-                foreach (LikeDTO like in photoDocumentDTO.Reactions)
+                foreach (var like in photoDocumentDto.Reactions)
                 {
                     if (like.Photo != null)
                     {
@@ -123,10 +126,10 @@ namespace Lama.BusinessLogic.Services
             var photo = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
             var user = photo.User;
             var ID = user.Id;
-            if (user.Id != newLike.UserId)
+            if (user.Id == newLike.UserId) return like.Id;
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
-                string noti = "Liked your photo";
+                var noti = "Liked your photo";
                 await notificationService.SendNotification(ID, user, noti);
             }
             return like.Id;
@@ -323,7 +326,7 @@ namespace Lama.BusinessLogic.Services
             var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
             var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
 
-            for (int i = 0; i < photos.Count(); i++)
+            for (var i = 0; i < photos.Count(); i++)
             {
                 var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
@@ -341,18 +344,18 @@ namespace Lama.BusinessLogic.Services
         }
         public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            string uri = $"{url}api/photos/deleted/{userId}";
+            var uri = $"{url}api/photos/deleted/{userId}";
 
-            HttpResponseMessage response = await httpClient.GetAsync(uri);
+            var response = await httpClient.GetAsync(uri);
 
-            string bodyJson = await response.Content.ReadAsStringAsync();
+            var bodyJson = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<DeletedPhotoDTO[]>(bodyJson);
         }
 
         public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
         {
-            string uri = $"{url}api/photos/delete_permanently";
+            var uri = $"{url}api/photos/delete_permanently";
 
             var content = new StringContent(JsonConvert.SerializeObject(photosToDelete), Encoding.UTF8, "application/json");
 
@@ -368,9 +371,9 @@ namespace Lama.BusinessLogic.Services
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {
-            string uri = $"{url}api/photos/restore";
+            var uri = $"{url}api/photos/restore";
 
-            StringContent content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
 
             return httpClient.PostAsync(uri, content);
         }

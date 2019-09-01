@@ -57,7 +57,7 @@ namespace Processors.BusinessLogic.Services
             try
             {
                 address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
-            }catch(Exception e) // FIX
+            }catch(Exception) // FIX
             {
                 return;
             }
