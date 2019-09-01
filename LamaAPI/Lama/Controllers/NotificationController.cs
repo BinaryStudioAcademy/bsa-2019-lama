@@ -38,6 +38,10 @@ namespace Lama.Controllers
         {
             await notificationService.MarkAllIsARead(id);
         }
-
+        [HttpDelete("{id}")]
+        public async Task DeleteNotification(int id)
+        {
+            await notificationService.DeleteNotification(id);
+        }
     }
 }

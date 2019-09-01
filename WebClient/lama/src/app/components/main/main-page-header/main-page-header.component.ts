@@ -116,6 +116,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error update notification')
       );
   }
+  sendDelete(id) {
+    this.notificationService.DeleteNotfication(id).subscribe(
+      x => {
+        this.notification = this.notification.filter(z => z.id !== id);
+      },
+      error => this.notifier.notify('error', 'Error deleting notification')
+    );
+  }
   MarkAllAsRead() {
     this.notificationService
       .MarkAllAsRead(this.id)
@@ -151,7 +159,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.notification.unshift(notification);
     this.checkNotification(this.notification);
   }
-
+  DeleteNotification() {}
   checkNotification(notification: NotificationDTO[]) {
     const check = notification.some(x => x.isRead === false);
     if (check) {
