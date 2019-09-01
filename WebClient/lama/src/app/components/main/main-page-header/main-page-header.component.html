@@ -44,7 +44,9 @@
           </div>
           <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && tagNames.length > 0)">
             <div class="row" *ngFor="let item of tagNames.slice(0,5)">
-              <i class="material-icons">label</i> {{ item }}
+              <a class="dropdown-item">
+                <i class="material-icons">label</i> {{ item }}
+              </a>
             </div>
           </div>
         </div>
