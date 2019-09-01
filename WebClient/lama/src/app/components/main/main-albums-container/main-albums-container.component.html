@@ -1,35 +1,22 @@
 <h2>Recent albums:</h2>
 <div class="items-container-left">
-  <a class="album">
-    <div class="new-album" (click)="CreateAlbum($event)">
-      <a><img src="assets/plus.svg" alt=""/></a>
+    <a class="album">
+        <div class="new-album" (click)="CreateAlbum($event)">
+            <a><img src="assets/plus.svg" alt="" /></a>
+        </div>
+        <div class="description has-text-centered">
+            <p>New album</p>
+        </div>
+    </a>
+    <div *ngIf="showFavorite">
+        <main-album [_album]="favorite" [currentUser]="currentUser" [_isFavorite]="true" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        </main-album>
     </div>
-    <div class="description has-text-centered">
-      <p>New album</p>
+    <div *ngFor="let item of albums">
+        <main-album [_album]="item" [currentUser]="currentUser" [_isFavorite]="false" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
+        </main-album>
     </div>
-  </a>
-  <div *ngIf="showFavorite">
-    <main-album
-      [_album]="favorite"
-      [_isFavorite]="true"
-      (Click)="albumClicked($event)"
-      (ClickDownload)="ArchiveAlbum($event)"
-      (deleteAlbumEvent)="deleteAlbumHandler($event)"
-    >
-    </main-album>
-  </div>
-  <div *ngFor="let item of albums">
-    <main-album
-      [_album]="item"
-      [currentUser]="currentUser"
-      [_isFavorite]="false"
-      (Click)="albumClicked($event)"
-      (ClickDownload)="ArchiveAlbum($event)"
-      (deleteAlbumEvent)="deleteAlbumHandler($event)"
-    >
-    </main-album>
-  </div>
 
-  <template #CreateAlbumnContainer></template>
+    <template #CreateAlbumnContainer></template>
 </div>
 <notifier-container></notifier-container>
