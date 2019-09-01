@@ -95,11 +95,12 @@
       </a>
     </div>
   </div>
-  <div class="notification-content">
+  <div class="notification-content" *ngIf="notification && notification.length !== 0">
     <div *ngFor="let item of notification">
       <app-main-notification (id)="sendIsRead($event)" [notification]="item"></app-main-notification>
     </div>
   </div>
+  <div class="no-notifications" *ngIf="notification && notification.length === 0">Here is nothing</div>
 </aside>
 <template #photoUploadModal></template>
 <notifier-container></notifier-container>
