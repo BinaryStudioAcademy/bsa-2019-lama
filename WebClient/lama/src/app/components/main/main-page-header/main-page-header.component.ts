@@ -55,7 +55,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   latestSearchAttempt = '';
   tagNames = [];
 
-  // constructors
   constructor(
     public auth: AuthService,
     private router: Router,
@@ -130,14 +129,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.notifier.notify('error', 'Error mark as all read notification')
       );
   }
-  silds(item) {
-    alert(5);
-    /*
-    sole logic
-    */
-    this.isSearchDropdownExpanded = false;
-  }
-  public registerHub() {
+
+  registerHub() {
     const stringConnection = environment.lamaApiUrl + environment.hub;
     this.Hub = new HubConnectionBuilder()
       .withUrl(`${stringConnection}`, {
@@ -153,10 +146,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }
     });
   }
+
   addNotification(notification) {
     this.notification.unshift(notification);
     this.checkNotification(this.notification);
   }
+
   checkNotification(notification: NotificationDTO[]) {
     const check = notification.some(x => x.isRead === false);
     if (check) {
@@ -252,9 +247,11 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         console.log('user is not signed in');
       });
   }
+
   ShowHideNotification() {
     this.IsShowNotify = !this.IsShowNotify;
   }
+
   getSearchHistory(id: number) {
     this.file
       .getSearchHistory(id)
@@ -278,7 +275,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
-    this.searchCriteria = '';
   }
 
   restore() {
@@ -290,8 +286,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     );
   }
 
-  searchHistoryItemClicked() {
-    console.log('1');
+  sendItemToSearchbar(item: string) {
+    this.searchCriteria = item;
+    this.find();
+    this.isSearchDropdownExpanded = false;
   }
 
   checkSearchSuggestions() {
