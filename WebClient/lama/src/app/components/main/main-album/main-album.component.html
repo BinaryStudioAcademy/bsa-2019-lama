@@ -19,7 +19,7 @@
         >Set cover</a
       >
       <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
-      <a *ngIf="!isFake" class="dropdown-item" (click)="addPhotos($event)"
+      <a *ngIf="!isFake && !isFavorite" class="dropdown-item" (click)="addPhotos($event)"
         >Add Photos</a
       >
       <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
