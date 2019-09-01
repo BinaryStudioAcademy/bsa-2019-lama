@@ -15,6 +15,7 @@ export class MainNotificationComponent implements OnInit {
   unsubscribe = new Subject();
 
   @Output() id = new EventEmitter<number>();
+  @Output() deleteId = new EventEmitter<number>();
 
   @Input() notification: NotificationDTO;
   ngOnInit() {
@@ -29,5 +30,8 @@ export class MainNotificationComponent implements OnInit {
     }
     this.id.emit(this.notification.id);
     this.notification.isRead = true;
+  }
+  sendDelete() {
+    this.deleteId.emit(this.notification.id);
   }
 }

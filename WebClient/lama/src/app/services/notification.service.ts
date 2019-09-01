@@ -27,4 +27,9 @@ export class NotificationService {
       id
     );
   }
+  DeleteNotfication(id: number) {
+    return this.client.delete(
+      `${environment.lamaApiUrl}/api/notification/${id}`
+    );
+  }
 }

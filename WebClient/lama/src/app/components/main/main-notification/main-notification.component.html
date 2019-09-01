@@ -1,21 +1,21 @@
 <div [style.background]="this.notification.isRead ? 'white' : '#00d1b270'" class="flex-notif">
-  <div class="read-button" (click)="sendIsRead()" [ngClass]="{'is-not-read': !notification.isRead}">
-  </div>
-  <div class="notification content">
-    <a class="delete is-small"></a>
-    <div class="title-content">
-      <div class="image is-32x32 logo">
-        <img src="{{ imageUrl }}" alt="">
-      </div>
-      <div class="name">
-        <strong class="stiles">{{this.notification.sender.name}}</strong>
-      </div>
+    <div class="read-button" (click)="sendIsRead()" [ngClass]="{'is-not-read': !notification.isRead}">
     </div>
-    <div class="main-content">
-      <p>{{this.notification.text}}</p>
+    <div class="notification content">
+        <a class="delete is-small" (click)="sendDelete()"></a>
+        <div class="title-content">
+            <div class="image is-32x32 logo">
+                <img src="{{ imageUrl }}" alt="">
+            </div>
+            <div class="name">
+                <strong class="stiles">{{this.notification.sender.name}}</strong>
+            </div>
+        </div>
+        <div class="main-content">
+            <p>{{this.notification.text}}</p>
+        </div>
+        <div class="date-content">
+            <p>{{this.notification.date | date:'short'}}</p>
+        </div>
     </div>
-    <div class="date-content">
-      <p>{{this.notification.date | date:'short'}}</p>
-    </div>
-  </div>
 </div>

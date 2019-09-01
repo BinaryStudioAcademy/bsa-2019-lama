@@ -58,7 +58,12 @@ namespace Lama.BusinessLogic.Services
             await Context.SaveChangesAsync();
             return value.Entity;
         }
-
+        public async Task DeleteNotification(int id)
+        {
+            var notification = await Context.Notifications.FirstOrDefaultAsync(x => x.Id == id);
+            Context.Notifications.Remove(notification);
+            await Context.SaveChangesAsync();
+        }
         public async Task<List<NotificationDTO>> GetNotification(int userId)
         {
             var list = await Context.Notifications.Include(x=>x.Sender).Where(x => x.UserId == userId).ToListAsync();
