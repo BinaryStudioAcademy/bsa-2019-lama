@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy
+} from '@angular/core';
 import { PhotoToDeleteRestoreDTO } from 'src/app/models';
 import { environment } from 'src/environments/environment';
 import { FileService } from 'src/app/services';
@@ -13,16 +20,16 @@ import { Subject } from 'rxjs';
   styleUrls: ['./duplicates-modal.component.sass']
 })
 export class DuplicatesModalComponent implements OnInit, OnDestroy {
-
   @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
   @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
   isActive = true;
   unsubscribe = new Subject();
-  constructor(private fileService: FileService, private notifier: NotifierService) {
-
-   }
+  constructor(
+    private fileService: FileService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {
     this.getDuplicatesUrls();
@@ -34,24 +41,28 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   }
 
   removeDuplicates() {
-    const toDelete = this.receivedDuplicates.map(photo => new PhotoToDeleteRestoreDTO(photo.id));
-    this.fileService.deletePhotosPermanently(toDelete)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(response => {
-      this.notifier.notify('success', 'Duplicates removed successfully');
-    },
-    error => this.notifier.notify('error', 'Error occured while removing duplicates'));
+    const toDelete = this.receivedDuplicates.map(
+      photo => new PhotoToDeleteRestoreDTO(photo.id)
+    );
+    this.fileService.deletePhotosPermanently(toDelete).subscribe(
+      response => {
+        this.notifier.notify('success', 'Duplicates removed successfully');
+      },
+      error =>
+        this.notifier.notify('error', 'Error occured while removing duplicates')
+    );
     this.Change.emit(toDelete.map(x => x.id));
     this.toggleModal();
   }
 
   getDuplicatesUrls() {
     this.receivedDuplicates.forEach(duplicate => {
-      this.fileService.getPhoto(duplicate.blob256Id)
+      this.fileService
+        .getPhoto(duplicate.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-        this.duplicatesUrls.push(url);
-      });
+          this.duplicatesUrls.push(url);
+        });
     });
   }
 
