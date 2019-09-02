@@ -96,7 +96,7 @@
                                         <h4 class="subtitle is-5 submarg">Description</h4>
                                         <div class="field">
                                             <div class="control">
-                                                <textarea class="textarea is-primary" (blur)="ChangeDescription($event.target.value)" [(ngModel)]="photo.description" placeholder="Description" rows="2"></textarea>
+                                                <textarea class="textarea is-primary" (blur)="ChangeDescription($event.target.value)" [(ngModel)]="photo.description" placeholder="Description" rows="2" [attr.disabled]="isBlockById() ? '' : null"></textarea>
                                             </div>
                                         </div>
                                     </div>
