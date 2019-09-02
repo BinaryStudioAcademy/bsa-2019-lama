@@ -335,8 +335,4 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();
   }
-
-  clearInput(event) {
-    this.searchCriteria = '';
-  }
 }
