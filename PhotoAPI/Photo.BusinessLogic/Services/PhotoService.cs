@@ -50,7 +50,7 @@ namespace Photo.BusinessLogic.Services
             return _elasticStorage.FindFields(id, criteria);
         }
 
-        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
+        public async Task<List<Byte[]>> GetPhotos(List<string> values)
         {
             return await _storage.GetPhotos(values);
         }

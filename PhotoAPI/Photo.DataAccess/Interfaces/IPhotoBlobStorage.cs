@@ -10,7 +10,7 @@ namespace Photo.DataAccess.Interfaces
         Task<string> LoadPhotoToBlob(byte[] blob, string name = null);
         Task<string> LoadAvatarToBlob(byte[] blob);
         Task DeleteFileAsync(string blobName);
-        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
+        Task<List<Byte[]>> GetPhotos(List<string> values);
         Task<string> GetPhoto(string value);
         Task<string> GetAvatar(string value);
     }

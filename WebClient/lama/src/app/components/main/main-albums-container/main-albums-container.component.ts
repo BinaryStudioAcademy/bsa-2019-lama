@@ -43,16 +43,17 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
   unsubscribe = new Subject();
   ngOnInit() {
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId)
+    this.httpService
+      .getData('users/' + userId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      u => {
-        this.currentUser = u;
-        this.GetFavoriteAlbum(this.currentUser.id);
-        this.GetAlbums();
-      },
-      error => this.notifier.notify('error', 'Error loading user')
-    );
+        u => {
+          this.currentUser = u;
+          this.GetFavoriteAlbum(this.currentUser.id);
+          this.GetAlbums();
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
   }
   constructor(
     resolver: ComponentFactoryResolver,
@@ -67,57 +68,59 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
 
   GetAlbums() {
     const id = this.currentUser.id;
-    this.albumService.getAlbums(id)
+    this.albumService
+      .getAlbums(id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      albums => {
-        this.albums = albums.body;
-        this.albums.forEach(a => {
-          if (
-            a.photo == null &&
-            a.photoAlbums != null &&
-            a.photoAlbums.length > 0
-          ) {
-            a.photo = a.photoAlbums[0];
-          }
-        });
-      },
-      error => this.notifier.notify('error', 'Error loading albums')
-    );
+        albums => {
+          this.albums = albums.body;
+          this.albums.forEach(a => {
+            if (
+              a.photo == null &&
+              a.photoAlbums != null &&
+              a.photoAlbums.length > 0
+            ) {
+              a.photo = a.photoAlbums[0];
+            }
+          });
+        },
+        error => this.notifier.notify('error', 'Error loading albums')
+      );
   }
 
   GetFavoriteAlbum(userId: number) {
-    this.favoriteService.getFavoritesPhotos(userId)
+    this.favoriteService
+      .getFavoritesPhotos(userId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      data => {
-        if (data.length !== 0) {
-          this.showFavorite = true;
-          this.favorite = {} as ViewAlbum;
-          this.favorite.photoAlbums = data;
-          this.favorite.id = 0;
-          this.favorite.title = 'Favorite photos';
-          const cover = localStorage.getItem('favoriteCover');
-          let photo: PhotoRaw = null;
-          const length: number = this.favorite.photoAlbums.length;
-          if (cover == null) {
-            photo = this.favorite.photoAlbums[length - 1];
-          } else {
-            photo = this.favorite.photoAlbums.find(
-              f => f.id === parseInt(cover, 10)
-            );
-            if (photo == null) {
-              photo = this.favorite.photoAlbums[0];
+        data => {
+          if (data.length !== 0) {
+            this.showFavorite = true;
+            this.favorite = {} as ViewAlbum;
+            this.favorite.photoAlbums = data;
+            this.favorite.id = 0;
+            this.favorite.title = 'Favorite photos';
+            const cover = localStorage.getItem('favoriteCover');
+            let photo: PhotoRaw = null;
+            const length: number = this.favorite.photoAlbums.length;
+            if (cover == null) {
+              photo = this.favorite.photoAlbums[length - 1];
             } else {
-              this.favorite.photo = photo;
+              photo = this.favorite.photoAlbums.find(
+                f => f.id === parseInt(cover, 10)
+              );
+              if (photo == null) {
+                photo = this.favorite.photoAlbums[0];
+              } else {
+                this.favorite.photo = photo;
+              }
             }
+            this.favorite.photo = photo;
+            this.showFavorite = true;
           }
-          this.favorite.photo = photo;
-          this.showFavorite = true;
-        }
-      },
-      error => this.notifier.notify('error', 'Error loading favourite albums')
-    );
+        },
+        error => this.notifier.notify('error', 'Error loading favourite albums')
+      );
   }
 
   CreateAlbum(event) {
@@ -128,8 +131,7 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.currentUser = this.currentUser;
     componentRef.instance.albumsTitles = this.albums.map(item => item.title);
-    componentRef.instance.createdAlbumEvent
-      .subscribe(
+    componentRef.instance.createdAlbumEvent.subscribe(
       (createdAlbum: ViewAlbum) => {
         this.albums.push(createdAlbum);
       }
@@ -138,15 +140,20 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
 
   ArchiveAlbum(event: ViewAlbum) {
     if (event.photoAlbums) {
-      this.albumService.ArchiveAlbum(event.photoAlbums)
+      const NameOfFiles = [];
+      for (const item of event.photoAlbums) {
+        NameOfFiles.push(item.originalBlobId);
+      }
+      this.albumService
+        .ArchiveAlbum(NameOfFiles)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
-        x => {
-          this.ArchivePhotos = x;
-          this.ConvertToImage(event.title);
-        },
-        error => this.notifier.notify('error', 'Error archive album')
-      );
+          x => {
+            this.ArchivePhotos = x;
+            this.ConvertToImage(event.title);
+          },
+          error => this.notifier.notify('error', 'Error archive album')
+        );
     } else {
       this.notifier.notify('error', 'Cannot download the empty album');
     }

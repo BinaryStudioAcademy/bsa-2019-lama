@@ -101,7 +101,7 @@ export class AlbumService {
       .subscribe(e => console.log(e));
   }
 
-  public ArchiveAlbum(photos: PhotoRaw[]) {
+  public ArchiveAlbum(photos: string[]) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<[]>(
       this.baseUrl + this.routeAlbum + '/ArchivePhotos',
@@ -130,7 +130,8 @@ export class AlbumService {
       body: photos
     };
     return this.http.delete(
-      `${this.baseUrl}${this.routeAlbum}/photos/${albumId}`, httpOptions
+      `${this.baseUrl}${this.routeAlbum}/photos/${albumId}`,
+      httpOptions
     );
   }
 }

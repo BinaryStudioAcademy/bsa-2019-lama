@@ -137,6 +137,8 @@ article
      
 .item-description
     margin-top: 25px
+    & textarea
+        cursor: text
 
 .item-albums
     margin-top: 15px
@@ -274,13 +276,16 @@ article
 .active
    opacity: 1
    visibility: visible
-
-
-
    
 .share-container
    position: absolute
    top: -100%
    left: -100%
 
+.fullsize-modal
+   min-height: 100vh
+   width: 100%
 
+.fullsize-modal .container
+   min-width: 100%
+   margin: 0

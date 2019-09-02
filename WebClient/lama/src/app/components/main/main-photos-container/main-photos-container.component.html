@@ -1,11 +1,9 @@
 <div class="content-header">
-    <h2 *ngIf="isHaveAnyPhotos" id="photos-container-title">Recent images:</h2>
-    <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary" *ngIf="isSearchTriggered && !isNothingFound">
-    Show all photos
-  </a>
-    <div class="dropdown is-hoverable" *ngIf="photos?.length">
-        <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+  <h2 *ngIf="isHaveAnyPhotos && !isSearchTriggered" id="photos-container-title">Recent images:</h2>
+  <h2 *ngIf="isSearchTriggered" id="photos-container-title">Search results "<b>{{ shared.searchCriteria }}</b>":</h2>
+  <div  class="dropdown is-hoverable" *ngIf="photos?.length">
+    <div class="dropdown-trigger">
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
         <span class="icon is-small">
           <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -17,7 +15,7 @@
                 <div class="dropdown-item" (click)="findDuplicates()">
                     <p>Find Duplicates</p>
                 </div>
-                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteWindow()">
+                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteImages()">
                     <p>Delete</p>
                 </div>
                 <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="downloadImages()">
@@ -27,11 +25,6 @@
         </div>
     </div>
 </div>
-
-<ng-template [ngIf]="isDeleting">
-    <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
-    </app-delete-modal>
-</ng-template>
 
 <div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
     <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">

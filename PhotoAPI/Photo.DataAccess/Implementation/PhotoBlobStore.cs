@@ -93,14 +93,14 @@ namespace Photo.DataAccess.Implementation
             await cloudBlockBlob.UploadFromByteArrayAsync(blob, 0, blob.Length);
             return $"{cloudBlockBlob.Container.Name}/{Path.GetFileName(cloudBlockBlob.Uri.ToString())}";
         }
-        public async Task<List<Byte[]>> GetPhotos(PhotoDocument[] values)
+        public async Task<List<Byte[]>> GetPhotos(List<string> values)
         {
             List<Byte[]> list = new List<Byte[]>();
             foreach(var item in values)
             {
                 var folderName = "images/";
-                var index = item.OriginalBlobId.IndexOf(folderName);
-                var text = item.OriginalBlobId.Substring(index + folderName.Length);
+                var index = item.IndexOf(folderName);
+                var text = item.Substring(index + folderName.Length);
                 CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(text);
 
                 await cloudBlob.FetchAttributesAsync();
