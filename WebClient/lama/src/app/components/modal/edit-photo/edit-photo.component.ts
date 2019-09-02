@@ -31,6 +31,9 @@ export class EditPhotoComponent {
   downText: string;
   colorPicker: string;
   private imageService: FileService;
+  showRotateAndCrop = true;
+  showFlip = false;
+  showMeme = false;
 
   // properties
   @Input()
@@ -130,5 +133,29 @@ export class EditPhotoComponent {
 
   disableMeme() {
     this.isMemeMode = false;
+  }
+
+  displayRotateAndCrop() {
+    this.disableAll();
+    this.showRotateAndCrop = true;
+    this.disableMeme();
+  }
+
+  displayFlip() {
+    this.disableAll();
+    this.showFlip = true;
+    this.disableMeme();
+  }
+
+  displayMeme() {
+    this.disableAll();
+    this.showMeme = true;
+    this.enableMeme();
+  }
+
+  disableAll() {
+    this.showRotateAndCrop = false;
+    this.showFlip = false;
+    this.showMeme = false;
   }
 }
