@@ -54,6 +54,7 @@ namespace Photo.Infrastructure
             var blobEndpointUrl =
                 CloudStorageAccount.Parse(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")
                     .ConnectionString).BlobEndpoint.ToString();
+            services.AddScoped<DuplicatesService>();
             services.AddScoped<IMessageService, MessageService>(serviceProvider => MessageServiceFactory(serviceProvider, configuration));
 
             services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
@@ -80,7 +81,7 @@ namespace Photo.Infrastructure
                 
             };
 
-            return new MessageService(messageServiceSettings, serviceProvider.GetService<IPhotoService>());
+            return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>());
         }
     }
 }

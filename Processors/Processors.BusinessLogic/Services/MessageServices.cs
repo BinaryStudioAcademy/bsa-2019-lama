@@ -8,6 +8,7 @@ using Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Processors.BusinessLogic.ImageComparer;
@@ -68,10 +69,12 @@ namespace Processors.BusinessLogic.Services
                 var currentImg = await GetImage(image.ImageType, fileName);
                 var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
                 var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
+                var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
                 var hash = new ImgHash((int) image.ImageId, _elasticStorage);
                 hash.GenerateFromByteArray(currentImg);
+                await _elasticStorage.UpdateThumbnailsAsync(image.ImageId, blob);
                 await _elasticStorage.UpdateImageTagsAsync(image.ImageId, new ImageTagsAsRaw
                 {
                     Tags = imageTagsAsRawString
@@ -85,6 +88,7 @@ namespace Processors.BusinessLogic.Services
                 foreach (var result in comparison_result)
                 {
                     if (result.Count <= 1) continue;
+
                     foreach (var itm in result)
                     {
                         if (itm.PhotoId == item.ImageId)

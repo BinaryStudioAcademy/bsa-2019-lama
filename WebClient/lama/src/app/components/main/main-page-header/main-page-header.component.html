@@ -165,9 +165,12 @@
     </div>
   </div>
   <div class="notification-content" *ngIf="duplicates.length">
-    <div>
+    <div (click)="openModal()">
       Duplicates in uploaded photos found
-      <!-- <app-main-notification (id)="sendIsRead($event)" (deleteId)="sendDelete($event)" [notification]="item"></app-main-notification> -->
+      <app-duplicates-modal
+        *ngIf="showModal"
+        [duplicatePhotos]="duplicates"
+      ></app-duplicates-modal>
     </div>
   </div>
   <div

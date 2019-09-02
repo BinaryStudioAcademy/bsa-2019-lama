@@ -55,6 +55,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  showModal = false;
   duplicates: UploadPhotoResultDTO[] = [];
 
   constructor(
@@ -313,6 +314,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.searchSuggestionsEmpty = false;
       }
     });
+  }
+
+  openModal() {
+    this.showModal = true;
   }
 
   openModalClicked() {

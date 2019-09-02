@@ -16,10 +16,10 @@ namespace Photo.BusinessLogic.Services
     {
         // FIELDS
         MessageServiceSettings serviceData;
-        private readonly IPhotoService _photoService;
+        private readonly DuplicatesService _photoService;
 
         // CONSTRUCTORS
-        public MessageService(MessageServiceSettings messageServiceSettings, IPhotoService service)
+        public MessageService(MessageServiceSettings messageServiceSettings, DuplicatesService service)
         {
             this.serviceData = messageServiceSettings;
             _photoService = service;
