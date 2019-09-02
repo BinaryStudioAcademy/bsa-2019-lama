@@ -1,5 +1,0 @@
-{
-  "error": "no such element",
-  "message": "no such element: Unable to locate element: {\"method\":\"css selector\",\"selector\":\"div.content-container button.mat-flat-button\"}\n  (Session info: chrome=76.0.3809.100)",
-  "stacktrace": "Backtrace:\n\tOrdinal0 [0x00FC7DF3+1474035]\n\tOrdinal0 [0x00F407D1+919505]\n\tOrdinal0 [0x00EDCB43+510787]\n\tOrdinal0 [0x00E7CAAD+117421]\n\tOrdinal0 [0x00E98610+230928]\n\tOrdinal0 [0x00E8F060+192608]\n\tOrdinal0 [0x00E97404+226308]\n\tOrdinal0 [0x00E8EECB+192203]\n\tOrdinal0 [0x00E75FF6+90102]\n\tOrdinal0 [0x00E7765A+95834]\n\tOrdinal0 [0x00E77554+95572]\n\tGetHandleVerifier [0x0112231C+1249612]\n\tGetHandleVerifier [0x01071575+525221]\n\tGetHandleVerifier [0x01071310+524608]\n\tOrdinal0 [0x00FD5D28+1531176]\n\tGetHandleVerifier [0x01071D4A+527226]\n\tOrdinal0 [0x00F575F6+1013238]\n\tOrdinal0 [0x00F5746F+1012847]\n\tOrdinal0 [0x00F6365B+1062491]\n\tOrdinal0 [0x00F6379F+1062815]\n\tOrdinal0 [0x00F62745+1058629]\n\tBaseThreadInitThunk [0x75DA0419+25]\n\tRtlGetAppContainerNamedObjectPath [0x7764662D+237]\n\tRtlGetAppContainerNamedObjectPath [0x776465FD+189]\n"
-}
