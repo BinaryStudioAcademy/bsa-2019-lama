@@ -50,7 +50,7 @@ namespace Lama.Controllers
             return await _service.FindAlbum(createdAlbumId);
         }
         [HttpPost("ArchivePhotos")]
-        public async Task<List<byte[]>> GetPhotos([FromBody] PhotoDocument[] photoDocuments)
+        public async Task<List<byte[]>> GetPhotos([FromBody] List<string> photoDocuments)
         {
             return await _service.GetPhotos(photoDocuments);
         }
