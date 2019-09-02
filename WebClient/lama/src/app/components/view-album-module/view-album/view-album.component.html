@@ -10,21 +10,22 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" *ngIf="!isFavorite() && !isAtLeastOnePhotoSelected" (click)="addPhoto($event)">
-          <p>Add photos</p>
-        </div>
-        <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteWindow()">
-          <p>Delete</p>
-        </div>
-        <div class="dropdown-item">
-          <p>Download</p>
-        </div>
         <div class="dropdown-item">
           <p>Share</p>
         </div>
         <div class="dropdown-item">
           <p>SetCover</p>
         </div>
+        <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected" (click)="addPhoto($event)">
+          <p>Add photos</p>
+        </div>
+        <div class="dropdown-item" (click)="deleteWindow()">
+          <p>Delete</p>
+        </div>
+        <div class="dropdown-item" (click)="downloadImages()">
+          <p>Download</p>
+        </div>
+        
       </div>
     </div>
   </div>

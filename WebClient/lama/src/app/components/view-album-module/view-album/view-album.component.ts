@@ -269,6 +269,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   downloadImages() {
+    if (!this.isAtLeastOnePhotoSelected) {
+      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+    }
     this.zipService.downloadImages(this.selectedPhotos);
   }
 
@@ -297,6 +300,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   deleteWindow() {
+    if (!this.isAtLeastOnePhotoSelected) {
+      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+    }
     this.isDeleting = true;
   }
 
