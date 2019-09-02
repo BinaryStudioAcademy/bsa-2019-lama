@@ -97,7 +97,7 @@ namespace Photo.Controllers
         }
 
         [HttpPost("ArchivePhotos")]
-        public async Task<List<byte[]>> GetPhotos([FromBody] PhotoDocument[] values)
+        public async Task<List<byte[]>> GetPhotos([FromBody] List<string> values)
         {
             return await _photoService.GetPhotos(values);
         }

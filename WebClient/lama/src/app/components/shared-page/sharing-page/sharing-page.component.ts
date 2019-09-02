@@ -72,7 +72,11 @@ export class SharingPageComponent implements OnInit {
   }
   ArchiveAlbum(event: ViewAlbum) {
     if (event.photoAlbums) {
-      this.albumService.ArchiveAlbum(event.photoAlbums).subscribe(
+      const NameOfFiles = [];
+      for (const item of event.photoAlbums) {
+        NameOfFiles.push(item.originalBlobId);
+      }
+      this.albumService.ArchiveAlbum(NameOfFiles).subscribe(
         x => {
           this.ArchivePhotos = x;
           this.ConvertToImage(event.title);

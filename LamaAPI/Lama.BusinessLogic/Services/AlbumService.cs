@@ -363,7 +363,7 @@ namespace Lama.BusinessLogic.Services
             }
             return albums;
         }
-        public async Task<List<byte[]>> GetPhotos(PhotoDocument[] photoDocuments)
+        public async Task<List<byte[]>> GetPhotos(List<string> photoDocuments)
         {
             var url = configuration["PhotoApiUrl"];
             using (var httpClient = new HttpClient())

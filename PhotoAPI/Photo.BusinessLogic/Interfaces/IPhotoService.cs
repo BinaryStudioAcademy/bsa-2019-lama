@@ -20,7 +20,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
         Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task MarkPhotoAsDeleted(int photoId);
-        Task<List<Byte[]>> GetPhotos(PhotoDocument[] values);
+        Task<List<Byte[]>> GetPhotos(List<string> values);
         Task<string> GetPhoto(string value);
         Task<string> GetAvatar(string value);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId);
