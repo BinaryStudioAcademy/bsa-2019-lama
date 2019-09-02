@@ -21,20 +21,19 @@ namespace Photo.Domain.ImageHashModels
 
         public double CompareWith(ImgHash compareWith)
         {
-            if (HashData.Count != compareWith.HashData.Count)
-            {
-                throw new Exception("Cannot compare hashes with different sizes");
-            }
-
-            double differenceCounter = 0;
-
-            for (int i = 0; i < HashData.Count; i++)
-            {
-                if (HashData[i] != compareWith.HashData[i])
+                if (HashData.Count != compareWith.HashData.Count)
                 {
-                    differenceCounter++;
+                    throw new Exception("Cannot compare hashes with different sizes");
                 }
-            }
+                double differenceCounter = 0;
+
+                for (int i = 0; i < HashData.Count; i++)
+                {
+                    if (HashData[i] != compareWith.HashData[i])
+                    {
+                        differenceCounter++;
+                    }
+                }
             return (HashData.Count - differenceCounter) / HashData.Count * 100;
         }
     }
