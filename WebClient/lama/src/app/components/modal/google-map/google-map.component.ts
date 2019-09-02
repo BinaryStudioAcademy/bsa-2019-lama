@@ -58,7 +58,7 @@ export class GoogleMapComponent implements OnInit {
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
           this.address = place.formatted_address;
           // verify result
-          console.log(place);
+
           this.checkForm = true;
           if (place.geometry === undefined || place.geometry === null) {
             return;
@@ -118,7 +118,6 @@ export class GoogleMapComponent implements OnInit {
         if (status === 'OK') {
           if (results[0]) {
             this.zoom = 12;
-            console.log(results[0]);
             this.address = results[0].formatted_address;
           } else {
             window.alert('No results found');
