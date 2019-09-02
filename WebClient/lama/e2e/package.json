@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "assert": "^2.0.0",
     "node-fetch": "^2.6.0",
     "webdriverio": "^5.10.1"
   },
