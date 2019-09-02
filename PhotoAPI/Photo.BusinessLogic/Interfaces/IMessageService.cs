@@ -7,11 +7,10 @@ namespace Photo.BusinessLogic.Interfaces
 {
     public interface IMessageService
     {
-        void SendToThumbnailProcessor(MakePhotoThumbnailDTO makePhotoThumbnail);
-
-        void SendPhotoToThumbnailProcessor(long imageId);
-        void SendAvatarToThumbnailProcessor(long imageId);
-        Task ReceiveDuplicates(bool isDuplicates);
+        void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail);
+        void SendPhotoToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images);
+        void SendAvatarToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images);
+        Task ReceiveDuplicates(List<int> duplicates);
         //Task RunAsync(int timeout);
         void RunAsync(object sender, ElapsedEventArgs e);
     }

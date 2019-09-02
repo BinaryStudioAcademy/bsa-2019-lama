@@ -7,6 +7,7 @@ using Services.Interfaces;
 using Services.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Processors.BusinessLogic.ImageComparer;
@@ -52,57 +53,48 @@ namespace Processors.BusinessLogic.Services
                 var receiveData = _consumer.Receive(millisecondsTimeout);
 
                 if (receiveData == null) continue;
-                await HandleReceivedDataAsync(JsonConvert.DeserializeObject<MakePhotoThumbnailDTO>(receiveData.Message));
+                await HandleReceivedDataAsync(JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(receiveData.Message));
                 _consumer.SetAcknowledge(receiveData.DeliveryTag, true);
             }
         }
 
 
-        private async Task HandleReceivedDataAsync(MakePhotoThumbnailDTO makePhotoThumbnailDTO)
+        private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
-            string address;
-            try
+            foreach (var image in images)
             {
-                address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
-            }catch(Exception) // FIX
-            {
-                return;
+                var address = await _elasticStorage.GetBlobId(image.ImageId);
+                var fileName = address.Substring(address.LastIndexOf('/') + 1);
+                var currentImg = await GetImage(image.ImageType, fileName);
+                var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
+                var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
+                var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
+                var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
+                var hash = new ImgHash((int) image.ImageId, _elasticStorage);
+                hash.GenerateFromByteArray(currentImg);
+                await _elasticStorage.UpdateHashAsync(image.ImageId, new HasDTO {Hash = new List<bool>(hash.HashData)});
             }
-            var fileName = address.Substring(address.LastIndexOf('/') + 1);
-            var currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
-
-            var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
-            var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
-            var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
-            var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
-            var hash = new ImgHash((int)makePhotoThumbnailDTO.ImageId, _elasticStorage);
-            hash.GenerateFromByteArray(currentImg);
-            await _elasticStorage.UpdateHashAsync(makePhotoThumbnailDTO.ImageId, new HasDTO { Hash = new List<bool>(hash.HashData) });
+            var duplicates = new List<int>();
             var comparison_result = await _comparer.FindDuplicatesWithTollerance(1);
-            var isDuplicate = false;
-            foreach (var item in comparison_result)
+            foreach (var item in images)
             {
-                if (item.Count <= 1) continue;
-                foreach (var itm in item)
+                foreach (var result in comparison_result)
                 {
-                    if (itm.PhotoId == makePhotoThumbnailDTO.ImageId)
+                    if (result.Count <= 1) continue;
+                    foreach (var itm in result)
                     {
-                        isDuplicate = true;
-                    } 
+                        if (itm.PhotoId == item.ImageId)
+                        {
+                            duplicates.Add((int)item.ImageId);
+                            break;
+                        }
+                    }
                 }
             }
 
-            var bytes = BitConverter.GetBytes(isDuplicate);
+            var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
+            //var bytes = BitConverter.GetBytes(duplicates);
             _producer.Send(bytes);
-
-            if (await _elasticStorage.ExistAsync(makePhotoThumbnailDTO.ImageId))
-            {
-                var thumbnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
-                var imageTagsAsRaw = new ImageTagsAsRaw{Tags = imageTagsAsRawString};
-
-                await _elasticStorage.UpdateImageTagsAsync(makePhotoThumbnailDTO.ImageId, imageTagsAsRaw);
-                await _elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thumbnailUpdateDTO);
-            }
         }
         private async Task<byte[]> GetImage(ImageType imageType, string fileName)
         {

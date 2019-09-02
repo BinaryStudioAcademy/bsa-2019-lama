@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Timers;
+using Photo.BusinessLogic.Interfaces;
 using Photo.Domain.Settings;
 using Photo.Domain.DataTransferObjects;
 using Timer = System.Timers.Timer;
@@ -14,11 +16,13 @@ namespace Photo.BusinessLogic.Services
     {
         // FIELDS
         MessageServiceSettings serviceData;
+        private readonly IPhotoService _photoService;
 
         // CONSTRUCTORS
-        public MessageService(MessageServiceSettings messageServiceSettings)
+        public MessageService(MessageServiceSettings messageServiceSettings, IPhotoService service)
         {
             this.serviceData = messageServiceSettings;
+            _photoService = service;
             Timer timer = new Timer();
             timer.Interval = 2500;
             timer.Elapsed += RunAsync;
@@ -30,24 +34,30 @@ namespace Photo.BusinessLogic.Services
             serviceData.PhotoProcessorProducer?.Dispose();
         }
 
-        public async Task ReceiveDuplicates(bool isDuplicate)
+        public async Task ReceiveDuplicates(List<int> duplicates)
         {
-            Console.WriteLine(isDuplicate);
+            if (duplicates.Count > 0)
+            {
+                await _photoService.SendDuplicates(duplicates);
+            }
         }
         public async void RunAsync(object sender, ElapsedEventArgs e)
         {
             var receiveData = serviceData.PhotoProcessorConsumer.Receive(1000);
                 if (receiveData == null) return;
                 Console.WriteLine(receiveData);
-                var isDuplicate = BitConverter.ToBoolean(receiveData.Body);
-                await ReceiveDuplicates(isDuplicate);
+                var originalList = Enumerable.Range(0, receiveData.Body.Length / 4)
+                .Select(i => BitConverter.ToInt32(receiveData.Body, i * 4))
+                .ToList();
+
+            await ReceiveDuplicates(originalList);
                 serviceData.PhotoProcessorConsumer.SetAcknowledge(receiveData.DeliveryTag, true);
         }
 
 
 
         // METHODS
-        public void SendToThumbnailProcessor(MakePhotoThumbnailDTO makePhotoThumbnail)
+        public void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail)
         {
             if (makePhotoThumbnail == null) throw new System.ArgumentNullException(nameof(makePhotoThumbnail));
 
@@ -55,21 +65,21 @@ namespace Photo.BusinessLogic.Services
 
             serviceData.PhotoProcessorProducer.Send(objectJson);
         }
-        public void SendPhotoToThumbnailProcessor(long imageId)
+        public void SendPhotoToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images)
         {
-            this.SendToThumbnailProcessor(new MakePhotoThumbnailDTO
+            foreach (var item in images)
             {
-                ImageId = imageId,
-                ImageType = Domain.Enums.ImageType.Photo
-            });
+                item.ImageType = Domain.Enums.ImageType.Photo;
+            }
+            this.SendToThumbnailProcessor(images);
         }
-        public void SendAvatarToThumbnailProcessor(long imageId)
+        public void SendAvatarToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images)
         {
-            this.SendToThumbnailProcessor(new MakePhotoThumbnailDTO
+            foreach (var item in images)
             {
-                ImageId = imageId,
-                ImageType = Domain.Enums.ImageType.Avatar
-            });
+                item.ImageType = Domain.Enums.ImageType.Avatar;
+            }
+            this.SendToThumbnailProcessor(images);
         }
     }
 }

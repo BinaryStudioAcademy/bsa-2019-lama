@@ -12,7 +12,7 @@ namespace Processors.BusinessLogic.Services
         private readonly IElasticStorage _elasticStorage;
         private readonly int _hashSize = 128;
 
-        private readonly List<ImgHash> _hashLib = new List<ImgHash>();
+        private List<ImgHash> _hashLib = new List<ImgHash>();
 
         public ImageCompareService(IElasticStorage elasticStorage)
         {
@@ -47,6 +47,7 @@ namespace Processors.BusinessLogic.Services
 
         private async Task InitializeHashes(int userId)
         {
+            _hashLib = new List<ImgHash>();
             var photos = await _elasticStorage.GetUserPhotos(userId);
             foreach (var item in photos)
             {
