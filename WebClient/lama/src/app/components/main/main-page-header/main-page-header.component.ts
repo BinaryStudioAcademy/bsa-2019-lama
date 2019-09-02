@@ -23,6 +23,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
+import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -54,6 +55,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  duplicates: UploadPhotoResultDTO[] = [];
 
   constructor(
     public auth: AuthService,
@@ -152,6 +154,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       if (notification) {
         this.addNotification(notification);
       }
+    });
+    this.Hub.on('DuplicatesFound', (duplicates: UploadPhotoResultDTO[]) => {
+      this.duplicates = duplicates;
     });
   }
 

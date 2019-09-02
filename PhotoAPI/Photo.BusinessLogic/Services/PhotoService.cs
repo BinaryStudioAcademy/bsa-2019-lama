@@ -162,7 +162,7 @@ namespace Photo.BusinessLogic.Services
             string uri = $"http://localhost:5000/api/photos";
             var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
 
-            StringContent content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
+            StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
 

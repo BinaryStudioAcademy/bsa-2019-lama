@@ -72,6 +72,10 @@ namespace Processors.BusinessLogic.Services
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
                 var hash = new ImgHash((int) image.ImageId, _elasticStorage);
                 hash.GenerateFromByteArray(currentImg);
+                await _elasticStorage.UpdateImageTagsAsync(image.ImageId, new ImageTagsAsRaw
+                {
+                    Tags = imageTagsAsRawString
+                });
                 await _elasticStorage.UpdateHashAsync(image.ImageId, new HasDTO {Hash = new List<bool>(hash.HashData)});
             }
             var duplicates = new List<int>();

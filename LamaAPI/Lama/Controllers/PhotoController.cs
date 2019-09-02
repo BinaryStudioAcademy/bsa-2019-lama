@@ -114,9 +114,9 @@ namespace Lama.Controllers
         }
 
         [HttpPost("duplicates_response")]
-        public async Task<IEnumerable<UploadPhotoResultDTO>> SendDuplicates(IEnumerable<UploadPhotoResultDTO> photos)
+        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
         {
-
+            await _service.SendDuplicates(photos);
         }
 
         [HttpGet("images/{blobId}")]

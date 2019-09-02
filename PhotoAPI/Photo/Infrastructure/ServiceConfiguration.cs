@@ -80,7 +80,7 @@ namespace Photo.Infrastructure
                 
             };
 
-            return new MessageService(messageServiceSettings);
+            return new MessageService(messageServiceSettings, serviceProvider.GetService<IPhotoService>());
         }
     }
 }
