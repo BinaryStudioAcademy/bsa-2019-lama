@@ -145,17 +145,16 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   }
 
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
-    if (this.album.photoAlbums === null) {
+    if (!this.album.photoAlbums) {
       this.album.photoAlbums = [];
-    } else {
-      this.album.photoAlbums.push(...photos);
-      if (this.album.photo === null) {
-        this.album.photo = photos[0];
-        this.fileService
-          .getPhoto(this.album.photo.blob256Id)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(url => (this.imageUrl = url));
-      }
+    }
+    this.album.photoAlbums.push(...photos);
+    if (this.album.photo === null) {
+      this.album.photo = photos[0];
+      this.fileService
+        .getPhoto(this.album.photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => (this.imageUrl = url));
     }
   }
 
