@@ -381,11 +381,14 @@ namespace Lama.BusinessLogic.Services
             var albums = await Context.PhotoAlbums.Include(x => x.Photo).Include(x => x.Album).Where(x => x.Photo.Id == id).Select(x => x.Album).ToListAsync();
             foreach (var album in albums)
             {
+                var photo = new PhotoAlbumDetails();
                 var Document = await _photoService.Get(album.CoverId.Value);
-                string image = Document.BlobId.Substring(7);
-                var tempohoto = await _photoService.GetPhoto(image);
-                var photo = new PhotoAlbumDetails() { ImageUrl = tempohoto };
-
+                if (Document != null)
+                {
+                    string image = Document.BlobId.Substring(7);
+                    var tempohoto = await _photoService.GetPhoto(image);
+                     photo = new PhotoAlbumDetails() { ImageUrl = tempohoto };
+                }
                 var returnAlbum = _mapper.Map<AlbumPhotoDetails>(album);
                 returnAlbum.Photo = photo;
 

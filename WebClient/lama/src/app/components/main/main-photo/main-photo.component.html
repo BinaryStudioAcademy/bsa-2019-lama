@@ -5,7 +5,7 @@
     <div class="overlay" [style.opacity]="isSelected ? '1' : ''">
       <div class="check-mark">
         <a (click)="$event.stopPropagation()" (click)="selectItem()">
-          <i [ngStyle]="{ color: isSelected ? '#00d1b2' : 'white' }" class="material-icons">check_circle_outline</i>
+          <i [ngStyle]="{ color: isSelected ? '#00d1b2' : 'white' }" class="material-icons">check_circle</i>
         </a>
       </div>
       <div class="heart-mark">

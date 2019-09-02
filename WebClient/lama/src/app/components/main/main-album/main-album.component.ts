@@ -87,11 +87,13 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       .deleteSharedAlbum(this.album.id)
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
+
   removeSharedAlbumForUser() {
     this.sharingService
       .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
+
   removeFakeSharedAlbum() {
     this.sharingService
       .deleteSharedPhoto(this.album.photo.id)
@@ -127,6 +129,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   toggleSetCoverModal() {
     this.showSetCoverModal = !this.showSetCoverModal;
   }
+
   addPhotos(e) {
     this.modaladdPhoto.clear();
     const factory = this.resolver.resolveComponentFactory(
@@ -142,17 +145,16 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   }
 
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
-    if (this.album.photoAlbums === null) {
+    if (!this.album.photoAlbums) {
       this.album.photoAlbums = [];
-    } else {
-      this.album.photoAlbums.push(...photos);
-      if (this.album.photo === null) {
-        this.album.photo = photos[0];
-        this.fileService
-          .getPhoto(this.album.photo.blob256Id)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(url => (this.imageUrl = url));
-      }
+    }
+    this.album.photoAlbums.push(...photos);
+    if (this.album.photo === null) {
+      this.album.photo = photos[0];
+      this.fileService
+        .getPhoto(this.album.photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => (this.imageUrl = url));
     }
   }
 
