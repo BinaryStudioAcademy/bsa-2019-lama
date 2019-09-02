@@ -87,11 +87,13 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       .deleteSharedAlbum(this.album.id)
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
+
   removeSharedAlbumForUser() {
     this.sharingService
       .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
+
   removeFakeSharedAlbum() {
     this.sharingService
       .deleteSharedPhoto(this.album.photo.id)
@@ -127,6 +129,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   toggleSetCoverModal() {
     this.showSetCoverModal = !this.showSetCoverModal;
   }
+
   addPhotos(e) {
     this.modaladdPhoto.clear();
     const factory = this.resolver.resolveComponentFactory(
