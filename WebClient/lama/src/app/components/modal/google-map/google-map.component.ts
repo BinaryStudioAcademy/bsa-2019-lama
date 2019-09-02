@@ -48,7 +48,7 @@ export class GoogleMapComponent implements OnInit {
       const autocomplete = new google.maps.places.Autocomplete(
         this.searchElementRef.nativeElement,
         {
-          types: ['address']
+          types: ['geocode']
         }
       );
       autocomplete.addListener('place_changed', () => {
@@ -58,6 +58,7 @@ export class GoogleMapComponent implements OnInit {
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
           this.address = place.formatted_address;
           // verify result
+
           this.checkForm = true;
           if (place.geometry === undefined || place.geometry === null) {
             return;
