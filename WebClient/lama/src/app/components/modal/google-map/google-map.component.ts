@@ -21,6 +21,7 @@ export class GoogleMapComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
+  checkForm = true;
   address: string;
   private geoCoder;
   displaymap = false;
@@ -91,11 +92,16 @@ export class GoogleMapComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
   ChangeLocation() {
+    if (this.address === '' || this.address === undefined) {
+      this.checkForm = false;
+      return;
+    }
     const newLoc: NewLocation = {
       id: this.photo.id,
       location: this.address,
       coordinates: `${this.latitude},${this.longitude}`
     };
+    this.checkForm = false;
     this.Updatelocation.emit(newLoc);
   }
   DeleteLocation() {
