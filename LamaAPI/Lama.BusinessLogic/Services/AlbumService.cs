@@ -512,5 +512,16 @@ namespace Lama.BusinessLogic.Services
             }
             return await Context.SaveChangesAsync();
         }
+
+        public async Task<int> UpdateAlbumTitle(UpdateAlbumDTO album)
+        {
+            var alb = await Context.Albums.FirstOrDefaultAsync(a => a.Id == album.Id);
+            if(album != null)
+            {
+                alb.Title = album.Title;
+                return await Context.SaveChangesAsync();
+            }
+            return -1;
+        }
     }
 }

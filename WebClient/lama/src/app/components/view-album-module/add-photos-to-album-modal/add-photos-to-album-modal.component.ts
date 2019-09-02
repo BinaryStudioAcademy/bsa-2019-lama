@@ -221,6 +221,10 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
     this.isShown = false;
   }
 
+  removePhoto(index: number) {
+    this.photos.splice(index, 1);
+  }
+
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();

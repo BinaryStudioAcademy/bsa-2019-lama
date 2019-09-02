@@ -74,6 +74,12 @@ namespace Lama.Controllers
             await _service.UpdateAlbum(album);
         }
 
+        [HttpPut("title")]
+        public async Task<int> UpdateAlbumTitle([FromBody] UpdateAlbumDTO album)
+        {
+            return await _service.UpdateAlbumTitle(album);
+        }
+
         [HttpPut("updateCover")]
         public async Task<int?> UpdateAlbumCover([FromBody] UpdateAlbumDTO album)
         {
