@@ -278,9 +278,11 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   changeAlbumName() {
     this.isTitleEdit = false;
     const ids = new Array<number>();
-    this.album.photoAlbums.forEach(e => {
-      ids.push(e.id);
-    });
+    if (this.album.photoAlbums) {
+      this.album.photoAlbums.forEach(e => {
+        ids.push(e.id);
+      });
+    }
     this.albumService.updateAlbumTitle({
       title: this.album.title,
       id: this.album.id,
