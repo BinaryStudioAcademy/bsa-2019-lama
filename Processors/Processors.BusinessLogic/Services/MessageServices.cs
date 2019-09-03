@@ -53,7 +53,8 @@ namespace Processors.BusinessLogic.Services
         public async void Get(object sender, BasicDeliverEventArgs args)
         {
             var message = Encoding.ASCII.GetString(args.Body);
-            await HandleReceivedDataAsync(JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message));
+            var obj = JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message);
+            await HandleReceivedDataAsync(obj);
             _consumer.SetAcknowledge(args.DeliveryTag, true);
         }
 
