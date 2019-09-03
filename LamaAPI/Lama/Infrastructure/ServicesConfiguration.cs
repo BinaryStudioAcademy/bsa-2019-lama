@@ -47,6 +47,7 @@ namespace Lama.Infrastructure
             services.AddScoped<IAlbumService, AlbumService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<SharingAlbumService>();
             services.AddScoped<IUserProtectionService, UserProtectionService>();
 

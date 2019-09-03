@@ -148,8 +148,7 @@ namespace Lama.BusinessLogic.Services
                 var photo = new Photo();
                 var user = await _context.GetRepository<User>().GetAsync(photos[i].AuthorId);
                 photo.User = user;
-                photo.UserId = photos[i].AuthorId;
-                //user.Photos.Add(photo);
+                photo.UserId = photos[i].AuthorId;            
                 savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
             }
 

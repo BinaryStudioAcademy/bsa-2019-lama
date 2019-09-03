@@ -76,7 +76,7 @@ namespace Lama.DataAccess
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.HasKey(k => k.Id);
-                entity.HasOne(o => o.User).WithMany(m => m.Locations).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
+                //entity.HasOne(o => o.User).WithMany(m => m.Locations).HasForeignKey(fk => fk.UserId).OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Notification>(entity =>
