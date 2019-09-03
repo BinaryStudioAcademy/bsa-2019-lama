@@ -286,7 +286,6 @@ export class MainPhotosContainerComponent
   }
 
   downloadImages() {
-    console.log('I am here');
     if (this.isAtLeastOnePhotoSelected) {
       this.zipService.downloadImages(this.selectedPhotos);
     } else {

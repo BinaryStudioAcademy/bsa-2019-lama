@@ -29,6 +29,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-view-album',
@@ -54,6 +55,8 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   isFakeAlbum = false;
   returnPath: string;
   unsubscribe = new Subject();
+  showSetCoverModal: boolean;
+  showSharedModal: boolean;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -67,6 +70,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     private albumService: AlbumService,
     private favoriteService: FavoriteService,
     private zipService: ZipService,
+    private fileService: FileService,
     private resolver: ComponentFactoryResolver,
     private notifier: NotifierService,
     private httpService: HttpService
@@ -137,6 +141,13 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading favourites')
       );
     this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
+    this.returnPath = this.router.url.substr(
+      0,
+      this.router.url.lastIndexOf('/') + 1
+    );
+    if (this.returnPath === '/main/sharing/') {
+      this.isShared = true;
+    }
   }
 
   photoClicked(eventArgs: PhotoRaw) {
@@ -275,6 +286,48 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     this.zipService.downloadImages(this.selectedPhotos);
   }
 
+  async savePhotos() {
+    const photos = new Array<Photo>();
+    if (this.isAtLeastOnePhotoSelected) {
+      this.selectedPhotos.forEach(el => {
+        photos.push(this.createPhoto(el, null));
+      });
+    } else {
+      this.album.photoAlbums.forEach(el => {
+        this.fileService
+        .getPhoto(el.blobId)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(data => {
+          photos.push(this.createPhoto(el, data));
+        });
+      });
+    }
+    await this.delay(2000);
+    this.fileService
+    .sendPhotos(photos)
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(
+      uploadedPhotos => {
+        this.notifier.notify('success', 'Photos saved');
+      },
+      error => this.notifier.notify('error', 'Error saving photos')
+      );
+  }
+
+  createPhoto(ph: PhotoRaw, url: string): Photo {
+    return {
+      imageUrl: url,
+      description: ph.description,
+      authorId: this.currentUser.id,
+      filename: ph.name,
+      location: ph.location
+    };
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   changeAlbumName() {
     this.isTitleEdit = false;
     const ids = new Array<number>();
@@ -298,7 +351,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   startChangingTitle() {
-    if (!this.isShared) {
+    if (!this.isShared && !this.isFavorite()) {
       this.isTitleEdit = true;
     }
   }
