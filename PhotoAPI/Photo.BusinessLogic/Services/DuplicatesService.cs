@@ -28,8 +28,15 @@ namespace Photo.BusinessLogic.Services
             var photos = new List<PhotoDocument>();
             foreach (var value in duplicates)
             {
-                var photo = await _elasticStorage.Get(value);
-                photos.Add(photo);
+                try
+                {
+                    var photo = await _elasticStorage.Get(value);
+                    photos.Add(photo);
+                }
+                catch (Exception e)
+                {
+
+                }
             }
             string uri = $"http://localhost:5000/api/photo/duplicates_response";
             var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
@@ -37,8 +44,6 @@ namespace Photo.BusinessLogic.Services
             StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
-
-            string bodyJson = await response.Content.ReadAsStringAsync();
         }
     }
 }

@@ -10,8 +10,7 @@ namespace Photo.BusinessLogic.Interfaces
         void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail);
         void SendPhotoToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images);
         void SendAvatarToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images);
-        Task ReceiveDuplicates(List<int> duplicates);
         //Task RunAsync(int timeout);
-        void RunAsync(object sender, ElapsedEventArgs e);
+        /*void RunAsync(object sender, ElapsedEventArgs e);*/
     }
 }

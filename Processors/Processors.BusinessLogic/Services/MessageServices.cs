@@ -7,8 +7,10 @@ using Services.Interfaces;
 using Services.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using Processors.BusinessLogic.ImageComparer;
@@ -39,6 +41,9 @@ namespace Processors.BusinessLogic.Services
             _producer = producer;
             _consumer = consumer;
             _comparer = comparer;
+            _consumer.Received += Get;
+            _consumer.Connect();
+            
         }
 
         public void Dispose()
@@ -46,17 +51,19 @@ namespace Processors.BusinessLogic.Services
             _consumer?.Dispose();
         }
 
+        public async void Get(object sender, BasicDeliverEventArgs args)
+        {
+            var message = Encoding.ASCII.GetString(args.Body);
+            await HandleReceivedDataAsync(JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message));
+            _consumer.SetAcknowledge(args.DeliveryTag, true);
+        }
+    
+        
+
         public async Task RunAsync(int millisecondsTimeout)
         {
             Console.WriteLine("running");
-            while (true)
-            {
-                var receiveData = _consumer.Receive(millisecondsTimeout);
-
-                if (receiveData == null) continue;
-                await HandleReceivedDataAsync(JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(receiveData.Message));
-                _consumer.SetAcknowledge(receiveData.DeliveryTag, true);
-            }
+            
         }
 
 
