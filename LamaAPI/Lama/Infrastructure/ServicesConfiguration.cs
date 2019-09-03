@@ -42,7 +42,7 @@ namespace Lama.Infrastructure
         {
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<UserService>();
-            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(f.GetService<ApplicationDbContext>(),configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(),f.GetService<INotificationService>()));
+            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(f.GetService<ApplicationDbContext>(),configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(),f.GetService<INotificationService>(), f.GetService<ILocationService>()));
             services.AddScoped<IPhotoDetailsService, PhotoDetailsService>(f => new PhotoDetailsService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
             services.AddScoped<IAlbumService, AlbumService>();
             services.AddScoped<IFavoriteService, FavoriteService>();

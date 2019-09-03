@@ -30,13 +30,15 @@ namespace Lama.BusinessLogic.Services
         private readonly IMapper _mapper;
         readonly INotificationService notificationService;
         readonly ApplicationDbContext Context;
-        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
+        ILocationService locationService;
+        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService,ILocationService locationService)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
             this._mapper = _mapper;
             this.Context = Context;
+            this.locationService = locationService;
             this.notificationService = notificationService;
         }
 
@@ -148,7 +150,11 @@ namespace Lama.BusinessLogic.Services
                 var photo = new Photo();
                 var user = await _context.GetRepository<User>().GetAsync(photos[i].AuthorId);
                 photo.User = user;
-                photo.UserId = photos[i].AuthorId;            
+                photo.UserId = photos[i].AuthorId;
+                if (photos[i].ShortLocation != null)
+                {
+                    photo.LocationId = await locationService.CheckAdrress(photos[i].ShortLocation);
+                }
                 savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
             }
 
