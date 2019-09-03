@@ -231,6 +231,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     }
   }
 
+  getThumbnailByName(item: string) {
+    const nameIndex = this.searchSuggestions.names.indexOf(item);
+    const thumb = this.searchSuggestions.thumbnails[nameIndex];
+    return thumb;
+  }
+
   extractTagNames(searchSuggestions: SearchSuggestionData) {
     const temp = [];
     searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));

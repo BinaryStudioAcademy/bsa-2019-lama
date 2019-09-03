@@ -40,12 +40,18 @@ namespace Photo.BusinessLogic.Services
             return _elasticStorage.Find(id, criteria);
         }
 
-        public Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+        public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
-            return _elasticStorage.FindFields(id, criteria);
+            var resultingDictionary = await _elasticStorage.FindFields(id, criteria);
+            for (var i = 0; i < resultingDictionary["thumbnails"].Count; i++)
+            {
+                resultingDictionary["thumbnails"][i] = await GetPhoto(resultingDictionary["thumbnails"][i]);
+            }
+            
+            return resultingDictionary;
         }
 
-        public async Task<List<Byte[]>> GetPhotos(List<string> values)
+        public async Task<List<byte[]>> GetPhotos(List<string> values)
         {
             return await _storage.GetPhotos(values);
         }
@@ -78,7 +84,7 @@ namespace Photo.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds)
         {
-            List<PhotoDocument> photos = new List<PhotoDocument>();
+            var photos = new List<PhotoDocument>();
             foreach (var item in elasticIds)
             {
                 photos.Add(await _elasticStorage.Get(item));
@@ -314,7 +320,7 @@ namespace Photo.BusinessLogic.Services
                 bool doc = false;
                 try
                 {
-                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}/{element.BlobId}")
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }
