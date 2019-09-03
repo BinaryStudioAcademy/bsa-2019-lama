@@ -19,7 +19,10 @@
         >Set cover</a
       >
       <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
-      <a *ngIf="!isFake && !isFavorite" class="dropdown-item" (click)="addPhotos($event)"
+      <a
+        *ngIf="!isFake && !isFavorite"
+        class="dropdown-item"
+        (click)="addPhotos($event)"
         >Add Photos</a
       >
       <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
@@ -54,7 +57,20 @@
         >Exit</a
       >
     </div>
-    <img src="{{ imageUrl || imgname }}" (click)="clickPerformed()" />
+    <img
+      src="{{ imageUrl || imgname }}"
+      (click)="clickPerformed()"
+      *ngIf="!isShared || (isShared && album.photoAlbums.length <= 1)"
+    />
+    <div
+      class="many-photos"
+      *ngIf="isShared && album.photoAlbums.length > 1"
+      (click)="clickPerformed()"
+    >
+      <img src="{{ sharedAlbumCover[0] || imgname }}" />
+      <img src="{{ sharedAlbumCover[1] || imgname }}" />
+      <img src="{{ sharedAlbumCover[2] || imgname }}" />
+    </div>
   </div>
   <div class="description has-text-centered">
     <p>{{ album.title }}</p>
