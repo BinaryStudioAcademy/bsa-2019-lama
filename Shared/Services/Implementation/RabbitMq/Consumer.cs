@@ -11,21 +11,32 @@ namespace Services.Implementation.RabbitMq
     public class Consumer : IConsumer
     {     
         private readonly IBroker _broker;
-        private readonly ISubscription _subscription;
+        private readonly EventingBasicConsumer _consumer;
+        private readonly Settings _settings;
 
+        public event EventHandler<BasicDeliverEventArgs> Received
+        {
+            add => _consumer.Received += value;
+            remove => _consumer.Received -= value;
+        }
 
 
         public Consumer(IConnectionFactory connectionFactory, Settings settings)
         {
             _broker = new Broker(connectionFactory, settings);
-            _subscription = new Subscription(_broker.Channel, settings.QueueName, autoAck: false);
+            _consumer = new EventingBasicConsumer(_broker.Channel);
+            _settings = settings;
         }
 
+        public void Connect()
+        {
+            _broker.Channel.BasicConsume(_settings.QueueName,
+                false, _consumer);
+        }
 
         public void Dispose()
         {
             _broker?.Dispose();
-            _subscription?.Dispose();
         }
 
         public void SetAcknowledge(ulong deliveryTag, bool processed)
@@ -38,20 +49,6 @@ namespace Services.Implementation.RabbitMq
             {
                 _broker.Channel.BasicNack(deliveryTag, multiple: false, requeue: true);
             }
-        }
-
-        public ReceiveData Receive(int millisecondsTimeout)
-        {
-            if (_subscription.Next(millisecondsTimeout, out BasicDeliverEventArgs basicDeliveryEventArgs))
-            {
-                return new ReceiveData
-                {
-                    DeliveryTag = basicDeliveryEventArgs.DeliveryTag,
-                    Body = basicDeliveryEventArgs.Body
-                };
-            }
-
-            return null;
         }
     }
 }

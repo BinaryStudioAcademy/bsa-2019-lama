@@ -1,5 +1,8 @@
-﻿namespace Photo.Domain.DataTransferObjects
+﻿using System;
+
+namespace Photo.Domain.DataTransferObjects
 {
+    [Serializable]
     public class ImageToProcessDTO
     {
         public long ImageId { get; set; }

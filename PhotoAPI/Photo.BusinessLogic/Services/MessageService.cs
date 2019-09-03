@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -8,6 +11,7 @@ using System.Timers;
 using Photo.BusinessLogic.Interfaces;
 using Photo.Domain.Settings;
 using Photo.Domain.DataTransferObjects;
+using RabbitMQ.Client.Events;
 using Timer = System.Timers.Timer;
 
 namespace Photo.BusinessLogic.Services
@@ -23,10 +27,8 @@ namespace Photo.BusinessLogic.Services
         {
             this.serviceData = messageServiceSettings;
             _photoService = service;
-            Timer timer = new Timer();
-            timer.Interval = 2500;
-            timer.Elapsed += RunAsync;
-            timer.Start();
+            messageServiceSettings.PhotoProcessorConsumer.Received += Get;
+            messageServiceSettings.PhotoProcessorConsumer.Connect();
         }
 
         public void Dispose()
@@ -34,37 +36,34 @@ namespace Photo.BusinessLogic.Services
             serviceData.PhotoProcessorProducer?.Dispose();
         }
 
-        public async Task ReceiveDuplicates(List<int> duplicates)
+
+        public async void Get(object sender, BasicDeliverEventArgs args)
         {
-            if (duplicates.Count > 0)
+            var originalList = Enumerable.Range(0, args.Body.Length / 4)
+                    .Select(i => BitConverter.ToInt32(args.Body, i * 4))
+                    .ToList();
+            if (originalList.Count > 0)
             {
-                await _photoService.SendDuplicates(duplicates);
+                await _photoService.SendDuplicates(originalList);
             }
+            serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
         }
-        public async void RunAsync(object sender, ElapsedEventArgs e)
-        {
-            var receiveData = serviceData.PhotoProcessorConsumer.Receive(1000);
-                if (receiveData == null) return;
-                Console.WriteLine(receiveData);
-                var originalList = Enumerable.Range(0, receiveData.Body.Length / 4)
-                .Select(i => BitConverter.ToInt32(receiveData.Body, i * 4))
-                .ToList();
-
-            await ReceiveDuplicates(originalList);
-                serviceData.PhotoProcessorConsumer.SetAcknowledge(receiveData.DeliveryTag, true);
-        }
-
-
 
         // METHODS
         public void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail)
         {
             if (makePhotoThumbnail == null) throw new System.ArgumentNullException(nameof(makePhotoThumbnail));
-
+            foreach (var imageToProcessDto in makePhotoThumbnail)
+            {
+                imageToProcessDto.ImageType = Domain.Enums.ImageType.Photo;
+            }
             string objectJson = JsonConvert.SerializeObject(makePhotoThumbnail);
+            var body = Encoding.ASCII.GetBytes(objectJson);
 
-            serviceData.PhotoProcessorProducer.Send(objectJson);
+
+            serviceData.PhotoProcessorProducer.Send(body);
         }
+
         public void SendPhotoToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images)
         {
             foreach (var item in images)
