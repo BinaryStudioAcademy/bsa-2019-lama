@@ -75,4 +75,26 @@
 
 a.dropdown-item
     padding: 5px 10px
-   
+
+.many-photos img
+    position: absolute
+    min-height: 80%
+    min-width: 80%
+    max-width: 80%
+    border-radius: 5px
+    border: 1px solid #bebebe
+
+.many-photos img:first-child
+    bottom: 0
+    left: 0
+    z-index: 0
+
+.many-photos img:nth-child(2n)
+    bottom: 10%
+    left: 10%
+    z-index: -1
+
+.many-photos img:last-child
+    top: 0
+    right: 0
+    z-index: -2
