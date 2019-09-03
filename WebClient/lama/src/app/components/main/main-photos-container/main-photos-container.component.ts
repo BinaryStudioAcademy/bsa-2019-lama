@@ -257,22 +257,41 @@ export class MainPhotosContainerComponent
   }
 
   private deleteImages(): void {
-    this.selectedPhotos.forEach(element => {
-      this.fileService
-        .markPhotoAsDeleted(element.id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          res => {
-            this.deletePhotoHandler(element.id);
-          },
-          error => this.notifier.notify('error', 'Error deleting images')
-        );
-    });
-    this.selectedPhotos = [];
+    if (this.isAtLeastOnePhotoSelected) {
+      this.selectedPhotos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+      this.selectedPhotos = [];
+    } else {
+      this.photos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+    }
   }
 
   downloadImages() {
-    this.zipService.downloadImages(this.selectedPhotos);
+    console.log('I am here');
+    if (this.isAtLeastOnePhotoSelected) {
+      this.zipService.downloadImages(this.selectedPhotos);
+    } else {
+      this.zipService.downloadImages(this.photos);
+    }
   }
 
   findDuplicates() {

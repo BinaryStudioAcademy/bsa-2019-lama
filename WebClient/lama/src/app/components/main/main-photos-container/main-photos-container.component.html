@@ -15,11 +15,11 @@
                 <div class="dropdown-item" (click)="findDuplicates()">
                     <p>Find Duplicates</p>
                 </div>
-                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteImages()">
-                    <p>Delete</p>
+                <div class="dropdown-item" (click)="deleteImages()">
+                    <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
                 </div>
-                <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="downloadImages()">
-                    <p>Download</p>
+                <div class="dropdown-item" (click)="downloadImages()">
+                    <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
                 </div>
             </div>
         </div>
