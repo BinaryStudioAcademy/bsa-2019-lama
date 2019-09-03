@@ -114,14 +114,13 @@ namespace Photo.DataAccess.Implementation
 
         public async Task<string> GetPhoto(string blobId)
         {
-           
-            CloudBlockBlob cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobId);
+            var cloudBlob = cloudBlobContainerPhotos.GetBlockBlobReference(blobId);
             var type = Path.GetExtension(blobId);
             await cloudBlob.FetchAttributesAsync();
-            long fileByteLength = cloudBlob.Properties.Length;
-            Byte[] myByteArray = new Byte[fileByteLength];
+            var fileByteLength = cloudBlob.Properties.Length;
+            var myByteArray = new byte[fileByteLength];
             await cloudBlob.DownloadToByteArrayAsync(myByteArray, 0);
-            string base64 = Convert.ToBase64String(myByteArray);
+            var base64 = Convert.ToBase64String(myByteArray);
             return $"data:image/{type.Substring(1)};base64,{base64}";
         }
 
