@@ -3,79 +3,46 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.IO;
-using Processors.DataAccess.Interfaces;
-using Processors.Domain.DTO;
+using System.Text;
 
-namespace Processors.BusinessLogic.ImageComparer
+namespace Services.Models
 {
-    [Serializable]
     public class ImgHash
     {
         private readonly int _hashSide;
-        private readonly IElasticStorage _elasticStorage;
-        private bool[] _hashData;
-        public int PhotoId { get; set; }
+        public long PhotoId { get; set; }
+        public List<bool> HashData { get; set; }
+        public string BlobId { get; set; }
 
-        public bool[] HashData
-        {
-            get { return _hashData; }
-        }
-        
-
-        private string _imgSize;
-        public string ImgSize
-        {
-            get { return _imgSize; }
-        }
-
-
-        public ImgHash(int photoId, IElasticStorage elasticStorage, List<bool> hash = null, int hashSideSize = 16)
+        public ImgHash(long id, List<bool> hash = null, int hashSideSize = 16)
         {
             _hashSide = hashSideSize;
-            _elasticStorage = elasticStorage;
-            if (hash == null)
-            {
-                _hashData = new bool[hashSideSize * hashSideSize];
-            }
-            else
-            {
-                _hashData = hash.ToArray();
-            }
-            PhotoId = photoId;
+            HashData = hash;
+            PhotoId = id;
         }
 
-        /// <summary>
-        /// Method to compare 2 image hashes
-        /// </summary>
-        /// <returns>% of similarity</returns>
         public double CompareWith(ImgHash compareWith)
         {
-            if (HashData.Length != compareWith.HashData.Length)
+            if (HashData.Count != compareWith.HashData.Count)
             {
                 throw new Exception("Cannot compare hashes with different sizes");
             }
-
             double differenceCounter = 0;
 
-            for (int i = 0; i < HashData.Length; i++)
+            for (int i = 0; i < HashData.Count; i++)
             {
                 if (HashData[i] != compareWith.HashData[i])
                 {
                     differenceCounter++;
                 }
             }
-
-            return (HashData.Length - differenceCounter) / HashData.Length * 100;
+            return (HashData.Count - differenceCounter) / HashData.Count * 100;
         }
 
         public List<bool> GenerateFromByteArray(Byte[] bytes)
         {
             Bitmap image = (Bitmap)Image.FromStream(new MemoryStream(bytes), true);
-
-            _imgSize = $"{image.Size.Width}x{image.Size.Height}";
-
             return GenerateFromImage(image);
-
             image.Dispose();
         }
 
@@ -94,11 +61,9 @@ namespace Processors.BusinessLogic.ImageComparer
                     lResult.Add(bmpMin.GetPixel(i, j).GetBrightness() < 0.5f);
                 }
             }
-
-            _hashData = lResult.ToArray();
-
+            HashData = lResult;
             bmpMin.Dispose();
-            return new List<bool>(_hashData);
+            return lResult;
         }
     }
 }

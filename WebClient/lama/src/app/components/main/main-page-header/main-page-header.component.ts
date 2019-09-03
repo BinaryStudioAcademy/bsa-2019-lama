@@ -139,9 +139,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   deleteDuplicatesHandler(event: number[]) {
-    this.shared.photos = this.shared.photos.filter(
-      photo => !event.includes(photo.id)
-    );
+    this.shared.deletedPhotos = event;
+    this.duplicates = [];
   }
 
   MarkAllAsRead() {
@@ -344,9 +343,6 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   deleteSystemNotification(event) {
     this.duplicates = [];
-    if (!this.notification) {
-      this.newNotify = false;
-    }
   }
 
   openModalClicked() {

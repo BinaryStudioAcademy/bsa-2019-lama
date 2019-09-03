@@ -11,7 +11,6 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using Processors.BusinessLogic.ImageComparer;
 using RabbitMQ.Client.Events;
 using Services.Implementation.RabbitMq;
 
@@ -72,7 +71,7 @@ namespace Processors.BusinessLogic.Services
                 var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
-                var hash = new ImgHash((int) image.ImageId, _elasticStorage);
+                var hash = new ImgHash((int) image.ImageId);
                 hash.GenerateFromByteArray(currentImg);
                 await _elasticStorage.UpdateThumbnailsAsync(image.ImageId, blob);
                 await _elasticStorage.UpdateImageTagsAsync(image.ImageId, new ImageTagsAsRaw
@@ -82,6 +81,7 @@ namespace Processors.BusinessLogic.Services
                 await _elasticStorage.UpdateHashAsync(image.ImageId, new HasDTO {Hash = new List<bool>(hash.HashData)});
             }
             var duplicates = new List<int>();
+            await Task.Delay(3000);
             var comparison_result = await _comparer.FindDuplicatesWithTollerance(images.FirstOrDefault().UserId);
             foreach (var item in images)
             {

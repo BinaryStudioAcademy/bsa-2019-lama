@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Processors.BusinessLogic.ImageComparer;
+using Services.Models;
 using Processors.DataAccess.Interfaces;
 
 namespace Processors.BusinessLogic.Services
@@ -51,16 +51,16 @@ namespace Processors.BusinessLogic.Services
             var photos = await _elasticStorage.GetUserPhotos(userId);
             foreach (var item in photos)
             {
-                _hashLib.Add(new ImgHash((int)item.Id, _elasticStorage, item.Hash));
+                _hashLib.Add(new ImgHash((int)item.Id, item.Hash));
                 
             }
         }
 
         public async Task<List<List<ImgHash>>> FindDuplicatesWithTollerance(int userId, int minSimilarity = 90)
         {
+            _hashLib = new List<ImgHash>();
             await InitializeHashes(userId);
             List<ImgHash> alreadyMarkedAsDupl = new List<ImgHash>();
-
             var duplicatesFound = new List<List<ImgHash>>();
 
             foreach (var hash in _hashLib)

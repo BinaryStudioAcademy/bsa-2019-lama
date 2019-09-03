@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Photo.DataAccess.Interfaces;
-using Photo.Domain.ImageHashModels;
+using Services.Models;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -56,7 +56,7 @@ namespace Photo.BusinessLogic.Services
             var photos = await _elasticStorage.GetUserPhotos(userId);
             foreach (var item in photos)
             {
-                _hashLib.Add(new ImgHash(item.Hash, item.Id, item.BlobId));
+                _hashLib.Add(new ImgHash(item.Id, item.Hash));
             }
         }
 

@@ -164,6 +164,12 @@ export class MainPhotosContainerComponent
         this.photos.unshift(element);
       });
     }
+    if (this.shared.deletedPhotos) {
+      this.shared.deletedPhotos.forEach(item => {
+        this.photos.filter(i => i.id !== item);
+      });
+      this.shared.deletedPhotos = [];
+    }
     if (this.shared.foundPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundPhotos;
       this.isNothingFound = false;

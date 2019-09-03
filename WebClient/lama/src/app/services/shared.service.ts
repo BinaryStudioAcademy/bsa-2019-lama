@@ -15,5 +15,6 @@ export class SharedService {
   isSearchTriggeredAtLeastOnce: boolean;
   restorePhotos: boolean;
   searchCriteria: string;
-  constructor() { }
+  deletedPhotos: number[];
+  constructor() {}
 }
