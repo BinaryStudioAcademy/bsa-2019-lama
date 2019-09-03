@@ -89,6 +89,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       0,
       this.router.url.lastIndexOf('/') + 1
     );
+    if (this.returnPath === '/main/sharing/') {
+      this.isShared = true;
+    }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.httpService.getData('users/' + userId).subscribe(
       u => {
@@ -283,18 +286,19 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         ids.push(e.id);
       });
     }
-    this.albumService.updateAlbumTitle({
-      title: this.album.title,
-      id: this.album.id,
-      photoIds: ids
-    })
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(
-      () => {
-        this.notifier.notify('success', 'Album title changed successfully');
-      },
-      error => this.notifier.notify('error', 'Album title does not changed')
-    );
+    this.albumService
+      .updateAlbumTitle({
+        title: this.album.title,
+        id: this.album.id,
+        photoIds: ids
+      })
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        () => {
+          this.notifier.notify('success', 'Album title changed successfully');
+        },
+        error => this.notifier.notify('error', 'Album title does not changed')
+      );
   }
 
   startChangingTitle() {
