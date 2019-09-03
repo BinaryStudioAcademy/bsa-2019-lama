@@ -11,16 +11,16 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length">
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
           <p>Share</p>
         </div>
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length">
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
           <p>SetCover</p>
         </div>
-        <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected" (click)="addPhoto($event)">
+        <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isShared" (click)="addPhoto($event)">
           <p>Add photos</p>
         </div>
-        <div class="dropdown-item" (click)="deleteWindow()" *ngIf="album?.photoAlbums?.length">
+        <div class="dropdown-item" (click)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
           <p>Delete</p>
         </div>
         <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">
