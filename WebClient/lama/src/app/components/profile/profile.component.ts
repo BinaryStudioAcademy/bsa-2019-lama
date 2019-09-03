@@ -66,7 +66,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             this.photoUrl = null;
           }
-          console.log(this.user.lastName);
           this.defaultEmail = this.user.email;
           this.defaultLastName = this.user.lastName;
           this.defaultFirstName = this.user.firstName;
@@ -74,7 +73,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         },
         err => {
           this.notifier.notify('error', 'Error loading');
-          console.log(err);
           this.showSpinner = false;
           this.isSuccesfull = false;
         }
