@@ -298,7 +298,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   startChangingTitle() {
-    this.isTitleEdit = true;
+    if (!this.isShared) {
+      this.isTitleEdit = true;
+    }
   }
 
   deleteWindow() {
