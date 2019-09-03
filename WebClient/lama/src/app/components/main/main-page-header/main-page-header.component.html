@@ -172,12 +172,12 @@
       (deleteId)="deleteSystemNotification($event)"
     >
     </app-main-notification>
-    <app-duplicates-modal
+    <!-- <app-duplicates-modal
       *ngIf="showModal"
       [duplicatePhotos]="duplicates"
       (Change)="deleteDuplicatesHandler($event)"
       (Click)="modalHandler($event)"
-    ></app-duplicates-modal>
+    ></app-duplicates-modal> -->
   </div>
   <div
     class="notification-content"
@@ -199,4 +199,5 @@
   </div>
 </aside>
 <template #photoUploadModal></template>
+<template #duplicatesModal></template>
 <notifier-container></notifier-container>

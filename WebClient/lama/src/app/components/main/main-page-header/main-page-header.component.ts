@@ -24,6 +24,7 @@ import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -35,6 +36,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
+  @ViewChild('duplicatesModal', { static: true, read: ViewContainerRef })
+  private duplicatesEntry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   avatarUrl: string;
   isActive = false;
@@ -334,7 +337,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   openModal() {
-    this.showModal = !this.showModal;
+    this.duplicatesEntry.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      DuplicatesModalComponent
+    );
+    const componentRef = this.duplicatesEntry.createComponent(factory);
+    componentRef.instance.Change.subscribe(data => {
+      this.deleteDuplicatesHandler(data);
+    });
+    // componentRef.instance.Click.subscribe(data => {
+    //   this.modalHandler(data);
+    // });
+    componentRef.instance.receivedDuplicates = this.duplicates;
+    // componentRef.instance.toggleModal();
+    // this.showModal = !this.showModal;
   }
 
   modalHandler(event) {
