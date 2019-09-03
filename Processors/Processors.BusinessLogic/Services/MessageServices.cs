@@ -86,7 +86,8 @@ namespace Processors.BusinessLogic.Services
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
                     new HasDTO { Hash = new List<bool>(hash.HashData) });
             }
-            await Task.Delay(1700);
+            //TODO rewrite this
+            await Task.Delay(2000);
             await FindDuplicates(images);
         }
 
