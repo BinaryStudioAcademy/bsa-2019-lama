@@ -287,7 +287,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
-        this.shared.foundPhotos = p;        
+        this.shared.foundPhotos = p;
         this.shared.searchCriteria = this.searchCriteria;
         this.searchCriteria = '';
         this.router.navigate(['main/photos']);
