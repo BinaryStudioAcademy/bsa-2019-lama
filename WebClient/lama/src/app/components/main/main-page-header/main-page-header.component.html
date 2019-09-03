@@ -180,6 +180,7 @@
         class="systemNotification"
         [notification]="systemNotification"
         (click)="openModal()"
+        (id)="markRead($event)"
         (deleteId)="deleteSystemNotification($event)"
       >
       </app-main-notification>

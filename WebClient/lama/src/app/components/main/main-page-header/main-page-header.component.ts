@@ -67,7 +67,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     isRead: false,
     sender: {
       name: 'System notification',
-      imageUrl: 'images/883a9f78-aa2e-4847-9a67-5ff17ce03cb0.jpeg'
+      imageUrl: ''
     }
   };
 
@@ -355,8 +355,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   deleteSystemNotification(event) {
     this.duplicates = [];
-    this.notification.find(i => i.id === event).isRead = true;
     this.notification = this.notification.filter(z => z.id !== event);
+    this.checkNotification(this.notification);
+  }
+
+  markRead(id: number) {
+    this.notification.find(i => i.id === id).isRead = true;
+    this.checkNotification(this.notification);
   }
 
   openModalClicked() {
