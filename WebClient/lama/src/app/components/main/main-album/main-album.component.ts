@@ -49,6 +49,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   isFake = false;
   isOwners = true;
   unsubscribe = new Subject();
+  sharedAlbumCover = new Array<string>();
 
   imgname = require('../../../../assets/icon-no-image.svg');
   constructor(
@@ -61,6 +62,20 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    if (this.album.photo) {
+      this.fileService
+        .getPhoto(this.album.photo.blob256Id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(url => (this.imageUrl = url));
+    }
+    if (this.isShared && this.album.photoAlbums.length > 0) {
+      this.album.photoAlbums.slice(0, 3).map(i => {
+        this.fileService
+          .getPhoto(i.blob256Id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => this.sharedAlbumCover.push(url));
+      });
+    }
     if (this.album.photo) {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
