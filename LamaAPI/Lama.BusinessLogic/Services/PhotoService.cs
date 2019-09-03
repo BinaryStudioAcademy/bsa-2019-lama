@@ -230,7 +230,8 @@ namespace Lama.BusinessLogic.Services
         }
 
         public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
-        {
+        {   
+            
             var user = await _context.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
             var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
             await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);

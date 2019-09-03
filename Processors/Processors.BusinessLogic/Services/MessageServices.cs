@@ -42,7 +42,7 @@ namespace Processors.BusinessLogic.Services
             _comparer = comparer;
             _consumer.Received += Get;
             _consumer.Connect();
-            
+
         }
 
         public void Dispose()
@@ -56,15 +56,12 @@ namespace Processors.BusinessLogic.Services
             await HandleReceivedDataAsync(JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message));
             _consumer.SetAcknowledge(args.DeliveryTag, true);
         }
-    
-        
 
         public async Task RunAsync(int millisecondsTimeout)
         {
             Console.WriteLine("running");
-            
-        }
 
+        }
 
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
@@ -78,17 +75,23 @@ namespace Processors.BusinessLogic.Services
                 var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
-                var hash = new ImgHash((int) image.ImageId);
+                var hash = new ImgHash((int)image.ImageId);
                 hash.GenerateFromByteArray(currentImg);
                 await _elasticStorage.UpdateThumbnailsAsync(image.ImageId, blob);
                 await _elasticStorage.UpdateImageTagsAsync(image.ImageId, new ImageTagsAsRaw
                 {
                     Tags = imageTagsAsRawString
                 });
-                await _elasticStorage.UpdateHashAsync(image.ImageId, new HasDTO {Hash = new List<bool>(hash.HashData)});
+                await _elasticStorage.UpdateHashAsync(image.ImageId,
+                    new HasDTO { Hash = new List<bool>(hash.HashData) });
             }
+            await Task.Delay(1700);
+            await FindDuplicates(images);
+        }
+
+        public async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
+        {
             var duplicates = new List<int>();
-            await Task.Delay(3000);
             var comparison_result = await _comparer.FindDuplicatesWithTollerance(images.FirstOrDefault().UserId);
             foreach (var item in images)
             {

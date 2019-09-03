@@ -144,6 +144,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   deleteDuplicatesHandler(event: number[]) {
     this.shared.deletedPhotos = event;
     this.duplicates = [];
+    this.checkNotification(this.notification.filter(i => i.id === 0));
   }
 
   MarkAllAsRead() {
@@ -177,7 +178,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     });
     this.Hub.on('DuplicatesFound', (duplicates: UploadPhotoResultDTO[]) => {
       this.duplicates = duplicates;
-      this.newNotify = true;
+      this.addNotification(this.systemNotification);
     });
   }
 
@@ -345,12 +346,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.Change.subscribe(data => {
       this.deleteDuplicatesHandler(data);
     });
-    // componentRef.instance.Click.subscribe(data => {
-    //   this.modalHandler(data);
-    // });
     componentRef.instance.receivedDuplicates = this.duplicates;
-    // componentRef.instance.toggleModal();
-    // this.showModal = !this.showModal;
   }
 
   modalHandler(event) {
@@ -359,6 +355,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   deleteSystemNotification(event) {
     this.duplicates = [];
+    this.notification.find(i => i.id === event).isRead = true;
+    this.notification = this.notification.filter(z => z.id !== event);
   }
 
   openModalClicked() {
@@ -379,11 +377,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   getCountOfUnreadNotifications() {
-    let result = 0;
-    if (this.duplicates) {
-      result = 1;
-    }
-    return result + this.notification.filter(x => !x.isRead).length;
+    return this.notification.filter(x => !x.isRead).length;
   }
 
   ngOnDestroy() {

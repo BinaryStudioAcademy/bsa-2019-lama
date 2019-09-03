@@ -164,31 +164,25 @@
       </a>
     </div>
   </div>
-  <div class="notification-content" *ngIf="duplicates.length">
-    <app-main-notification
-      class="systemNotification"
-      [notification]="systemNotification"
-      (click)="openModal()"
-      (deleteId)="deleteSystemNotification($event)"
-    >
-    </app-main-notification>
-    <!-- <app-duplicates-modal
-      *ngIf="showModal"
-      [duplicatePhotos]="duplicates"
-      (Change)="deleteDuplicatesHandler($event)"
-      (Click)="modalHandler($event)"
-    ></app-duplicates-modal> -->
-  </div>
   <div
     class="notification-content"
     *ngIf="notification && notification.length !== 0"
   >
     <div *ngFor="let item of notification">
       <app-main-notification
+        *ngIf="item.id !== 0"
         (id)="sendIsRead($event)"
         (deleteId)="sendDelete($event)"
         [notification]="item"
       ></app-main-notification>
+      <app-main-notification
+        *ngIf="item.id === 0 && notification.length"
+        class="systemNotification"
+        [notification]="systemNotification"
+        (click)="openModal()"
+        (deleteId)="deleteSystemNotification($event)"
+      >
+      </app-main-notification>
     </div>
   </div>
   <div

@@ -166,7 +166,7 @@ export class MainPhotosContainerComponent
     }
     if (this.shared.deletedPhotos) {
       this.shared.deletedPhotos.forEach(item => {
-        this.photos.filter(i => i.id !== item);
+        this.photos = this.photos.filter(i => i.id !== item);
       });
       this.shared.deletedPhotos = [];
     }
