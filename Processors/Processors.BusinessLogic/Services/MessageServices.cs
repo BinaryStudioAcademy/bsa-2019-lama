@@ -82,7 +82,7 @@ namespace Processors.BusinessLogic.Services
                 await _elasticStorage.UpdateHashAsync(image.ImageId, new HasDTO {Hash = new List<bool>(hash.HashData)});
             }
             var duplicates = new List<int>();
-            var comparison_result = await _comparer.FindDuplicatesWithTollerance(1);
+            var comparison_result = await _comparer.FindDuplicatesWithTollerance(images.FirstOrDefault().UserId);
             foreach (var item in images)
             {
                 foreach (var result in comparison_result)
@@ -99,9 +99,7 @@ namespace Processors.BusinessLogic.Services
                     }
                 }
             }
-
             var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
-            //var bytes = BitConverter.GetBytes(duplicates);
             _producer.Send(bytes);
         }
         private async Task<byte[]> GetImage(ImageType imageType, string fileName)

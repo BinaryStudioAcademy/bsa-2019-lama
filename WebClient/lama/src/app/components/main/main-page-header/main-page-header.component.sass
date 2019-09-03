@@ -11,13 +11,15 @@ header
 img
     outline: none
 
+.systemNotification
+    cursor: pointer
 .button
     height: 35px
 
 header
     width: 100%
 datalist div
-  font-family: 'FontAwesome'
+    font-family: 'FontAwesome'
 
 .align-right
     display: flex
@@ -25,9 +27,8 @@ datalist div
     justify-content: center
     .button
         margin-right: 10px
-
-input::-webkit-calendar-picker-indicator
-  display: none
+        input::-webkit-calendar-picker-indicator
+        display: none
 
 .align-left
     display: flex
@@ -75,7 +76,6 @@ input::-webkit-calendar-picker-indicator
     margin-right: .4rem
     height: 100%
 
-
 .logo p
     font-weight: 500
     font-size: 19pt
@@ -91,7 +91,7 @@ input::-webkit-calendar-picker-indicator
     margin: auto
     object-fit: cover
 
-.main-header    
+.main-header
     width: 100%
     z-index: 5
     background: white
@@ -100,14 +100,13 @@ input::-webkit-calendar-picker-indicator
     margin-left: 10px
     position: relative
     i
-        font-size: 20pt      
+        font-size: 20pt
     .fa-bell
         color: orangered
     &:hover .fa-bell
         color: #00d1b2
     &:hover .notification-count
         background: #00d1b2
-
 
 .notification-count
     position: absolute
@@ -141,7 +140,7 @@ input::-webkit-calendar-picker-indicator
     overflow: auto
     position: fixed
     margin-top: 70px
-    top:0
+    top: 0
     max-height: 90%
     width: 350px
     z-index: 1
@@ -168,9 +167,9 @@ input::-webkit-calendar-picker-indicator
     border-bottom: 1px solid black
 
 .not-active
-  pointer-events: none
-  cursor: default
-  background-color: gray
+    pointer-events: none
+    cursor: default
+    background-color: gray
 
 .search-bar
     position: relative
@@ -217,5 +216,3 @@ input::-webkit-calendar-picker-indicator
 
     .search-bar .field > a i
         margin: 0
-
-
