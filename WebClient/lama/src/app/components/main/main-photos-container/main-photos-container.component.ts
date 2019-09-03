@@ -44,22 +44,25 @@ export class MainPhotosContainerComponent
   duplicatesFound = false;
   numberLoadPhoto = 30;
   unsubscribe = new Subject();
+  shared: SharedService;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef })
   private modalUploadPhotoEntry: ViewContainerRef;
 
+
   constructor(
     private resolver: ComponentFactoryResolver,
     private fileService: FileService,
-    private shared: SharedService,
+    shared: SharedService,
     private favoriteService: FavoriteService,
     private zipService: ZipService,
     private userService: UserService,
     private notifier: NotifierService
   ) {
     this.favorites = new Set<number>();
+    this.shared = shared;
   }
 
   async ngOnInit() {
@@ -118,6 +121,11 @@ export class MainPhotosContainerComponent
   }
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
+    if (this.shared.isSearchTriggered && this.shared.isSearchTriggeredAtLeastOnce) {
+      this.photos = this.shared.foundPhotos;
+      this.showSpinner = false;
+      return;
+    }
     if (startId === 0) {
       this.isNothingFound = false;
       this.shared.isSearchTriggeredAtLeastOnce = false;
@@ -135,6 +143,7 @@ export class MainPhotosContainerComponent
         },
         error => this.notifier.notify('error', 'Error getting photos')
       );
+
   }
 
   GetPhotos() {

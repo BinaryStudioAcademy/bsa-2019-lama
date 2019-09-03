@@ -54,18 +54,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  shared: SharedService;
 
   constructor(
     public auth: AuthService,
     private router: Router,
     resolver: ComponentFactoryResolver,
-    private shared: SharedService,
+    shared: SharedService,
     private http: HttpService,
     private file: FileService,
     private notifier: NotifierService,
     private notificationService: NotificationService
   ) {
     this.resolver = resolver;
+    this.shared = shared;
   }
 
   async ngOnInit() {
@@ -286,6 +288,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
         this.shared.foundPhotos = p;
+        this.router.navigate(['main/photos']);
         this.shared.searchCriteria = this.searchCriteria;
         this.searchCriteria = '';
       },
