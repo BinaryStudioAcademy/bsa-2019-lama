@@ -19,6 +19,49 @@ export function getLocation(latitude, longitude, geoCoder): Promise<string> {
   });
 }
 
+export function getShortAddress(
+  latitude,
+  longitude,
+  geoCoder
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    return geoCoder.geocode(
+      { location: { lat: latitude, lng: longitude } },
+      (results, status) => {
+        if (status === 'OK') {
+          if (results[0]) {
+            let Country;
+            let City;
+            let address;
+            for (const firstEl of results[0].address_components) {
+              if (firstEl.types[0] === 'country') {
+                Country = firstEl.long_name;
+              }
+              if (firstEl.types[0] === 'administrative_area_level_1') {
+                City = firstEl.long_name;
+              }
+            }
+            if (Country !== undefined && City !== undefined) {
+              address = Country + ',' + City;
+            }
+            if (Country === undefined && City !== undefined) {
+              address = City;
+            }
+            if (Country !== undefined && City === undefined) {
+              address = Country;
+            }
+            resolve(address);
+          } else {
+            console.log('No results found');
+          }
+        } else {
+          console.log('Geocoder failed due to: ' + status);
+        }
+      }
+    );
+  });
+}
+
 export function getLatitude(exifObj): number {
   const field = 'GPS';
   let latitude;

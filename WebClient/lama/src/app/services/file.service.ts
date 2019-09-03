@@ -29,7 +29,6 @@ export class FileService {
   };
 
   sendPhotos(photos: Photo[]): Observable<UploadPhotoResultDTO[]> {
-    console.log(photos);
     return this.client.post<UploadPhotoResultDTO[]>(
       `${environment.lamaApiUrl}/api/photo`,
       photos,

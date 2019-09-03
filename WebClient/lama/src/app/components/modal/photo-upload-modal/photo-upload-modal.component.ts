@@ -23,7 +23,8 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
 import {
   getLocation,
   getLatitude,
-  getLongitude
+  getLongitude,
+  getShortAddress
 } from 'src/app/export-functions/exif';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -79,7 +80,8 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
         authorId: parseInt(userId, 10),
         filename: this.photos[i].filename,
         location: this.photos[i].location,
-        coordinates: this.photos[i].coordinates
+        coordinates: this.photos[i].coordinates,
+        shortLocation: this.photos[i].shortLocation
       };
     }
     this.fileService
@@ -167,13 +169,18 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
-                this.address = location;
-                this.photos.push({
-                  imageUrl: modifiedObject,
-                  filename: file.name,
-                  location: this.address,
-                  coordinates: latitude + ',' + longitude
-                });
+                getShortAddress(latitude, longitude, this.geoCoder).then(
+                  shortname => {
+                    this.address = location;
+                    this.photos.push({
+                      imageUrl: modifiedObject,
+                      filename: file.name,
+                      location: this.address,
+                      coordinates: latitude + ',' + longitude,
+                      shortLocation: shortname
+                    });
+                  }
+                );
               });
             } else {
               this.photos.push({

@@ -9,5 +9,6 @@
         public string FileName { get; set; }
         public string Coordinates { set; get; }
         public string Location { get; set; }
+        public string ShortLocation { set; get; }
     }
 }
