@@ -101,6 +101,12 @@ export class AlbumService {
       .subscribe(e => console.log(e));
   }
 
+  public updateAlbumTitle(album: UpdateAlbum) {
+    const headers = new HttpHeaders().set('content-type', 'application/json');
+    return this.http
+      .put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/title/`, album, { headers });
+  }
+
   public ArchiveAlbum(photos: string[]) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http.post<[]>(

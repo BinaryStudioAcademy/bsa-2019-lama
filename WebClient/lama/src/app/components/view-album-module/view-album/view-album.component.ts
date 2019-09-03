@@ -42,6 +42,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
+  isTitleEdit: boolean;
   coverId: number;
   loading = false;
   isDeleting: boolean;
@@ -268,10 +269,44 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   downloadImages() {
+    if (!this.isAtLeastOnePhotoSelected) {
+      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+    }
     this.zipService.downloadImages(this.selectedPhotos);
   }
 
+  changeAlbumName() {
+    this.isTitleEdit = false;
+    const ids = new Array<number>();
+    if (this.album.photoAlbums) {
+      this.album.photoAlbums.forEach(e => {
+        ids.push(e.id);
+      });
+    }
+    this.albumService.updateAlbumTitle({
+      title: this.album.title,
+      id: this.album.id,
+      photoIds: ids
+    })
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(
+      () => {
+        this.notifier.notify('success', 'Album title changed successfully');
+      },
+      error => this.notifier.notify('error', 'Album title does not changed')
+    );
+  }
+
+  startChangingTitle() {
+    if (!this.isShared) {
+      this.isTitleEdit = true;
+    }
+  }
+
   deleteWindow() {
+    if (!this.isAtLeastOnePhotoSelected) {
+      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+    }
     this.isDeleting = true;
   }
 

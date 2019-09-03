@@ -43,7 +43,6 @@ export class MainPhotosContainerComponent
   isHaveAnyPhotos = false;
   duplicatesFound = false;
   numberLoadPhoto = 30;
-  isDeleting: boolean;
   unsubscribe = new Subject();
   shared: SharedService;
 
@@ -298,20 +297,6 @@ export class MainPhotosContainerComponent
       this.photos.length,
       this.numberLoadPhoto
     );
-  }
-
-  deleteWindow() {
-    this.isDeleting = true;
-  }
-
-  goBackToImageView(): void {
-    this.isDeleting = false;
-  }
-
-  deletePhotosHandler(photosToDelete: number[]) {
-    for (const p of photosToDelete) {
-      this.deletePhotoHandler(p);
-    }
   }
 
   ngOnDestroy(): void {

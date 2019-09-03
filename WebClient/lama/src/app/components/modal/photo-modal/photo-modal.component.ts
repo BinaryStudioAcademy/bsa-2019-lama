@@ -159,15 +159,15 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       date: e
     };
     this.photodetailsService
-    .UpdateDate(date)
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(
-      a => {
-        this.photo.uploadDate = a;
-        this.notifier.notify('success', 'Date updated');
-      },
-      error => this.notifier.notify('error', 'Error updating date')
-    );
+      .UpdateDate(date)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        a => {
+          this.photo.uploadDate = a;
+          this.notifier.notify('success', 'Date updated');
+        },
+        error => this.notifier.notify('error', 'Error updating date')
+      );
   }
   UpdateLocation(e: NewLocation) {
     this.photodetailsService.updateLocation(e).subscribe(
@@ -506,10 +506,12 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
 
   openModalForPicklocation(event) {
-    const overlay = document.getElementsByClassName('overlay-location')[0];
-    const modalElem = document.getElementsByClassName('modal-location')[0];
-    modalElem.classList.add('active');
-    overlay.classList.add('active');
+    if (!this.isBlockById()) {
+      const overlay = document.getElementsByClassName('overlay-location')[0];
+      const modalElem = document.getElementsByClassName('modal-location')[0];
+      modalElem.classList.add('active');
+      overlay.classList.add('active');
+    }
   }
   CloseModalForPicklocation(event) {
     const overlay = document.getElementsByClassName('overlay-location')[0];

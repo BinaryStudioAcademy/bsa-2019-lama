@@ -3,6 +3,7 @@ import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { FileService } from 'src/app/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import * as moment from 'moment';
 @Component({
   selector: 'app-main-notification',
   templateUrl: './main-notification.component.html',
@@ -23,6 +24,7 @@ export class MainNotificationComponent implements OnInit {
       .getPhoto(this.notification.sender.imageUrl)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(x => (this.imageUrl = x));
+    this.notification.date = moment.utc(this.notification.date).local().toDate();
   }
   sendIsRead() {
     if (this.notification.isRead) {

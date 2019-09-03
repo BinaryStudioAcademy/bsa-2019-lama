@@ -25,6 +25,10 @@ namespace Photo.BusinessLogic.Services
 
             foreach (var hashCompareWith in _hashLib)
             {
+                if (hashCompareWith.HashData == null)
+                {
+                    continue;
+                }
                 if (hash.CompareWith(hashCompareWith) >= minSimilarity)
                 {
                     if (!alreadyMarkedAsDupl.Contains(hash))
@@ -42,6 +46,8 @@ namespace Photo.BusinessLogic.Services
                     }
                 }
             }
+
+
             return currHashDupl;
         }
 

@@ -93,7 +93,7 @@
   margin-bottom: 10px
 
 .photos img
-  width: 300px
+  width: 305px
 
 .photos .desc
   width: 301px
@@ -133,6 +133,37 @@
   transform: translate(-50%, -50%)
   z-index: -1
 
-
 .uploader img.loaded 
   opacity: 1
+
+.remove-button
+  & i
+    font-size: 100px
+  position: relative
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  -ms-transform: translate(-50%, -50%)
+  text-align: center
+
+.overlay
+  position: absolute
+  top: 0
+  bottom: 0
+  right: 0
+  height: 100%
+  width: 100%
+  opacity: 0
+  transition: .3s ease
+  background-color: white
+
+.remove-button:hover
+  color:#808080
+  cursor: pointer
+
+.uploaded-image
+    position: relative
+    width: 100%
+
+.uploaded-image:hover .overlay
+    opacity: 0.6

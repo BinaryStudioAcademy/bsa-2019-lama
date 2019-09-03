@@ -13,5 +13,6 @@ export class SharedService {
   isSearchTriggered: boolean;
   isSearchTriggeredAtLeastOnce: boolean;
   restorePhotos: boolean;
+  searchCriteria: string;
   constructor() { }
 }

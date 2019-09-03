@@ -21,6 +21,7 @@ export class GoogleMapComponent implements OnInit {
   latitude: number;
   longitude: number;
   zoom: number;
+  checkForm = true;
   address: string;
   private geoCoder;
   displaymap = false;
@@ -47,7 +48,7 @@ export class GoogleMapComponent implements OnInit {
       const autocomplete = new google.maps.places.Autocomplete(
         this.searchElementRef.nativeElement,
         {
-          types: ['address']
+          types: ['geocode']
         }
       );
       autocomplete.addListener('place_changed', () => {
@@ -57,6 +58,8 @@ export class GoogleMapComponent implements OnInit {
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
           this.address = place.formatted_address;
           // verify result
+
+          this.checkForm = true;
           if (place.geometry === undefined || place.geometry === null) {
             return;
           }
@@ -84,6 +87,7 @@ export class GoogleMapComponent implements OnInit {
   Change() {
     const input = document.getElementById('Input') as HTMLInputElement;
     input.value = '';
+    this.address = '';
   }
   markerDragEnd($event: MouseEvent) {
     this.latitude = $event.coords.lat;
@@ -91,14 +95,20 @@ export class GoogleMapComponent implements OnInit {
     this.getAddress(this.latitude, this.longitude);
   }
   ChangeLocation() {
+    if (this.address === '' || this.address === undefined) {
+      this.checkForm = false;
+      return;
+    }
     const newLoc: NewLocation = {
       id: this.photo.id,
       location: this.address,
       coordinates: `${this.latitude},${this.longitude}`
     };
+    this.checkForm = true;
     this.Updatelocation.emit(newLoc);
   }
   DeleteLocation() {
+    this.checkForm = true;
     this.Deletelocation.emit();
   }
   getAddress(latitude, longitude) {

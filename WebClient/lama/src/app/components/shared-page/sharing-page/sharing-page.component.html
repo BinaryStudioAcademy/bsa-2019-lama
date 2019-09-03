@@ -1,4 +1,4 @@
-<h2>Recent shared items:</h2>
+<h2 *ngIf="isAnyItems">Recent shared items:</h2>
 <div class="items-container-left">
   <div class="no-content" *ngIf="!isAnyItems">
     <h2>Nothing here yet..</h2>
