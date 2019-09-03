@@ -79,14 +79,12 @@ export class SharedPageComponent implements OnInit, OnDestroy {
     this.userSubject.subscribe(
       data => {
         this.userData = data;
-        if (this.userData.photo.imageUrl) {
-          this.fileService
-            .getPhoto(this.userData.user.photoUrl)
-            .pipe(takeUntil(this.unsubscribe))
-            .subscribe(url => (this.userAvatarUrl = url));
-        } else {
-          this.userAvatarUrl = 'assets/default_avatar.png';
-        }
+        this.fileService
+          .getPhoto(this.userData.user.photoUrl)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => {
+            this.userAvatarUrl = url;
+          });
       },
       error => this.notifier.notify('error', 'Error user subject')
     );
