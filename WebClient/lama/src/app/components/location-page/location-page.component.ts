@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LocationServiceService } from 'src/app/services/location-service.service';
 
 @Component({
   selector: 'app-location-page',
@@ -6,7 +7,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./location-page.component.sass']
 })
 export class LocationPageComponent implements OnInit {
-  constructor() {}
+  constructor(private locationService: LocationServiceService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    this.locationService
+      .getUserLocationAlbums(userId)
+      .subscribe(x => console.log(x));
+    this.locationService
+      .getUserLocationAlbumsByCountry(userId)
+      .subscribe(x => console.log(x));
+  }
 }
