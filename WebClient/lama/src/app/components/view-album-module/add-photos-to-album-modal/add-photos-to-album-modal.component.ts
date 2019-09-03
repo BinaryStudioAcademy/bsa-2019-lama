@@ -173,6 +173,7 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
       this.notifier.notify('error', 'Error no photos');
     } else if (this.LoadNewImage === true) {
       if (
+        this.photoAlbums &&
         this.photos.some(p => this.photoAlbums.some(x => x.name === p.filename))
       ) {
         this.notifier.notify('warning', 'This photos appear to be duplicates');
@@ -218,6 +219,10 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
 
   toggleModal() {
     this.isShown = false;
+  }
+
+  removePhoto(index: number) {
+    this.photos.splice(index, 1);
   }
 
   ngOnDestroy() {

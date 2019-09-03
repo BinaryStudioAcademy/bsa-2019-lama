@@ -3,6 +3,7 @@
     <div class="form-group input-size">
         <div class="field">
             <div class="control">
+
                 <input id="Input" [value]="photo?.location" [className]="checkForm ? 'input is-primary form-control' : 'input is-danger form-control'" (click)="Change()" (keydown.enter)="$event.preventDefault()" placeholder="Search Nearest Location" autocorrect="off"
                     autocapitalize="off" spellcheck="off" type="text" #search>
             </div>

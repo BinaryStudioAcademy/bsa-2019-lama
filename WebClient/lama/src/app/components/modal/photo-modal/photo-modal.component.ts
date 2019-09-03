@@ -159,15 +159,15 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       date: e
     };
     this.photodetailsService
-    .UpdateDate(date)
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(
-      a => {
-        this.photo.uploadDate = a;
-        this.notifier.notify('success', 'Date updated');
-      },
-      error => this.notifier.notify('error', 'Error updating date')
-    );
+      .UpdateDate(date)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        a => {
+          this.photo.uploadDate = a;
+          this.notifier.notify('success', 'Date updated');
+        },
+        error => this.notifier.notify('error', 'Error updating date')
+      );
   }
   UpdateLocation(e: NewLocation) {
     this.photodetailsService.updateLocation(e).subscribe(

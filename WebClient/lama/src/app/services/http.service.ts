@@ -9,13 +9,13 @@ import { PhotoRaw } from '../models';
 export class HttpService {
   constructor(private http: HttpClient) {}
 
-  getData(endPoint: string): Observable<User> {
+  getData(endPoint: string) {
     return this.http.get(
       `${environment.lamaApiUrl}/api/${endPoint}`
     ) as Observable<User>;
   }
 
-  getDataWithHeader(endPoint: string, data: any): Observable<User> {
+  getDataWithHeader(endPoint: string, data: any) {
     return this.http.get(`${environment.lamaApiUrl}/api/${endPoint}`, {
       headers: data
     }) as Observable<User>;
@@ -25,7 +25,7 @@ export class HttpService {
     return this.http.put(`${environment.lamaApiUrl}/api/${endPoint}`, data);
   }
 
-  findPhotos(id: string, criteria: string): Observable<PhotoRaw[]> {
+  findPhotos(id: string, criteria: string) {
     return this.http.get(
       `${environment.lamaApiUrl}/api/photo/search/${id}/${criteria}`
     ) as Observable<PhotoRaw[]>;

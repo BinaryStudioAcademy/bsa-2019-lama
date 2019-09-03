@@ -15,6 +15,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<ReturnAlbumDTO> CreateAlbumWithNewPhotos(NewAlbumDTO albumDto);
         Task<int> CreateEmptyAlbum(NewAlbumDTO albumDto);
         Task UpdateAlbum(UpdateAlbumDTO albumDto);
+        Task<int> UpdateAlbumTitle(UpdateAlbumDTO album);
         Task<List<ReturnAlbumDTO>> FindAll(int UserId);
         Task<ReturnAlbumDTO> FindAlbum(int Id);
         Task<List<byte[]>> GetPhotos(List<string> photoDocuments);

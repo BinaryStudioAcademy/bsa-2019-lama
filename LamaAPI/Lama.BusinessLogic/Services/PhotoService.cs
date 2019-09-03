@@ -113,8 +113,6 @@ namespace Lama.BusinessLogic.Services
             return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(responseContent);
         }
 
-        // METHODS
-        #region CREATE
         public Task<int> Create(PhotoDocument item)
         {
             throw new NotImplementedException();
@@ -213,17 +211,15 @@ namespace Lama.BusinessLogic.Services
             return user.AvatarUrl;
         }
 
-        #endregion
-
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
-            string uri = $"{url}api/photos";
+            var uri = $"{url}api/photos";
 
-            StringContent content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await httpClient.PutAsync(uri, content);
+            var response = await httpClient.PutAsync(uri, content);
 
-            string bodyJson = await response.Content.ReadAsStringAsync();
+            var bodyJson = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
 

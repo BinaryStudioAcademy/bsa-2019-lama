@@ -14,6 +14,7 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO;
 using Lama.Domain.DTO.Photo;
+using Lama.Domain.DTO.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -40,6 +41,8 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<SharedPhotoDTO> Get(int id)
         {
+            var phot = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(s => s.Id == id);
+
             var sharedPhotoData = await Context.SharedPhotos
                 .Include(sharedPhoto => sharedPhoto.User)
                 .Include(sharedPhoto => sharedPhoto.Photo)
@@ -48,19 +51,22 @@ namespace Lama.BusinessLogic.Services
                     .ThenInclude(photo => photo.Comments)
                 .FirstOrDefaultAsync(sharedPhoto => sharedPhoto.PhotoId == id);
             
-            if (sharedPhotoData == null)
+            if (phot  == null)
             {
                 throw new NotFoundException(nameof(SharedPhoto), id);
             }
             var url = string.Empty;
-            if (sharedPhotoData.Photo.User != null)
+            if (phot.User != null)
             {
-                url = (await _photoService.Get(sharedPhotoData.Photo.User.Id)).Blob256Id;
+                url = phot.User.AvatarUrl;
             }
-            var mappedResponse = _mapper.Map<SharedPhotoDTO>(sharedPhotoData);
-            mappedResponse.User.PhotoUrl = url;
 
-            return mappedResponse;
+            var sharePhoto = new SharedPhotoDTO()
+            {
+                User = _mapper.Map<UserDTO>(phot.User)
+            };
+            sharePhoto.User.PhotoUrl = url;
+            return sharePhoto;
         }
 
         public async Task<IEnumerable<PhotoAlbumDTO>> GetUsersSharedPhoto(int id)

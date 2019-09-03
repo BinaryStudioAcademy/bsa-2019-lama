@@ -1,5 +1,6 @@
 <div class="navigation">
-  <div *ngIf="(!isFavorite() || isAtLeastOnePhotoSelected) && album?.photoAlbums?.length" class="dropdown is-hoverable">
+  <div class="dropdown is-hoverable">
+
     <div class="dropdown-trigger">
       <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
         <span>Options</span>
@@ -10,15 +11,22 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" *ngIf="!isFavorite()" (click)="addPhoto($event)">
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
+          <p>Share</p>
+        </div>
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
+          <p>SetCover</p>
+        </div>
+        <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isShared" (click)="addPhoto($event)">
           <p>Add photos</p>
         </div>
-        <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="deleteWindow()">
+        <div class="dropdown-item" (click)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
           <p>Delete</p>
         </div>
-        <div class="dropdown-item" *ngIf="isAtLeastOnePhotoSelected" (click)="downloadImages()">
+        <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">
           <p>Download</p>
         </div>
+        
       </div>
     </div>
   </div>
@@ -30,7 +38,8 @@
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
   <div class="title">
-    <h2 class="title is-2">{{ album.title }}</h2>
+    <h2 class="title is-2" *ngIf="!isTitleEdit" (click)="startChangingTitle()">{{ album.title }}</h2>
+    <input class="title is-2" *ngIf="isTitleEdit" [(ngModel)]="album.title" value="{{ album.title }}" (focusout)="changeAlbumName()">
   </div>
   <div *ngIf="loading" class="items-container-centered">
     <div *ngFor="let item of album.photoAlbums">

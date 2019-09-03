@@ -70,18 +70,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       imageUrl: ''
     }
   };
+  shared: SharedService;
 
   constructor(
     public auth: AuthService,
     private router: Router,
     resolver: ComponentFactoryResolver,
-    private shared: SharedService,
+    shared: SharedService,
     private http: HttpService,
     private file: FileService,
     private notifier: NotifierService,
     private notificationService: NotificationService
   ) {
     this.resolver = resolver;
+    this.shared = shared;
   }
 
   async ngOnInit() {
@@ -258,6 +260,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     }
   }
 
+  getThumbnailByName(item: string) {
+    const nameIndex = this.searchSuggestions.names.indexOf(item);
+    const thumb = this.searchSuggestions.thumbnails[nameIndex];
+    return thumb;
+  }
+
   extractTagNames(searchSuggestions: SearchSuggestionData) {
     const temp = [];
     searchSuggestions.tags.forEach(x => temp.push(JSON.parse(x)));
@@ -309,6 +317,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.shared.foundPhotos = p;
         this.shared.searchCriteria = this.searchCriteria;
         this.searchCriteria = '';
+        this.router.navigate(['main/photos']);
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
