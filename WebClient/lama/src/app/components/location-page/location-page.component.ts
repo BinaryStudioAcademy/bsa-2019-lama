@@ -31,11 +31,9 @@ export class LocationPageComponent implements OnInit {
     const userId = parseInt(localStorage.getItem('userId'), 10);
     this.locationService.getUserLocationAlbums(userId).subscribe(x => {
       this.AlbumsViewCities = x;
-      this.locationService.AlbumsCities = x;
     });
     this.locationService.getUserLocationAlbumsByCountry(userId).subscribe(x => {
       this.AlbumsViewCountries = x;
-      this.locationService.AlbumsCountries = x;
     });
   }
   public albumClicked(eventArgs: ViewAlbum) {
