@@ -11,20 +11,23 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
       <div class="dropdown-content">
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared && !this.isAtLeastOnePhotoSelected" (click)="showSharedModal = true">
           <p>Share</p>
         </div>
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared">
-          <p>SetCover</p>
+        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared && !this.isAtLeastOnePhotoSelected" (click)="showSetCoverModal = true">
+          <p>Set Cover</p>
         </div>
         <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isShared" (click)="addPhoto($event)">
           <p>Add photos</p>
         </div>
         <div class="dropdown-item" (click)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
-          <p>Delete</p>
+          <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+        </div>
+        <div class="dropdown-item" (click)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">
+          <p>Save<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
         </div>
         <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">
-          <p>Download</p>
+          <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
         </div>
         
       </div>
@@ -39,7 +42,7 @@
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
   <div class="title">
     <h2 class="title is-2" *ngIf="!isTitleEdit" (click)="startChangingTitle()">{{ album.title }}</h2>
-    <input class="title is-2" *ngIf="isTitleEdit" [(ngModel)]="album.title" value="{{ album.title }}" (focusout)="changeAlbumName()">
+    <input class="title is-2" *ngIf="isTitleEdit" [(ngModel)]="album.title" value="{{ album.title }}" (focusout)="changeAlbumName()" autofocus>
   </div>
   <div *ngIf="loading" class="items-container-centered">
     <div *ngFor="let item of album.photoAlbums">
@@ -50,4 +53,18 @@
   <template #modalPhotoContainer></template>
   <template #AddPhotosToAlbum></template>
 </div>
+
+<app-set-album-cover-modal
+    [receivedAlbum]="album"
+    [_isFavorite]="isFavorite()"
+    *ngIf="showSetCoverModal"
+    (Close)="showSetCoverModal = false"
+></app-set-album-cover-modal>
+
+<app-share-album-by-email
+  [receivedAlbum]="album"
+  *ngIf="showSharedModal"
+  (Close)="showSharedModal = false"
+></app-share-album-by-email>
+
 <notifier-container></notifier-container>

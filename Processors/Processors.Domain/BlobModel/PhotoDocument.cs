@@ -20,5 +20,6 @@ namespace Processors.Domain.BlobModel
         public string Coordinates { set; get; }
         public string ImageTags { get; set; }
         public string ImageDescription { get; set; }
+        public List<bool> Hash { get; set; }
     }
 }

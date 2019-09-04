@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Photo.DataAccess.Interfaces;
 using Services.Models;
+using Processors.DataAccess.Interfaces;
 
-namespace Photo.BusinessLogic.Services
+namespace Processors.BusinessLogic.Services
 {
     public class ImageCompareService
     {
         private readonly IElasticStorage _elasticStorage;
         private readonly int _hashSize = 128;
 
-        private readonly List<ImgHash> _hashLib = new List<ImgHash>();
+        private List<ImgHash> _hashLib = new List<ImgHash>();
 
         public ImageCompareService(IElasticStorage elasticStorage)
         {
@@ -27,8 +27,6 @@ namespace Photo.BusinessLogic.Services
             {
                 try
                 {
-
-
                     if (hash.CompareWith(hashCompareWith) >= minSimilarity)
                     {
                         if (!alreadyMarkedAsDupl.Contains(hash))
@@ -44,6 +42,7 @@ namespace Photo.BusinessLogic.Services
 
                             currHashDupl.Add(hashCompareWith);
                         }
+
                     }
                 }
                 catch (Exception e)
@@ -51,25 +50,25 @@ namespace Photo.BusinessLogic.Services
 
                 }
             }
-
-
             return currHashDupl;
         }
 
         private async Task InitializeHashes(int userId)
         {
+            _hashLib = new List<ImgHash>();
             var photos = await _elasticStorage.GetUserPhotos(userId);
             foreach (var item in photos)
             {
-                _hashLib.Add(new ImgHash(item.Id, item.Hash));
+                _hashLib.Add(new ImgHash((int)item.Id, item.Hash));
+                
             }
         }
 
         public async Task<List<List<ImgHash>>> FindDuplicatesWithTollerance(int userId, int minSimilarity = 90)
         {
+            _hashLib = new List<ImgHash>();
             await InitializeHashes(userId);
             List<ImgHash> alreadyMarkedAsDupl = new List<ImgHash>();
-
             var duplicatesFound = new List<List<ImgHash>>();
 
             foreach (var hash in _hashLib)

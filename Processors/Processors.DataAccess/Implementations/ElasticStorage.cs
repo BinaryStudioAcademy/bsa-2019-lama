@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Nest;
 using Processors.Domain;
 using Processors.Domain.BlobModel;
@@ -42,6 +43,24 @@ namespace Processors.DataAccess.Implementations
         public Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription)
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageDescription));
+        }
+        
+        public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
+        {
+            var mustClauses = new List<QueryContainer>
+            {
+                new TermQuery {Field = Infer.Field<PhotoDocument>(p => p.IsDeleted), Value = false},
+                new TermQuery {Field = Infer.Field<PhotoDocument>(t => t.UserId), Value = userId,},
+                new MatchQuery {Field = Infer.Field<PhotoDocument>(p => p.BlobId), Query = ".*images.*"}
+            };
+
+            var searchRequest = new SearchRequest<PhotoDocument>(_indexName)
+            {
+                Size = 100,
+                From = 0,
+                Query = new BoolQuery { Must = mustClauses }
+            };
+            return (await _elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
     }
 }

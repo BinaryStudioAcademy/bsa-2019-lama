@@ -74,7 +74,8 @@
       <div class="columns">
         <div class="column has-text-centered">
           <a class="button is-primary" (click)="GenerateClick()">
-            Generate shared link
+            <span *ngIf="!userEmails.length">Generate shared link</span>
+            <span *ngIf="userEmails.length">Send</span>
           </a>
         </div>
       </div>

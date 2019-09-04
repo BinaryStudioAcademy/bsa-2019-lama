@@ -1,8 +1,13 @@
-﻿namespace Photo.Domain.DataTransferObjects
+﻿using System;
+
+namespace Photo.Domain.DataTransferObjects
 {
-    public class MakePhotoThumbnailDTO
+    [Serializable]
+    public class ImageToProcessDTO
     {
         public long ImageId { get; set; }
+        public int UserId { get; set; }
         public Enums.ImageType ImageType { get; set; }
+
     }
 }

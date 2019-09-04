@@ -35,6 +35,7 @@ namespace Photo
                     AutoRegisterTemplate = true,
                 })
             .CreateLogger();
+
         }
 
         public IConfiguration Configuration { get; }

@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Nest;
+using Processors.Domain.BlobModel;
 using Processors.Domain.DTO;
 
 
@@ -12,5 +15,6 @@ namespace Processors.DataAccess.Interfaces
         Task<bool> ExistAsync(long id);
         Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRawString);
         Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription);
+        Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
     }
 }

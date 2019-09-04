@@ -23,6 +23,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
+import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -34,6 +36,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
+  @ViewChild('duplicatesModal', { static: true, read: ViewContainerRef })
+  private duplicatesEntry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   avatarUrl: string;
   isActive = false;
@@ -54,6 +58,18 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  showModal = false;
+  duplicates: UploadPhotoResultDTO[] = [];
+  systemNotification = {
+    id: 0,
+    text: 'Duplicates found',
+    date: Date.now(),
+    isRead: false,
+    sender: {
+      name: 'System notification',
+      imageUrl: ''
+    }
+  };
   shared: SharedService;
 
   constructor(
@@ -126,6 +142,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       error => this.notifier.notify('error', 'Error deleting notification')
     );
   }
+
+  deleteDuplicatesHandler(event: number[]) {
+    this.shared.deletedPhotos = event;
+    this.duplicates = [];
+    this.checkNotification(this.notification.filter(i => i.id === 0));
+  }
+
   MarkAllAsRead() {
     this.notificationService
       .MarkAllAsRead(this.id)
@@ -154,6 +177,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       if (notification) {
         this.addNotification(notification);
       }
+    });
+    this.Hub.on('DuplicatesFound', (duplicates: UploadPhotoResultDTO[]) => {
+      this.duplicates = duplicates;
+      this.addNotification(this.systemNotification);
     });
   }
 
@@ -317,6 +344,33 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.searchSuggestionsEmpty = false;
       }
     });
+  }
+
+  openModal() {
+    this.duplicatesEntry.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      DuplicatesModalComponent
+    );
+    const componentRef = this.duplicatesEntry.createComponent(factory);
+    componentRef.instance.Change.subscribe(data => {
+      this.deleteDuplicatesHandler(data);
+    });
+    componentRef.instance.receivedDuplicates = this.duplicates;
+  }
+
+  modalHandler(event) {
+    this.openModal();
+  }
+
+  deleteSystemNotification(event) {
+    this.duplicates = [];
+    this.notification = this.notification.filter(z => z.id !== event);
+    this.checkNotification(this.notification);
+  }
+
+  markRead(id: number) {
+    this.notification.find(i => i.id === id).isRead = true;
+    this.checkNotification(this.notification);
   }
 
   openModalClicked() {

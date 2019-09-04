@@ -11,8 +11,11 @@ using AutoMapper;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using Nest;
+using Newtonsoft.Json;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -24,6 +27,7 @@ namespace Photo.BusinessLogic.Services
         private readonly IMapper _mapper;
         private readonly ImageCompareService _imageComporator;
         private readonly string _blobUrl;
+        private readonly HttpClient _httpClient;
 
         public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, ImageCompareService imageComporator, string blobUrl)
         {
@@ -33,6 +37,7 @@ namespace Photo.BusinessLogic.Services
             _mapper = mapper;
             _blobUrl = blobUrl;
             _imageComporator = imageComporator;
+            _httpClient = new HttpClient();
         }
 
         public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
@@ -123,7 +128,12 @@ namespace Photo.BusinessLogic.Services
                 Blob256Id = blobId
             };
             await _elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-            _messageService.SendPhotoToThumbnailProcessor(updatePhotoDTO.Id);
+            var models = new List<ImageToProcessDTO>();
+            models.Add(new ImageToProcessDTO
+            {
+                ImageId = updatePhotoDTO.Id
+            });
+            _messageService.SendPhotoToThumbnailProcessor(models);
             return updatedPhoto;
         }
 
@@ -147,6 +157,23 @@ namespace Photo.BusinessLogic.Services
             return photoDocument.OriginalBlobId;
         }
 
+        public async Task SendDuplicates(List<int> duplicates)
+        {
+            var photos = new List<PhotoDocument>();
+            foreach (var value in duplicates)
+            {
+                var photo = await _elasticStorage.Get(value);
+                photos.Add(photo);
+            }
+            string uri = $"http://localhost:5000/api/photos";
+            var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+
+            string bodyJson = await response.Content.ReadAsStringAsync();
+        }
 
         public async Task<CreateResponse> Create(PhotoDocument item)
         {
@@ -172,8 +199,18 @@ namespace Photo.BusinessLogic.Services
                 var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
                 await Create(mappedToPhotoDocument);
                 createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
-                _messageService.SendPhotoToThumbnailProcessor(mappedToPhotoDocument.Id);
+                
             }
+            var models = new List<ImageToProcessDTO>();
+            foreach (var item in duplicates)
+            {
+                models.Add(new ImageToProcessDTO
+                {
+                    ImageId = item.Id,
+                    UserId = item.UserId
+                });
+            }
+            _messageService.SendPhotoToThumbnailProcessor(models);
 
             return createdDuplicates;
         }
@@ -204,27 +241,7 @@ namespace Photo.BusinessLogic.Services
                 var base64 = ConvertToBase64(item.ImageUrl);
                 var blob = Convert.FromBase64String(base64);
                 var blobId = await _storage.LoadPhotoToBlob(blob);
-                var filesWithSameName = await _elasticStorage.Find(item.AuthorId, item.FileName);
-                var collectionWithSameNameFiles = filesWithSameName.ToList();
-                if (collectionWithSameNameFiles.Any() && IsSameSized(collectionWithSameNameFiles, item))
-                {
-                    var duplicatePhotoDocument = new CreatePhotoResultDTO
-                    {
-                        Id = item.Id,
-                        Name = item.FileName,
-                        Description = item.Description,
-                        BlobId = blobId,
-                        Blob64Id = blobId,
-                        Blob256Id = blobId,
-                        OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
-                        UserId = item.AuthorId,
-                        IsDuplicate = true
-                    };
-                    createdPhotos.Add(duplicatePhotoDocument);
-                }
-                else
-                {
-                    var photoDocumentToCreate = new PhotoDocument
+                var photoDocumentToCreate = new PhotoDocument
                     {
                         Id = item.Id,
                         Name = item.FileName,
@@ -240,9 +257,20 @@ namespace Photo.BusinessLogic.Services
 
                     await Create(photoDocumentToCreate);
                     createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
-                    _messageService.SendPhotoToThumbnailProcessor(photoDocumentToCreate.Id);
-                }
             }
+
+            var models = new List<ImageToProcessDTO>();
+            foreach (var item in items)
+            {
+                models.Add(new ImageToProcessDTO
+                {
+                    ImageId = item.Id,
+                    UserId = item.AuthorId
+                });
+            }
+
+            _messageService.SendPhotoToThumbnailProcessor(models);
+
             return createdPhotos;
         }
 
