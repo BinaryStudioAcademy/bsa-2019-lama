@@ -24,7 +24,8 @@ import {
   getLocation,
   getLatitude,
   getLongitude,
-  getShortAddress
+  getShortAddress,
+  getFormattedAdress
 } from 'src/app/export-functions/exif';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -151,14 +152,13 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
   async onFileDropped(files: File[]) {
     this.loaded = false;
     this.showSpinner = true;
-    let latitude;
-    let longitude;
+
     for (const file of files) {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
         const field = 'GPS';
-        latitude = getLatitude(exifObj);
-        longitude = getLongitude(exifObj);
+        const latitude = getLatitude(exifObj);
+        const longitude = getLongitude(exifObj);
         const d = dump(exifObj);
         const compressedFile = await this.ng2ImgToolsService
           .compress([file], environment.compressionOptions.maxSizeMB)
@@ -169,18 +169,15 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
-                getShortAddress(latitude, longitude, this.geoCoder).then(
-                  shortname => {
-                    this.address = location;
-                    this.photos.push({
-                      imageUrl: modifiedObject,
-                      filename: file.name,
-                      location: this.address,
-                      coordinates: latitude + ',' + longitude,
-                      shortLocation: shortname
-                    });
-                  }
-                );
+                this.address = getFormattedAdress(location);
+                const shortname = getShortAddress(location);
+                this.photos.push({
+                  imageUrl: modifiedObject,
+                  filename: file.name,
+                  location: this.address,
+                  coordinates: latitude + ',' + longitude,
+                  shortLocation: shortname
+                });
               });
             } else {
               this.photos.push({

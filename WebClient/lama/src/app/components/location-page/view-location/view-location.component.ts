@@ -18,6 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { HttpService } from 'src/app/services/http.service';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
+import { LocationServiceService } from 'src/app/services/location-service.service';
 
 @Component({
   selector: 'app-view-location',
@@ -30,10 +31,11 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
 
   private routeSubscription: Subscription;
   @Input() album: ViewAlbum = {} as ViewAlbum;
-  AlbumId: number;
+  AlbumName: string;
   isAtLeastOnePhotoSelected = false;
   selectedPhotos: PhotoRaw[];
   loading = false;
+  albumCities = false;
   currentUser: User;
   unsubscribe = new Subject();
   favorites: Set<number> = new Set<number>();
@@ -45,16 +47,22 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
     private zipService: ZipService,
     private resolver: ComponentFactoryResolver,
     private favoriteService: FavoriteService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private locationService: LocationServiceService
   ) {
-    this.routeSubscription = route.params.subscribe(
-      params => (this.AlbumId = parseInt(params.id, 10))
-    );
+    this.routeSubscription = route.params.subscribe(params => {
+      this.AlbumName = params.id;
+    });
     this.route.queryParams.subscribe(
       params => {
         if (this.router.getCurrentNavigation().extras.state) {
           this.album = this.router.getCurrentNavigation().extras.state.album;
           this.loading = true;
+        } else {
+          const id = this.AlbumName.indexOf(',');
+          if (id === -1) {
+            this.albumCities = true;
+          }
         }
       },
       error => this.notifier.notify('error', 'Error getting query params')
@@ -79,6 +87,28 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
       },
       error => this.notifier.notify('error', 'Error loading user')
     );
+    this.selectedPhotos = [];
+    if (this.albumCities === true) {
+      this.locationService
+        .getUserLocationAlbumsByCountry(userId)
+        .subscribe(albums => {
+          for (const alb of albums) {
+            if (alb.title === this.AlbumName) {
+              this.album = alb;
+              break;
+            }
+          }
+        });
+    } else {
+      this.locationService.getUserLocationAlbums(userId).subscribe(albums => {
+        for (const alb of albums) {
+          if (alb.title === this.AlbumName) {
+            this.album = alb;
+            break;
+          }
+        }
+      });
+    }
   }
 
   downloadImages() {
@@ -122,6 +152,7 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
     this.album.photoAlbums[index] = updatedPhoto;
   }
   photoSelected(eventArgs: PhotoRawState) {
+    console.log(eventArgs);
     if (eventArgs.isSelected) {
       this.selectedPhotos.push(eventArgs.photo);
     } else {
