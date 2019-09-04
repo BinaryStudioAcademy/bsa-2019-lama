@@ -15,10 +15,9 @@ import { FileUploadDirective } from '../directives';
 
 import { FileService } from '../services';
 import { SharingPageComponent } from './shared-page/sharing-page/sharing-page.component';
-import { LocationPageComponent } from './location-page/location-page.component';
 
 @NgModule({
-  declarations: [FileUploadDirective, LocationPageComponent],
+  declarations: [FileUploadDirective],
   providers: [FileService],
   imports: [
     CommonModule,

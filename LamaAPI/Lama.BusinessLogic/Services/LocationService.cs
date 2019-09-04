@@ -5,6 +5,7 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DbModels;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Photo;
+using Lama.Domain.DTO.Reaction;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -73,12 +74,28 @@ namespace Lama.BusinessLogic.Services
                 {
                     Title = Name
                 };
-                if (photos != null)
+                if (photos != null && photos.Count() != 0)
                 {
+
+                    foreach (var item in photos)
+                    {
+                        item.Reactions = _mapper.Map<LikeDTO[]>(Context.Likes
+                            .Where(l => l.PhotoId == item.Id)
+                            .ToArray());
+
+                        foreach (LikeDTO like in item.Reactions)
+                        {
+                            if (like.Photo != null)
+                            {
+                                like.Photo.Likes = null;
+                            }
+                        }
+                    }
+
                     album.Photo = photos.First();
                     album.PhotoAlbums = photos;
+                    returnList.Add(album);
                 }
-                returnList.Add(album);
             }
             return returnList;
         }
@@ -100,7 +117,7 @@ namespace Lama.BusinessLogic.Services
                 {
                     continue;
                 }
-                var Name = city.Name.Split(new char[] {',' })[1];
+                var Name = city.Name;
 
                 var photos = from pl in photosElastic
                              join t in city.Photos on pl.Id equals t.Id
@@ -110,12 +127,28 @@ namespace Lama.BusinessLogic.Services
                 {
                     Title = Name
                 };
-                if(photos != null)
+                if(photos != null && photos.Count() != 0)
                 {
+
+                    foreach(var item in photos)
+                    {
+                        item.Reactions = _mapper.Map<LikeDTO[]>(Context.Likes
+                            .Where(l => l.PhotoId == item.Id)
+                            .ToArray());
+
+                        foreach (LikeDTO like in item.Reactions)
+                        {
+                            if (like.Photo != null)
+                            {
+                                like.Photo.Likes = null;
+                            }
+                        }
+                    }
+
                     album.Photo = photos.First();
                     album.PhotoAlbums = photos;
+                    returnList.Add(album);
                 }
-                returnList.Add(album);
             }
 
             return returnList;
