@@ -14,7 +14,7 @@ describe('Auth with Google', () => {
         browser.reloadSession();
     });
 
-    it('should authorizate user', () => {
+    xit('should authorizate user', () => {
         const parentGUID = browser.getWindowHandle();
         pageSteps.goToMainPage();
         pageSteps.loginWithGoogle();

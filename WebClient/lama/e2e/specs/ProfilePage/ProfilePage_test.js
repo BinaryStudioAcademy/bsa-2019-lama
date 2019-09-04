@@ -1,38 +1,48 @@
 const assert = require('assert');
-
+const { loginWithGoogle } = require('../../helpers/auth');
+const credencial = require('../../testdata.json');
+const wait = require('../../helpers/waiters');
+const random = Math.floor(Math.random() * 1000000);
 const ProfileActions = require('./ProfilePage_pa');
-
 const profileSteps = new ProfileActions();
+const newFirstName = `Lama-${random}`;
+const newLastName = `Moore-${random}`;
 
-const newFirstName = 'Lama';
-const newLastName = 'Moore';
-const newEmail = 'lamatest@gmail.com';
-
-// describe('Profile', () => {
-//     beforeEach(() => {
-//         browser.maximizeWindow();
-//         browser.url('');
-//     });
-
+describe('Profile', () => {
+    beforeEach(() => {
+        browser.maximizeWindow();
+        browser.url(credencial.appUrl);
+        loginWithGoogle(browser);
+    });
     
     it('Should edit profile page', () => {
-        
-    profileSteps.moveToProfile();
+        profileSteps.moveToProfile();
 
-    waitForSpinner();
-    profileSteps.enterFirstName(newFirstName);
-    profileSteps.enterLastName(newLastName);
-    profileSteps.enterEmail(newEmail);
-    profileSteps.uploadAvatar();
-    profileSteps.deleteAvatar();
-    profileSteps.saveChanges();
+        profileSteps.enterFirstName(newFirstName);
+        profileSteps.enterLastName(newLastName);
+        profileSteps.saveChanges();
 
-    waitForNotification();
-    assert.equal(getNotificationText(), 'Changes Saved');
-    assert.equal(profileSteps.getFirstName(), newFirstName);
-    assert.equal(profileSteps.getLastName(), newLastName);
-    assert.equal(profileSteps.getEmail(), newEmail);
-   
-
+        wait.forNotification();
+        assert.equal(profileSteps.getNotificationText(), 'Changes Saved');
+        assert.equal(profileSteps.getFirstName(), newFirstName);
+        assert.equal(profileSteps.getLastName(), newLastName);
+        assert.equal(profileSteps.isEmailEnabled(), false); 
     });
-//});
+
+    // TODO: implement test
+    xit('Should upload new avatar', () => {
+        profileSteps.moveToProfile();
+        waitForSpinner();
+
+        const imagePath = 'C:\fakepath\appay-clipart-small[1].png';
+
+        profileSteps.uploadAvatar(imagePath);
+        console.log('---> AVATAR: ', profileSteps.getAvatarPath());
+        // profileSteps.deleteAvatar();
+    });
+
+    // TODO: implement test
+    xit('Should delete avatar', () => {
+        profileSteps.deleteAvatar();
+    })
+});

@@ -11,6 +11,11 @@ class CustomWaits {
         notification.waitForDisplayed(5000, true);
     }
 
+    forNotification() {
+        const notification = $('.notifier__notification--success');
+        notification.waitForDisplayed(5000);
+    }
+
 }
 
-module.exports = new CustomWaits;
+module.exports = new CustomWaits();

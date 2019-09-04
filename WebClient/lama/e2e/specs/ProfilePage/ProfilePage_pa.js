@@ -4,12 +4,12 @@ const profile = new ProfilePage();
 class ProfileActions {
 
     moveToProfile() {
-        profile.profilePage.waitForDisplayed(10000);
-        profile.profilePage.moveTo();
+        profile.avatarIcon.waitForDisplayed(10000);
+        profile.avatarIcon.click();
     }
 
     enterFirstName(value) {
-        profile.firstNameInput.waitForDisplayed(2000);
+        profile.firstNameInput.waitForDisplayed(5000);
         profile.firstNameInput.clearValue();
         profile.firstNameInput.setValue(value);
     }
@@ -20,15 +20,16 @@ class ProfileActions {
         profile.lastNameInput.setValue(value);
     }
 
-    enterEmail(value) {
-        profile.emailInput.waitForDisplayed(2000);
-        profile.emailInput.clearValue();
-        profile.emailInput.setValue(value);
-    }
+    // enterEmail(value) {
+    //     profile.emailInput.waitForDisplayed(2000);
+    //     profile.emailInput.clearValue();
+    //     profile.emailInput.setValue(value);
+    // }
 
     uploadAvatar(path) {
         profile.imageInput.waitForDisplayed(2000);
-        profile.imageInput.setValue(path);
+        // profile.imageInput.setValue(path);
+        profile.imageInput.sendKeys(path);
     }
 
     deleteAvatar() {
@@ -47,14 +48,27 @@ class ProfileActions {
     }
 
     getFirstName() {
-        return profile.firstNameInput.getText();
+        return profile.firstNameInput.getValue();
     }
 
     getLastName() {
-        return profile.lastNameInput.getText();
+        return profile.lastNameInput.getValue();
     }
-    getEmail() {
-        return profile.emailInput.getText();
+
+    // getEmail() {
+    //     return profile.emailInput.getText();
+    // }
+
+    getAvatarPath() {
+        return profile.imageInput.value;
+    }
+
+    getNotificationText() {
+        return profile.notification.getText();
+    }
+
+    isEmailEnabled() {
+       return profile.emailInput.isEnabled();
     }
 }
 
