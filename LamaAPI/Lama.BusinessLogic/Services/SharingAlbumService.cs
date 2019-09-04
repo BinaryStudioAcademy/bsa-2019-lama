@@ -20,7 +20,7 @@ namespace Lama.BusinessLogic.Services
     public class SharingAlbumService : BaseService<Album>
     {
         private IPhotoService _photoService;
-		private IAlbumService albumService;
+        private IAlbumService albumService;
         private IMapper _mapper;
         public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper, IAlbumService albumService)
             : base(context)
