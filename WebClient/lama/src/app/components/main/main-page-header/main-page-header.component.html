@@ -1,40 +1,54 @@
 <header class="navbar is-fixed-top">
-  <div class="align-right">
-    <main-left-actions-sidebar style="height: 100%">
-    </main-left-actions-sidebar>
-    <div class="logo" routerLink="/main/photos">
-      <img src="assets/lama.jpg" />
-      <p>Lama</p>
+    <div class="align-right">
+        <main-left-actions-sidebar style="height: 100%" *ngIf="auth.token">
+        </main-left-actions-sidebar>
+        <div class="logo" routerLink="/main/photos">
+            <img src="assets/lama.jpg" />
+            <p>Lama</p>
+        </div>
     </div>
-  </div>
-  <!--search-->
-  <div class="search-bar is-hidden-mobile">
-    <div class="field has-addons">
-      <div class="control input-form">
-        <input
-          (keyup.enter)="find()"
-          class="input search-bar"
-          type="search"
-          placeholder="Find a photo"
-          [(ngModel)]="searchCriteria"
-          list="values"
-          (click)="showSearchDropdown()"
-        />
-        <div
-          class="dropdown control is-expanded"
-          [ngStyle]="{ display: isSearchDropdownExpanded ? 'block' : 'none' }"
-          (mouseover)="showSearchDropdown()"
-          (mouseout)="hideSearchDropdown()"
-        >
-          <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
-            <div
-              (click)="sendItemToSearchbar(item)"
-              class="row"
-              *ngFor="let item of searchHistory"
-            >
-              <a class="dropdown-item">
-                <i class="material-icons">history</i> {{ item }}
-              </a>
+    <!--search-->
+    <div class="search-bar is-hidden-mobile" *ngIf="auth.token">
+        <div class="field has-addons">
+            <div class="control input-form">
+                <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo" [(ngModel)]="searchCriteria" list="values" (click)="showSearchDropdown()" />
+                <div class="dropdown control is-expanded" [ngStyle]="{'display': isSearchDropdownExpanded ? 'block' : 'none'}" (mouseover)="showSearchDropdown()" (mouseout)="hideSearchDropdown()">
+                    <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
+                        <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchHistory">
+                            <a class="dropdown-item">
+                                <i class="material-icons">history</i> {{ item }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.names.length > 0)">
+                        <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchSuggestions.names.slice(0,5)">
+                            <a class="dropdown-item">
+                              <i><img class="image is-24x24" *ngIf="searchSuggestions" [src]="getThumbnailByName(item)"></i> {{ item }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.description.length > 0)">
+                        <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchSuggestions.description.slice(0,5)">
+                            <a class="dropdown-item">
+                                <i class="material-icons">text_format</i> {{ item }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && searchSuggestions.locations.length > 0)">
+                        <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchSuggestions.locations.slice(0,5)">
+                            <a class="dropdown-item">
+                                <i class="material-icons">room</i> {{ item }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="dropdown-content" *ngIf="(!searchSuggestionsEmpty && tagNames.length > 0)">
+                        <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of tagNames.slice(0,5)">
+                            <a class="dropdown-item">
+                                <i class="material-icons">label</i> {{ item }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
           <div
@@ -120,7 +134,7 @@
       </div>
 
       <!--upload-->
-      <a
+      <a *ngIf="auth.token"
         (click)="openModalClicked()"
         class="button is-primary is-hidden-mobile add"
       >
@@ -131,7 +145,7 @@
   </div>
 
   <!--profile-->
-  <div class="align-right">
+  <div class="align-right" *ngIf="auth.token">
     <!--notification-->
     <a class="image is-48x48 profile">
       <img
@@ -153,7 +167,7 @@
       }}</span>
     </a>
     <!--log-out-->
-    <a class="logout" (click)="logOut(); $event.preventDefault()">
+    <a class="logout" (click)="logOut(); $event.preventDefault()" *ngIf="auth.token">
       <i class="fa fa-sign-out"></i>
     </a>
   </div>
