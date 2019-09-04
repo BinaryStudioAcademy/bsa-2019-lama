@@ -49,6 +49,10 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   // properties
   @Input()
   photo: PhotoRaw;
+  @Input()
+  currentIndex: number;
+  @Input()
+  photosArrayLength: number;
   photos: PhotoRaw[] = [];
   isShown: boolean;
   isInfoShown = false;
@@ -70,6 +74,8 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   deletePhotoEvent = new EventEmitter<number>();
   @Output()
   updatePhotoEvent = new EventEmitter<PhotoRaw>();
+  @Output()
+  changePhotoEvent = new EventEmitter<boolean>();
   hasUserReaction: boolean;
 
   // fields
@@ -544,6 +550,14 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
         },
         error => this.notifier.notify('error', 'Error saving photo')
       );
+  }
+
+  previousPhoto() {
+    this.changePhotoEvent.emit(false);
+  }
+
+  nextPhoto() {
+    this.changePhotoEvent.emit(true);
   }
 
   ngOnDestroy() {

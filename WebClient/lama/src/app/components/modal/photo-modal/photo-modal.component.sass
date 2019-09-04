@@ -289,3 +289,33 @@ article
 .fullsize-modal .container
    min-width: 100%
    margin: 0
+
+.navigation-button
+    position: absolute
+    height: 100%
+    width: 100px
+    top: 0
+    background-color: transparent
+    color: white
+    font-size: 80px
+    display: flex
+    justify-content: center
+    align-items: center
+    .icon
+        visibility: hidden
+        background-color: grey
+        border-radius: 50%
+        width: 80px
+        height: 80px
+    &:hover
+        .icon
+            visibility: visible
+
+.nav-btn-right
+    right: 0
+
+.nav-btn-left
+    left: 0
+
+.modal-close
+    right: 120px

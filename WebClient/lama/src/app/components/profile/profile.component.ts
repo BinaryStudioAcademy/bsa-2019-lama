@@ -58,7 +58,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.fileService
               .getPhoto(u.photoUrl)
               .pipe(takeUntil(this.unsubscribe))
-              .subscribe(url => (this.photoUrl = url));
+              .subscribe(url => {
+                this.photoUrl = url;
+                this.defaultImageUrl = this.photoUrl;
+              });
           } else if (u.photoUrl) {
             this.showSpinner = false;
             this.photoUrl = u.photoUrl;
@@ -69,7 +72,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.defaultEmail = this.user.email;
           this.defaultLastName = this.user.lastName;
           this.defaultFirstName = this.user.firstName;
-          this.defaultImageUrl = this.user.photoUrl;
         },
         err => {
           this.notifier.notify('error', 'Error loading');
