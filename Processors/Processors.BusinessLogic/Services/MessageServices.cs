@@ -4,17 +4,13 @@ using Processors.DataAccess.Interfaces;
 using Processors.Domain;
 using Processors.Domain.DTO;
 using Services.Interfaces;
-using Services.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
-using Services.Implementation.RabbitMq;
+using Services.Models;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -42,7 +38,6 @@ namespace Processors.BusinessLogic.Services
             _comparer = comparer;
             _consumer.Received += Get;
             _consumer.Connect();
-
         }
 
         public void Dispose()
@@ -61,12 +56,12 @@ namespace Processors.BusinessLogic.Services
         public async Task RunAsync(int millisecondsTimeout)
         {
             Console.WriteLine("running");
-
         }
 
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
-            foreach (var image in images)
+            var imageToProcessDtos = images.ToList();
+            foreach (var image in imageToProcessDtos)
             {
                 var address = await _elasticStorage.GetBlobId(image.ImageId);
                 var fileName = address.Substring(address.LastIndexOf('/') + 1);
@@ -89,34 +84,42 @@ namespace Processors.BusinessLogic.Services
                     ImageDescription = imageDescription
                 });
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
-                    new HasDTO { Hash = new List<bool>(hash.HashData) });
+                    new HashDTO { Hash = new List<bool>(hash.HashData)});
             }
-            //TODO rewrite this
-            await Task.Delay(2000);
-            await FindDuplicates(images);
+            await FindDuplicates(imageToProcessDtos);
         }
 
 
-        public async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
+        private async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
         {
             var duplicates = new List<int>();
-            var comparison_result = await _comparer.FindDuplicatesWithTollerance(images.FirstOrDefault().UserId);
-            foreach (var item in images)
+            var imageToProcessDtos = images.ToList();
+            ImageToProcessDTO first = null;
+            foreach (var dto in imageToProcessDtos)
             {
-                foreach (var result in comparison_result)
-                {
-                    if (result.Count <= 1) continue;
+                first = dto;
+                break;
+            }
 
-                    foreach (var itm in result)
+            if (first != null)
+            {
+                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId);
+                foreach (var item in imageToProcessDtos)
+                {
+                    foreach (var result in comparisonResult)
                     {
-                        if (itm.PhotoId == item.ImageId)
+                        if (result.Count <= 1) continue;
+
+                        foreach (var itm in result)
                         {
+                            if (itm.PhotoId != item.ImageId) continue;
                             duplicates.Add((int)item.ImageId);
                             break;
                         }
                     }
                 }
             }
+
             var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
             _producer.Send(bytes);
         }

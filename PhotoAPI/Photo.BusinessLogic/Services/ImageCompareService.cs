@@ -10,7 +10,7 @@ namespace Photo.BusinessLogic.Services
     public class ImageCompareService
     {
         private readonly IElasticStorage _elasticStorage;
-        private readonly int _hashSize = 128;
+        //private readonly int _hashSize = 128;
 
         private readonly List<ImgHash> _hashLib = new List<ImgHash>();
 
@@ -27,28 +27,22 @@ namespace Photo.BusinessLogic.Services
             {
                 try
                 {
-
-
-                    if (hash.CompareWith(hashCompareWith) >= minSimilarity)
+                    if (!(hash.CompareWith(hashCompareWith) >= minSimilarity)) continue;
+                    if (!alreadyMarkedAsDupl.Contains(hash))
                     {
-                        if (!alreadyMarkedAsDupl.Contains(hash))
-                        {
-                            alreadyMarkedAsDupl.Add(hash);
+                        alreadyMarkedAsDupl.Add(hash);
 
-                            currHashDupl.Add(hash);
-                        }
-
-                        if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
-                        {
-                            alreadyMarkedAsDupl.Add(hashCompareWith);
-
-                            currHashDupl.Add(hashCompareWith);
-                        }
+                        currHashDupl.Add(hash);
                     }
-                }
-                catch (Exception e)
-                {
 
+                    if (alreadyMarkedAsDupl.Contains(hashCompareWith)) continue;
+                    alreadyMarkedAsDupl.Add(hashCompareWith);
+
+                    currHashDupl.Add(hashCompareWith);
+                }
+                catch (Exception)
+                {
+                    // ignored
                 }
             }
 
@@ -68,18 +62,16 @@ namespace Photo.BusinessLogic.Services
         public async Task<List<List<ImgHash>>> FindDuplicatesWithTollerance(int userId, int minSimilarity = 90)
         {
             await InitializeHashes(userId);
-            List<ImgHash> alreadyMarkedAsDupl = new List<ImgHash>();
+            var alreadyMarkedAsDupl = new List<ImgHash>();
 
             var duplicatesFound = new List<List<ImgHash>>();
 
             foreach (var hash in _hashLib)
             {
-                if (alreadyMarkedAsDupl.Contains(hash) == false)
-                {
-                    var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
+                if (alreadyMarkedAsDupl.Contains(hash)) continue;
+                var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
 
-                    duplicatesFound.Add(singleImgDuplicates);
-                }
+                duplicatesFound.Add(singleImgDuplicates);
             }
             return duplicatesFound;
         }

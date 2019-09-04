@@ -23,7 +23,7 @@ namespace Photo.BusinessLogic.Services
             _mapper = mapper;
             _httpClient = new HttpClient();
         }
-        public async Task SendDuplicates(List<int> duplicates)
+        public async Task SendDuplicates(IEnumerable<int> duplicates)
         {
             var photos = new List<PhotoDocument>();
             foreach (var value in duplicates)
@@ -33,17 +33,17 @@ namespace Photo.BusinessLogic.Services
                     var photo = await _elasticStorage.Get(value);
                     photos.Add(photo);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-
+                    // ignored
                 }
             }
-            string uri = $"http://localhost:5000/api/photo/duplicates_response";
+            var uri = $"http://localhost:5000/api/photo/duplicates_response";
             var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
 
-            StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+            var response = await _httpClient.PostAsync(uri, content);
         }
     }
 }

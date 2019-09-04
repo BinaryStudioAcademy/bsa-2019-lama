@@ -18,14 +18,12 @@ namespace Photo.BusinessLogic.Services
 {
     public class MessageService : Interfaces.IMessageService, System.IDisposable
     {
-        // FIELDS
-        MessageServiceSettings serviceData;
+         private readonly MessageServiceSettings _serviceData;
         private readonly DuplicatesService _photoService;
 
-        // CONSTRUCTORS
         public MessageService(MessageServiceSettings messageServiceSettings, DuplicatesService service)
         {
-            this.serviceData = messageServiceSettings;
+            this._serviceData = messageServiceSettings;
             _photoService = service;
             messageServiceSettings.PhotoProcessorConsumer.Received += Get;
             messageServiceSettings.PhotoProcessorConsumer.Connect();
@@ -33,7 +31,7 @@ namespace Photo.BusinessLogic.Services
 
         public void Dispose()
         {
-            serviceData.PhotoProcessorProducer?.Dispose();
+            _serviceData.PhotoProcessorProducer?.Dispose();
         }
 
 
@@ -46,10 +44,9 @@ namespace Photo.BusinessLogic.Services
             {
                 await _photoService.SendDuplicates(originalList);
             }
-            serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
+            _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
         }
 
-        // METHODS
         public void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail)
         {
             if (makePhotoThumbnail == null) throw new System.ArgumentNullException(nameof(makePhotoThumbnail));
@@ -57,28 +54,30 @@ namespace Photo.BusinessLogic.Services
             {
                 imageToProcessDto.ImageType = Domain.Enums.ImageType.Photo;
             }
-            string objectJson = JsonConvert.SerializeObject(makePhotoThumbnail);
+            var objectJson = JsonConvert.SerializeObject(makePhotoThumbnail);
             var body = Encoding.ASCII.GetBytes(objectJson);
 
 
-            serviceData.PhotoProcessorProducer.Send(body);
+            _serviceData.PhotoProcessorProducer.Send(body);
         }
 
         public void SendPhotoToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images)
         {
-            foreach (var item in images)
+            var imageToProcessDtos = images.ToList();
+            foreach (var item in imageToProcessDtos)
             {
                 item.ImageType = Domain.Enums.ImageType.Photo;
             }
-            this.SendToThumbnailProcessor(images);
+            SendToThumbnailProcessor(imageToProcessDtos);
         }
         public void SendAvatarToThumbnailProcessor(IEnumerable<ImageToProcessDTO> images)
         {
-            foreach (var item in images)
+            var imageToProcessDtos = images.ToList();
+            foreach (var item in imageToProcessDtos)
             {
                 item.ImageType = Domain.Enums.ImageType.Avatar;
             }
-            this.SendToThumbnailProcessor(images);
+            SendToThumbnailProcessor(imageToProcessDtos);
         }
     }
 }

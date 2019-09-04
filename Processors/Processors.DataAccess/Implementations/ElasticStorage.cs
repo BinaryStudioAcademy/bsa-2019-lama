@@ -9,7 +9,7 @@ namespace Processors.DataAccess.Implementations
 {
     public class ElasticStorage : Interfaces.IElasticStorage
     {
-        private string _indexName;
+        private readonly string _indexName;
         private readonly IElasticClient _elasticClient;
 
         public ElasticStorage(string indexName, IElasticClient elasticClient)
@@ -22,27 +22,27 @@ namespace Processors.DataAccess.Implementations
         {
             return (await _elasticClient.GetAsync<PhotoDocument>(documentId)).Source.BlobId;
         }
-        public Task UpdateThumbnailsAsync(long id, ThumbnailUpdateDTO thumbnailUpdate)
+        public async Task UpdateThumbnailsAsync(long id, ThumbnailUpdateDTO thumbnailUpdate)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
+            await _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
         }
-        public Task UpdateHashAsync(long id, HashDTO hash)
+        public async Task UpdateHashAsync(long id, HashDTO hash)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(hash));
+            await  _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(hash));
         }
         public async Task<bool> ExistAsync(long id)
         {
             return (await _elasticClient.DocumentExistsAsync<PhotoDocument>(id)).Exists;
         }
 
-        public Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRaw)
+        public async Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRaw)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsAsRaw));
+            await _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsAsRaw));
         }
 
-        public Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription)
+        public async Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageDescription));
+            await _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageDescription));
         }
         
         public async Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)

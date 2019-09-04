@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -29,6 +28,7 @@ namespace Lama.BusinessLogic.Services
         private readonly IMapper _mapper;
         private readonly INotificationService _notificationService;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public PhotoService(ApplicationDbContext dbContext, string url, IUnitOfWork unitOfWorkContext, IMapper mapper, INotificationService notificationService, IHubContext<NotificationHub> hub)
         {
@@ -227,7 +227,7 @@ namespace Lama.BusinessLogic.Services
         public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
         {   
             
-            var user = await _context.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
+            var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
             var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
             await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);
         }
@@ -241,15 +241,15 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
-            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            var photoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(photoDocuments);
 
             if (photos == null)
             {
                 return null;
             }
 
-            for (int i = 0; i < photos.Count(); i++)
+            for (var i = 0; i < photos.Count(); i++)
             {
                 var getLike = await _unitOfWorkContext.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);

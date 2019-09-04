@@ -13,7 +13,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using Nest;
 using Newtonsoft.Json;
 
@@ -222,9 +221,9 @@ namespace Photo.BusinessLogic.Services
             foreach (var item in comparisionResult)
             {
                 if (item.Count <= 1) continue;
-                foreach (var id in item)
+                foreach (var imgHash in item)
                 {
-                    var photo = await _elasticStorage.Get((int)id.PhotoId);
+                    var photo = await _elasticStorage.Get((int)imgHash.PhotoId);
                     var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
                     duplicates.Add(mappedPhoto);
                 }
@@ -348,11 +347,11 @@ namespace Photo.BusinessLogic.Services
                 bool doc = false;
                 try
                 {
-                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}/{element.BlobId}")
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // ignored
                 }
