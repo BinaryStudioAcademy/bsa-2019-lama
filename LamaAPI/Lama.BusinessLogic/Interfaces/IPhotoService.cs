@@ -30,5 +30,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> AddReaction(NewLikeDTO newLike);
         Task RemoveReaction(NewLikeDTO removeLike);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count);
+        Task SetPhotoCategory(string photoData);
     }
 }

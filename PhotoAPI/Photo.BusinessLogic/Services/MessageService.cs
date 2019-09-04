@@ -16,18 +16,23 @@ using Timer = System.Timers.Timer;
 
 namespace Photo.BusinessLogic.Services
 {
-    public class MessageService : Interfaces.IMessageService, System.IDisposable
+    public class MessageService : IMessageService, IDisposable
     {
-         private readonly MessageServiceSettings _serviceData;
-        private readonly DuplicatesService _photoService;
+        private readonly MessageServiceSettings _serviceData;
+        private readonly DuplicatesService _duplicatesService;
+        private readonly ImageProcessingService _imageProcessingService;
 
-        public MessageService(MessageServiceSettings messageServiceSettings, DuplicatesService service)
+        public MessageService(MessageServiceSettings messageServiceSettings, DuplicatesService service, ImageProcessingService imageProcessingService)
         {
-            this._serviceData = messageServiceSettings;
-            _photoService = service;
+            _serviceData = messageServiceSettings;
+            _duplicatesService = service;
+            _imageProcessingService = imageProcessingService;
             messageServiceSettings.PhotoProcessorConsumer.Received += Get;
+            //messageServiceSettings.PhotoProcessorConsumer.Received += GetPhotoCategory;
             messageServiceSettings.PhotoProcessorConsumer.Connect();
         }
+
+
 
         public void Dispose()
         {
@@ -37,15 +42,28 @@ namespace Photo.BusinessLogic.Services
 
         public async void Get(object sender, BasicDeliverEventArgs args)
         {
-            var originalList = Enumerable.Range(0, args.Body.Length / 4)
-                    .Select(i => BitConverter.ToInt32(args.Body, i * 4))
-                    .ToList();
-            if (originalList.Count > 0)
+            switch (args.RoutingKey)
             {
-                await _photoService.SendDuplicates(originalList);
+                case "getDuplicates":
+                {
+                    var originalList = Enumerable.Range(0, args.Body.Length / 4)
+                        .Select(i => BitConverter.ToInt32(args.Body, i * 4))
+                        .ToList();
+                    if (originalList.Count > 0)
+                    {
+                        await _duplicatesService.SendDuplicates(originalList);
+                    }
+                    _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
+                    break;
+                }
+                case "getImageCategory":
+                {
+                    await _imageProcessingService.SendCategory(Encoding.Default.GetString(args.Body));
+                    break;
+                }
             }
-            _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
         }
+        
 
         public void SendToThumbnailProcessor(IEnumerable<ImageToProcessDTO> makePhotoThumbnail)
         {

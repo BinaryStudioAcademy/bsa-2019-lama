@@ -93,9 +93,12 @@ namespace PhotoProcessor.Infrastructure
                 (_configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"));
             var producer = unityContainer.Resolve<IConnectionProvider>().Open
                 (_configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI"));
+            var categoryProducer = unityContainer.Resolve<IConnectionProvider>().Open(
+                _configuration.Bind<Settings>("Queues:FromPhotoProcessorImageCategoryToPhotoAPI"));
+            
 
             var comparer = unityContainer.Resolve<ImageCompareService>();
-            return new MessageServices(imageProcessingService, cognitiveService, elasticStorage, photoBlobStorage, consumer, producer, comparer);
+            return new MessageServices(imageProcessingService, cognitiveService, elasticStorage, photoBlobStorage, consumer, producer, categoryProducer,comparer);
         }
 
         private ICognitiveService CognitiveServiceFactory(IUnityContainer unityContainer)

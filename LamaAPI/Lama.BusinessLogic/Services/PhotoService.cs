@@ -124,12 +124,12 @@ namespace Lama.BusinessLogic.Services
 
             var photo = await _dbContext.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
             var user = photo.User;
-            var ID = user.Id;
+            var id = user.Id;
             if (user.Id == newLike.UserId) return like.Id;
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var noti = "Liked your photo";
-                await _notificationService.SendNotification(ID, user, noti);
+                await _notificationService.SendNotification(id, user, noti);
             }
             return like.Id;
         }
@@ -169,11 +169,12 @@ namespace Lama.BusinessLogic.Services
             var response = await _httpClient.PostAsync($"{_url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
-            foreach (var photo in converted)
+            var uploadPhotoResultDtos = converted.ToList();
+            foreach (var photo in uploadPhotoResultDtos)
             {
                 photo.Reactions = new Like[0];
             }
-            return converted;
+            return uploadPhotoResultDtos;
         }
 
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateDuplicates(UploadPhotoResultDTO[] duplicates)
@@ -338,6 +339,48 @@ namespace Lama.BusinessLogic.Services
             }
             return photos;
         }
+
+        public async Task SetPhotoCategory(string photoData)
+        {
+            var deserializedPhotoData = JsonConvert.DeserializeObject<List<Tuple<int,long, string>>>(photoData);
+            foreach (var (userId, photoId, category) in deserializedPhotoData)
+            {
+                var categoryId = await ProcessPhotoCategoryAsync(userId, category);
+                var foundPhoto = await _dbContext.Photos.FirstOrDefaultAsync(photo => photo.Id == photoId);
+                if (foundPhoto != null)
+                {
+                    foundPhoto.CategoryId = categoryId;
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        private async Task<int> ProcessPhotoCategoryAsync(int currentUserId,string category)
+        {
+            var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(existing => existing.Name == category);
+            if (existingCategory == null)
+            {
+                _dbContext.Categories.Add(new Category
+                {
+                    Name = category,
+                    Count = 1,
+                    UserId = currentUserId
+                });
+                
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                existingCategory.Count++;
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var addedCategory = await _dbContext.Categories.FirstAsync(cat => cat.Name == category);
+
+            return addedCategory.Id;
+        }
+
         #endregion
 
         #region DELETE

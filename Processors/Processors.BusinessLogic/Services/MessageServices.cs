@@ -24,16 +24,18 @@ namespace Processors.BusinessLogic.Services
         private readonly IConsumer _consumer;
         private readonly ICognitiveService _cognitiveService;
         private readonly ImageCompareService _comparer;
+        private readonly IProducer _categoryProducer;
 
         // CONSTRUCTORS
         public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService,
-            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer, ImageCompareService comparer)
+            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer, IProducer categoryProducer, ImageCompareService comparer)
         {
             _imageProcessingService = imageProcessingService;
             _cognitiveService = cognitiveService;
             _elasticStorage = elasticStorage;
             _photoBlobStore = photoBlobStore;
             _producer = producer;
+            _categoryProducer = categoryProducer;
             _consumer = consumer;
             _comparer = comparer;
             _consumer.Received += Get;
@@ -70,7 +72,7 @@ namespace Processors.BusinessLogic.Services
                 var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
                 var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
-                var imageDescription = await _cognitiveService.ProcessImageDescription(currentImg);
+                var imageCategory = await _cognitiveService.ProcessImageDescription(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
                 var hash = new ImgHash((int)image.ImageId);
                 hash.GenerateFromByteArray(currentImg);
@@ -81,12 +83,27 @@ namespace Processors.BusinessLogic.Services
                 });
                 await _elasticStorage.UpdateImageDescriptionAsync(image.ImageId, new ImageDescriptionDTO
                 {
-                    ImageDescription = imageDescription
+                    Category = imageCategory
                 });
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
                     new HashDTO { Hash = new List<bool>(hash.HashData)});
             }
             await FindDuplicates(imageToProcessDtos);
+            await SendImageCategories(imageToProcessDtos.Select(x => x.ImageId));
+        }
+
+        private async Task SendImageCategories(IEnumerable<long> imageToProcessIds)
+        {
+            var dataToSend = new List<Tuple<int,long,string>>();
+            foreach (var imageId in imageToProcessIds)
+            {
+                var userId = await _elasticStorage.GetUserAsync(imageId);
+                var category = await _elasticStorage.GetCategoryAsync(imageId);
+                dataToSend.Add(new Tuple<int, long, string>(userId,imageId,category));
+            }
+
+            var serializedData = JsonConvert.SerializeObject(dataToSend);
+            _categoryProducer.Send(serializedData);
         }
 
 

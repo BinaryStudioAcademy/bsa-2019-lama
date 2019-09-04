@@ -22,6 +22,16 @@ namespace Processors.DataAccess.Implementations
         {
             return (await _elasticClient.GetAsync<PhotoDocument>(documentId)).Source.BlobId;
         }
+        
+        public async Task<int> GetUserAsync(long imageId)
+        {
+            return (await _elasticClient.GetAsync<PhotoDocument>(imageId)).Source.UserId;
+        }
+
+        public async Task<string> GetCategoryAsync(long documentId)
+        {
+            return (await _elasticClient.GetAsync<PhotoDocument>(documentId)).Source.Category;
+        }
         public async Task UpdateThumbnailsAsync(long id, ThumbnailUpdateDTO thumbnailUpdate)
         {
             await _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
@@ -62,5 +72,7 @@ namespace Processors.DataAccess.Implementations
             };
             return (await _elasticClient.SearchAsync<PhotoDocument>(searchRequest)).Documents;
         }
+
+
     }
 }

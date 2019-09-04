@@ -120,6 +120,13 @@ namespace Lama.Controllers
             await _service.SendDuplicates(photos);
         }
 
+        [AllowAnonymous]
+        [HttpPost("photoCategory")]
+        public async Task SetPhotoCategory([FromBody]string photoData)
+        {
+            await _service.SetPhotoCategory(photoData);
+        }
+
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {
