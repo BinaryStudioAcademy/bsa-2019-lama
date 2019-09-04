@@ -162,5 +162,15 @@
     </app-edit-modal>
 
     <button *ngIf="!isEditing" class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
+    <div class="navigation-button nav-btn-left" *ngIf="currentIndex != 0" (click)="previousPhoto()">
+        <span class="icon is-large">
+            <i class="fa fa-angle-left"left aria-hidden="true"></i>
+        </span>
+    </div>
+    <div class="navigation-button nav-btn-right" *ngIf="currentIndex != photosArrayLength-1" (click)="nextPhoto()">
+        <span class="icon is-large">
+            <i class="fa fa-angle-right"left aria-hidden="true"></i>
+        </span>
+    </div>
 </div>
 <notifier-container></notifier-container>

@@ -43,6 +43,7 @@ export class MainPhotosContainerComponent
   isHaveAnyPhotos = false;
   duplicatesFound = false;
   numberLoadPhoto = 30;
+  currentPhotoIndex: number;
   unsubscribe = new Subject();
   shared: SharedService;
 
@@ -226,10 +227,13 @@ export class MainPhotosContainerComponent
   }
 
   photoClicked(eventArgs: PhotoRaw) {
+    this.currentPhotoIndex = this.photos.indexOf(eventArgs);
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
+    componentRef.instance.currentIndex = this.currentPhotoIndex;
+    componentRef.instance.photosArrayLength = this.photos.length;
     componentRef.instance.deletePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(this.deletePhotoHandler.bind(this));
@@ -237,10 +241,29 @@ export class MainPhotosContainerComponent
     componentRef.instance.updatePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(this.updatePhotoHandler.bind(this));
+    componentRef.instance.changePhotoEvent
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(this.changePhotoHandler.bind(this));
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  changePhotoHandler(isNext: boolean) {
+    if (isNext) {
+      this.currentPhotoIndex++;
+    } else {
+      this.currentPhotoIndex--;
+    }
+    this.photoClicked(this.photos[this.currentPhotoIndex]);
+    if (this.currentPhotoIndex === this.photos.length - 2) {
+      this.GetUserPhotosRange(
+        this.currentUser.id,
+        this.photos.length,
+        this.numberLoadPhoto
+        );
+    }
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -257,22 +280,40 @@ export class MainPhotosContainerComponent
   }
 
   private deleteImages(): void {
-    this.selectedPhotos.forEach(element => {
-      this.fileService
-        .markPhotoAsDeleted(element.id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          res => {
-            this.deletePhotoHandler(element.id);
-          },
-          error => this.notifier.notify('error', 'Error deleting images')
-        );
-    });
-    this.selectedPhotos = [];
+    if (this.isAtLeastOnePhotoSelected) {
+      this.selectedPhotos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+      this.selectedPhotos = [];
+    } else {
+      this.photos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+    }
   }
 
   downloadImages() {
-    this.zipService.downloadImages(this.selectedPhotos);
+    if (this.isAtLeastOnePhotoSelected) {
+      this.zipService.downloadImages(this.selectedPhotos);
+    } else {
+      this.zipService.downloadImages(this.photos);
+    }
   }
 
   findDuplicates() {
