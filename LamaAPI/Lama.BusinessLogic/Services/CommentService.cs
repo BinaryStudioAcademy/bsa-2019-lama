@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lama.DataAccess;
+using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lama.BusinessLogic.Services
@@ -70,7 +71,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == createCommentDTO.UserId);
                 string noti = "Commented your photo";
-                await notificationService.SendNotification(ID, user, noti);
+                await notificationService.SendNotification(ID, user, noti, ActivityType.Comment);
             }
             return comment.Id;
         }

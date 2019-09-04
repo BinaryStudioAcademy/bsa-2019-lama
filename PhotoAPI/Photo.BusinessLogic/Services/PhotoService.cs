@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using Nest;
 using Newtonsoft.Json;
+using Services.Models;
 
 namespace Photo.BusinessLogic.Services
 {
@@ -52,7 +53,7 @@ namespace Photo.BusinessLogic.Services
             {
                 resultingDictionary["thumbnails"][i] = await GetPhoto(resultingDictionary["thumbnails"][i]);
             }
-            
+
             return resultingDictionary;
         }
 
@@ -199,7 +200,7 @@ namespace Photo.BusinessLogic.Services
                 var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
                 await Create(mappedToPhotoDocument);
                 createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
-                
+
             }
             var models = new List<ImageToProcessDTO>();
             foreach (var item in duplicates)
@@ -242,21 +243,21 @@ namespace Photo.BusinessLogic.Services
                 var blob = Convert.FromBase64String(base64);
                 var blobId = await _storage.LoadPhotoToBlob(blob);
                 var photoDocumentToCreate = new PhotoDocument
-                    {
-                        Id = item.Id,
-                        Name = item.FileName,
-                        BlobId = blobId,
-                        Blob64Id = blobId,
-                        Blob256Id = blobId,
-                        OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
-                        UserId = item.AuthorId,
-                        Location = item.Location,
-                        Description = item.Description,
-                        Coordinates = item.Coordinates
-                    };
+                {
+                    Id = item.Id,
+                    Name = item.FileName,
+                    BlobId = blobId,
+                    Blob64Id = blobId,
+                    Blob256Id = blobId,
+                    OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
+                    UserId = item.AuthorId,
+                    Location = item.Location,
+                    Description = item.Description,
+                    Coordinates = item.Coordinates
+                };
 
-                    await Create(photoDocumentToCreate);
-                    createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
+                await Create(photoDocumentToCreate);
+                createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
             }
 
             var models = new List<ImageToProcessDTO>();
