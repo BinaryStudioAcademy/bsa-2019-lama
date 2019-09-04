@@ -1,32 +1,35 @@
 <div class="navigation">
-    <div class="image">
-        <a routerLink="/main/albums"><img src="assets/back.svg" alt=""></a>
-    </div>
-    <div *ngIf="isAtLeastOnePhotoSelected" class="dropdown is-hoverable">
-        <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-                <span>Options</span>
-            </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-            <div class="dropdown-content">
-                <div class="dropdown-item" (click)="downloadImages()">
-                    <p>Download</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="title">
-        <h2 class="title is-2">{{album.title}}</h2>
-    </div>
-    <div *ngIf="loading" class="items-container-centered">
-        <div *ngFor="let item of album.photoAlbums">
-            <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)">
-            </main-photo>
-        </div>
-    </div>
+  <div class="dropdown is-hoverable">
 
-    <template #modalPhotoContainer></template>
+    <div class="dropdown-trigger">
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+        <span>Options</span>
+        <span class="icon is-small">
+          <i class="fa fa-angle-down" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+      <div class="dropdown-content">
+        <div class="dropdown-item" (click)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">
+          <p>Save<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+        </div>
+        <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">
+          <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
 </div>
+<div class="container" fileDrop (fileDropped)="addPhoto($event)">
+  <div *ngIf="loading" class="items-container-centered">
+    <div *ngFor="let item of album.photoAlbums">
+      <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)"
+        (Select)="photoSelected($event)"></main-photo>
+    </div>
+  </div>
+  <template #modalPhotoContainer></template>
+</div>
+
+<notifier-container></notifier-container>

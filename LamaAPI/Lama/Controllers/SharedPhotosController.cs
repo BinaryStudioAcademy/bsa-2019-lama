@@ -32,6 +32,7 @@ namespace Lama.Controllers
             await _sharingPhotoService.Delete(id);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<SharedPhotoDTO> GetSharedPhoto(int id)
         {
@@ -50,6 +51,7 @@ namespace Lama.Controllers
             await _sharingPhotoService.ProcessSharedPhoto(sharedPhoto);
 		}
 		
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<PhotoDocument> UpdateSharedPhotoWithLink(int id)
         {
