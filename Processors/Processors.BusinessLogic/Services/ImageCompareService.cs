@@ -65,11 +65,18 @@ namespace Processors.BusinessLogic.Services
 
             foreach (var hash in _hashLib)
             {
-                if (alreadyMarkedAsDupl.Contains(hash) == false)
+                try
                 {
-                    var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
+                    if (alreadyMarkedAsDupl.Contains(hash) == false)
+                    {
+                        var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
 
-                    duplicatesFound.Add(singleImgDuplicates);
+                        duplicatesFound.Add(singleImgDuplicates);
+                    }
+                }
+                catch (Exception e)
+                {
+
                 }
             }
             return duplicatesFound;
