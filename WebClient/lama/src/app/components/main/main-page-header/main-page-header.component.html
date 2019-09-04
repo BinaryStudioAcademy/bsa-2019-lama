@@ -185,7 +185,7 @@
         *ngIf="item.activity === 2"
         class="systemNotification"
         [notification]="item"
-        (click)="openModal()"
+        (click)="openModal(item.id)"
         (id)="sendIsRead($event)"
         (deleteId)="sendDelete($event)"
       >

@@ -343,7 +343,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     });
   }
 
-  openModal() {
+  openModal(id: number) {
     this.duplicatesEntry.clear();
     const factory = this.resolver.resolveComponentFactory(
       DuplicatesModalComponent
@@ -353,10 +353,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.Change.subscribe(data => {
       this.deleteDuplicatesHandler(data);
     });
+    this.sendDelete(id);
+    this.notification = this.notification.filter(i => i.id !== id);
+    this.checkNotification(this.notification);
   }
 
   modalHandler(event) {
-    this.openModal();
+    // this.openModal();
   }
 
   markRead(id: number) {
