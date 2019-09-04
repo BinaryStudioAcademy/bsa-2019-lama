@@ -25,9 +25,9 @@ namespace Processors.DataAccess.Implementations
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
         }
-        public Task UpdateHashAsync(long id, HasDTO has)
+        public Task UpdateHashAsync(long id, HashDTO hash)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(has));
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(hash));
         }
         public async Task<bool> ExistAsync(long id)
         {
@@ -37,6 +37,11 @@ namespace Processors.DataAccess.Implementations
         public Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRaw)
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsAsRaw));
+        }
+
+        public Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription)
+        {
+            return _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageDescription));
         }
     }
 }

@@ -16,6 +16,8 @@ namespace Lama.Domain.DbModels
 
         public int Id { get; set; }
         public int UserId { get; set; }
+        
+        public int CategoryId { get; set; }
 
         [JsonIgnore]
         public PhotoState PhotoState { get; set; }

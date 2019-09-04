@@ -23,31 +23,30 @@ namespace Lama.BusinessLogic.Services
 {
     public class PhotoService : IPhotoService, IDisposable
     {
-        // FIELDS
-        private readonly string url;
-        private readonly IUnitOfWork _context;
-        private readonly HttpClient httpClient;
+        private readonly string _url;
+        private readonly IUnitOfWork _unitOfWorkContext;
+        private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
-        readonly INotificationService notificationService;
-        readonly ApplicationDbContext Context;
-        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
+        private readonly INotificationService _notificationService;
+        private readonly ApplicationDbContext _dbContext;
+        public PhotoService(ApplicationDbContext dbContext, string url, IUnitOfWork unitOfWorkContext, IMapper mapper, INotificationService notificationService)
         {
-            this.url = url;
-            _context = context;
-            httpClient = new HttpClient();
-            this._mapper = _mapper;
-            this.Context = Context;
-            this.notificationService = notificationService;
+            _url = url;
+            _unitOfWorkContext = unitOfWorkContext;
+            _httpClient = new HttpClient();
+            _mapper = mapper;
+            _dbContext = dbContext;
+            _notificationService = notificationService;
         }
 
 
         public void Dispose()
         {
-            this.httpClient.Dispose();
+            _httpClient.Dispose();
         }
         public async Task<IEnumerable<string>> GetHistory(int userId)
         {
-            var history = await _context.GetRepository<SearchHistory>().GetAsync(h => h.UserId == userId);
+            var history = await _unitOfWorkContext.GetRepository<SearchHistory>().GetAsync(h => h.UserId == userId);
             return history.Reverse()
                 .GroupBy(h => h.Text)
                 .Take(5)
@@ -60,9 +59,9 @@ namespace Lama.BusinessLogic.Services
         public async Task<IEnumerable<PhotoDocumentDTO>> FindPhoto(int id, string criteria)
         {
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/search/{id}/{criteria}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/search/{id}/{criteria}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -71,7 +70,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach (var photoDocumentDto in photoDocumentDTOs)
             {
-                var likes =  (await _context.GetRepository<Like>()
+                var likes =  (await _unitOfWorkContext.GetRepository<Like>()
                     .GetAsync(l => l.PhotoId == photoDocumentDto.Id))
 
 
@@ -87,13 +86,13 @@ namespace Lama.BusinessLogic.Services
                     }
                 }
             }
-            await _context.GetRepository<SearchHistory>().InsertAsync(new SearchHistory
+            await _unitOfWorkContext.GetRepository<SearchHistory>().InsertAsync(new SearchHistory
             {
                 Text = criteria,
                 UserId = id,
                 SearchDate = DateTime.Now
             });
-            await _context.SaveAsync();
+            await _unitOfWorkContext.SaveAsync();
 
             return photoDocumentDTOs;
         }
@@ -101,9 +100,9 @@ namespace Lama.BusinessLogic.Services
         public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
         {
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/search/fields/{id}/{criteria}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/search/fields/{id}/{criteria}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -118,44 +117,44 @@ namespace Lama.BusinessLogic.Services
         public async Task<int> AddReaction(NewLikeDTO newLike)
         {
             var like = _mapper.Map<Like>(newLike);
-            await _context.GetRepository<Like>().InsertAsync(like);
-            await _context.SaveAsync();
+            await _unitOfWorkContext.GetRepository<Like>().InsertAsync(like);
+            await _unitOfWorkContext.SaveAsync();
 
-            var photo = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
+            var photo = await _dbContext.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == newLike.PhotoId);
             var user = photo.User;
             var ID = user.Id;
             if (user.Id == newLike.UserId) return like.Id;
             {
-                user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
+                user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var noti = "Liked your photo";
-                await notificationService.SendNotification(ID, user, noti);
+                await _notificationService.SendNotification(ID, user, noti);
             }
             return like.Id;
         }
         public async Task RemoveReaction(NewLikeDTO removeLike)
         {
-            var collect = await _context.GetRepository<Like>().GetAsync();
+            var collect = await _unitOfWorkContext.GetRepository<Like>().GetAsync();
             var like = collect.FirstOrDefault(x => x.PhotoId == removeLike.PhotoId && x.UserId == removeLike.UserId);
-            _context.GetRepository<Like>().Delete(like);
-            await _context.SaveAsync();
+            _unitOfWorkContext.GetRepository<Like>().Delete(like);
+            await _unitOfWorkContext.SaveAsync();
         }
 
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos)
         {
             var savedPhotos = new Photo[photos.Length];
-            for (int i = 0; i < photos.Length; ++i)
+            for (var i = 0; i < photos.Length; ++i)
             {
                 var photo = new Photo();
-                var user = await _context.GetRepository<User>().GetAsync(photos[i].AuthorId);
+                var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(photos[i].AuthorId);
                 photo.User = user;
                 photo.UserId = photos[i].AuthorId;
                 //user.Photos.Add(photo);
-                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
+                savedPhotos[i] = await _unitOfWorkContext.GetRepository<Photo>().InsertAsync(photo);
             }
 
-            await _context.SaveAsync();
+            await _unitOfWorkContext.SaveAsync();
 
-            var users = await _context.GetRepository<Photo>().GetAsync();
+            var users = await _unitOfWorkContext.GetRepository<Photo>().GetAsync();
 
             // modify photos with ids
             for (int i = 0; i < photos.Length; ++i)
@@ -165,7 +164,7 @@ namespace Lama.BusinessLogic.Services
 
             // send photos to Photo project
             var content = new StringContent(JsonConvert.SerializeObject(photos), Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync($"{url}api/photos", content);
+            var response = await _httpClient.PostAsync($"{_url}api/photos", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
             foreach (var photo in converted)
@@ -178,7 +177,7 @@ namespace Lama.BusinessLogic.Services
         public async Task<IEnumerable<UploadPhotoResultDTO>> CreateDuplicates(UploadPhotoResultDTO[] duplicates)
         {
             var content = new StringContent(JsonConvert.SerializeObject(duplicates), Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync($"{url}api/photos/duplicates", content);
+            var response = await _httpClient.PostAsync($"{_url}api/photos/duplicates", content);
             var responseContent = await response.Content.ReadAsStringAsync();
             var converted = JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
             return converted;
@@ -186,36 +185,36 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<Photo> Create(CreatePhotoDTO item)
         {
-            var insertedPhoto = (await _context.GetRepository<Photo>().InsertAsync(new Photo()));
-            await _context.SaveAsync();
+            var insertedPhoto = (await _unitOfWorkContext.GetRepository<Photo>().InsertAsync(new Photo()));
+            await _unitOfWorkContext.SaveAsync();
 
             // send request to Photo
             item.Id = insertedPhoto.Id;
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await httpClient.PostAsJsonAsync($"{url}api/photos", item);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = await _httpClient.PostAsJsonAsync($"{_url}api/photos", item);
 
             return response.IsSuccessStatusCode ? insertedPhoto : null;
         }
 
         public async Task<string> CreateAvatar(CreatePhotoDTO item)
         {
-            var user = await _context.GetRepository<User>().GetAsync(item.AuthorId);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var response = await httpClient.PostAsJsonAsync($"{url}api/photos/avatar", item);
+            var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(item.AuthorId);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = await _httpClient.PostAsJsonAsync($"{_url}api/photos/avatar", item);
             var content = await response.Content.ReadAsStringAsync();
             user.AvatarUrl = JsonConvert.DeserializeObject<string>(content);
-            await _context.SaveAsync();
+            await _unitOfWorkContext.SaveAsync();
             return user.AvatarUrl;
         }
 
         public async Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO)
         {
-            var uri = $"{url}api/photos";
+            var uri = $"{_url}api/photos";
 
             var content = new StringContent(JsonConvert.SerializeObject(updatePhotoDTO), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync(uri, content);
+            var response = await _httpClient.PutAsync(uri, content);
 
             var bodyJson = await response.Content.ReadAsStringAsync();
 
@@ -226,9 +225,9 @@ namespace Lama.BusinessLogic.Services
         #region GET
         public async Task<IEnumerable<PhotoDocumentDTO>> GetAll()
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos");
+            var response = await _httpClient.GetAsync($"{_url}api/photos");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -242,7 +241,7 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < photos.Count(); i++)
             {
-                var getLike = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                var getLike = await _unitOfWorkContext.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(getLike);
             }
             return photos;
@@ -250,9 +249,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int userId)
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/duplicates/{userId}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/duplicates/{userId}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
@@ -260,9 +259,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<string> GetPhoto(string blobId)
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/images/{blobId}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/images/{blobId}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(responseContent);
@@ -270,9 +269,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<string> GetAvatar(string blobId)
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/avatars/{blobId}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/avatars/{blobId}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(responseContent);
@@ -280,9 +279,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/user/{id}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/user/{id}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -291,7 +290,7 @@ namespace Lama.BusinessLogic.Services
 
             for (int i = 0; i < photos.Count(); i++)
             {
-                var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                var like = await _unitOfWorkContext.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
             }
             return photos;
@@ -299,9 +298,9 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<PhotoDocument> Get(int id)
         {
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = await httpClient.GetAsync($"{url}api/photos/{id}");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/{id}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -310,12 +309,12 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count)
         {
-            var countPhotos = await _context.GetRepository<Photo>().CountAsync(x => x.User.Id == userId);
-            httpClient.DefaultRequestHeaders.Add("userId", $"{userId}");
-            httpClient.DefaultRequestHeaders.Add("startId", $"{startId}");
-            httpClient.DefaultRequestHeaders.Add("count", $"{count}");
+            var countPhotos = await _unitOfWorkContext.GetRepository<Photo>().CountAsync(x => x.User.Id == userId);
+            _httpClient.DefaultRequestHeaders.Add("userId", $"{userId}");
+            _httpClient.DefaultRequestHeaders.Add("startId", $"{startId}");
+            _httpClient.DefaultRequestHeaders.Add("count", $"{count}");
 
-            var response = await httpClient.GetAsync($"{url}api/photos/rangeUserPhotos");
+            var response = await _httpClient.GetAsync($"{_url}api/photos/rangeUserPhotos");
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -324,7 +323,7 @@ namespace Lama.BusinessLogic.Services
 
             for (var i = 0; i < photos.Count(); i++)
             {
-                var like = await _context.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
+                var like = await _unitOfWorkContext.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
             }
             return photos;
@@ -334,15 +333,15 @@ namespace Lama.BusinessLogic.Services
         #region DELETE
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
-            string uri = $"{url}api/photos/{photoToDeleteId}";
+            string uri = $"{_url}api/photos/{photoToDeleteId}";
 
-            return httpClient.DeleteAsync(uri);
+            return _httpClient.DeleteAsync(uri);
         }
         public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
         {
-            var uri = $"{url}api/photos/deleted/{userId}";
+            var uri = $"{_url}api/photos/deleted/{userId}";
 
-            var response = await httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri);
 
             var bodyJson = await response.Content.ReadAsStringAsync();
 
@@ -351,27 +350,27 @@ namespace Lama.BusinessLogic.Services
 
         public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
         {
-            var uri = $"{url}api/photos/delete_permanently";
+            var uri = $"{_url}api/photos/delete_permanently";
 
             var content = new StringContent(JsonConvert.SerializeObject(photosToDelete), Encoding.UTF8, "application/json");
 
-            await httpClient.PostAsync(uri, content);
+            await _httpClient.PostAsync(uri, content);
 
             foreach (var photoToDelete in photosToDelete)
             {
-                await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
+                await _unitOfWorkContext.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
 
-            await _context.SaveAsync();
+            await _unitOfWorkContext.SaveAsync();
         }
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {
-            var uri = $"{url}api/photos/restore";
+            var uri = $"{_url}api/photos/restore";
 
             var content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
 
-            return httpClient.PostAsync(uri, content);
+            return _httpClient.PostAsync(uri, content);
         }
         #endregion
 

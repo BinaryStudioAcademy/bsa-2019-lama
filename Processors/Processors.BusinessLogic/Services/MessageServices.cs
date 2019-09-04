@@ -56,16 +56,19 @@ namespace Processors.BusinessLogic.Services
             try
             {
                 address = await _elasticStorage.GetBlobId(makePhotoThumbnailDTO.ImageId);
-            }catch(Exception) // FIX
+            }
+            catch(Exception) // FIX
             {
                 return;
             }
+            
             var fileName = address.Substring(address.LastIndexOf('/') + 1);
             var currentImg = await GetImage(makePhotoThumbnailDTO.ImageType, fileName);
 
             var image64 = _imageProcessingService.CreateThumbnail(currentImg, 64);
             var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
             var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
+            var imageDescription = await _cognitiveService.ProcessImageDescription(currentImg);
             var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
             new ImgHash((int)makePhotoThumbnailDTO.ImageId, _elasticStorage).GenerateFromByteArray(currentImg);
 
@@ -73,8 +76,10 @@ namespace Processors.BusinessLogic.Services
             {
                 var thumbnailUpdateDTO = await LoadImageToBlob(makePhotoThumbnailDTO.ImageType, image64, image256);
                 var imageTagsAsRaw = new ImageTagsAsRaw{Tags = imageTagsAsRawString};
+                var imageDescriptionDto = new ImageDescriptionDTO{ImageDescription = imageDescription};
 
                 await _elasticStorage.UpdateImageTagsAsync(makePhotoThumbnailDTO.ImageId, imageTagsAsRaw);
+                await _elasticStorage.UpdateImageDescriptionAsync(makePhotoThumbnailDTO.ImageId, imageDescriptionDto);
                 await _elasticStorage.UpdateThumbnailsAsync(makePhotoThumbnailDTO.ImageId, thumbnailUpdateDTO);
             }
         }
@@ -85,7 +90,7 @@ namespace Processors.BusinessLogic.Services
                 case ImageType.Photo: return await _photoBlobStore.GetPhoto(fileName);
                 case ImageType.Avatar: return await _photoBlobStore.GetAvatar(fileName);
 
-                default: throw new System.ArgumentException("Unexpected image type");
+                default: throw new ArgumentException("Unexpected image type");
             }
         }
         private async Task<ThumbnailUpdateDTO> LoadImageToBlob(ImageType imageType, byte[] image64, byte[] image256)

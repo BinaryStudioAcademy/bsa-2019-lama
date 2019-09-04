@@ -26,7 +26,7 @@ namespace Lama.Controllers
         }
 
         [HttpPost]
-        public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
+        public Task<IEnumerable<UploadPhotoResultDTO>> UploadPhoto([FromBody] CreatePhotoDTO[] photos)
         {
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
@@ -35,7 +35,7 @@ namespace Lama.Controllers
         }
 
         [HttpPost("duplicates")]
-        public Task<IEnumerable<UploadPhotoResultDTO>> PostDuplicates([FromBody] UploadPhotoResultDTO[] duplicates)
+        public Task<IEnumerable<UploadPhotoResultDTO>> UploadDuplicates([FromBody] UploadPhotoResultDTO[] duplicates)
         {
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);

@@ -19,5 +19,6 @@ namespace Processors.Domain.BlobModel
         public int CategoryId { get; set; }
         public string Coordinates { set; get; }
         public string ImageTags { get; set; }
+        public string ImageDescription { get; set; }
     }
 }

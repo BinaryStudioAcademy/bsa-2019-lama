@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -37,6 +38,7 @@ namespace Processors.BusinessLogic.Services
                     try
                     {
                         var response = await client.TagImageInStreamAsync(stream, "en");
+                        
                         return response.Tags;
 
                     }
@@ -46,6 +48,28 @@ namespace Processors.BusinessLogic.Services
                     }
                 }
             }
-        } 
+        }
+
+        public async Task<string> ProcessImageDescription(byte[] imageAsByteArray)
+        {
+            using (var client = new ComputerVisionClient(new ApiKeyServiceClientCredentials(_endpointKey)))
+            {
+                client.Endpoint = _endpoint;
+                using (Stream stream = new MemoryStream(imageAsByteArray))
+                {
+                    try
+                    {
+                        var response = await client.DescribeImageInStreamAsync(stream,1,"en");
+                        
+                        return response.Tags.First();
+
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
     }
 }

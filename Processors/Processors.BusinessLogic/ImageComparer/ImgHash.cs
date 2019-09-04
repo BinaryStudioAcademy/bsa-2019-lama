@@ -90,7 +90,7 @@ namespace Processors.BusinessLogic.ImageComparer
 
             _hashData = lResult.ToArray();
 
-            _elasticStorage.UpdateHashAsync(_photoId, new HasDTO{Hash = new List<bool>(_hashData)});
+            _elasticStorage.UpdateHashAsync(_photoId, new HashDTO{Hash = new List<bool>(_hashData)});
 
             bmpMin.Dispose();
         }
