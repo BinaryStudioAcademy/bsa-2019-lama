@@ -20,7 +20,7 @@ export class MainNotificationComponent implements OnInit {
 
   @Input() notification: NotificationDTO;
   ngOnInit() {
-    if (this.notification.id !== 0) {
+    if (this.notification.sender.imageUrl.indexOf('assets') === -1) {
       this.fileService
         .getPhoto(this.notification.sender.imageUrl)
         .pipe(takeUntil(this.unsubscribe))
@@ -29,8 +29,9 @@ export class MainNotificationComponent implements OnInit {
         .utc(this.notification.date)
         .local()
         .toDate();
+    } else {
+      this.imageUrl = this.notification.sender.imageUrl;
     }
-    this.imageUrl = '../../../../assets/setting-512.png';
   }
   sendIsRead() {
     if (this.notification.isRead) {

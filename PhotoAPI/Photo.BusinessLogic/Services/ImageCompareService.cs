@@ -29,21 +29,29 @@ namespace Photo.BusinessLogic.Services
                 {
                     continue;
                 }
-                if (hash.CompareWith(hashCompareWith) >= minSimilarity)
+
+                try
                 {
-                    if (!alreadyMarkedAsDupl.Contains(hash))
+                    if (hash.CompareWith(hashCompareWith) >= minSimilarity)
                     {
-                        alreadyMarkedAsDupl.Add(hash);
+                        if (!alreadyMarkedAsDupl.Contains(hash))
+                        {
+                            alreadyMarkedAsDupl.Add(hash);
 
-                        currHashDupl.Add(hash);
+                            currHashDupl.Add(hash);
+                        }
+
+                        if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
+                        {
+                            alreadyMarkedAsDupl.Add(hashCompareWith);
+
+                            currHashDupl.Add(hashCompareWith);
+                        }
                     }
+                }
+                catch (Exception e)
+                {
 
-                    if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
-                    {
-                        alreadyMarkedAsDupl.Add(hashCompareWith);
-
-                        currHashDupl.Add(hashCompareWith);
-                    }
                 }
             }
 

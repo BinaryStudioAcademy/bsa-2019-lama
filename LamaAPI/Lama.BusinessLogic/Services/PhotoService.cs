@@ -17,7 +17,9 @@ using Lama.Domain.DTO.Reaction;
 using Microsoft.AspNetCore.SignalR;
 using Lama.BusinessLogic.Hubs;
 using Lama.DataAccess;
+using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -130,7 +132,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var noti = "Liked your photo";
-                await notificationService.SendNotification(ID, user, noti);
+                await notificationService.SendNotification(ID, user, noti, ActivityType.Like);
             }
             return like.Id;
         }
@@ -230,7 +232,14 @@ namespace Lama.BusinessLogic.Services
             
             var user = await _context.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
             var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
-            await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);
+            var jsonObj = 
+            JsonConvert.SerializeObject(
+                photos,
+            new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            await notificationService.SendNotification(photos.FirstOrDefault().UserId, null, "Duplicates found", ActivityType.Duplicates, jsonObj);
         }
 
         #region GET
