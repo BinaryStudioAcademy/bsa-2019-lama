@@ -25,7 +25,7 @@ namespace Photo.BusinessLogic.Services
 
             foreach (var hashCompareWith in _hashLib)
             {
-                if (hashCompareWith.HashData == null)
+                if (hashCompareWith == null)
                 {
                     continue;
                 }
