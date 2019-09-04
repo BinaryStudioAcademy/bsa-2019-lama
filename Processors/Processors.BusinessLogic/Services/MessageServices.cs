@@ -14,7 +14,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
+using Serilog;
 using Services.Implementation.RabbitMq;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -66,6 +69,7 @@ namespace Processors.BusinessLogic.Services
 
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
+            Log.Logger.Information("received");
             foreach (var image in images)
             {
                 var address = await _elasticStorage.GetBlobId(image.ImageId);
@@ -86,9 +90,11 @@ namespace Processors.BusinessLogic.Services
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
                     new HasDTO { Hash = new List<bool>(hash.HashData) });
             }
+            Log.Logger.Information("updated hashes");
             //TODO rewrite this
             await Task.Delay(2000);
             await FindDuplicates(images);
+            Log.Logger.Information("duplicates founded");
         }
 
         public async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
