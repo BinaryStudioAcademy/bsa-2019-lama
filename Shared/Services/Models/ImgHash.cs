@@ -28,14 +28,17 @@ namespace Services.Models
                 throw new Exception("Cannot compare hashes with different sizes");
             }
             double differenceCounter = 0;
-
-            for (int i = 0; i < HashData.Count; i++)
+            if (compareWith.HashData != null)
             {
-                if (HashData[i] != compareWith.HashData[i])
+                for (int i = 0; i < HashData.Count; i++)
                 {
-                    differenceCounter++;
+                    if (HashData[i] != compareWith.HashData[i])
+                    {
+                        differenceCounter++;
+                    }
                 }
             }
+
             return (HashData.Count - differenceCounter) / HashData.Count * 100;
         }
 

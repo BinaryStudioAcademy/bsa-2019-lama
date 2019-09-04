@@ -25,25 +25,30 @@ namespace Photo.BusinessLogic.Services
 
             foreach (var hashCompareWith in _hashLib)
             {
-                if (hashCompareWith.HashData == null)
+                try
                 {
-                    continue;
+
+
+                    if (hash.CompareWith(hashCompareWith) >= minSimilarity)
+                    {
+                        if (!alreadyMarkedAsDupl.Contains(hash))
+                        {
+                            alreadyMarkedAsDupl.Add(hash);
+
+                            currHashDupl.Add(hash);
+                        }
+
+                        if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
+                        {
+                            alreadyMarkedAsDupl.Add(hashCompareWith);
+
+                            currHashDupl.Add(hashCompareWith);
+                        }
+                    }
                 }
-                if (hash.CompareWith(hashCompareWith) >= minSimilarity)
+                catch (Exception e)
                 {
-                    if (!alreadyMarkedAsDupl.Contains(hash))
-                    {
-                        alreadyMarkedAsDupl.Add(hash);
 
-                        currHashDupl.Add(hash);
-                    }
-
-                    if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
-                    {
-                        alreadyMarkedAsDupl.Add(hashCompareWith);
-
-                        currHashDupl.Add(hashCompareWith);
-                    }
                 }
             }
 
