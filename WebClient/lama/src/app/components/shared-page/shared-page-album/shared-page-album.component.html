@@ -22,14 +22,12 @@
     </div>
   </div>
 </div>
-<div class="container" fileDrop (fileDropped)="addPhoto($event)">
-  <div *ngIf="loading" class="items-container-centered">
-    <div *ngFor="let item of album.photoAlbums">
-      <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)"
-        (Select)="photoSelected($event)"></main-photo>
-    </div>
+<div *ngIf="loading" class="items-container-centered">
+  <div *ngFor="let item of album.photoAlbums">
+    <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)"
+      (Select)="photoSelected($event)"></main-photo>
   </div>
-  <template #modalPhotoContainer></template>
 </div>
+<template #modalPhotoContainer></template>
 
 <notifier-container></notifier-container>
