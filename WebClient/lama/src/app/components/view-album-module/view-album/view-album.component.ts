@@ -54,6 +54,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   isFakeAlbum = false;
   returnPath: string;
   unsubscribe = new Subject();
+  currentPhotoIndex;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -140,6 +141,15 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading favourites')
       );
     this.coverId = parseInt(localStorage.getItem('favoriteCover'), 10);
+  }
+
+  changePhotoHandler(isNext: boolean) {
+    if (isNext) {
+      this.currentPhotoIndex++;
+    } else {
+      this.currentPhotoIndex--;
+    }
+    this.photoClicked(this.album.photoAlbums[this.currentPhotoIndex]);
   }
 
   photoClicked(eventArgs: PhotoRaw) {
