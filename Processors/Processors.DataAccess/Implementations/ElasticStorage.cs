@@ -26,9 +26,9 @@ namespace Processors.DataAccess.Implementations
         {
             return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(thumbnailUpdate));
         }
-        public Task UpdateHashAsync(long id, HasDTO has)
+        public async Task UpdateHashAsync(long id, HasDTO has)
         {
-            return _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(has));
+            await _elasticClient.UpdateAsync<PhotoDocument, object>(id, p => p.Doc(has));
         }
         public async Task<bool> ExistAsync(long id)
         {
