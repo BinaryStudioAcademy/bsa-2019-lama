@@ -113,6 +113,13 @@ namespace Lama.Controllers
             return await _service.GetUserPhotos(currentUserId);
         }
 
+        [AllowAnonymous]
+        [HttpPost("duplicates_response")]
+        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
+        {
+            await _service.SendDuplicates(photos);
+        }
+
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {

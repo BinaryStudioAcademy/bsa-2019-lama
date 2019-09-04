@@ -25,6 +25,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
   isActive = true;
+  isShow = false;
   unsubscribe = new Subject();
   constructor(
     private fileService: FileService,

@@ -20,11 +20,17 @@ export class MainNotificationComponent implements OnInit {
 
   @Input() notification: NotificationDTO;
   ngOnInit() {
-    this.fileService
-      .getPhoto(this.notification.sender.imageUrl)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(x => (this.imageUrl = x));
-    this.notification.date = moment.utc(this.notification.date).local().toDate();
+    if (this.notification.id !== 0) {
+      this.fileService
+        .getPhoto(this.notification.sender.imageUrl)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(x => (this.imageUrl = x));
+      this.notification.date = moment
+        .utc(this.notification.date)
+        .local()
+        .toDate();
+    }
+    this.imageUrl = '../../../../assets/setting-512.png';
   }
   sendIsRead() {
     if (this.notification.isRead) {

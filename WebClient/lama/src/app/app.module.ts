@@ -100,6 +100,6 @@ import { SharingPageComponent } from './components/shared-page/sharing-page//sha
     }
   ],
   bootstrap: [AppComponent],
-  entryComponents: [AddPhotosToAlbumModalComponent]
+  entryComponents: [AddPhotosToAlbumModalComponent, DuplicatesModalComponent]
 })
 export class AppModule {}

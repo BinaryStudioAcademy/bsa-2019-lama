@@ -55,6 +55,7 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   isFakeAlbum = false;
   returnPath: string;
   unsubscribe = new Subject();
+  currentPhotoIndex;
   showSetCoverModal: boolean;
   showSharedModal: boolean;
 
@@ -93,6 +94,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       0,
       this.router.url.lastIndexOf('/') + 1
     );
+    if (this.returnPath === '/main/sharing/') {
+      this.isShared = true;
+    }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.httpService.getData('users/' + userId).subscribe(
       u => {
@@ -150,6 +154,15 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     }
   }
 
+  changePhotoHandler(isNext: boolean) {
+    if (isNext) {
+      this.currentPhotoIndex++;
+    } else {
+      this.currentPhotoIndex--;
+    }
+    this.photoClicked(this.album.photoAlbums[this.currentPhotoIndex]);
+  }
+
   photoClicked(eventArgs: PhotoRaw) {
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
@@ -162,6 +175,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.updatePhotoEvent.subscribe(
       this.updatePhotoHandler.bind(this)
     );
+    componentRef.instance.changePhotoEvent.subscribe(bool => {
+      this.changePhotoHandler(bool);
+    });
+    this.currentPhotoIndex = this.album.photoAlbums.indexOf(eventArgs);
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
@@ -295,22 +312,22 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     } else {
       this.album.photoAlbums.forEach(el => {
         this.fileService
-        .getPhoto(el.blobId)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(data => {
-          photos.push(this.createPhoto(el, data));
-        });
+          .getPhoto(el.blobId)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(data => {
+            photos.push(this.createPhoto(el, data));
+          });
       });
     }
     await this.delay(2000);
     this.fileService
-    .sendPhotos(photos)
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(
-      uploadedPhotos => {
-        this.notifier.notify('success', 'Photos saved');
-      },
-      error => this.notifier.notify('error', 'Error saving photos')
+      .sendPhotos(photos)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        uploadedPhotos => {
+          this.notifier.notify('success', 'Photos saved');
+        },
+        error => this.notifier.notify('error', 'Error saving photos')
       );
   }
 
@@ -336,18 +353,19 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         ids.push(e.id);
       });
     }
-    this.albumService.updateAlbumTitle({
-      title: this.album.title,
-      id: this.album.id,
-      photoIds: ids
-    })
-    .pipe(takeUntil(this.unsubscribe))
-    .subscribe(
-      () => {
-        this.notifier.notify('success', 'Album title changed successfully');
-      },
-      error => this.notifier.notify('error', 'Album title does not changed')
-    );
+    this.albumService
+      .updateAlbumTitle({
+        title: this.album.title,
+        id: this.album.id,
+        photoIds: ids
+      })
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        () => {
+          this.notifier.notify('success', 'Album title changed successfully');
+        },
+        error => this.notifier.notify('error', 'Album title does not changed')
+      );
   }
 
   startChangingTitle() {

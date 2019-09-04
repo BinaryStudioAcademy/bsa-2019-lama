@@ -30,7 +30,8 @@ namespace Lama.BusinessLogic.Services
         private readonly IMapper _mapper;
         readonly INotificationService notificationService;
         readonly ApplicationDbContext Context;
-        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService)
+        private readonly IHubContext<NotificationHub> _hub;
+        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService, IHubContext<NotificationHub> hub)
         {
             this.url = url;
             _context = context;
@@ -38,6 +39,7 @@ namespace Lama.BusinessLogic.Services
             this._mapper = _mapper;
             this.Context = Context;
             this.notificationService = notificationService;
+            _hub = hub;
         }
 
 
@@ -221,6 +223,14 @@ namespace Lama.BusinessLogic.Services
 
             return JsonConvert.DeserializeObject<UpdatedPhotoResultDTO>(bodyJson);
 
+        }
+
+        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
+        {   
+            
+            var user = await _context.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
+            var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
+            await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);
         }
 
         #region GET
