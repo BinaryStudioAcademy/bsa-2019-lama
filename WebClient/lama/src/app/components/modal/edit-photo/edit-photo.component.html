@@ -1,30 +1,6 @@
-<div class="tile is-ancestor">
-  <div #defaultMode class="tile is-parent photo-container">
-    <div class="edit-container">
-      <div class="overlay columns">
-        <!--menu items-->
-        <div class="column menu-items has-text-centered">
-          <div class="overlay-item has-text-right">
-            <a class="button is-text is-medium is-primary is-outlined" (click)="resetClickHandler()">
-              <span class="icon">
-                <i class="fa fa-undo"></i>
-              </span>
-            </a>
-            <a class="button is-text is-medium is-primary is-outlined" (click)="saveClickHandler()">
-              <span class="icon">
-                <i class="fa fa-save"></i>
-              </span>
-            </a>
-            <a class="button is-text is-medium is-primary is-outlined" (click)="cancelClickHandler()">
-              <span class="icon">
-                <i class="fa fa-times"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="isMemeMode; then memeMode; else defaultMode"></div>
-
+<div class="modal" [class.is-active]="isShown">
+  <div class="modal-content">
+    <div class="container">
       <ng-template #memeMode>
         <div class="memeArea">
           <img src="{{ imageToEditBase64 }}" alt="image" />
@@ -43,87 +19,84 @@
           (imageCropped)="imageCroppedHandler($event)">
         </image-cropper>
       </ng-template>
-    </div>
-  </div>
 
-  <!--right panel-->
-  <div class="right-panel column is-one-fifth">
-    <div class="tabs is-centered is-boxed is-medium">
-      <ul>
-        <li class="tab is-active" (click)="displayRotateAndCrop()" [class.is-active]="showRotateAndCrop">
-          <a>
-            <img src="assets/crop-rotate-icon.svg" alt="Crop and rotate" />
-          </a>
-        </li>
-        <li class="tab" (click)="displayFlip()" [class.is-active]="showFlip">
-          <a>
-            <img src="assets/flip-icon.svg" alt="Flip" />
-          </a>
-        </li>
-        <li class="tab" (click)="displayMeme()" [class.is-active]="showMeme">
-          <a>
-            <img src="assets/meme-icon.svg" alt="Meme" />
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <div *ngIf="showRotateAndCrop">
-      <div class="columns" *ngIf="showRotateAndCrop">
-        <div class="column has-text-centered">
-          <button class="button is-primary" (click)="rotateLeftHandler()">
-            <i class="material-icons is-block">rotate_left</i>
-            <h5 class="subtitle is-5">Rotate left</h5>
-          </button>
+      <div class="main-container">
+        <div class="main-photo-area">
+          <!--photo-->
+          <div class="main-photo">
+            <!--image-->
+            <div class="photo">
+              <div *ngIf="isMemeMode; then memeMode; else defaultMode"></div>
+            </div>
+          </div>
+          <div class="overlay">
+            <div class="back-icon" (click)="cancelClickHandler()">
+              <span class="icon">
+                <i class="fa fa-angle-left" left aria-hidden="true"></i>
+              </span>
+            </div>
+            <div class="overlay-items">
+              <div class="overlay-item" (click)="resetClickHandler()">
+                <div title="Reset to original">
+                  <i class="fa fa-undo"></i>
+                </div>
+              </div>
+              <div class="overlay-item" (click)="saveClickHandler()">
+                <div title="Save">
+                  <i class="fa fa-save"></i>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="columns" *ngIf="showRotateAndCrop">
-        <div class="column has-text-centered">
-          <button class="button is-primary" (click)="rotateRightHandler()">
-            <i class="material-icons is-block">rotate_right</i>
-            <h5 class="subtitle is-5">Rotate right</h5>
-          </button>
-        </div>
-      </div>
+        <div class="photo-info-area">
+          <div>
+            <div class="tabs is-centered is-boxed is-medium">
+              <ul>
+                <li class="tab is-active" (click)="displayRotateAndCrop()" [class.is-active]="showRotateAndCrop">
+                  <a>
+                    <img src="assets/crop-rotate-icon.svg" alt="Crop and rotate" />
+                  </a>
+                </li>
+                <li class="tab" (click)="displayMeme()" [class.is-active]="showMeme">
+                  <a>
+                    <img src="assets/meme-icon.svg" alt="Meme" />
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-      <div class="columns is-centered">
-        <table>
-          <tr>
-            <td>Width:</td>
-            <td>{{ croppedImageHeight }} px</td>
-          </tr>
-          <tr>
-            <td>Height:</td>
-            <td>{{ croppedImageWidth }} px</td>
-          </tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="drop-content" *ngIf="showFlip">
-      <div class="columns">
-        <div class="column has-text-centered">
-          <button class="button is-primary" (click)="flipHorizontalHandler()">
-            <i class="material-icons is-block">border_vertical</i>
-            <h5 class="subtitle is-5">Flip horizontal</h5>
-          </button>
-        </div>
-      </div>
-      <div class="columns">
-        <div class="column has-text-centered">
-          <button class="button is-primary" (click)="flipVerticalHandler()">
-            <i class="material-icons is-block">border_horizontal</i>
-            <h5 class="subtitle is-5">Flip vertical</h5>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="drop-content" *ngIf="showMeme">
-      <div class="columns">
-        <div class="column has-text-centered">
-          <input type="color" [(ngModel)]="colorPicker" />
-          <h5 class="subtitle is-5">Text color</h5>
+            <div *ngIf="showRotateAndCrop" class="action-icons">
+              <div class="rotate">
+                <div class="icon" (click)="rotateLeftHandler()">
+                  <i class="material-icons is-block">rotate_left</i>
+                </div>
+                <div class="icon" (click)="rotateRightHandler()">
+                  <i class="material-icons is-block">rotate_right</i>
+                </div>
+              </div>
+              <div class="flip">
+                <div class="icon" (click)="flipHorizontalHandler()">
+                  <i class="material-icons is-block">border_vertical</i>
+                </div>
+                <div class="icon" (click)="flipVerticalHandler()">
+                  <i class="material-icons is-block">border_horizontal</i>
+                </div>
+              </div>
+              <div class="size-info">
+                <span>Width: {{ croppedImageHeight }} px</span>
+                <span>Height: {{ croppedImageWidth }} px</span>
+              </div>
+            </div>
+            <div class="drop-content" *ngIf="showMeme">
+              <div class="columns">
+                <div class="column has-text-centered">
+                  <input class="input-color" type="color" [(ngModel)]="colorPicker" />
+                  <h5 class="subtitle is-5">Choose text color</h5>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
