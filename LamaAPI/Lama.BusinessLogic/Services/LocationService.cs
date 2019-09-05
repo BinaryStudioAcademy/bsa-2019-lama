@@ -52,7 +52,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach(var item in photosBd)
             {
-                item.Location.Name = item.Location.Name.Split(new char[] { ' ' })[0];
+                item.Location.Name = item.Location.Name.Split(new char[] { ',' })[0];
             }
             var Cities = photosBd.GroupBy(x => x.Location.Name).Select(g => new {
                 Name = g.Key,
@@ -113,7 +113,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach(var city in Cities)
             {
-                if(city.Name == null || !city.Name.Contains(' '))
+                if(city.Name == null || !city.Name.Contains(','))
                 {
                     continue;
                 }
