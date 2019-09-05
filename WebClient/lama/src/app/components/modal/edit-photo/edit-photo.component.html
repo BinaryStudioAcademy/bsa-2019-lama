@@ -5,26 +5,17 @@
         <!--menu items-->
         <div class="column menu-items has-text-centered">
           <div class="overlay-item has-text-right">
-            <a
-              class="button is-text is-medium is-primary is-outlined"
-              (click)="resetClickHandler()"
-            >
+            <a class="button is-text is-medium is-primary is-outlined" (click)="resetClickHandler()">
               <span class="icon">
                 <i class="fa fa-undo"></i>
               </span>
             </a>
-            <a
-              class="button is-text is-medium is-primary is-outlined"
-              (click)="saveClickHandler()"
-            >
+            <a class="button is-text is-medium is-primary is-outlined" (click)="saveClickHandler()">
               <span class="icon">
                 <i class="fa fa-save"></i>
               </span>
             </a>
-            <a
-              class="button is-text is-medium is-primary is-outlined"
-              (click)="cancelClickHandler()"
-            >
+            <a class="button is-text is-medium is-primary is-outlined" (click)="cancelClickHandler()">
               <span class="icon">
                 <i class="fa fa-times"></i>
               </span>
@@ -38,34 +29,18 @@
         <div class="memeArea">
           <img src="{{ imageToEditBase64 }}" alt="image" />
           <div *ngIf="!memeSaved">
-            <textarea
-              [(ngModel)]="upText"
-              rows="2"
-              class="upTextArea"
-              [appMemeColor]="colorPicker"
-              maxlength="55"
-            ></textarea>
-            <textarea
-              [(ngModel)]="downText"
-              rows="2"
-              class="downTextArea"
-              [appMemeColor]="colorPicker"
-              maxlength="55"
-            ></textarea>
+            <textarea [(ngModel)]="upText" rows="2" class="upTextArea" [appMemeColor]="colorPicker"
+              maxlength="55"></textarea>
+            <textarea [(ngModel)]="downText" rows="2" class="downTextArea" [appMemeColor]="colorPicker"
+              maxlength="55"></textarea>
           </div>
         </div>
       </ng-template>
 
       <ng-template #defaultMode>
-        <image-cropper
-          #editor
-          [imageBase64]="imageToEditBase64"
-          [cropperMinWidth]="cropperMinWidth"
-          [cropperMinHeight]="cropperMinHeight"
-          [maintainAspectRatio]="false"
-          format="jpeg"
-          (imageCropped)="imageCroppedHandler($event)"
-        >
+        <image-cropper #editor [imageBase64]="imageToEditBase64" [cropperMinWidth]="cropperMinWidth"
+          [cropperMinHeight]="cropperMinHeight" [maintainAspectRatio]="false" format="jpeg"
+          (imageCropped)="imageCroppedHandler($event)">
         </image-cropper>
       </ng-template>
     </div>
@@ -75,11 +50,7 @@
   <div class="right-panel column is-one-fifth">
     <div class="tabs is-centered is-boxed is-medium">
       <ul>
-        <li
-          class="tab is-active"
-          (click)="displayRotateAndCrop()"
-          [class.is-active]="showRotateAndCrop"
-        >
+        <li class="tab is-active" (click)="displayRotateAndCrop()" [class.is-active]="showRotateAndCrop">
           <a>
             <img src="assets/crop-rotate-icon.svg" alt="Crop and rotate" />
           </a>

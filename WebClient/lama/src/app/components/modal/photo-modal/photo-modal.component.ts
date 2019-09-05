@@ -249,12 +249,12 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
-      { title: 'share', icon: 'share' },
-      { title: 'remove', icon: 'clear' },
-      { title: 'download', icon: 'cloud_download' },
-      { title: 'edit', icon: 'edit' },
-      { title: 'info', icon: 'info' },
-      { title: 'save', icon: 'save' }
+      { title: 'Share', icon: 'share' },
+      { title: 'Remove', icon: 'clear' },
+      { title: 'Download', icon: 'cloud_download' },
+      { title: 'Edit', icon: 'edit' },
+      { title: 'Info', icon: 'info' },
+      { title: 'Save', icon: 'save' }
     ];
   }
 

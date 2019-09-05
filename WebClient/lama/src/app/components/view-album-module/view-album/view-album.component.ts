@@ -16,13 +16,8 @@ import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { AlbumService } from 'src/app/services/album.service';
 import { FavoriteService } from 'src/app/services/favorite.service';
-import * as JSZipUtils from 'jszip-utils';
-import * as JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { element } from 'protractor';
 import { ZipService } from 'src/app/services/zip.service';
 import { User } from 'src/app/models/User/user';
-import { UpdateAlbum } from 'src/app/models/Album/updatedAlbum';
 import { NotifierService } from 'angular-notifier';
 import { AddPhotosToAlbumModalComponent } from '../add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { HttpService } from 'src/app/services/http.service';
@@ -43,14 +38,11 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
-  isTitleEdit: boolean;
   coverId: number;
   loading = false;
   isDeleting: boolean;
   selectedPhotos: PhotoRaw[];
   isAtLeastOnePhotoSelected = false;
-  private routeSubscription: Subscription;
-  private querySubscription: Subscription;
   currentUser: User;
   isFakeAlbum = false;
   returnPath: string;
@@ -76,9 +68,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     private notifier: NotifierService,
     private httpService: HttpService
   ) {
-    this.routeSubscription = route.params.subscribe(
-      params => (this.AlbumId = parseInt(params.id, 10))
-    );
     this.route.queryParams.subscribe(
       params => {
         if (this.router.getCurrentNavigation().extras.state) {
@@ -346,7 +335,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   changeAlbumName() {
-    this.isTitleEdit = false;
     const ids = new Array<number>();
     if (this.album.photoAlbums) {
       this.album.photoAlbums.forEach(e => {
@@ -368,12 +356,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       );
   }
 
-  startChangingTitle() {
-    if (!this.isShared && !this.isFavorite()) {
-      this.isTitleEdit = true;
-    }
-  }
-
   deleteWindow() {
     if (!this.isAtLeastOnePhotoSelected) {
       Object.assign(this.selectedPhotos, this.album.photoAlbums);
@@ -381,12 +363,24 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     this.isDeleting = true;
   }
 
-  public goBackToImageView(): void {
+  goBackToImageView(): void {
     this.isDeleting = false;
   }
 
   isFavorite() {
     return this.AlbumId === 0;
+  }
+
+  handleDropdownDisplay(dropDown: HTMLElement) {
+    dropDown.style.display = dropDown.style.display
+      ? dropDown.style.display === 'none'
+        ? 'block'
+        : 'none'
+      : 'block';
+  }
+
+  handleDropdownOutsideClick(dropDown: HTMLElement) {
+    dropDown.style.display = 'none';
   }
 
   ngOnDestroy() {
