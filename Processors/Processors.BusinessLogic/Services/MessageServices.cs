@@ -7,17 +7,11 @@ using Services.Interfaces;
 using Services.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using Serilog;
-using Services.Implementation.RabbitMq;
-using Serilog.Exceptions;
-using Serilog.Sinks.Elasticsearch;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -55,16 +49,22 @@ namespace Processors.BusinessLogic.Services
 
         public async void Get(object sender, BasicDeliverEventArgs args)
         {
-            var message = Encoding.ASCII.GetString(args.Body);
-            var obj = JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message);
-            await HandleReceivedDataAsync(obj);
-            _consumer.SetAcknowledge(args.DeliveryTag, true);
+			try
+			{
+				var message = Encoding.ASCII.GetString(args.Body);
+				var obj = JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message);
+				await HandleReceivedDataAsync(obj);
+				_consumer.SetAcknowledge(args.DeliveryTag, true);
+			}
+			catch (Exception e)
+			{
+				Log.Logger.Error(e, "During processing message from the queue");
+            }
         }
 
-        public async Task RunAsync(int millisecondsTimeout)
+        public void Run()
         {
             Console.WriteLine("running");
-
         }
 
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
