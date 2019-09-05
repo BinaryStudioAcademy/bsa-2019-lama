@@ -1,0 +1,14 @@
+<a class="link_album">
+    <div class="album">
+        <div [style.display]="isMenu ? 'block' : 'none'" class="menu" (click)="clickMenu()">
+            <img src="assets/three-dots-menu.svg" alt="" />
+        </div>
+        <div [style.visibility]="isContent ? 'visible' : 'hidden'" class="dropdown-content" (mouseleave)="leave($event)">
+            <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
+        </div>
+        <img src="{{ imageUrl || imgname }}" (click)="clickPerformed()" />
+    </div>
+    <div class="description has-text-centered">
+        <p>{{ album.title }}</p>
+    </div>
+</a>

@@ -4,14 +4,16 @@ using Lama.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Lama.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190903153049_locationID")]
+    partial class locationID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,7 +131,11 @@ namespace Lama.DataAccess.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Locations");
                 });
@@ -140,20 +146,16 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Activity");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsRead");
 
-                    b.Property<string>("Payload");
-
-                    b.Property<int?>("SenderId");
+                    b.Property<int>("SenderId");
 
                     b.Property<string>("Text")
                         .IsRequired();
 
-                    b.Property<int?>("UserId");
+                    b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
@@ -376,11 +378,19 @@ namespace Lama.DataAccess.Migrations
                         .HasForeignKey("UserId");
                 });
 
+            modelBuilder.Entity("Lama.Domain.DbModels.Location", b =>
+                {
+                    b.HasOne("Lama.Domain.DbModels.User", "User")
+                        .WithMany("Locations")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("Lama.Domain.DbModels.Notification", b =>
                 {
                     b.HasOne("Lama.Domain.DbModels.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId");
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Notifications")
