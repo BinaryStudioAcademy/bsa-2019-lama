@@ -77,7 +77,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.auth.user) {
+    if (!this.auth.token) {
       return;
     }
     this.registerHub();
