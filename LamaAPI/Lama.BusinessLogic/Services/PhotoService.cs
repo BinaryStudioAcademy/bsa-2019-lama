@@ -19,6 +19,7 @@ using Lama.BusinessLogic.Hubs;
 using Lama.DataAccess;
 using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Newtonsoft.Json.Serialization;
 
 namespace Lama.BusinessLogic.Services
@@ -234,6 +235,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task SendDuplicates(IEnumerable<int> photos)
         {
+            Log.Logger.Information("Duplicates received on LamaAPI");
             var userId = (await _context.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
             await notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
         }
