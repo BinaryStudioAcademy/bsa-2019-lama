@@ -170,6 +170,15 @@ namespace Lama.BusinessLogic.Services
 
             return photos;
         }
+        public async Task DeleteLocation(int id)
+        {
+            var loca = await Context.Locations.FirstOrDefaultAsync(x=>x.Id == id);
+            if(loca != null)
+            {
+                Context.Locations.Remove(loca);
+                await Context.SaveChangesAsync();
+            }
+        }
 
     }
 }

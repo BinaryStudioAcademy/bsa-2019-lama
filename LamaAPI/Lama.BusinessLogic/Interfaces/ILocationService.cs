@@ -11,5 +11,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> CheckAdrress(string shortLocation);
         Task<List<ReturnAlbumDTO>> GetUserAlbumsByCity(int id);
         Task<List<ReturnAlbumDTO>> GetUserAlbumsByCountry(int id);
+        Task DeleteLocation(int id);
     }
 }

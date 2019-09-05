@@ -362,12 +362,27 @@ namespace Lama.BusinessLogic.Services
 
             await httpClient.PostAsync(uri, content);
 
+            Photo haveLocation = null;
+            int LocationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
+                var phot = await Context.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
+                if(phot.LocationId.HasValue)
+                {
+                    LocationId = phot.LocationId.Value;
+                }
                 await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
 
             await _context.SaveAsync();
+            haveLocation = await Context.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
+            if (haveLocation == null)
+            {
+                if (LocationId != 0)
+                {
+                    await locationService.DeleteLocation(LocationId);
+                }
+            }
         }
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)

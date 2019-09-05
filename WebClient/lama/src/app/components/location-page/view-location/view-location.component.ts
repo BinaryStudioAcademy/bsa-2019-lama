@@ -5,7 +5,8 @@ import {
   OnDestroy,
   ViewChild,
   ViewContainerRef,
-  ComponentFactoryResolver
+  ComponentFactoryResolver,
+  DoCheck
 } from '@angular/core';
 import { Subscription, Subject } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -19,13 +20,14 @@ import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.compone
 import { HttpService } from 'src/app/services/http.service';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { LocationServiceService } from 'src/app/services/location-service.service';
+import { FileService } from 'src/app/services';
 
 @Component({
   selector: 'app-view-location',
   templateUrl: './view-location.component.html',
   styleUrls: ['./view-location.component.sass']
 })
-export class ViewLocationComponent implements OnInit, OnDestroy {
+export class ViewLocationComponent implements OnInit, OnDestroy, DoCheck {
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
 
@@ -48,6 +50,7 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
     private resolver: ComponentFactoryResolver,
     private favoriteService: FavoriteService,
     private httpService: HttpService,
+    private fileService: FileService,
     private locationService: LocationServiceService
   ) {
     this.routeSubscription = route.params.subscribe(params => {
@@ -150,6 +153,27 @@ export class ViewLocationComponent implements OnInit, OnDestroy {
       i => i.id === updatedPhoto.id
     );
     this.album.photoAlbums[index] = updatedPhoto;
+  }
+  private deleteImages(): void {
+    this.selectedPhotos.forEach(element => {
+      this.fileService
+        .markPhotoAsDeleted(element.id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          res => {
+            this.deletePhotoHandler(element.id);
+          },
+          error => this.notifier.notify('error', 'Error deleting images')
+        );
+    });
+    this.selectedPhotos = [];
+  }
+  ngDoCheck() {
+    if (this.selectedPhotos && this.selectedPhotos.length > 0) {
+      this.isAtLeastOnePhotoSelected = true;
+    } else {
+      this.isAtLeastOnePhotoSelected = false;
+    }
   }
   photoSelected(eventArgs: PhotoRawState) {
     console.log(eventArgs);
