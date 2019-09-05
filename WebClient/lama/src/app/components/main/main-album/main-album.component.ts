@@ -68,7 +68,8 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
     }
-    if (this.isShared && this.album.photoAlbums.length > 0) {
+    if (this.isShared && this.album.photoAlbums &&
+        this.album.photoAlbums.length > 0) {
       this.album.photoAlbums.slice(0, 3).map(i => {
         this.fileService
           .getPhoto(i.blob256Id)

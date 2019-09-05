@@ -187,6 +187,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       this.isUniqueName = false;
       this.checkForm = false;
     } else {
+      this.loaded = false;
       if (this.photos.length === 0) {
         this.album = {
           title: this.albumName,
@@ -298,6 +299,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
   toggleModal() {
     this.isShown = false;
+    this.loaded = true;
   }
 
   ChoosePhoto() {
