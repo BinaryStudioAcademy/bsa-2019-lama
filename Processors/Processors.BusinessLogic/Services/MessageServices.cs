@@ -111,16 +111,17 @@ namespace Processors.BusinessLogic.Services
                     {
                         if (itm.PhotoId == item.ImageId)
                         {
-                            duplicates.Add((int)item.ImageId);
+                            duplicates.Add((int) item.ImageId);
                             break;
                         }
                     }
                 }
             }
-            
+
             var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
             _producer.Send(bytes);
         }
+
         private async Task<byte[]> GetImage(ImageType imageType, string fileName)
         {
             switch (imageType)
