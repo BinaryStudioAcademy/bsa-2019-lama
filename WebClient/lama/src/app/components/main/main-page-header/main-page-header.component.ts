@@ -23,6 +23,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
+import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
+import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -34,6 +36,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   @Output() Click = new EventEmitter<boolean>();
   @ViewChild('photoUploadModal', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
+  @ViewChild('duplicatesModal', { static: true, read: ViewContainerRef })
+  private duplicatesEntry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   avatarUrl: string;
   isActive = false;
@@ -54,21 +58,28 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  showModal = false;
+  duplicates: UploadPhotoResultDTO[] = [];
+  shared: SharedService;
 
   constructor(
     public auth: AuthService,
     private router: Router,
     resolver: ComponentFactoryResolver,
-    private shared: SharedService,
+    shared: SharedService,
     private http: HttpService,
     private file: FileService,
     private notifier: NotifierService,
     private notificationService: NotificationService
   ) {
     this.resolver = resolver;
+    this.shared = shared;
   }
 
   async ngOnInit() {
+    if (!this.auth.token) {
+      return;
+    }
     this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
@@ -82,6 +93,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         u => {
           this.notification = u.reverse();
           this.checkNotification(this.notification);
+          console.log(u);
+          u.forEach(item => {
+            if (item.activity === 2) {
+              const obj: UploadPhotoResultDTO[] = JSON.parse(item.payload);
+              this.duplicates = obj;
+            }
+          });
         },
         error => this.notifier.notify('error', 'Error loading nofitications')
       );
@@ -92,7 +110,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .subscribe(
         u => {
           if (u.photoUrl) {
-            if (u.photoUrl.indexOf('base64') === -1) {
+            if (u.photoUrl.indexOf('assets') === -1) {
               this.file
                 .getPhoto(u.photoUrl)
                 .pipe(takeUntil(this.unsubscribe))
@@ -105,6 +123,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading user')
       );
   }
+
   sendIsRead(id) {
     this.notificationService
       .sendIsRead(id)
@@ -124,6 +143,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       error => this.notifier.notify('error', 'Error deleting notification')
     );
   }
+
+  deleteDuplicatesHandler(event: number[]) {
+    this.shared.deletedPhotos = event;
+    this.duplicates = [];
+  }
+
   MarkAllAsRead() {
     this.notificationService
       .MarkAllAsRead(this.id)
@@ -151,6 +176,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.Hub.on('Notification', (notification: NotificationDTO) => {
       if (notification) {
         this.addNotification(notification);
+      }
+      if (notification.activity === 2) {
+        const obj: UploadPhotoResultDTO[] = JSON.parse(notification.payload);
+        this.duplicates = obj;
       }
     });
   }
@@ -288,6 +317,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.shared.foundPhotos = p;
         this.shared.searchCriteria = this.searchCriteria;
         this.searchCriteria = '';
+        this.router.navigate(['main/photos']);
       },
       error => this.notifier.notify('error', 'Error find photos')
     );
@@ -314,6 +344,30 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.searchSuggestionsEmpty = false;
       }
     });
+  }
+
+  openModal(id: number) {
+    this.duplicatesEntry.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      DuplicatesModalComponent
+    );
+    const componentRef = this.duplicatesEntry.createComponent(factory);
+    componentRef.instance.receivedDuplicates = this.duplicates;
+    componentRef.instance.Change.subscribe(data => {
+      this.deleteDuplicatesHandler(data);
+    });
+    this.sendDelete(id);
+    this.notification = this.notification.filter(i => i.id !== id);
+    this.checkNotification(this.notification);
+  }
+
+  modalHandler(event) {
+    // this.openModal();
+  }
+
+  markRead(id: number) {
+    this.notification.find(i => i.id === id).isRead = true;
+    this.checkNotification(this.notification);
   }
 
   openModalClicked() {

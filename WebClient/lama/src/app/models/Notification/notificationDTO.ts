@@ -6,4 +6,6 @@ export interface NotificationDTO {
   date: Date;
   isRead: boolean;
   sender: NotificationUserDTO;
+  activity: number;
+  payload: string;
 }

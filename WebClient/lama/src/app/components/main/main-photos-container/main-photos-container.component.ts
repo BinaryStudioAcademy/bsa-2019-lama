@@ -6,7 +6,8 @@ import {
   ViewContainerRef,
   ViewChild,
   DoCheck,
-  OnDestroy
+  OnDestroy,
+  HostListener
 } from '@angular/core';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
@@ -43,7 +44,9 @@ export class MainPhotosContainerComponent
   isHaveAnyPhotos = false;
   duplicatesFound = false;
   numberLoadPhoto = 30;
+  currentPhotoIndex: number;
   unsubscribe = new Subject();
+  shared: SharedService;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -53,13 +56,14 @@ export class MainPhotosContainerComponent
   constructor(
     private resolver: ComponentFactoryResolver,
     private fileService: FileService,
-    private shared: SharedService,
+    shared: SharedService,
     private favoriteService: FavoriteService,
     private zipService: ZipService,
     private userService: UserService,
     private notifier: NotifierService
   ) {
     this.favorites = new Set<number>();
+    this.shared = shared;
   }
 
   async ngOnInit() {
@@ -118,6 +122,14 @@ export class MainPhotosContainerComponent
   }
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
+    if (
+      this.shared.isSearchTriggered &&
+      this.shared.isSearchTriggeredAtLeastOnce
+    ) {
+      this.photos = this.shared.foundPhotos;
+      this.showSpinner = false;
+      return;
+    }
     if (startId === 0) {
       this.isNothingFound = false;
       this.shared.isSearchTriggeredAtLeastOnce = false;
@@ -163,6 +175,12 @@ export class MainPhotosContainerComponent
       this.shared.photos.forEach(element => {
         this.photos.unshift(element);
       });
+    }
+    if (this.shared.deletedPhotos) {
+      this.shared.deletedPhotos.forEach(item => {
+        this.photos = this.photos.filter(i => i.id !== item);
+      });
+      this.shared.deletedPhotos = [];
     }
     if (this.shared.foundPhotos.length !== 0 && this.shared.isSearchTriggered) {
       this.photos = this.shared.foundPhotos;
@@ -217,10 +235,13 @@ export class MainPhotosContainerComponent
   }
 
   photoClicked(eventArgs: PhotoRaw) {
+    this.currentPhotoIndex = this.photos.indexOf(eventArgs);
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
+    componentRef.instance.currentIndex = this.currentPhotoIndex;
+    componentRef.instance.photosArrayLength = this.photos.length;
     componentRef.instance.deletePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(this.deletePhotoHandler.bind(this));
@@ -228,10 +249,29 @@ export class MainPhotosContainerComponent
     componentRef.instance.updatePhotoEvent
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(this.updatePhotoHandler.bind(this));
+    componentRef.instance.changePhotoEvent
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(this.changePhotoHandler.bind(this));
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
     this.photos = this.photos.filter(p => p.id !== photoToDeleteId);
+  }
+
+  changePhotoHandler(isNext: boolean) {
+    if (isNext) {
+      this.currentPhotoIndex++;
+    } else {
+      this.currentPhotoIndex--;
+    }
+    this.photoClicked(this.photos[this.currentPhotoIndex]);
+    if (this.currentPhotoIndex === this.photos.length - 2) {
+      this.GetUserPhotosRange(
+        this.currentUser.id,
+        this.photos.length,
+        this.numberLoadPhoto
+      );
+    }
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -247,23 +287,41 @@ export class MainPhotosContainerComponent
     this.photos[index] = Object.assign({}, updatedPhoto);
   }
 
-  private deleteImages(): void {
-    this.selectedPhotos.forEach(element => {
-      this.fileService
-        .markPhotoAsDeleted(element.id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          res => {
-            this.deletePhotoHandler(element.id);
-          },
-          error => this.notifier.notify('error', 'Error deleting images')
-        );
-    });
-    this.selectedPhotos = [];
+  deleteImages(): void {
+    if (this.isAtLeastOnePhotoSelected) {
+      this.selectedPhotos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+      this.selectedPhotos = [];
+    } else {
+      this.photos.forEach(element => {
+        this.fileService
+          .markPhotoAsDeleted(element.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            res => {
+              this.deletePhotoHandler(element.id);
+            },
+            error => this.notifier.notify('error', 'Error deleting images')
+          );
+      });
+    }
   }
 
   downloadImages() {
-    this.zipService.downloadImages(this.selectedPhotos);
+    if (this.isAtLeastOnePhotoSelected) {
+      this.zipService.downloadImages(this.selectedPhotos);
+    } else {
+      this.zipService.downloadImages(this.photos);
+    }
   }
 
   findDuplicates() {
@@ -288,6 +346,18 @@ export class MainPhotosContainerComponent
       this.photos.length,
       this.numberLoadPhoto
     );
+  }
+
+  handleDropdownDisplay(dropDown: HTMLElement) {
+    dropDown.style.display = dropDown.style.display
+      ? dropDown.style.display === 'none'
+        ? 'block'
+        : 'none'
+      : 'block';
+  }
+
+  handleDropdownOutsideClick(dropDown: HTMLElement) {
+    dropDown.style.display = 'none';
   }
 
   ngOnDestroy(): void {

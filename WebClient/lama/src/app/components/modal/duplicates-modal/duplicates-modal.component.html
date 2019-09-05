@@ -3,12 +3,16 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Duplicates found</p>
-      <button (click)="toggleModal()" class="delete" aria-label="close"></button>
+      <button
+        (click)="toggleModal()"
+        class="delete"
+        aria-label="close"
+      ></button>
     </header>
     <section class="modal-card-body">
       <div *ngFor="let photo of duplicatesUrls; let i = index">
         <div class="uploaded-image">
-          <img src="{{ photo }}" class="image"/>
+          <img src="{{ photo }}" class="image" />
         </div>
       </div>
       <!-- Content ... -->

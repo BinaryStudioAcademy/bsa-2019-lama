@@ -70,7 +70,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
   @Input()
   public isShown: boolean;
-  albumsTitles: string[];
+  albumsTitles = new Array<string>();
   unsubscribe = new Subject();
 
   constructor(

@@ -2,150 +2,170 @@ $tabs-toggle-link-active-background-color: #00d1b2
 $tabs-toggle-link-active-border-color: #00d1b2
 $tabs-toggle-link-active-color: #fff
 
-.is-no-flex
-    flex: none
 
-.action-buttons
-    color: white
-    display: flex
-    flex-direction: column
-    & a
-        margin-top: 15px
-
-.photo-container
-    height: 500px
-    background: lavender
-    padding: 0
-
-.right-panel
-    padding-top: 0
-    padding-bottom: 0
-
-.edit-container
+.modal-content
+    max-width: 100%
+    max-height: 100%
     width: 100%
+    height: 100%
+    overflow-x: hidden
+    overflow-y: hidden
+    .container
+        width: 100%
+        max-width: 100%
+        margin: 0
+        height: 100%
+
+.main-container
+    height: 100%
+    display: flex
+
+.main-photo-area
+    height: 100%
+    width: 75%
+    position: relative
+    background: white
+
+.photo-info-area
+    width: 25%
+    position: relative
+    background: white
+    border-left: 1px solid lightgray
+    padding: 10px    
+
+.overlay 
+    position: absolute
+    top: 0
+    color: white
+    width: 100%
+    background-image: linear-gradient(0deg,rgba(0,0,0,0),rgba(0,0,0,0.5))
+    height: 50px
+    text-shadow: 0 0 2px #000
+    i
+        font-size: 28px
+        color: white
+        text-align: center
+        width: 28px
+
+.overlay-items
+    position: absolute
+    right: 0
+    top: 0
+    width: 9%
+    height: 100%
+    display: flex
+    justify-content: space-between
+
+.back-icon
+    height: 50px
+    width: 50px
+    border-radius: 50% 
+    cursor: pointer
+    position: absolute
+    left: 0
+    top: 0
+    height: 100%
+    margin-left: 10px
+    display: flex
+    align-items: center
+    justify-content: center
+    span
+        height: 100%
+    &:hover 
+        background: #00000017
+
+.overlay-item
+    height: 50px
+    width: 50px
+    border-radius: 50% 
+    display: flex !important
+    align-items: center
+    justify-content: center
+    cursor: pointer
+    & div
+        height: 28px
+    &:hover 
+        background: #00000017
+
+.main-photo
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  width: auto
+  height: 100%
+
+.photo
+    display: flex
+    align-items: center    
+    flex-direction: column
+    width: 100%
+    justify-content: center
+
+.photo img
+    width: auto !important
+
+.action-icons
     display: flex
     flex-direction: column
     align-items: center
-
-summary
-    background-color: lavender
-    padding: 10px
-    color: black
-    cursor: pointer
+    .rotate
+        display: flex
+        flex-direction: row
+    .flip
+        display: flex
+        flex-direction: row
+    .size-info
+        display: flex
+        flex-direction: column
+        span
+            margin: 10px 0
+            font-size: 18px
+    .icon
+        width: 70px
+        height: 70px
+        border-radius: 50% 
+        margin: 10px
+        cursor: pointer
+        background: #00d1b2
+        color: white
 
 .memeArea
     position: relative
     width: fit-content
     height: fit-content
-    max-height: 85%
     margin: auto
-
-.memeArea textarea 
-    position: absolute
-    resize: none
-    width: 90%
-    z-index: 2
-    margin: auto
-    font-size: 25px
-    text-align: center
-    text-transform: uppercase
-    font-weight: bold
-    padding: 5px
-    background-color: transparent
-    right: 0
-    left: 0
-
-.memeArea .upTextArea
-    top: 20px
-
-.memeArea .downTextArea
-    bottom: 30px
-
-details
-    background-color: transparent
-    .drop-content
-        padding: 10px        
-        button:hover
-            color: #00ffd9
-        table
-            width: 100%
-            td 
-                text-align: center
-            
-
-.menu 
-    opacity: 0.85
-    background: rgba(0, 0, 0, 0.5)
-    background-image: linear-gradient(rgba(45,45,45,0.5), rgba(45,45,45,1))
-    color: #f1f1f1
-    transition: .5s ease
-    font-size: 20px
-    padding: 20px
-    text-align: center
-    
-    .columns
-        margin: -20px
-
-        .column:hover
-            color: #00d1b2
-            opacity: 1
-            cursor: pointer
-            -webkit-box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)
-            -moz-box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)
-            box-shadow: inset -0px -15px 30px 0px rgba(0,0,0,0.75)
-
-.right-panel
-    height: 100vh
-
-.source-image
-    min-width: 100%
-
-.photo-container
-    height: 100vh
-
-.overlay
-   background: #f5f5f5
-   opacity: 0.95
-   width: 100%
-   z-index: 1
-   margin-bottom: 0
-
-.memeArea img
-    max-width: 100%
-    max-height: 100%
-    margin: auto
-    display: block
-
-.overlay .columns
-    margin: 0
-
-.overlay .overlay-item
-    padding: 5px
+    textarea 
+        position: absolute
+        resize: none
+        width: 90%
+        z-index: 2
+        margin: auto
+        font-size: 25px
+        text-align: center
+        text-transform: uppercase
+        font-weight: bold
+        padding: 5px
+        background-color: transparent
+        right: 0
+        left: 0
+    .upTextArea
+        top: 20px
+    .downTextArea
+        bottom: 30px
+    img
+        max-width: 100%
+        max-height: 100%
+        margin: auto
+        display: block
 
 image-cropper
     margin: auto
 
-.is-text
-    text-decoration: none
-    margin-left: 15px
-
 .tabs
-    width: 120%
-
-input[type="color"]
-    width: 32px
-    height: 32px
-    border-radius: 100%
-   
-.right-panel .columns
-    margin: auto
-    padding: 15px
-
-.right-panel .button
     width: 100%
 
-input[type="color"]::-webkit-color-swatch-wrapper
-    padding: 0
-
-input[type="color"]::-webkit-color-swatch
-    border: none
+.input-color
+    width: 100px
+    height: 40px
+    margin-bottom: 10px

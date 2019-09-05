@@ -29,8 +29,9 @@ namespace Lama.Controllers
             _userProtectionService = userProtectionService;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<Album> GetSharedPhoto(int id)
+        public async Task<ReturnAlbumDTO> GetSharedPhoto(int id)
         {
             return await _sharingAlbumService.Get(id);
         }
