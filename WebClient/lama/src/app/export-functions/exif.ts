@@ -34,7 +34,7 @@ export function getShortAddress(adress) {
       }
     }
     if (Country !== undefined && City !== undefined) {
-      address = Country + ' ' + City;
+      address = Country + ',' + City;
     }
     if (Country === undefined && City !== undefined) {
       address = City;
