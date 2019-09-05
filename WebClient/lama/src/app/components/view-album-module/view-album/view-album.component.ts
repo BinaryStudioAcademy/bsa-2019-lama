@@ -87,15 +87,17 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       this.isShared = true;
     }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId)
+    this.httpService
+      .getData('users/' + userId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      u => {
-        this.currentUser = u;
-      },
-      error => this.notifier.notify('error', 'Error loading user')
-    );
+        u => {
+          this.currentUser = u;
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
     this.selectedPhotos = [];
+    this.AlbumId = this.album.id;
     if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
       this.albumService
         .getAlbum(this.AlbumId)
@@ -155,10 +157,13 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   photoClicked(eventArgs: PhotoRaw) {
+    this.currentPhotoIndex = this.album.photoAlbums.indexOf(eventArgs);
     this.modalPhotoEntry.clear();
     const factory = this.resolver.resolveComponentFactory(PhotoModalComponent);
     const componentRef = this.modalPhotoEntry.createComponent(factory);
     componentRef.instance.photo = eventArgs;
+    componentRef.instance.currentIndex = this.currentPhotoIndex;
+    componentRef.instance.photosArrayLength = this.album.photoAlbums.length;
     componentRef.instance.deletePhotoEvent.subscribe(
       this.deletePhotoHandler.bind(this)
     );
@@ -169,7 +174,6 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.changePhotoEvent.subscribe(bool => {
       this.changePhotoHandler(bool);
     });
-    this.currentPhotoIndex = this.album.photoAlbums.indexOf(eventArgs);
   }
 
   deletePhotoHandler(photoToDeleteId: number) {
