@@ -76,12 +76,6 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
           .subscribe(url => this.sharedAlbumCover.push(url));
       });
     }
-    if (this.album.photo) {
-      this.fileService
-        .getPhoto(this.album.photo.blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.imageUrl = url));
-    }
     if (this.album.id === -1) {
       this.isFake = true;
     }
