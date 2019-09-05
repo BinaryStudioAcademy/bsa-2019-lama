@@ -11,7 +11,6 @@ namespace Lama.Domain.DbModels
             Categories = new HashSet<Category>();
             Notifications = new HashSet<Notification>();
             SearchHistories = new HashSet<SearchHistory>();
-            Locations = new HashSet<Location>();
             Likes = new HashSet<Like>();
             Comments = new HashSet<Comment>();
             Favorites = new HashSet<Favorite>();
@@ -33,8 +32,6 @@ namespace Lama.Domain.DbModels
         public ICollection<Notification> Notifications { get; set; }
         [JsonIgnore]
         public ICollection<SearchHistory> SearchHistories { get; set; }
-        [JsonIgnore]
-        public ICollection<Location> Locations { get; set; }
         [JsonIgnore]
         public ICollection<Like> Likes { get; set; }
         [JsonIgnore]

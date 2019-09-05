@@ -11,6 +11,13 @@ import {
 import { MapsAPILoader, MouseEvent } from '@agm/core';
 import { PhotoRaw } from 'src/app/models';
 import { NewLocation } from 'src/app/models/Photo/NewLocation';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude,
+  getFormattedAdress,
+  getShortAddress
+} from 'src/app/export-functions/exif';
 
 @Component({
   selector: 'app-google-map',
@@ -23,6 +30,7 @@ export class GoogleMapComponent implements OnInit {
   zoom: number;
   checkForm = true;
   address: string;
+  shortAddress: string;
   private geoCoder;
   displaymap = false;
   @Output() Deletelocation = new EventEmitter();
@@ -57,8 +65,8 @@ export class GoogleMapComponent implements OnInit {
           this.displaymap = true;
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
           this.address = place.formatted_address;
+          this.shortAddress = getShortAddress(place);
           // verify result
-
           this.checkForm = true;
           if (place.geometry === undefined || place.geometry === null) {
             return;
@@ -102,7 +110,8 @@ export class GoogleMapComponent implements OnInit {
     const newLoc: NewLocation = {
       id: this.photo.id,
       location: this.address,
-      coordinates: `${this.latitude},${this.longitude}`
+      coordinates: `${this.latitude},${this.longitude}`,
+      shortLocation: this.shortAddress
     };
     this.checkForm = true;
     this.Updatelocation.emit(newLoc);
@@ -119,6 +128,7 @@ export class GoogleMapComponent implements OnInit {
           if (results[0]) {
             this.zoom = 12;
             this.address = results[0].formatted_address;
+            this.shortAddress = getShortAddress(results[0]);
           } else {
             window.alert('No results found');
           }

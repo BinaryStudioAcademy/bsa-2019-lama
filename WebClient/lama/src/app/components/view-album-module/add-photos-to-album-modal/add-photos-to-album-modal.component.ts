@@ -23,18 +23,27 @@ import { AlbumExistPhotos } from 'src/app/models/Album/AlbumExistPhotos';
 import { AlbumNewPhotos } from 'src/app/models/Album/AlbumNewPhotos';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude,
+  getShortAddress,
+  getFormattedAdress
+} from 'src/app/export-functions/exif';
+import { MapsAPILoader } from '@agm/core';
 
 @Component({
   selector: 'app-add-photos-to-album-modal',
   templateUrl: './add-photos-to-album-modal.component.html',
   styleUrls: ['./add-photos-to-album-modal.component.sass']
 })
-export class AddPhotosToAlbumModalComponent implements OnDestroy {
+export class AddPhotosToAlbumModalComponent implements OnInit, OnDestroy {
   constructor(
     private resolver: ComponentFactoryResolver,
     private notifier: NotifierService,
     private albumService: AlbumService,
-    private fileService: FileService
+    private fileService: FileService,
+    private mapsAPILoader: MapsAPILoader
   ) {
     this.isShown = true;
   }
@@ -50,7 +59,7 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
 
   photos: Photo[] = [];
   imageUrl: string;
-
+  geoCoder;
   ExistPhotosId: number[] = [];
 
   AlbumExistPhotos: AlbumExistPhotos;
@@ -71,6 +80,11 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
   unsubscribe = new Subject();
   photoAlbums: PhotoRaw[] = [];
 
+  ngOnInit() {
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
+  }
   handleDragEnter() {
     this.dragging = true;
   }
@@ -103,6 +117,8 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
       this.loaded = false;
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
+        const latitude = getLatitude(exifObj);
+        const longitude = getLongitude(exifObj);
         const d = dump(exifObj);
         const compressedFile = await imageCompression(
           file,
@@ -111,7 +127,24 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
         const base64 = await this.toBase64(compressedFile);
         remove(base64);
         const modifiedObject = insert(d, base64);
-        this.photos.push({ imageUrl: modifiedObject, filename: file.name });
+        if (latitude && longitude) {
+          getLocation(latitude, longitude, this.geoCoder).then(location => {
+            const address = getFormattedAdress(location);
+            const shortname = getShortAddress(location);
+            this.photos.push({
+              imageUrl: modifiedObject,
+              filename: file.name,
+              location: address,
+              coordinates: latitude + ',' + longitude,
+              shortLocation: shortname
+            });
+          });
+        } else {
+          this.photos.push({
+            imageUrl: modifiedObject,
+            filename: file.name
+          });
+        }
       } else {
         const compressedFile = await imageCompression(
           file,
@@ -159,9 +192,9 @@ export class AddPhotosToAlbumModalComponent implements OnDestroy {
         .getPhoto(photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => {
-        this.photos.push({ imageUrl: url, description: photo.description });
-        this.ExistPhotos.push(photo);
-      });
+          this.photos.push({ imageUrl: url, description: photo.description });
+          this.ExistPhotos.push(photo);
+        });
     } else {
       this.ExistPhotosId = this.ExistPhotosId.filter(x => x !== photo.id);
       this.ExistPhotos = this.ExistPhotos.filter(x => x.id !== photo.id);

@@ -40,10 +40,11 @@ namespace Lama.Infrastructure
         }
         public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<UserService>();
-            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(f.GetService<ApplicationDbContext>(),configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(),f.GetService<INotificationService>(), f.GetService<IHubContext<NotificationHub>>()));
-            services.AddScoped<IPhotoDetailsService, PhotoDetailsService>(f => new PhotoDetailsService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>()));
+            services.AddScoped<IPhotoService, PhotoService>(f => new PhotoService(f.GetService<ApplicationDbContext>(),configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(),f.GetService<INotificationService>(), f.GetService<ILocationService>(),f.GetService<IHubContext<NotificationHub>>()));
+            services.AddScoped<IPhotoDetailsService, PhotoDetailsService>(f => new PhotoDetailsService(configuration["PhotoApiUrl"], f.GetRequiredService<IUnitOfWork>(), f.GetService<IMapper>(), f.GetService<ApplicationDbContext>(), f.GetService<ILocationService>()));
             services.AddScoped<IAlbumService, AlbumService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICommentService, CommentService>();

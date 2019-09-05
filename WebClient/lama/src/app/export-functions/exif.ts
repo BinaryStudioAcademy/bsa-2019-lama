@@ -1,12 +1,11 @@
-export function getLocation(latitude, longitude, geoCoder): Promise<string> {
+export function getLocation(latitude, longitude, geoCoder) {
   return new Promise((resolve, reject) => {
     return geoCoder.geocode(
       { location: { lat: latitude, lng: longitude } },
       (results, status) => {
         if (status === 'OK') {
           if (results[0]) {
-            const address = results[0].formatted_address;
-            console.log(address);
+            const address = results[0];
             resolve(address);
           } else {
             console.log('No results found');
@@ -17,6 +16,36 @@ export function getLocation(latitude, longitude, geoCoder): Promise<string> {
       }
     );
   });
+}
+export function getFormattedAdress(adress) {
+  return adress.formatted_address;
+}
+export function getShortAddress(adress) {
+  if (adress) {
+    let Country;
+    let City;
+    let address;
+    for (const firstEl of adress.address_components) {
+      if (firstEl.types[0] === 'country') {
+        Country = firstEl.long_name;
+      }
+      if (firstEl.types[0] === 'locality') {
+        City = firstEl.long_name;
+      }
+    }
+    if (Country !== undefined && City !== undefined) {
+      address = Country + ',' + City;
+    }
+    if (Country === undefined && City !== undefined) {
+      address = City;
+    }
+    if (Country !== undefined && City === undefined) {
+      address = Country;
+    }
+    return address;
+  } else {
+    console.log('No results found');
+  }
 }
 
 export function getLatitude(exifObj): number {
