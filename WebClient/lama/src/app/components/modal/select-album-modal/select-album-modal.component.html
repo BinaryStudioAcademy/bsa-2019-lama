@@ -1,0 +1,30 @@
+<div class="modal" [class.is-active]="isActive">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Choose album</p>
+      <button
+        class="delete"
+        aria-label="close"
+        (click)="toggleModal()"
+      ></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="items-container-centered height">
+        <div *ngFor="let item of albums" class="has-text-centered photo">
+          <app-album-item
+            [_album]="item"
+            [currentUser]="currentUser"
+            (Click)="clickPerformed($event)"
+            [isSelected]="selectedAlbum?.id == item.id"
+          >
+          </app-album-item>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot foot size buttons is-right">
+      <a class="button is-primary" (click)="saveChanges()">Add to album</a>
+    </footer>
+  </div>
+</div>
+<notifier-container></notifier-container>

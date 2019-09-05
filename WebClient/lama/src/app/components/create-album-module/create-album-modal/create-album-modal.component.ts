@@ -24,13 +24,20 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import {
+  getLocation,
+  getLatitude,
+  getLongitude,
+  getShortAddress,
+  getFormattedAdress
+} from 'src/app/export-functions/exif';
+import { MapsAPILoader } from '@agm/core';
 
 @Component({
   selector: 'app-create-album-modal',
   templateUrl: './create-album-modal.component.html',
   styleUrls: ['./create-album-modal.component.sass']
 })
-
 export class CreateAlbumModalComponent implements OnInit, OnDestroy {
   @ViewChild('ChoosePhotos', { static: true, read: ViewContainerRef })
   private entry: ViewContainerRef;
@@ -48,7 +55,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
   albumName = '';
   checkForm = true;
-
+  geoCoder;
   activeColor = '#00d1b2';
   overlayColor = 'rgba(255,255,255,0.5)';
   dragging = false;
@@ -77,13 +84,18 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
     resolver: ComponentFactoryResolver,
     private albumService: AlbumService,
     private fileService: FileService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private mapsAPILoader: MapsAPILoader
   ) {
     this.isShown = true;
     this.resolver = resolver;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.mapsAPILoader.load().then(() => {
+      this.geoCoder = new google.maps.Geocoder();
+    });
+  }
 
   handleDragEnter() {
     this.dragging = true;
@@ -116,6 +128,8 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
         const d = dump(exifObj);
+        const latitude = getLatitude(exifObj);
+        const longitude = getLongitude(exifObj);
         const compressedFile = await imageCompression(
           file,
           environment.compressionOptions
@@ -123,7 +137,25 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
         const base64 = await this.toBase64(compressedFile);
         remove(base64);
         const modifiedObject = insert(d, base64);
-        this.photos.push({ imageUrl: modifiedObject, filename: file.name });
+
+        if (latitude && longitude) {
+          getLocation(latitude, longitude, this.geoCoder).then(location => {
+            const address = getFormattedAdress(location);
+            const shortname = getShortAddress(location);
+            this.photos.push({
+              imageUrl: modifiedObject,
+              filename: file.name,
+              location: address,
+              coordinates: latitude + ',' + longitude,
+              shortLocation: shortname
+            });
+          });
+        } else {
+          this.photos.push({
+            imageUrl: modifiedObject,
+            filename: file.name
+          });
+        }
       } else {
         const compressedFile = await imageCompression(
           file,
@@ -155,6 +187,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       this.isUniqueName = false;
       this.checkForm = false;
     } else {
+      this.loaded = false;
       if (this.photos.length === 0) {
         this.album = {
           title: this.albumName,
@@ -218,7 +251,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
         this.albumWithExistPhotos = {
           title: this.albumName,
           photosId: this.ExistPhotosId,
-          authorId: this.currentUser.id,
+          authorId: this.currentUser.id
         };
         this.albumService
           .createAlbumWithExistPhotos(this.albumWithExistPhotos)
@@ -266,6 +299,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
   toggleModal() {
     this.isShown = false;
+    this.loaded = true;
   }
 
   ChoosePhoto() {

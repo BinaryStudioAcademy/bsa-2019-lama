@@ -1,0 +1,12 @@
+<a class="link_album">
+  <div
+    class="image is-128x128"
+    [style.border]="isSelected ? '5px solid #00d1b2' : 'none'"
+  >
+    <img src="{{ imageUrl || imgname }}" (click)="clickPerformed()" />
+  </div>
+  <div class="description has-text-centered">
+    <p>{{ album.title }}</p>
+  </div>
+  <notifier-container></notifier-container>
+</a>

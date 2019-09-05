@@ -30,7 +30,8 @@ namespace Lama.BusinessLogic.Services
         private IUnitOfWork _context;
         IConfiguration configuration;
         private readonly IMapper _mapper;
-        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context, IMapper _mapper)
+        ILocationService locationService;
+        public AlbumService(ApplicationDbContext Context, IConfiguration configuration, IPhotoService _photoService, IUnitOfWork context, IMapper _mapper, ILocationService locationService)
             : base(Context)
         {
             this._photoService = _photoService;
@@ -38,6 +39,7 @@ namespace Lama.BusinessLogic.Services
             this.configuration = configuration;
             this._context = context;
             this._mapper = _mapper;
+            this.locationService = locationService;
         }
 
         public async Task UpdateAlbum(UpdateAlbumDTO album)
@@ -143,9 +145,15 @@ namespace Lama.BusinessLogic.Services
 
             Photo[] savedPhotos = new Photo[PhotosAlbum.Length];
             var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newPhotosAlbum.UserId);
-            for (int i = 0; i < PhotosAlbum.Length; ++i)
+            for (int i = 0; i < PhotosAlbum.Length; i++)
             {
-                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(new Photo() {User = user });
+                var photo = new Photo();
+                photo.User = user;
+                if (PhotosAlbum[i].ShortLocation != null)
+                {
+                    photo.LocationId = await locationService.CheckAdrress(PhotosAlbum[i].ShortLocation);
+                }
+                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
             }
             await _context.SaveAsync();
 
@@ -159,7 +167,9 @@ namespace Lama.BusinessLogic.Services
                     AuthorId = newPhotosAlbum.UserId,
                     ImageUrl = PhotosAlbum[i].ImageUrl,
                     Description = PhotosAlbum[i].Description,
-                    FileName = PhotosAlbum[i].FileName
+                    FileName = PhotosAlbum[i].FileName,
+                    Location = PhotosAlbum[i].Location,
+                    Coordinates = PhotosAlbum[i].Coordinates
                 };
             }
 
@@ -212,7 +222,13 @@ namespace Lama.BusinessLogic.Services
 
             for (var i = 0; i < PhotosAlbum.Length; ++i)
             {
-                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(new Photo() { User = user});
+                var photo = new Photo();
+                photo.User = user;
+                if (PhotosAlbum[i].ShortLocation != null)
+                {
+                    photo.LocationId = await locationService.CheckAdrress(PhotosAlbum[i].ShortLocation);
+                }
+                savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
             }
             await _context.SaveAsync();
 
@@ -227,7 +243,9 @@ namespace Lama.BusinessLogic.Services
                     AuthorId = user.Id,
                     ImageUrl = PhotosAlbum[i].ImageUrl,
                     Description = PhotosAlbum[i].Description,
-                    FileName = PhotosAlbum[i].FileName
+                    FileName = PhotosAlbum[i].FileName,
+                    Location = PhotosAlbum[i].Location,
+                    Coordinates = PhotosAlbum[i].Coordinates
                 };
             }
             
