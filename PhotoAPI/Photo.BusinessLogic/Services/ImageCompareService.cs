@@ -25,10 +25,13 @@ namespace Photo.BusinessLogic.Services
 
             foreach (var hashCompareWith in _hashLib)
             {
+                if (hashCompareWith == null)
+                {
+                    continue;
+                }
+
                 try
                 {
-
-
                     if (hash.CompareWith(hashCompareWith) >= minSimilarity)
                     {
                         if (!alreadyMarkedAsDupl.Contains(hash))

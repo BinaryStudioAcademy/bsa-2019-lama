@@ -20,17 +20,19 @@ namespace Lama.BusinessLogic.Services
     public class SharingAlbumService : BaseService<Album>
     {
         private IPhotoService _photoService;
+        private IAlbumService albumService;
         private IMapper _mapper;
-        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper)
+        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper, IAlbumService albumService)
             : base(context)
         {
             this._photoService = photoService;
             this._mapper = mapper;
+			this.albumService = albumService;
         }
 
-        public async Task<Album> Get(int id)
+        public async Task<ReturnAlbumDTO> Get(int id)
         {
-            throw new System.NotImplementedException();
+            return await albumService.FindAlbum(id);
         }
 
         public async Task<IEnumerable<ReturnAlbumDTO>> GetSharedAlbums(int userId)
