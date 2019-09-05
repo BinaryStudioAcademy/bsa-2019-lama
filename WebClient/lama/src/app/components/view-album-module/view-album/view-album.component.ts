@@ -8,9 +8,7 @@ import {
   DoCheck,
   OnDestroy
 } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Album } from 'src/app/models/Album/album';
 import { Photo, PhotoRaw } from 'src/app/models';
 import { PhotoRawState } from 'src/app/models/Photo/photoRawState';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
@@ -97,7 +95,11 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading user')
       );
     this.selectedPhotos = [];
-    this.AlbumId = this.album.id;
+    if (this.album.id) {
+      this.AlbumId = this.album.id;
+    } else {
+      this.AlbumId = parseInt(this.router.url.slice(this.router.url.lastIndexOf('/') + 1), 10);
+    }
     if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
       this.albumService
         .getAlbum(this.AlbumId)
