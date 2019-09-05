@@ -117,6 +117,7 @@ namespace Processors.BusinessLogic.Services
                     }
                 }
             }
+            
             var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
             _producer.Send(bytes);
         }

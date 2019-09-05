@@ -179,6 +179,7 @@
         *ngIf="item.activity !== 2"
         (id)="sendIsRead($event)"
         (deleteId)="sendDelete($event)"
+        (click)="openPhoto(photo)"
         [notification]="item"
       ></app-main-notification>
       <app-main-notification
@@ -201,4 +202,5 @@
 </aside>
 <template #photoUploadModal></template>
 <template #duplicatesModal></template>
+<template #modalPhotoContainer></template>
 <notifier-container></notifier-container>
