@@ -33,6 +33,7 @@ namespace Lama.BusinessLogic.Services
         readonly INotificationService notificationService;
         readonly ApplicationDbContext Context;
         ILocationService locationService;
+        private readonly IHubContext<NotificationHub> _hub;
         public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService,ILocationService locationService, IHubContext<NotificationHub> hub)
         {
             this.url = url;

@@ -62,7 +62,7 @@ export class ViewLocationComponent implements OnInit, OnDestroy, DoCheck {
           this.album = this.router.getCurrentNavigation().extras.state.album;
           this.loading = true;
         } else {
-          const id = this.AlbumName.indexOf(',');
+          const id = this.AlbumName.indexOf(' ');
           if (id === -1) {
             this.albumCities = true;
           }
