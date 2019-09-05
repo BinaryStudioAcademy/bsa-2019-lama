@@ -1,70 +1,67 @@
 <div class="navigation">
-  <div class="dropdown is-hoverable">
-
-    <div class="dropdown-trigger">
-      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+    <div class="dropdown">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" (click)="handleDropdownDisplay(dropdownMenu)" (focusout)="handleDropdownOutsideClick(dropdownMenu)">
         <span>Options</span>
         <span class="icon is-small">
           <i class="fa fa-angle-down" aria-hidden="true"></i>
         </span>
       </button>
+        </div>
+        <div #dropdownMenu class="dropdown-menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item" *ngIf="
+            album?.photoAlbums?.length &&
+            !isShared &&
+            !this.isAtLeastOnePhotoSelected
+          " (mousedown)="showSharedModal = true">
+                    <p>Share</p>
+                </div>
+                <div class="dropdown-item" *ngIf="
+            album?.photoAlbums?.length &&
+            !isShared &&
+            !this.isAtLeastOnePhotoSelected
+          " (mousedown)="showSetCoverModal = true">
+                    <p>Set Cover</p>
+                </div>
+                <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isShared" (mousedown)="addPhoto($event)">
+                    <p>Add photos</p>
+                </div>
+                <div class="dropdown-item" (mousedown)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
+                    <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+                </div>
+                <div class="dropdown-item" (mousedown)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">
+                    <p>Save<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+                </div>
+                <div class="dropdown-item" (mousedown)="downloadImages()" *ngIf="album?.photoAlbums?.length">
+                    <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-      <div class="dropdown-content">
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared && !this.isAtLeastOnePhotoSelected" (click)="showSharedModal = true">
-          <p>Share</p>
-        </div>
-        <div class="dropdown-item" *ngIf="album?.photoAlbums?.length && !isShared && !this.isAtLeastOnePhotoSelected" (click)="showSetCoverModal = true">
-          <p>Set Cover</p>
-        </div>
-        <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isShared" (click)="addPhoto($event)">
-          <p>Add photos</p>
-        </div>
-        <div class="dropdown-item" (click)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
-          <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
-        </div>
-        <div class="dropdown-item" (click)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">
-          <p>Save<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
-        </div>
-        <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">
-          <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
-        </div>
-        
-      </div>
-    </div>
-  </div>
 </div>
 <ng-template [ngIf]="isDeleting">
-  <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos"
-    (deleteEvent)="deletePhotosHandler($event)">
-  </app-delete-modal>
+    <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="selectedPhotos" (deleteEvent)="deletePhotosHandler($event)">
+    </app-delete-modal>
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
-  <div class="title">
-    <h2 class="title is-2" *ngIf="!isTitleEdit" (click)="startChangingTitle()">{{ album.title }}</h2>
-    <input class="title is-2" *ngIf="isTitleEdit" [(ngModel)]="album.title" value="{{ album.title }}" (focusout)="changeAlbumName()" autofocus>
-  </div>
-  <div *ngIf="loading" class="items-container-centered">
-    <div *ngFor="let item of album.photoAlbums">
-      <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)"
-        (Select)="photoSelected($event)"></main-photo>
+    <div class="title">
+        <h2 class="title is-2" (focusout)="changeAlbumName()" (input)="album.title = $event.target.textContent" [textContent]="album.title" [(ngModel)]="album.title" contenteditable="true" ngDefaultControl>
+            {{ album.title }}
+        </h2>
     </div>
-  </div>
-  <template #modalPhotoContainer></template>
-  <template #AddPhotosToAlbum></template>
+    <div *ngIf="loading" class="items-container-centered">
+        <div *ngFor="let item of album.photoAlbums">
+            <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)" (Select)="photoSelected($event)"></main-photo>
+        </div>
+    </div>
+    <template #modalPhotoContainer></template>
+    <template #AddPhotosToAlbum></template>
 </div>
 
-<app-set-album-cover-modal
-    [receivedAlbum]="album"
-    [_isFavorite]="isFavorite()"
-    *ngIf="showSetCoverModal"
-    (Close)="showSetCoverModal = false"
-></app-set-album-cover-modal>
+<app-set-album-cover-modal [receivedAlbum]="album" [_isFavorite]="isFavorite()" *ngIf="showSetCoverModal" (Close)="showSetCoverModal = false"></app-set-album-cover-modal>
 
-<app-share-album-by-email
-  [receivedAlbum]="album"
-  *ngIf="showSharedModal"
-  (Close)="showSharedModal = false"
-></app-share-album-by-email>
+<app-share-album-by-email [receivedAlbum]="album" *ngIf="showSharedModal" (Close)="showSharedModal = false">
+</app-share-album-by-email>
 
 <notifier-container></notifier-container>

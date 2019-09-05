@@ -2,6 +2,6 @@
 {
     public interface IMessageService : System.IDisposable
     {
-        System.Threading.Tasks.Task RunAsync(int millisecondsTimeout);
+        void Run();
     }
 }

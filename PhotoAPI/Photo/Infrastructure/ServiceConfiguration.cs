@@ -22,66 +22,71 @@ using QueueConnectionSettings = Services.Models.ConnectionSettings;
 
 namespace Photo.Infrastructure
 {
-    public static class ServicesConfiguration
-    {
-        public static void AddQueueService(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>(
-                f => new DefaultConnectionFactory(configuration.Bind<QueueConnectionSettings>("Queues:ConnectionSettings")));
-            services.AddSingleton<IConnectionProvider, ConnectionProvider>();
-        }
+	public static class ServicesConfiguration
+	{
+		public static void AddQueueService(this IServiceCollection services, IConfiguration configuration)
+		{
+			services.AddSingleton<IConnectionFactory, DefaultConnectionFactory>(
+				f => new DefaultConnectionFactory(configuration.Bind<QueueConnectionSettings>("Queues:ConnectionSettings")));
+			services.AddSingleton<IConnectionProvider, ConnectionProvider>();
+		}
 
-        public static void AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
-        {
-            string url = configuration["elasticsearch:url"];
-            string defaultIndex = configuration["elasticsearch:index"];
-            Uri uri = new Uri(url);
+		public static void AddElasticSearch(this IServiceCollection services, IConfiguration configuration)
+		{
+			string url = configuration["elasticsearch:url"];
+			string defaultIndex = configuration["elasticsearch:index"];
+			Uri uri = new Uri(url);
 
-            NestConnectionSettings settings = new NestConnectionSettings(uri)
-                .DefaultIndex(defaultIndex)
-                .DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));                
-            
-            services.AddSingleton<IElasticClient>(new ElasticClient(settings));
-            services.AddSingleton<IElasticStorage>(f => new ElasticStorage(defaultIndex, f.GetService<IElasticClient>()));
-        }
-        public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddAutoMapper(typeof(PhotoProfile).Assembly);
-        }
+			NestConnectionSettings settings = new NestConnectionSettings(uri)
+				.DefaultIndex(defaultIndex)
+				.DefaultMappingFor<PhotoDocument>(m => m.IdProperty(p => p.Id));
 
-        public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            var blobEndpointUrl =
-                CloudStorageAccount.Parse(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")
-                    .ConnectionString).BlobEndpoint.ToString();
-            services.AddScoped<DuplicatesService>();
-            services.AddScoped<IMessageService, MessageService>(serviceProvider => MessageServiceFactory(serviceProvider, configuration));
+			services.AddSingleton<IElasticClient>(new ElasticClient(settings));
+			services.AddSingleton<IElasticStorage>(f => new ElasticStorage(defaultIndex, f.GetService<IElasticClient>()));
+		}
 
-            services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
-                f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
-            services.AddScoped<ImageCompareService>();
-            services.AddScoped<IPhotoService, PhotoService>(serviceProvider => 
-                new PhotoService(
-                    serviceProvider.GetService<IElasticStorage>(),
-                    serviceProvider.GetService<IPhotoBlobStorage>(),
-                    serviceProvider.GetService<IMessageService>(),
-                    serviceProvider.GetService<IMapper>(),
-                    serviceProvider.GetService<ImageCompareService>(),
-                    blobEndpointUrl));
-           
-        }
-        private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
-        {
-            IConnectionProvider connectionProvider = serviceProvider.GetService<IConnectionProvider>();
+		public static void AddMapper(this IServiceCollection services, IConfiguration configuration)
+		{
+			services.AddAutoMapper(typeof(PhotoProfile).Assembly);
+		}
 
-            MessageServiceSettings messageServiceSettings = new MessageServiceSettings()
-            {
-                PhotoProcessorConsumer = connectionProvider.Connect(configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI")),
-                PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
-                
-            };
+		public static void AddBusinessLogicServices(this IServiceCollection services, IConfiguration configuration)
+		{
+			var blobEndpointUrl =
+				CloudStorageAccount.Parse(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")
+						.ConnectionString)
+					.BlobEndpoint.ToString();
+			services.AddScoped<DuplicatesService>(serviceProvider => new DuplicatesService(
+				serviceProvider.GetService<IElasticStorage>(),
+				serviceProvider.GetService<IMapper>(),
+				configuration));
+			services.AddScoped<IMessageService, MessageService>(serviceProvider => MessageServiceFactory(serviceProvider, configuration));
 
-            return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>());
-        }
-    }
+			services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
+				f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
+			services.AddScoped<ImageCompareService>();
+			services.AddScoped<IPhotoService, PhotoService>(serviceProvider =>
+				new PhotoService(
+					serviceProvider.GetService<IElasticStorage>(),
+					serviceProvider.GetService<IPhotoBlobStorage>(),
+					serviceProvider.GetService<IMessageService>(),
+					serviceProvider.GetService<IMapper>(),
+					serviceProvider.GetService<ImageCompareService>(),
+					blobEndpointUrl,
+					configuration));
+		}
+
+		private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
+		{
+			IConnectionProvider connectionProvider = serviceProvider.GetService<IConnectionProvider>();
+
+			MessageServiceSettings messageServiceSettings = new MessageServiceSettings()
+			{
+				PhotoProcessorConsumer = connectionProvider.Connect(configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI")),
+				PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
+			};
+
+			return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>());
+		}
+	}
 }

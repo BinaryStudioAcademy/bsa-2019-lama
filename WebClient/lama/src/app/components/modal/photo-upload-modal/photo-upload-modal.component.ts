@@ -23,7 +23,9 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
 import {
   getLocation,
   getLatitude,
-  getLongitude
+  getLongitude,
+  getShortAddress,
+  getFormattedAdress
 } from 'src/app/export-functions/exif';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -79,7 +81,8 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
         authorId: parseInt(userId, 10),
         filename: this.photos[i].filename,
         location: this.photos[i].location,
-        coordinates: this.photos[i].coordinates
+        coordinates: this.photos[i].coordinates,
+        shortLocation: this.photos[i].shortLocation
       };
     }
     this.fileService
@@ -149,14 +152,13 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
   async onFileDropped(files: File[]) {
     this.loaded = false;
     this.showSpinner = true;
-    let latitude;
-    let longitude;
+
     for (const file of files) {
       if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         const exifObj = load(await this.toBase64(file));
         const field = 'GPS';
-        latitude = getLatitude(exifObj);
-        longitude = getLongitude(exifObj);
+        const latitude = getLatitude(exifObj);
+        const longitude = getLongitude(exifObj);
         const d = dump(exifObj);
         const compressedFile = await this.ng2ImgToolsService
           .compress([file], environment.compressionOptions.maxSizeMB)
@@ -167,12 +169,14 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
-                this.address = location;
+                this.address = getFormattedAdress(location);
+                const shortname = getShortAddress(location);
                 this.photos.push({
                   imageUrl: modifiedObject,
                   filename: file.name,
                   location: this.address,
-                  coordinates: latitude + ',' + longitude
+                  coordinates: latitude + ',' + longitude,
+                  shortLocation: shortname
                 });
               });
             } else {

@@ -32,8 +32,8 @@ export class EditPhotoComponent {
   colorPicker: string;
   private imageService: FileService;
   showRotateAndCrop = true;
-  showFlip = false;
   showMeme = false;
+  isShown = false;
 
   // properties
   @Input()
@@ -64,6 +64,7 @@ export class EditPhotoComponent {
 
   // constructors
   constructor(imageService: FileService) {
+    this.isShown = true;
     this.imageService = imageService;
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
@@ -121,6 +122,7 @@ export class EditPhotoComponent {
 
   public cancelClickHandler() {
     this.cancelClickedEvent.emit();
+    this.isShown = false;
   }
 
   resetClickHandler() {
@@ -143,7 +145,6 @@ export class EditPhotoComponent {
 
   displayFlip() {
     this.disableAll();
-    this.showFlip = true;
     this.disableMeme();
   }
 
@@ -155,7 +156,6 @@ export class EditPhotoComponent {
 
   disableAll() {
     this.showRotateAndCrop = false;
-    this.showFlip = false;
     this.showMeme = false;
   }
 }

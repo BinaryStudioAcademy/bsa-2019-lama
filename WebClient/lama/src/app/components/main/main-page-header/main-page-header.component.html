@@ -1,6 +1,6 @@
 <header class="navbar is-fixed-top">
   <div class="align-right">
-    <main-left-actions-sidebar style="height: 100%">
+    <main-left-actions-sidebar style="height: 100%" *ngIf="auth.token">
     </main-left-actions-sidebar>
     <div class="logo" routerLink="/main/photos">
       <img src="assets/lama.jpg" />
@@ -8,7 +8,7 @@
     </div>
   </div>
   <!--search-->
-  <div class="search-bar is-hidden-mobile">
+  <div class="search-bar is-hidden-mobile" *ngIf="auth.token">
     <div class="field has-addons">
       <div class="control input-form">
         <input
@@ -121,6 +121,7 @@
 
       <!--upload-->
       <a
+        *ngIf="auth.token"
         (click)="openModalClicked()"
         class="button is-primary is-hidden-mobile add"
       >
@@ -131,7 +132,7 @@
   </div>
 
   <!--profile-->
-  <div class="align-right">
+  <div class="align-right" *ngIf="auth.token">
     <!--notification-->
     <a class="image is-48x48 profile">
       <img
@@ -153,7 +154,11 @@
       }}</span>
     </a>
     <!--log-out-->
-    <a class="logout" (click)="logOut(); $event.preventDefault()">
+    <a
+      class="logout"
+      (click)="logOut(); $event.preventDefault()"
+      *ngIf="auth.token"
+    >
       <i class="fa fa-sign-out"></i>
     </a>
   </div>

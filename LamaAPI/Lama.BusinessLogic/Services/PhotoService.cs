@@ -32,14 +32,16 @@ namespace Lama.BusinessLogic.Services
         private readonly IMapper _mapper;
         readonly INotificationService notificationService;
         readonly ApplicationDbContext Context;
+        ILocationService locationService;
         private readonly IHubContext<NotificationHub> _hub;
-        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService, IHubContext<NotificationHub> hub)
+        public PhotoService(ApplicationDbContext Context, string url, IUnitOfWork context, IMapper _mapper, INotificationService notificationService,ILocationService locationService, IHubContext<NotificationHub> hub)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
             this._mapper = _mapper;
             this.Context = Context;
+            this.locationService = locationService;
             this.notificationService = notificationService;
             _hub = hub;
         }
@@ -153,7 +155,10 @@ namespace Lama.BusinessLogic.Services
                 var user = await _context.GetRepository<User>().GetAsync(photos[i].AuthorId);
                 photo.User = user;
                 photo.UserId = photos[i].AuthorId;
-                //user.Photos.Add(photo);
+                if (photos[i].ShortLocation != null)
+                {
+                    photo.LocationId = await locationService.CheckAdrress(photos[i].ShortLocation);
+                }
                 savedPhotos[i] = await _context.GetRepository<Photo>().InsertAsync(photo);
             }
 
@@ -368,12 +373,27 @@ namespace Lama.BusinessLogic.Services
 
             await httpClient.PostAsync(uri, content);
 
+            Photo haveLocation = null;
+            int LocationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
+                var phot = await Context.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
+                if(phot.LocationId.HasValue)
+                {
+                    LocationId = phot.LocationId.Value;
+                }
                 await _context.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
 
             await _context.SaveAsync();
+            haveLocation = await Context.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
+            if (haveLocation == null)
+            {
+                if (LocationId != 0)
+                {
+                    await locationService.DeleteLocation(LocationId);
+                }
+            }
         }
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)

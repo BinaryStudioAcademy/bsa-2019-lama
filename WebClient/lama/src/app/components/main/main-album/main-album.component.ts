@@ -112,6 +112,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   removeFakeSharedAlbum() {
     this.sharingService
       .deleteSharedPhoto(this.album.photo.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
 

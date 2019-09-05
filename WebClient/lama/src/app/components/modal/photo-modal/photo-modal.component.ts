@@ -30,7 +30,8 @@ import { NotifierService } from 'angular-notifier';
 import {
   getLocation,
   getLatitude,
-  getLongitude
+  getLongitude,
+  getFormattedAdress
 } from 'src/app/export-functions/exif';
 import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
@@ -207,7 +208,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
-      location => (this.address = location)
+      (this.address = getFormattedAdress(location))
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
     this.userService
@@ -242,19 +243,19 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       this.longitude = getLongitude(exifObj);
       if (this.latitude && this.longitude) {
         getLocation(this.latitude, this.longitude, this.geoCoder).then(
-          location => (this.address = location)
+          (this.address = getFormattedAdress(location))
         );
       }
     }
   }
   private initializeMenuItem() {
     this.defaultMenuItem = [
-      { title: 'share', icon: 'share' },
-      { title: 'remove', icon: 'clear' },
-      { title: 'download', icon: 'cloud_download' },
-      { title: 'edit', icon: 'edit' },
-      { title: 'info', icon: 'info' },
-      { title: 'save', icon: 'save' }
+      { title: 'Share', icon: 'share' },
+      { title: 'Remove', icon: 'clear' },
+      { title: 'Download', icon: 'cloud_download' },
+      { title: 'Edit', icon: 'edit' },
+      { title: 'Info', icon: 'info' },
+      { title: 'Save', icon: 'save' }
     ];
   }
 
