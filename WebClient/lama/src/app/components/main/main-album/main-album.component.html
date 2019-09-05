@@ -60,11 +60,11 @@
     <img
       src="{{ imageUrl || imgname }}"
       (click)="clickPerformed()"
-      *ngIf="!isShared || (isShared && album.photoAlbums.length <= 1)"
+      *ngIf="!isShared || isShared && (!album.photoAlbums || album.photoAlbums.length <= 1)"
     />
     <div
       class="many-photos"
-      *ngIf="isShared && album.photoAlbums.length > 1"
+      *ngIf="isShared && album.photoAlbums && album.photoAlbums.length > 1"
       (click)="clickPerformed()"
     >
       <img src="{{ sharedAlbumCover[0] || imgname }}" />
