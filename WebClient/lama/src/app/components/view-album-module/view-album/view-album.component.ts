@@ -87,7 +87,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       this.isShared = true;
     }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId).subscribe(
+    this.httpService.getData('users/' + userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       u => {
         this.currentUser = u;
       },
