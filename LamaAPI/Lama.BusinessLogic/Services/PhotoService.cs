@@ -19,6 +19,7 @@ using Lama.BusinessLogic.Hubs;
 using Lama.DataAccess;
 using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Newtonsoft.Json.Serialization;
 
 namespace Lama.BusinessLogic.Services
@@ -77,7 +78,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach (var photoDocumentDto in photoDocumentDTOs)
             {
-                var likes =  (await _context.GetRepository<Like>()
+                var likes = (await _context.GetRepository<Like>()
                     .GetAsync(l => l.PhotoId == photoDocumentDto.Id))
 
 
@@ -134,7 +135,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var noti = "Liked your photo";
-                await notificationService.SendNotification(ID, user, noti, ActivityType.Like);
+                await notificationService.SendNotification(ID, user, noti, ActivityType.Like, new List<int>() {photo.Id});
             }
             return like.Id;
         }
@@ -232,19 +233,11 @@ namespace Lama.BusinessLogic.Services
 
         }
 
-        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
-        {   
-            
-            var user = await _context.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
-            var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
-            var jsonObj = 
-            JsonConvert.SerializeObject(
-                photos,
-            new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-            await notificationService.SendNotification(photos.FirstOrDefault().UserId, null, "Duplicates found", ActivityType.Duplicates, jsonObj);
+        public async Task SendDuplicates(IEnumerable<int> photos)
+        {
+            Log.Logger.Information("Duplicates received on LamaAPI");
+            var userId = (await _context.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
+            await notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
         }
 
         #region GET
@@ -321,7 +314,7 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
-        public async Task<PhotoDocument> Get(int id)
+        public async Task<PhotoDocumentDTO> Get(int id)
         {
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -329,7 +322,8 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+            var photo =  JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+            return _mapper.Map<PhotoDocumentDTO>(photo);
         }
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count)

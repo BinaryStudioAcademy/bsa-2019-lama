@@ -435,7 +435,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     // also maybe hide like from HTML if its your photo
 
     // if (this.photo.userId === parseInt(this.currentUser.id)) return;
-
+    if (this.photo.reactions === null) {
+      this.photo.reactions = [];
+    }
     const hasreaction = this.photo.reactions.some(
       x => x.userId === this.currentUser.id
     );
