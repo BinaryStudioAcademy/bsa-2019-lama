@@ -32,6 +32,7 @@ services:
       BlobStorageSettings:ConnectionString: ${LamaBlobStorageConnectionString}
       Queues:ConnectionSettings:HostName: "rabbitmq"
       elasticsearch:url: "http://elasticsearch:9200"
+      LamaApiUrl: "http://lamaapi:5000/"
       ASPNETCORE_URLS: http://+:6000
 
   photoprocessor:
