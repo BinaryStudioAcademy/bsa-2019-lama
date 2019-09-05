@@ -109,13 +109,12 @@ export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
   public encodeAlbumData(album: SharedAlbum): string {
     let encoded = btoa(JSON.stringify(album)).replace('/', '___');
     encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
-    console.log(encoded);
     return encoded;
   }
 
   private initInvariableFields() {
     this.sharedAlbum.albumId = this.receivedAlbum.id;
-    this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+    this.sharedAlbum.userId = parseInt(localStorage.getItem('userId'), 10);
   }
   public GenerateClick() {
     this.createShareableLink();
@@ -129,7 +128,7 @@ export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
             userId: item
           })
           .pipe(takeUntil(this.unsubscribe))
-          .subscribe(e => console.log(e));
+          .subscribe(e => e);
       });
     } else {
       this.availableAll = true;
