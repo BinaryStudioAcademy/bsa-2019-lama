@@ -47,6 +47,7 @@ export class MainPhotosContainerComponent
   currentPhotoIndex: number;
   unsubscribe = new Subject();
   shared: SharedService;
+  showAddToAlbumModal = false;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -358,6 +359,10 @@ export class MainPhotosContainerComponent
 
   handleDropdownOutsideClick(dropDown: HTMLElement) {
     dropDown.style.display = 'none';
+  }
+
+  addToAlbum() {
+    this.showAddToAlbumModal = true;
   }
 
   ngOnDestroy(): void {
