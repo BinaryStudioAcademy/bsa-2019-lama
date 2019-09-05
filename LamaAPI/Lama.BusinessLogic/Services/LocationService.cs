@@ -113,7 +113,7 @@ namespace Lama.BusinessLogic.Services
 
             foreach(var city in Cities)
             {
-                if(city.Name == null)
+                if(city.Name == null || !city.Name.Contains(' '))
                 {
                     continue;
                 }

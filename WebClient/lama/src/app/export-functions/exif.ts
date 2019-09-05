@@ -29,12 +29,12 @@ export function getShortAddress(adress) {
       if (firstEl.types[0] === 'country') {
         Country = firstEl.long_name;
       }
-      if (firstEl.types[0] === 'administrative_area_level_1') {
+      if (firstEl.types[0] === 'locality') {
         City = firstEl.long_name;
       }
     }
     if (Country !== undefined && City !== undefined) {
-      address = Country + ',' + City;
+      address = Country + ' ' + City;
     }
     if (Country === undefined && City !== undefined) {
       address = City;
