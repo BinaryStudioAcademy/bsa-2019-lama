@@ -25,7 +25,7 @@ import {
   getLatitude,
   getLongitude,
   getShortAddress,
-  getFormattedAdress
+  getFormattedAddress
 } from 'src/app/export-functions/exif';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -169,7 +169,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
-                this.address = getFormattedAdress(location);
+                this.address = getFormattedAddress(location);
                 const shortname = getShortAddress(location);
                 this.photos.push({
                   imageUrl: modifiedObject,
