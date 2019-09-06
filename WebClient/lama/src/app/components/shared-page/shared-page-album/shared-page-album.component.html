@@ -23,9 +23,18 @@
   </div>
 </div>
 <div *ngIf="loading" class="items-container-centered">
+  <div class="title">
+      <h2 class="title is-2">
+          {{ album.title }}
+      </h2>
+    </div>
   <div *ngFor="let item of album.photoAlbums">
     <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)"
       (Select)="photoSelected($event)"></main-photo>
+  </div>
+  <div *ngIf="!album.photoAlbums?.length" class="title empty-album">
+      <img src="assets/icon-no-image.svg" alt="" />
+      <h3 class="title is-3">Album empty</h3>
   </div>
 </div>
 <template #modalPhotoContainer></template>
