@@ -53,7 +53,6 @@ export class SharingPageComponent implements OnInit, OnDestroy {
         if (!this.albums.length) {
           this.isAnyItems = false;
         }
-        console.log(this.albums);
       });
   }
 

@@ -20,11 +20,13 @@ import { NotifierService } from 'angular-notifier';
 import { environment } from '../../../../environments/environment';
 import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -38,6 +40,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   private entry: ViewContainerRef;
   @ViewChild('duplicatesModal', { static: true, read: ViewContainerRef })
   private duplicatesEntry: ViewContainerRef;
+  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
+  private modalPhotoEntry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   avatarUrl: string;
   isActive = false;
@@ -59,8 +63,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   latestSearchAttempt = '';
   tagNames = [];
   showModal = false;
-  duplicates: UploadPhotoResultDTO[] = [];
+  duplicates: number[] = [];
   shared: SharedService;
+  photo;
 
   constructor(
     public auth: AuthService,
@@ -96,8 +101,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           console.log(u);
           u.forEach(item => {
             if (item.activity === 2) {
-              const obj: UploadPhotoResultDTO[] = JSON.parse(item.payload);
-              this.duplicates = obj;
+              this.duplicates = JSON.parse(item.payload);
+            } else {
+              this.photo = JSON.parse(item.payload);
             }
           });
         },
@@ -149,6 +155,17 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.duplicates = [];
   }
 
+  openPhoto(eventArgs) {
+    this.file.get(eventArgs).subscribe(photo => {
+      this.modalPhotoEntry.clear();
+      const factory = this.resolver.resolveComponentFactory(
+        PhotoModalComponent
+      );
+      const componentRef = this.modalPhotoEntry.createComponent(factory);
+      componentRef.instance.photo = photo;
+    });
+  }
+
   MarkAllAsRead() {
     this.notificationService
       .MarkAllAsRead(this.id)
@@ -178,8 +195,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.addNotification(notification);
       }
       if (notification.activity === 2) {
-        const obj: UploadPhotoResultDTO[] = JSON.parse(notification.payload);
-        this.duplicates = obj;
+        this.duplicates = JSON.parse(notification.payload);
+      } else {
+        this.photo = JSON.parse(notification.payload);
       }
     });
   }
@@ -244,7 +262,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   getSearchSuggestions(id: number, criteria: string) {
     if (this.searchCriteria.length > 0) {
       this.file
-        .getSearchSuggestions(id, criteria)
+        .getSearchSuggestions(id, criteria.trim())
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(items => {
           this.latestSearchAttempt = criteria;
@@ -352,10 +370,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       DuplicatesModalComponent
     );
     const componentRef = this.duplicatesEntry.createComponent(factory);
-    componentRef.instance.receivedDuplicates = this.duplicates;
     componentRef.instance.Change.subscribe(data => {
       this.deleteDuplicatesHandler(data);
     });
+    componentRef.instance.receivedIds = this.duplicates;
     this.sendDelete(id);
     this.notification = this.notification.filter(i => i.id !== id);
     this.checkNotification(this.notification);

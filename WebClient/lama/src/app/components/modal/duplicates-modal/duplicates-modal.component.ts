@@ -21,6 +21,7 @@ import { Subject } from 'rxjs';
 })
 export class DuplicatesModalComponent implements OnInit, OnDestroy {
   @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
+  receivedIds: number[] = [];
   @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
@@ -42,9 +43,11 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   }
 
   removeDuplicates() {
-    const toDelete = this.receivedDuplicates.map(
-      photo => new PhotoToDeleteRestoreDTO(photo.id)
-    );
+    const toDelete = this.receivedDuplicates.length
+      ? this.receivedDuplicates.map(
+          photo => new PhotoToDeleteRestoreDTO(photo.id)
+        )
+      : this.receivedIds.map(id => new PhotoToDeleteRestoreDTO(id));
     this.fileService.deletePhotosPermanently(toDelete).subscribe(
       response => {
         this.notifier.notify('success', 'Duplicates removed successfully');
@@ -57,14 +60,27 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   }
 
   getDuplicatesUrls() {
-    this.receivedDuplicates.forEach(duplicate => {
-      this.fileService
-        .getPhoto(duplicate.blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => {
-          this.duplicatesUrls.push(url);
+    if (this.receivedDuplicates.length) {
+      this.receivedDuplicates.forEach(duplicate => {
+        this.fileService
+          .getPhoto(duplicate.blob256Id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => {
+            this.duplicatesUrls.push(url);
+          });
+      });
+    } else if (this.receivedIds) {
+      this.receivedIds.forEach(item => {
+        this.fileService.get(item).subscribe(it => {
+          this.fileService
+            .getPhoto(it.blob256Id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(url => {
+              this.duplicatesUrls.push(url);
+            });
         });
-    });
+      });
+    }
   }
 
   ngOnDestroy() {

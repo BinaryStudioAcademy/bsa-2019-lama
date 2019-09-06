@@ -29,7 +29,7 @@ import {
   getLatitude,
   getLongitude,
   getShortAddress,
-  getFormattedAdress
+  getFormattedAddress
 } from 'src/app/export-functions/exif';
 import { MapsAPILoader } from '@agm/core';
 
@@ -140,7 +140,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
         if (latitude && longitude) {
           getLocation(latitude, longitude, this.geoCoder).then(location => {
-            const address = getFormattedAdress(location);
+            const address = getFormattedAddress(location);
             const shortname = getShortAddress(location);
             this.photos.push({
               imageUrl: modifiedObject,
@@ -187,6 +187,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
       this.isUniqueName = false;
       this.checkForm = false;
     } else {
+      this.loaded = false;
       if (this.photos.length === 0) {
         this.album = {
           title: this.albumName,
@@ -298,6 +299,7 @@ export class CreateAlbumModalComponent implements OnInit, OnDestroy {
 
   toggleModal() {
     this.isShown = false;
+    this.loaded = true;
   }
 
   ChoosePhoto() {

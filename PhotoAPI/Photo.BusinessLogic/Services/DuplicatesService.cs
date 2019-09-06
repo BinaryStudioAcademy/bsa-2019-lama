@@ -24,29 +24,14 @@ namespace Photo.BusinessLogic.Services
             _elasticStorage = elasticStorage;
             _mapper = mapper;
             _httpClient = new HttpClient();
-			_configuration = configuration;
-		}
+            _configuration = configuration;
+        }        
+
         public async Task SendDuplicates(List<int> duplicates)
         {
-            var photos = new List<PhotoDocument>();
-            foreach (var value in duplicates)
-            {
-                try
-                {
-                    var photo = await _elasticStorage.Get(value);
-                    photos.Add(photo);
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
             string uri = _configuration["LamaApiUrl"];
-            var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
-
-            StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
-
-            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+            StringContent content = new StringContent(JsonConvert.SerializeObject(duplicates), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}/api/photo/duplicates_response", content);
         }
     }
 }

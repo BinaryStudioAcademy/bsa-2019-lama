@@ -38,6 +38,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   @Output() ClickDownload = new EventEmitter<ViewAlbum>();
   @Input() currentUser: User;
   @Input() isShared = false;
+  @Input() isCategoryAlbum = false;
   @ViewChild('AddPhotosToAlbum', { static: true, read: ViewContainerRef })
   private modaladdPhoto: ViewContainerRef;
 

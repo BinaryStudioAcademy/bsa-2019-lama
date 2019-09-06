@@ -169,8 +169,8 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
       saveAs(content, name);
     });
   }
-  // methods
-  public albumClicked(eventArgs: Album) {
+
+  albumClicked(eventArgs: Album) {
     const navigationExtras: NavigationExtras = {
       state: {
         album: eventArgs

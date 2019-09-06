@@ -1,4 +1,5 @@
-﻿using Lama.Domain.BlobModels;
+﻿using System;
+using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.Domain.DbModels;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace Lama.BusinessLogic.Interfaces
         Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos);
         Task<string> CreateAvatar(CreatePhotoDTO item);
-        Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos);
+        Task SendDuplicates(IEnumerable<int> photos);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateDuplicates(UploadPhotoResultDTO[] duplicates);
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();
         Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int userId);
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
-        Task<PhotoDocument> Get(int id);
+        Task<PhotoDocumentDTO> Get(int id);
         Task<IEnumerable<string>> GetHistory(int userId);
         Task<string> GetPhoto(string blobId);
         Task<string> GetAvatar(string blobId);
@@ -30,5 +31,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> AddReaction(NewLikeDTO newLike);
         Task RemoveReaction(NewLikeDTO removeLike);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count);
+        Task SetPhotoCategory(string photoData);
+        Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId);
     }
 }

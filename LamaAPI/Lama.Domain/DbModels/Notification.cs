@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Lama.Domain.Enums;
 using Newtonsoft.Json;
 

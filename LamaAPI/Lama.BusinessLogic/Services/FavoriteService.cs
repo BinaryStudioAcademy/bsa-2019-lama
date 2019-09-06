@@ -32,7 +32,8 @@ namespace Lama.BusinessLogic.Services
             IEnumerable<Favorite> favorites = await Context.Favorites.Where(f => f.UserId == userId).ToListAsync();
             foreach (var far in favorites)
             {
-                PhotoDocument pd = await _photoService.Get(far.PhotoId);
+                var photoDto = await _photoService.Get(far.PhotoId);
+                var pd = mapper.Map<PhotoDocument>(photoDto);
                 if (pd == null)
                 {
                     await DeleteFavorite(userId, far.PhotoId);

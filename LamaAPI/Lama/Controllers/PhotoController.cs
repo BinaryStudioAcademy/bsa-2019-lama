@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace Lama.Controllers
         }
 
         [HttpPost]
-        public Task<IEnumerable<UploadPhotoResultDTO>> ReceivePhoto([FromBody] CreatePhotoDTO[] photos)
+        public Task<IEnumerable<UploadPhotoResultDTO>> UploadPhoto([FromBody] CreatePhotoDTO[] photos)
         {
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
@@ -35,7 +36,7 @@ namespace Lama.Controllers
         }
 
         [HttpPost("duplicates")]
-        public Task<IEnumerable<UploadPhotoResultDTO>> PostDuplicates([FromBody] UploadPhotoResultDTO[] duplicates)
+        public Task<IEnumerable<UploadPhotoResultDTO>> UploadDuplicates([FromBody] UploadPhotoResultDTO[] duplicates)
         {
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
@@ -105,6 +106,12 @@ namespace Lama.Controllers
             return await _service.GetAll();
         }
 
+        [HttpGet("{id}")]
+        public async Task<PhotoDocumentDTO> GetPhoto(int id)
+        {
+            return await _service.Get(id);
+        }
+
         [HttpGet("user/{id}")]
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
@@ -113,14 +120,28 @@ namespace Lama.Controllers
             return await _service.GetUserPhotos(currentUserId);
         }
 
+        [HttpGet("categorized")]
+        public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized()
+        {
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            return await _service.GetUserPhotosCategorized(currentUserId);
+        } 
+
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
-        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
+        public async Task SendDuplicates(IEnumerable<int> photos)
         {
             await _service.SendDuplicates(photos);
         }
 
         [AllowAnonymous]
+        [HttpPost("photoCategory")]
+        public async Task SetPhotoCategory([FromBody]string photoData)
+        {
+            await _service.SetPhotoCategory(photoData);
+        }
+
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {

@@ -109,7 +109,6 @@ export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
   public encodeAlbumData(album: SharedAlbum): string {
     let encoded = btoa(JSON.stringify(album)).replace('/', '___');
     encoded += btoa(JSON.stringify(this.userEmails)).replace('/', '___');
-    console.log(encoded);
     return encoded;
   }
 
@@ -129,7 +128,7 @@ export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
             userId: item
           })
           .pipe(takeUntil(this.unsubscribe))
-          .subscribe(e => console.log(e));
+          .subscribe(e => e);
       });
     } else {
       this.availableAll = true;

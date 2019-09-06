@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lama.Domain.Enums;
+using Newtonsoft.Json;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -24,7 +25,7 @@ namespace Lama.BusinessLogic.Services
             this.Context = Context;
             this.Hub = Hub;
         }
-        public async Task SendNotification(int? id, User user, string notification, ActivityType type, string payload = null)
+        public async Task SendNotification(int? id, User user, string notification, ActivityType type, IEnumerable<int> payload = null)
         {
             var model = await CreateNotification(notification, id, user, type, payload);
 
@@ -53,7 +54,7 @@ namespace Lama.BusinessLogic.Services
                 Text = model.Text,
                 Sender = sender,
                 Activity = type,
-                Payload = payload
+                Payload = JsonConvert.SerializeObject(payload)
 
             };
             var user2 = await Context.Users.FirstOrDefaultAsync(x => x.Id == id);
@@ -61,7 +62,7 @@ namespace Lama.BusinessLogic.Services
             await Hub.Clients.User(email).SendAsync("Notification", message);
         }
 
-        private async Task<Notification> CreateNotification(string Notification, int? UserId, User user, ActivityType type, string payload)
+        private async Task<Notification> CreateNotification(string Notification, int? UserId, User user, ActivityType type, IEnumerable<int> payload)
         {
             var notification = new Notification()
             {
@@ -71,18 +72,10 @@ namespace Lama.BusinessLogic.Services
                 UserId = UserId,
                 Sender = user,
                 Activity = type,
-                Payload = payload
+                Payload = JsonConvert.SerializeObject(payload)
             };
             var value = await Context.Notifications.AddAsync(notification);
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-
-            }
-
+            await Context.SaveChangesAsync();
             return value.Entity;
         }
         public async Task DeleteNotification(int id)
