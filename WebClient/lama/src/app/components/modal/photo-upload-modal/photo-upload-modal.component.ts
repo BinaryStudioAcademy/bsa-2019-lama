@@ -73,6 +73,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
       return;
     }
     this.showSpinner = true;
+    this.loaded = false;
     const userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) {
       this.photos[i] = {
@@ -103,6 +104,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
               'This photos appear to be duplicates. Upload them anyway?'
             );
           }
+          this.loaded = true;
         },
         error => this.notifier.notify('error', 'Error sending photos')
       );
