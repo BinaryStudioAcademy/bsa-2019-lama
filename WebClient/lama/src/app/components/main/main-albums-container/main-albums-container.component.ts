@@ -38,7 +38,7 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
   currentUser: User;
   favorite: ViewAlbum = null;
   showFavorite = false;
-
+  showSpinner = true;
   ArchivePhotos = [];
   unsubscribe = new Subject();
   ngOnInit() {
@@ -83,6 +83,7 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
               a.photo = a.photoAlbums[0];
             }
           });
+          this.showSpinner = false;
         },
         error => this.notifier.notify('error', 'Error loading albums')
       );
