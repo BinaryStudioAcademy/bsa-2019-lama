@@ -1,4 +1,3 @@
-<spinner *ngIf="showSpinner"></spinner>
 <div class="content-header">
     <h2 *ngIf="!isAnyItems" class="photos-container-title">Location albums:</h2>
     <div class="no-content" *ngIf="isAnyItems">
@@ -35,4 +34,5 @@
         <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></app-location-album>
     </div>
 </div>
+<spinner *ngIf="showSpinner"></spinner>
 <notifier-container></notifier-container>
