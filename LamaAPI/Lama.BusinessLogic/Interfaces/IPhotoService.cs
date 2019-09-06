@@ -13,6 +13,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateAll(CreatePhotoDTO[] photos);
         Task<string> CreateAvatar(CreatePhotoDTO item);
+        Task<IEnumerable<PhotoDocumentDTO>> GetSimilarPhotos(int id);
         Task SendDuplicates(IEnumerable<int> photos);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateDuplicates(UploadPhotoResultDTO[] duplicates);
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();

@@ -235,6 +235,31 @@ namespace Photo.BusinessLogic.Services
 			return createdDuplicates;
 		}
 
+        public async Task<IEnumerable<PhotoDocumentDTO>> FindSimilarPhotos(int photoId)
+        {
+            var hash = new List<ImgHash>();
+            var photo = await _elasticStorage.Get(photoId);
+            var comparisonResult = await _imageComporator.FindDuplicatesWithTollerance(photo.UserId, 85);
+            foreach (var item in comparisonResult)
+            {
+                if (item.Count <= 0) continue;
+                if (item.Select(i => i.PhotoId).Contains(photoId))
+                {
+                    hash = item;
+                    break;
+                }
+            }
+            hash.Remove(hash.FirstOrDefault(i => i.PhotoId == photoId));
+            var result = new List<PhotoDocumentDTO>();
+            foreach (var item in hash)
+            {
+                var photoDoc = await _elasticStorage.Get((int)item.PhotoId);
+                var photoDocDto = _mapper.Map<PhotoDocumentDTO>(photoDoc);
+                result.Add(photoDocDto);
+            }
+            return result;
+        }
+ 
 		public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
 		{
 			var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);

@@ -43,6 +43,12 @@ export class FileService {
     );
   }
 
+  getSimilarPhotos(id: number): Observable<PhotoRaw> {
+    return this.client.get<PhotoRaw>(
+      `${environment.lamaApiUrl}/api/photo/similar/${id}`
+    );
+  }
+
   uploadDuplicates(duplicates: UploadPhotoResultDTO[]) {
     return this.client.post<UploadPhotoResultDTO[]>(
       `${environment.lamaApiUrl}/api/photo/duplicates`,

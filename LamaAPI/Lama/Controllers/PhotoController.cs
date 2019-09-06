@@ -133,6 +133,12 @@ namespace Lama.Controllers
             return await _service.GetPhoto(blobId);
         }
 
+        [HttpGet("similar/{id}")]
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetSimilarPhotos(int id)
+        {
+            return await _service.GetSimilarPhotos(id);
+        }
+
         [AllowAnonymous]
         [HttpGet("avatars/{blobId}")]
         public async Task<string> GetAvatar(string blobId)

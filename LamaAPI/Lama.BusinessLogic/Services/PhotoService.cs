@@ -233,6 +233,14 @@ namespace Lama.BusinessLogic.Services
 
         }
 
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetSimilarPhotos(int id)
+        {
+            var uri = $"{url}api/photos/similar/{id}";
+            var response = await httpClient.GetAsync(uri);
+            var bodyJson = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(bodyJson);
+        }
+
         public async Task SendDuplicates(IEnumerable<int> photos)
         {
             Log.Logger.Information("Duplicates received on LamaAPI");

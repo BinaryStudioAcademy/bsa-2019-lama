@@ -56,6 +56,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   photosArrayLength: number;
   photos: PhotoRaw[] = [];
   isShown: boolean;
+  items = [{ name: 'lala' }, { name: 'haha' }, { name: 'mumu' }];
   isInfoShown = false;
   imageUrl: string;
   userId: number;

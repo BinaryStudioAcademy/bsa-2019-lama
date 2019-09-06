@@ -28,6 +28,7 @@ import { CalendarModule } from '../../calendar.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AlbumItemComponent } from './select-album-modal/album-item/album-item.component';
 import { SelectAlbumModalComponent } from './select-album-modal/select-album-modal.component';
+import { Ng2CarouselamosModule } from 'ng2-carouselamos';
 
 @NgModule({
   imports: [
@@ -37,6 +38,7 @@ import { SelectAlbumModalComponent } from './select-album-modal/select-album-mod
     BrowserAnimationsModule,
     CalendarModule,
     NotificationModule,
+    Ng2CarouselamosModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
