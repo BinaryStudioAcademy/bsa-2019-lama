@@ -115,7 +115,7 @@ export class ShareAlbumByEmailComponent implements OnInit, OnDestroy {
 
   private initInvariableFields() {
     this.sharedAlbum.albumId = this.receivedAlbum.id;
-    this.sharedAlbum.userId = this.receivedAlbum.photo.userId;
+    this.sharedAlbum.userId = parseInt(localStorage.getItem('userId'), 10);
   }
   public GenerateClick() {
     this.createShareableLink();
