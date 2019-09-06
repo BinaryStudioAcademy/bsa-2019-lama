@@ -133,8 +133,8 @@ namespace Lama.BusinessLogic.Services
             if (user.Id == newLike.UserId) return like.Id;
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
-                var noti = "Liked your photo";
-                await _notificationService.SendNotification(id, user, noti, ActivityType.Like, new List<int>() {photo.Id});
+                const string notification = "Liked your photo";
+                await _notificationService.SendNotification(id, user, notification, ActivityType.Like, new List<int>() {photo.Id});
             }
             return like.Id;
         }
@@ -238,8 +238,9 @@ namespace Lama.BusinessLogic.Services
         public async Task SendDuplicates(IEnumerable<int> photos)
         {
             Log.Logger.Information("Duplicates received on LamaAPI");
-            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
-            await _notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
+            var photosList = photos.ToList();
+            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photosList.FirstOrDefault())).UserId;
+            await _notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photosList);
 
         }
 
@@ -306,10 +307,10 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
-            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            var photoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(photoDocuments);
 
-            for (int i = 0; i < photos.Count(); i++)
+            for (var i = 0; i < photos.Count(); i++)
             {
                 var like = await _unitOfWorkContext.GetRepository<Like>().GetAsync(x => x.PhotoId == photos[i].Id);
                 photos[i].Reactions = _mapper.Map<IEnumerable<LikeDTO>>(like);
@@ -340,8 +341,8 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            var PhotoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
-            var photos = _mapper.Map<List<PhotoDocumentDTO>>(PhotoDocuments);
+            var photoDocuments = JsonConvert.DeserializeObject<IEnumerable<PhotoDocument>>(responseContent);
+            var photos = _mapper.Map<List<PhotoDocumentDTO>>(photoDocuments);
 
             for (var i = 0; i < photos.Count(); i++)
             {
@@ -416,7 +417,7 @@ namespace Lama.BusinessLogic.Services
         #region DELETE
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
-            string uri = $"{_url}api/photos/{photoToDeleteId}";
+            var uri = $"{_url}api/photos/{photoToDeleteId}";
             RemoveFromCategoriesListById(photoToDeleteId);
 
             return _httpClient.DeleteAsync(uri);
@@ -441,24 +442,24 @@ namespace Lama.BusinessLogic.Services
             await _httpClient.PostAsync(uri, content);
 
             Photo haveLocation = null;
-            int LocationId = 0;
+            var locationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
-                var phot = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
-                if(phot.LocationId.HasValue)
+                var photo = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
+                if(photo.LocationId.HasValue)
                 {
-                    LocationId = phot.LocationId.Value;
+                    locationId = photo.LocationId.Value;
                 }
                 await _unitOfWorkContext.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
 
             await _unitOfWorkContext.SaveAsync();
-            haveLocation = await _dbContext.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
+            haveLocation = await _dbContext.Photos.FirstOrDefaultAsync(x => x.LocationId == locationId);
             if (haveLocation == null)
             {
-                if (LocationId != 0)
+                if (locationId != 0)
                 {
-                    await _locationService.DeleteLocation(LocationId);
+                    await _locationService.DeleteLocation(locationId);
                 }
             }              
                
