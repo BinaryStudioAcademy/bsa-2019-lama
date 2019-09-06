@@ -158,7 +158,7 @@ namespace Lama.BusinessLogic.Services
 
                 if (photos[i].ShortLocation != null)
                 {
-                    photo.LocationId = await locationService.CheckAdrress(photos[i].ShortLocation);
+                    photo.LocationId = await _locationService.CheckAdrress(photos[i].ShortLocation);
                 }
                 savedPhotos[i] = await _unitOfWorkContext.GetRepository<Photo>().InsertAsync(photo);
             }
@@ -238,8 +238,8 @@ namespace Lama.BusinessLogic.Services
         public async Task SendDuplicates(IEnumerable<int> photos)
         {
             Log.Logger.Information("Duplicates received on LamaAPI");
-            var userId = (await _context.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
-            await notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
+            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
+            await _notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
 
         }
 
@@ -444,7 +444,7 @@ namespace Lama.BusinessLogic.Services
             int LocationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
-                var phot = await Context.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
+                var phot = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
                 if(phot.LocationId.HasValue)
                 {
                     LocationId = phot.LocationId.Value;
@@ -453,12 +453,12 @@ namespace Lama.BusinessLogic.Services
             }
 
             await _unitOfWorkContext.SaveAsync();
-            haveLocation = await Context.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
+            haveLocation = await _dbContext.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
             if (haveLocation == null)
             {
                 if (LocationId != 0)
                 {
-                    await locationService.DeleteLocation(LocationId);
+                    await _locationService.DeleteLocation(LocationId);
                 }
             }              
                

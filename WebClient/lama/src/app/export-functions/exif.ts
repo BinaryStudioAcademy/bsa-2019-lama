@@ -17,15 +17,16 @@ export function getLocation(latitude, longitude, geoCoder) {
     );
   });
 }
-export function getFormattedAdress(adress) {
-  return adress.formatted_address;
+export function getFormattedAddress(address) {
+  return address.formatted_address;
 }
-export function getShortAddress(adress) {
-  if (adress) {
+export function getShortAddress(address: any) {
+  if (address) {
     let Country;
     let City;
+    // tslint:disable-next-line: no-shadowed-variable
     let address;
-    for (const firstEl of adress.address_components) {
+    for (const firstEl of address.address_components) {
       if (firstEl.types[0] === 'country') {
         Country = firstEl.long_name;
       }

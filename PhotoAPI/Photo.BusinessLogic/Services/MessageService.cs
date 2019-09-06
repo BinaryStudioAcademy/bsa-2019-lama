@@ -38,7 +38,7 @@ namespace Photo.BusinessLogic.Services
 
         public void Dispose()
         {
-            serviceData.PhotoProcessorProducer?.Dispose();
+            _serviceData.PhotoProcessorProducer?.Dispose();
             Log.Logger.Information("PhotoApi producer disposed");
         }
 
@@ -67,7 +67,7 @@ namespace Photo.BusinessLogic.Services
                 }
             }
             Log.Logger.Information("Trying to set anknowledge(photoApi)");
-            serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
+            _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
             Log.Logger.Information("Anknowvledge is set");
         }
         

@@ -65,6 +65,7 @@ namespace Photo.Infrastructure
 			services.AddScoped<IPhotoBlobStorage, PhotoBlobStore>(
 				f => new PhotoBlobStore(configuration.Bind<CreateBlobStorageSettings>("BlobStorageSettings")));
 			services.AddScoped<ImageCompareService>();
+			services.AddScoped<ImageProcessingService>();
 			services.AddScoped<IPhotoService, PhotoService>(serviceProvider =>
 				new PhotoService(
 					serviceProvider.GetService<IElasticStorage>(),
@@ -78,15 +79,16 @@ namespace Photo.Infrastructure
 
 		private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
 		{
-			IConnectionProvider connectionProvider = serviceProvider.GetService<IConnectionProvider>();
+			var connectionProvider = serviceProvider.GetService<IConnectionProvider>();
 
-			MessageServiceSettings messageServiceSettings = new MessageServiceSettings()
+			var messageServiceSettings = new MessageServiceSettings()
 			{
 				PhotoProcessorConsumer = connectionProvider.Connect(configuration.Bind<Settings>("Queues:FromPhotoProcessorToPhotoAPI")),
 				PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
 			};
 
-			return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>());
+			return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>(),
+															   serviceProvider.GetService<ImageProcessingService>());
 		}
 	}
 }
