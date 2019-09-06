@@ -370,7 +370,7 @@ namespace Lama.BusinessLogic.Services
 
         public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId)
         {
-            var top5Categories = _dbContext.Categories.ToList().OrderByDescending(category => category.Count).Take(5);
+            var top5Categories = _dbContext.Categories.Where(category => category.UserId == userId).ToList().OrderByDescending(category => category.Count).Take(5);
             var top5CategoriesWithPhotos = new List<PhotoCategoryDTO>();
             foreach (var category in top5Categories)
             {
