@@ -34,22 +34,26 @@ namespace Photo.BusinessLogic.Services
                 {
                     if (hash.CompareWith(hashCompareWith) >= minSimilarity)
                     {
-                        alreadyMarkedAsDupl.Add(hash);
+                        if (!alreadyMarkedAsDupl.Contains(hash))
+                        {
+                            alreadyMarkedAsDupl.Add(hash);
 
-                        currHashDupl.Add(hash);
+                            currHashDupl.Add(hash);
+                        }
+
+                        if (!alreadyMarkedAsDupl.Contains(hashCompareWith))
+                        {
+                            alreadyMarkedAsDupl.Add(hashCompareWith);
+
+                            currHashDupl.Add(hashCompareWith);
+                        }
                     }
-
-                    if (alreadyMarkedAsDupl.Contains(hashCompareWith)) continue;
-                    alreadyMarkedAsDupl.Add(hashCompareWith);
-
-                    currHashDupl.Add(hashCompareWith);
                 }
                 catch (Exception)
                 {
                     // ignored
                 }
             }
-
 
             return currHashDupl;
         }
