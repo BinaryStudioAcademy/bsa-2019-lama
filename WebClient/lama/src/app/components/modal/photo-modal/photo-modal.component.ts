@@ -31,7 +31,7 @@ import {
   getLocation,
   getLatitude,
   getLongitude,
-  getFormattedAdress
+  getFormattedAddress
 } from 'src/app/export-functions/exif';
 import { NewDescription } from 'src/app/models/Photo/NewDescription';
 import { PhotodetailsService } from 'src/app/services/photodetails.service';
@@ -208,7 +208,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
-      (this.address = getFormattedAdress(location))
+      (this.address = getFormattedAddress(location))
     );
     const loggedUserId: number = this.authService.getLoggedUserId();
     this.userService
@@ -243,7 +243,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       this.longitude = getLongitude(exifObj);
       if (this.latitude && this.longitude) {
         getLocation(this.latitude, this.longitude, this.geoCoder).then(
-          (this.address = getFormattedAdress(location))
+          (this.address = getFormattedAddress(location))
         );
       }
     }

@@ -12,6 +12,7 @@ import { SharedPageAlbumComponent } from './components/shared-page/shared-page-a
 
 import { LoggedInGuard, AuthGuard } from './guards';
 import { SharingPageComponent } from './components/shared-page/sharing-page/sharing-page.component';
+import { CategoriesPageComponent } from './components/categories-page/categories-page.component';
 import { LocationPageComponent } from './components/location-page/location-page.component';
 import { ViewLocationComponent } from './components/location-page/view-location/view-location.component';
 
@@ -43,6 +44,8 @@ const routes: Routes = [
           { path: 'location', component: LocationPageComponent },
           { path: 'location/:id', component: ViewLocationComponent },
           { path: 'shared/:userdata', component: SharedPageComponent },
+          { path: 'categories', component: CategoriesPageComponent },
+          { path: 'categories/:id', component: ViewAlbumComponent },
           {
             path: 'shared/album/:userdata',
             component: SharedPageAlbumComponent

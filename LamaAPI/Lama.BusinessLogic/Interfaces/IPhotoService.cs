@@ -1,4 +1,5 @@
-﻿using Lama.Domain.BlobModels;
+﻿using System;
+using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.Domain.DbModels;
 using System.Collections.Generic;
@@ -30,5 +31,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task<int> AddReaction(NewLikeDTO newLike);
         Task RemoveReaction(NewLikeDTO removeLike);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count);
+        Task SetPhotoCategory(string photoData);
+        Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId);
     }
 }

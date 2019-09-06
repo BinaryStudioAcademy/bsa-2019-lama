@@ -47,6 +47,7 @@ import { Ng2ImgToolsModule } from 'ng2-img-tools';
 // tslint:disable-next-line:max-line-length
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { SharingPageComponent } from './components/shared-page/sharing-page//sharing-page.component';
+import { CategoriesPageComponent } from './components/categories-page/categories-page.component';
 import { ViewLocationComponent } from '../app/components/location-page/view-location/view-location.component';
 
 @NgModule({
@@ -76,7 +77,8 @@ import { ViewLocationComponent } from '../app/components/location-page/view-loca
     SharedPageAlbumComponent,
     SetAlbumCoverModalComponent,
     ChooseAlbumCoverComponent,
-    DuplicatesModalComponent
+    DuplicatesModalComponent,
+    CategoriesPageComponent
   ],
   imports: [
     Ng2ImgToolsModule,

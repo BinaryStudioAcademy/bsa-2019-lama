@@ -24,8 +24,9 @@ namespace Photo.BusinessLogic.Services
             _elasticStorage = elasticStorage;
             _mapper = mapper;
             _httpClient = new HttpClient();
-			_configuration = configuration;
-		}
+            _configuration = configuration;
+        }        
+
         public async Task SendDuplicates(List<int> duplicates)
         {
             string uri = _configuration["LamaApiUrl"];

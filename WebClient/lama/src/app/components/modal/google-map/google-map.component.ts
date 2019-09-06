@@ -15,7 +15,7 @@ import {
   getLocation,
   getLatitude,
   getLongitude,
-  getFormattedAdress,
+  getFormattedAddress,
   getShortAddress
 } from 'src/app/export-functions/exif';
 

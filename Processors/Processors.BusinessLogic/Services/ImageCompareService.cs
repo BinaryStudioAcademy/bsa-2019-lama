@@ -68,7 +68,7 @@ namespace Processors.BusinessLogic.Services
         {
             _hashLib = new List<ImgHash>();
             await InitializeHashes(userId);
-            List<ImgHash> alreadyMarkedAsDupl = new List<ImgHash>();
+            var alreadyMarkedAsDupl = new List<ImgHash>();
             var duplicatesFound = new List<List<ImgHash>>();
 
             foreach (var hash in _hashLib)

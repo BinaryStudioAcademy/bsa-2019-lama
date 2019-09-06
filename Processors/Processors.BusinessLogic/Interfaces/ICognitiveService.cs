@@ -8,5 +8,6 @@ namespace Processors.BusinessLogic.Interfaces
     public interface ICognitiveService
     {
         Task<IEnumerable<ImageTag>> ProcessImageTags(byte[] imageAsByteArray);
+        Task<string> ProcessImageDescription(byte[] imageAsByteArray);
     }
 }
