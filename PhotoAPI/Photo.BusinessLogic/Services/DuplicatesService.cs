@@ -31,7 +31,7 @@ namespace Photo.BusinessLogic.Services
         {
             string uri = _configuration["LamaApiUrl"];
             StringContent content = new StringContent(JsonConvert.SerializeObject(duplicates), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}/api/photo/duplicates_response", content);
+            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}api/photo/duplicates_response", content);
         }
     }
 }
