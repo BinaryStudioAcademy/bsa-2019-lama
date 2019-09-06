@@ -35,5 +35,9 @@ namespace Lama.Domain.DbModels
         public ICollection<SharedPhoto> SharedPhotos { get; set; }
         [JsonIgnore]
         public User User { get; set; }
+
+        public int? LocationId { set; get; }
+        [JsonIgnore]
+        public Location Location { set; get; }
     }
 }

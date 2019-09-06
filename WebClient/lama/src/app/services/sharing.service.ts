@@ -59,6 +59,12 @@ export class SharingService {
     );
   }
 
+  getSharedAlbumPhotos(albumId: number) {
+    return this.httpClient.get<ViewAlbum>(
+      `${this.lamaApiUrl}/api/sharedalbums/${albumId}`
+    );
+  }
+
   getPhotoEntity(photoId: number) {
     return this.httpClient.get<SharedPhoto>(
       `${this.lamaApiUrl}/${this.routePrefix}/${photoId}`

@@ -16,7 +16,10 @@ using Lama.Domain.DTO.Reaction;
 using Microsoft.AspNetCore.SignalR;
 using Lama.BusinessLogic.Hubs;
 using Lama.DataAccess;
+using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Newtonsoft.Json.Serialization;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -29,8 +32,9 @@ namespace Lama.BusinessLogic.Services
         private readonly INotificationService _notificationService;
         private readonly ApplicationDbContext _dbContext;
         private readonly IHubContext<NotificationHub> _hub;
+        private readonly ILocationService _locationService;
 
-        public PhotoService(ApplicationDbContext dbContext, string url, IUnitOfWork unitOfWorkContext, IMapper mapper, INotificationService notificationService, IHubContext<NotificationHub> hub)
+        public PhotoService(ApplicationDbContext dbContext, string url, IUnitOfWork unitOfWorkContext, IMapper mapper, INotificationService notificationService, ILocationService locationService, IHubContext<NotificationHub> hub)
         {
             _url = url;
             _unitOfWorkContext = unitOfWorkContext;
@@ -38,6 +42,7 @@ namespace Lama.BusinessLogic.Services
             _mapper = mapper;
             _dbContext = dbContext;
             _notificationService = notificationService;
+            _locationService = locationService;
             _hub = hub;
         }
 
@@ -129,7 +134,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 var noti = "Liked your photo";
-                await _notificationService.SendNotification(id, user, noti);
+                await _notificationService.SendNotification(id, user, noti, ActivityType.Like, new List<int>() {photo.Id});
             }
             return like.Id;
         }
@@ -150,7 +155,11 @@ namespace Lama.BusinessLogic.Services
                 var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(photos[i].AuthorId);
                 photo.User = user;
                 photo.UserId = photos[i].AuthorId;
-                //user.Photos.Add(photo);
+
+                if (photos[i].ShortLocation != null)
+                {
+                    photo.LocationId = await locationService.CheckAdrress(photos[i].ShortLocation);
+                }
                 savedPhotos[i] = await _unitOfWorkContext.GetRepository<Photo>().InsertAsync(photo);
             }
 
@@ -225,11 +234,13 @@ namespace Lama.BusinessLogic.Services
 
         }
 
-        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
+
+        public async Task SendDuplicates(IEnumerable<int> photos)
         {
-            var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
-            var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
-            await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);
+            Log.Logger.Information("Duplicates received on LamaAPI");
+            var userId = (await _context.GetRepository<Photo>().GetAsync(photos.FirstOrDefault())).UserId;
+            await notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photos);
+
         }
 
         #region GET
@@ -306,7 +317,7 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
-        public async Task<PhotoDocument> Get(int id)
+        public async Task<PhotoDocumentDTO> Get(int id)
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -314,7 +325,8 @@ namespace Lama.BusinessLogic.Services
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+            var photo =  JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
+            return _mapper.Map<PhotoDocumentDTO>(photo);
         }
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count)
@@ -428,13 +440,29 @@ namespace Lama.BusinessLogic.Services
 
             await _httpClient.PostAsync(uri, content);
 
+            Photo haveLocation = null;
+            int LocationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
+                var phot = await Context.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
+                if(phot.LocationId.HasValue)
+                {
+                    LocationId = phot.LocationId.Value;
+                }
                 await _unitOfWorkContext.GetRepository<Photo>().DeleteAsync(photoToDelete.Id);
             }
 
             await _unitOfWorkContext.SaveAsync();
-        }
+            haveLocation = await Context.Photos.FirstOrDefaultAsync(x => x.LocationId == LocationId);
+            if (haveLocation == null)
+            {
+                if (LocationId != 0)
+                {
+                    await locationService.DeleteLocation(LocationId);
+                }
+            }              
+               
+        }        
 
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {

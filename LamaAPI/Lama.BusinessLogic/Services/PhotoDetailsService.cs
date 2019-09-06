@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Lama.BusinessLogic.Interfaces;
+using Lama.DataAccess;
 using Lama.DataAccess.Interfaces;
 using Lama.Domain.BlobModels;
+using Lama.Domain.DbModels;
 using Lama.Domain.DTO.PhotoDetails;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,13 +22,16 @@ namespace Lama.BusinessLogic.Services
         private IUnitOfWork _context;
         private HttpClient httpClient;
         private readonly IMapper _mapper;
-
-        public PhotoDetailsService(string url, IUnitOfWork context, IMapper _mapper)
+        ApplicationDbContext Context;
+        ILocationService locationService;
+        public PhotoDetailsService(string url, IUnitOfWork context, IMapper _mapper, ApplicationDbContext Context, ILocationService locationService)
         {
             this.url = url;
             _context = context;
             httpClient = new HttpClient();
             this._mapper = _mapper;
+            this.Context = Context;
+            this.locationService = locationService;
         }
         public async Task<string> UpdateDescription(NewDescription newDescription)
         {
@@ -56,6 +62,21 @@ namespace Lama.BusinessLogic.Services
             doc.Coordinates = newLocation.Coordinates;
             StringContent content = new StringContent(JsonConvert.SerializeObject(doc), Encoding.UTF8, "application/json");
             await httpClient.PutAsync(uri, content);
+
+            var dbPhoto = await Context.Photos.FirstOrDefaultAsync(x => x.Id == newLocation.Id);
+            var oldLocation = dbPhoto.LocationId;
+            dbPhoto.LocationId = await locationService.CheckAdrress(newLocation.ShortLocation);
+            Context.Photos.Update(dbPhoto);
+            await Context.SaveChangesAsync();
+
+            var haveLocation = await Context.Photos.FirstOrDefaultAsync(x => x.LocationId == oldLocation);
+            if (haveLocation == null)
+            {
+                if (oldLocation.HasValue)
+                {
+                    await locationService.DeleteLocation(oldLocation.Value);
+                }
+            }
 
             return JsonConvert.SerializeObject(doc.Location);
         }

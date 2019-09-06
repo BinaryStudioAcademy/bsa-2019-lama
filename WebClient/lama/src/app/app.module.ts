@@ -22,6 +22,8 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
 import { HttpClientModule } from '@angular/common/http';
+import { LocationPageComponent } from '../app/components/location-page/location-page.component';
+import { LocationAlbumComponent } from '../app/components/location-page/location-album/location-album.component';
 import {
   SharedModule,
   ModalModule,
@@ -46,6 +48,7 @@ import { Ng2ImgToolsModule } from 'ng2-img-tools';
 import { AddPhotosToAlbumModalComponent } from './components/view-album-module/add-photos-to-album-modal/add-photos-to-album-modal.component';
 import { SharingPageComponent } from './components/shared-page/sharing-page//sharing-page.component';
 import { CategoriesPageComponent } from './components/categories-page/categories-page.component';
+import { ViewLocationComponent } from '../app/components/location-page/view-location/view-location.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +68,9 @@ import { CategoriesPageComponent } from './components/categories-page/categories
     ViewAlbumComponent,
     AddPhotosToAlbumModalComponent,
     SharedPageComponent,
+    LocationPageComponent,
+    LocationAlbumComponent,
+    ViewLocationComponent,
     SharedPageHeaderComponent,
     FavoriteDirective,
     CheckFavoriteDirective,

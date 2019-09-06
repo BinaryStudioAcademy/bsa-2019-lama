@@ -1,170 +1,187 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Photo.Domain.BlobModels;
 using Photo.BusinessLogic.Interfaces;
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.DataTransferObjects;
-
 using AutoMapper;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Nest;
 using Newtonsoft.Json;
+using Services.Models;
 
 namespace Photo.BusinessLogic.Services
 {
-    public class PhotoService : IPhotoService
-    {
-        private readonly IElasticStorage _elasticStorage;
-        private readonly IPhotoBlobStorage _storage;
-        private readonly IMessageService _messageService;
-        private readonly IMapper _mapper;
-        private readonly ImageCompareService _imageComporator;
-        private readonly string _blobUrl;
-        private readonly HttpClient _httpClient;
+	public class PhotoService : IPhotoService
+	{
+		private readonly IElasticStorage _elasticStorage;
+		private readonly IPhotoBlobStorage _storage;
+		private readonly IMessageService _messageService;
+		private readonly IMapper _mapper;
+		private readonly ImageCompareService _imageComporator;
+		private readonly string _blobUrl;
+		private readonly HttpClient _httpClient;
+		private readonly IConfiguration _configuration;
 
-        public PhotoService(IElasticStorage elasticStorage, IPhotoBlobStorage storage, IMessageService messageService, IMapper mapper, ImageCompareService imageComporator, string blobUrl)
-        {
-            _elasticStorage = elasticStorage;
-            _storage = storage;
-            _messageService = messageService;
-            _mapper = mapper;
-            _blobUrl = blobUrl;
-            _imageComporator = imageComporator;
-            _httpClient = new HttpClient();
-        }
+		public PhotoService(
+			IElasticStorage elasticStorage,
+			IPhotoBlobStorage storage,
+			IMessageService messageService,
+			IMapper mapper,
+			ImageCompareService imageComporator,
+			string blobUrl,
+			IConfiguration configuration)
+		{
+			_elasticStorage = elasticStorage;
+			_storage = storage;
+			_messageService = messageService;
+			_mapper = mapper;
+			_blobUrl = blobUrl;
+			_imageComporator = imageComporator;
+			_httpClient = new HttpClient();
+			_configuration = configuration;
+		}
 
-        public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
-        {
-            return _elasticStorage.Find(id, criteria);
-        }
+		public Task<IEnumerable<PhotoDocument>> Find(int id, string criteria)
+		{
+			return _elasticStorage.Find(id, criteria);
+		}
 
-        public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
-        {
-            var resultingDictionary = await _elasticStorage.FindFields(id, criteria);
-            for (var i = 0; i < resultingDictionary["thumbnails"].Count; i++)
-            {
-                resultingDictionary["thumbnails"][i] = await GetPhoto(resultingDictionary["thumbnails"][i]);
-            }
-            
-            return resultingDictionary;
-        }
+		public async Task<Dictionary<string, List<string>>> FindFields(int id, string criteria)
+		{
+			var resultingDictionary = await _elasticStorage.FindFields(id, criteria);
+			for (var i = 0; i < resultingDictionary["thumbnails"].Count; i++)
+			{
+				resultingDictionary["thumbnails"][i] = await GetPhoto(resultingDictionary["thumbnails"][i]);
+			}
 
-        public async Task<List<byte[]>> GetPhotos(List<string> values)
-        {
-            return await _storage.GetPhotos(values);
-        }
-        public async Task<string> GetPhoto(string blobId)
-        {
-            return await _storage.GetPhoto(blobId);
-        }
+			return resultingDictionary;
+		}
 
-        public async Task<string> GetAvatar(string blobId)
-        {
-            return await _storage.GetAvatar(blobId);
-        }
+		public async Task<List<byte[]>> GetPhotos(List<string> values)
+		{
+			return await _storage.GetPhotos(values);
+		}
 
-        public async Task<IEnumerable<PhotoDocument>> Get()
-        {
-            return await _elasticStorage.Get();
-        }
-        public Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
-        {
-            return _elasticStorage.GetUserPhotos(userId);
-        }
-        public async Task<int> CheckAuthorPhoto(Tuple<int, int> tuple)
-        {
-            return await _elasticStorage.CheckUserPhoto(tuple);
-        }
-        public async Task<PhotoDocument> Get(int elasticId)
-        {
-            return await _elasticStorage.Get(elasticId);
-        }
+		public async Task<string> GetPhoto(string blobId)
+		{
+			return await _storage.GetPhoto(blobId);
+		}
 
-        public async Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds)
-        {
-            var photos = new List<PhotoDocument>();
-            foreach (var item in elasticIds)
-            {
-                photos.Add(await _elasticStorage.Get(item));
-            }
-            return photos;
-        }
-        public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
-        {
-            return await _elasticStorage.GetUserPhotosRange(userId, startId, count);
-        }
+		public async Task<string> GetAvatar(string blobId)
+		{
+			return await _storage.GetAvatar(blobId);
+		}
 
-        public async Task Delete(int id)
-        {
-            await _elasticStorage.DeleteAsync(id);
-            await DeleteAllBlobsAsync(id);
-        }
+		public async Task<IEnumerable<PhotoDocument>> Get()
+		{
+			return await _elasticStorage.Get();
+		}
 
-        public async Task Update(PhotoDocument item)
-        {
-            await _elasticStorage.UpdateAsync(item);
-        }
+		public Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId)
+		{
+			return _elasticStorage.GetUserPhotos(userId);
+		}
 
-        public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
-        {
-            var filename = Path.GetFileName(updatePhotoDTO.BlobId);
-            var ext = Path.GetExtension(filename);
-            var file = filename.Replace(ext, "");
-            var base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
-            var newImageBlob = Convert.FromBase64String(base64);
-            await DeleteOldBlobsAsync(elasticId: updatePhotoDTO.Id);
-            var blobId = await _storage.LoadPhotoToBlob(newImageBlob, $"{filename}");
-            var updatedPhoto = new UpdatedPhotoResultDTO
-            {
-                BlobId = blobId,
-                Blob64Id = blobId,
-                Blob256Id = blobId
-            };
-            await _elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
-            var models = new List<ImageToProcessDTO>();
-            models.Add(new ImageToProcessDTO
-            {
-                ImageId = updatePhotoDTO.Id
-            });
-            _messageService.SendPhotoToThumbnailProcessor(models);
-            return updatedPhoto;
-        }
+		public async Task<int> CheckAuthorPhoto(Tuple<int, int> tuple)
+		{
+			return await _elasticStorage.CheckUserPhoto(tuple);
+		}
 
-        private async Task DeleteOldBlobsAsync(int elasticId)
-        {
-            var photoDocument = await Get(elasticId);
+		public async Task<PhotoDocument> Get(int elasticId)
+		{
+			return await _elasticStorage.Get(elasticId);
+		}
 
-            await _storage.DeleteFileAsync(photoDocument.BlobId);
-            await _storage.DeleteFileAsync(photoDocument.Blob64Id);
-            await _storage.DeleteFileAsync(photoDocument.Blob256Id);
-        }
+		public async Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds)
+		{
+			var photos = new List<PhotoDocument>();
+			foreach (var item in elasticIds)
+			{
+				photos.Add(await _elasticStorage.Get(item));
+			}
 
-        private async Task<string> ResetBlobAsync(int elasticId)
-        {
-            var photoDocument = await Get(elasticId);
+			return photos;
+		}
 
-            await _storage.DeleteFileAsync(photoDocument.BlobId);
-            await _storage.DeleteFileAsync(photoDocument.Blob64Id);
-            await _storage.DeleteFileAsync(photoDocument.Blob256Id);
+		public async Task<IEnumerable<PhotoDocument>> GetUserPhotosRange(int userId, int startId, int count)
+		{
+			return await _elasticStorage.GetUserPhotosRange(userId, startId, count);
+		}
 
-            return photoDocument.OriginalBlobId;
-        }
+		public async Task Delete(int id)
+		{
+			await _elasticStorage.DeleteAsync(id);
+			await DeleteAllBlobsAsync(id);
+		}
 
-        public async Task SendDuplicates(List<int> duplicates)
-        {
-            var photos = new List<PhotoDocument>();
-            foreach (var value in duplicates)
-            {
-                var photo = await _elasticStorage.Get(value);
-                photos.Add(photo);
-            }
-            string uri = $"http://localhost:5000/api/photos";
+		public async Task Update(PhotoDocument item)
+		{
+			await _elasticStorage.UpdateAsync(item);
+		}
+
+		public async Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO)
+		{
+			var filename = Path.GetFileName(updatePhotoDTO.BlobId);
+			var ext = Path.GetExtension(filename);
+			var file = filename.Replace(ext, "");
+			var base64 = ConvertToBase64(imageUrl: updatePhotoDTO.ImageBase64);
+			var newImageBlob = Convert.FromBase64String(base64);
+			await DeleteOldBlobsAsync(elasticId: updatePhotoDTO.Id);
+			var blobId = await _storage.LoadPhotoToBlob(newImageBlob, $"{filename}");
+			var updatedPhoto = new UpdatedPhotoResultDTO
+			{
+				BlobId = blobId,
+				Blob64Id = blobId,
+				Blob256Id = blobId
+			};
+			await _elasticStorage.UpdatePartiallyAsync(updatePhotoDTO.Id, updatedPhoto);
+			var models = new List<ImageToProcessDTO>();
+			models.Add(new ImageToProcessDTO
+			{
+				ImageId = updatePhotoDTO.Id
+			});
+			_messageService.SendPhotoToThumbnailProcessor(models);
+			return updatedPhoto;
+		}
+
+		private async Task DeleteOldBlobsAsync(int elasticId)
+		{
+			var photoDocument = await Get(elasticId);
+
+			await _storage.DeleteFileAsync(photoDocument.BlobId);
+			await _storage.DeleteFileAsync(photoDocument.Blob64Id);
+			await _storage.DeleteFileAsync(photoDocument.Blob256Id);
+		}
+
+		private async Task<string> ResetBlobAsync(int elasticId)
+		{
+			var photoDocument = await Get(elasticId);
+
+			await _storage.DeleteFileAsync(photoDocument.BlobId);
+			await _storage.DeleteFileAsync(photoDocument.Blob64Id);
+			await _storage.DeleteFileAsync(photoDocument.Blob256Id);
+
+			return photoDocument.OriginalBlobId;
+		}
+
+		public async Task SendDuplicates(List<int> duplicates)
+		{
+			var photos = new List<PhotoDocument>();
+			foreach (var value in duplicates)
+			{
+				var photo = await _elasticStorage.Get(value);
+				photos.Add(photo);
+			}
+
+			string uri = _configuration["LamaApiUrl"];
             var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");

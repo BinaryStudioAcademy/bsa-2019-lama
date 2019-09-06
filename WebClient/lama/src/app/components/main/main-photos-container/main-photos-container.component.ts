@@ -6,7 +6,8 @@ import {
   ViewContainerRef,
   ViewChild,
   DoCheck,
-  OnDestroy
+  OnDestroy,
+  HostListener
 } from '@angular/core';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { PhotoUploadModalComponent } from '../../modal/photo-upload-modal/photo-upload-modal.component';
@@ -46,12 +47,12 @@ export class MainPhotosContainerComponent
   currentPhotoIndex: number;
   unsubscribe = new Subject();
   shared: SharedService;
+  showAddToAlbumModal = false;
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
   @ViewChild('modalUploadPhoto', { static: true, read: ViewContainerRef })
   private modalUploadPhotoEntry: ViewContainerRef;
-
 
   constructor(
     private resolver: ComponentFactoryResolver,
@@ -122,7 +123,10 @@ export class MainPhotosContainerComponent
   }
 
   public GetUserPhotosRange(userId: number, startId: number, count: number) {
-    if (this.shared.isSearchTriggered && this.shared.isSearchTriggeredAtLeastOnce) {
+    if (
+      this.shared.isSearchTriggered &&
+      this.shared.isSearchTriggeredAtLeastOnce
+    ) {
       this.photos = this.shared.foundPhotos;
       this.showSpinner = false;
       return;
@@ -144,7 +148,6 @@ export class MainPhotosContainerComponent
         },
         error => this.notifier.notify('error', 'Error getting photos')
       );
-
   }
 
   GetPhotos() {
@@ -268,7 +271,7 @@ export class MainPhotosContainerComponent
         this.currentUser.id,
         this.photos.length,
         this.numberLoadPhoto
-        );
+      );
     }
   }
 
@@ -285,7 +288,7 @@ export class MainPhotosContainerComponent
     this.photos[index] = Object.assign({}, updatedPhoto);
   }
 
-  private deleteImages(): void {
+  deleteImages(): void {
     if (this.isAtLeastOnePhotoSelected) {
       this.selectedPhotos.forEach(element => {
         this.fileService
@@ -344,6 +347,22 @@ export class MainPhotosContainerComponent
       this.photos.length,
       this.numberLoadPhoto
     );
+  }
+
+  handleDropdownDisplay(dropDown: HTMLElement) {
+    dropDown.style.display = dropDown.style.display
+      ? dropDown.style.display === 'none'
+        ? 'block'
+        : 'none'
+      : 'block';
+  }
+
+  handleDropdownOutsideClick(dropDown: HTMLElement) {
+    dropDown.style.display = 'none';
+  }
+
+  addToAlbum() {
+    this.showAddToAlbumModal = true;
   }
 
   ngOnDestroy(): void {

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -20,17 +21,19 @@ namespace Lama.BusinessLogic.Services
     public class SharingAlbumService : BaseService<Album>
     {
         private IPhotoService _photoService;
+        private IAlbumService albumService;
         private IMapper _mapper;
-        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper)
+        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper, IAlbumService albumService)
             : base(context)
         {
             this._photoService = photoService;
             this._mapper = mapper;
+			this.albumService = albumService;
         }
 
-        public async Task<Album> Get(int id)
+        public async Task<ReturnAlbumDTO> Get(int id)
         {
-            throw new System.NotImplementedException();
+            return await albumService.FindAlbum(id);
         }
 
         public async Task<IEnumerable<ReturnAlbumDTO>> GetSharedAlbums(int userId)
@@ -57,7 +60,7 @@ namespace Lama.BusinessLogic.Services
             foreach (var id in photoIds)
             {
                 var item = await _photoService.Get(id);
-                photosList.Add(item);
+                photosList.Add(_mapper.Map<PhotoDocument>(item));
             }
 
             IEnumerable<PhotoDocumentDTO> photosDto = _mapper.Map<PhotoDocumentDTO[]>(photosList);
@@ -67,11 +70,18 @@ namespace Lama.BusinessLogic.Services
             List<ReturnAlbumDTO> albums = new List<ReturnAlbumDTO>();
             foreach (PhotoDocumentDTO photoDto in photosDto)
             {
-                photoDto.Reactions =
-                    _mapper.Map<LikeDTO[]>(
-                        Context.Likes
-                            .Where(l => l.PhotoId == photoDto.Id)
-                            .ToArray());
+                try
+                {
+                    photoDto.Reactions =
+                        _mapper.Map<LikeDTO[]>(
+                            Context.Likes
+                                .Where(l => l.PhotoId == photoDto.Id)
+                                .ToArray());
+                }
+                catch (Exception e)
+                {
+
+                }
 
                 foreach (LikeDTO like in photoDto.Reactions)
                 {

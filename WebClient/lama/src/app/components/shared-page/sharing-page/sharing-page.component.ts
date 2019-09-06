@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { User } from 'src/app/models/User/user';
 import { SharingService } from 'src/app/services/sharing.service';
@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
   templateUrl: './sharing-page.component.html',
   styleUrls: ['./sharing-page.component.sass']
 })
-export class SharingPageComponent implements OnInit {
+export class SharingPageComponent implements OnInit, OnDestroy {
   albums: ViewAlbum[] = [];
   currentUser: User;
   ArchivePhotos = [];
@@ -33,7 +33,9 @@ export class SharingPageComponent implements OnInit {
 
   ngOnInit() {
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId).subscribe(
+    this.httpService.getData('users/' + userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       u => {
         this.currentUser = u;
         this.getSharedAlbums();
@@ -51,7 +53,6 @@ export class SharingPageComponent implements OnInit {
         if (!this.albums.length) {
           this.isAnyItems = false;
         }
-        console.log(this.albums);
       });
   }
 
@@ -96,5 +97,10 @@ export class SharingPageComponent implements OnInit {
     zip.generateAsync({ type: 'blob' }).then(content => {
       saveAs(content, name);
     });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

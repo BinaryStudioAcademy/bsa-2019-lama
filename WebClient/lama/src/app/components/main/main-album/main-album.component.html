@@ -15,12 +15,12 @@
       <a *ngIf="!isShared" class="dropdown-item" (click)="openShareModal()"
         >Share</a
       >
-      <a *ngIf="!isFake" class="dropdown-item" (click)="toggleSetCoverModal()"
+      <a class="dropdown-item" (click)="toggleSetCoverModal()"
         >Set cover</a
       >
       <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
       <a
-        *ngIf="!isFake && !isFavorite"
+        *ngIf="!isFavorite"
         class="dropdown-item"
         (click)="addPhotos($event)"
         >Add Photos</a
@@ -60,11 +60,11 @@
     <img
       src="{{ imageUrl || imgname }}"
       (click)="clickPerformed()"
-      *ngIf="!isShared || (isShared && album.photoAlbums.length <= 1)"
+      *ngIf="!isShared || isShared && (!album.photoAlbums || album.photoAlbums.length <= 1)"
     />
     <div
       class="many-photos"
-      *ngIf="isShared && album.photoAlbums.length > 1"
+      *ngIf="isShared && album.photoAlbums && album.photoAlbums.length > 1"
       (click)="clickPerformed()"
     >
       <img src="{{ sharedAlbumCover[0] || imgname }}" />

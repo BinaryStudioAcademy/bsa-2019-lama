@@ -12,6 +12,7 @@ using Photo.BusinessLogic.Interfaces;
 using Photo.Domain.Settings;
 using Photo.Domain.DataTransferObjects;
 using RabbitMQ.Client.Events;
+using Serilog;
 using Timer = System.Timers.Timer;
 
 namespace Photo.BusinessLogic.Services
@@ -30,13 +31,15 @@ namespace Photo.BusinessLogic.Services
             messageServiceSettings.PhotoProcessorConsumer.Received += Get;
             //messageServiceSettings.PhotoProcessorConsumer.Received += GetPhotoCategory;
             messageServiceSettings.PhotoProcessorConsumer.Connect();
+            Log.Logger.Information("PhotoAPI messageService constuctor");
         }
 
 
 
         public void Dispose()
         {
-            _serviceData.PhotoProcessorProducer?.Dispose();
+            serviceData.PhotoProcessorProducer?.Dispose();
+            Log.Logger.Information("PhotoApi producer disposed");
         }
 
 
@@ -46,6 +49,7 @@ namespace Photo.BusinessLogic.Services
             {
                 case "getDuplicates":
                 {
+                    Log.Logger.Information("Duplication received");
                     var originalList = Enumerable.Range(0, args.Body.Length / 4)
                         .Select(i => BitConverter.ToInt32(args.Body, i * 4))
                         .ToList();
@@ -62,6 +66,9 @@ namespace Photo.BusinessLogic.Services
                     break;
                 }
             }
+            Log.Logger.Information("Trying to set anknowledge(photoApi)");
+            serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
+            Log.Logger.Information("Anknowvledge is set");
         }
         
 

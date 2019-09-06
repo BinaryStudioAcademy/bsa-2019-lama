@@ -106,6 +106,12 @@ namespace Lama.Controllers
             return await _service.GetAll();
         }
 
+        [HttpGet("{id}")]
+        public async Task<PhotoDocumentDTO> GetPhoto(int id)
+        {
+            return await _service.Get(id);
+        }
+
         [HttpGet("user/{id}")]
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id)
         {
@@ -124,7 +130,7 @@ namespace Lama.Controllers
 
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
-        public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
+        public async Task SendDuplicates(IEnumerable<int> photos)
         {
             await _service.SendDuplicates(photos);
         }
@@ -142,6 +148,7 @@ namespace Lama.Controllers
             return await _service.GetPhoto(blobId);
         }
 
+        [AllowAnonymous]
         [HttpGet("avatars/{blobId}")]
         public async Task<string> GetAvatar(string blobId)
         {

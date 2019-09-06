@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
 using Services.Models;
+using Serilog;
 
 namespace Processors.BusinessLogic.Services
 {
@@ -40,28 +41,41 @@ namespace Processors.BusinessLogic.Services
             _comparer = comparer;
             _consumer.Received += Get;
             _consumer.Connect();
+            Log.Logger.Information("Processor messageService constructor");
+
         }
 
         public void Dispose()
         {
             _consumer?.Dispose();
+            Log.Logger.Information("Consumer disposed(processor)");
         }
 
         public async void Get(object sender, BasicDeliverEventArgs args)
         {
-            var message = Encoding.ASCII.GetString(args.Body);
-            var obj = JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message);
-            await HandleReceivedDataAsync(obj);
-            _consumer.SetAcknowledge(args.DeliveryTag, true);
+			try
+			{
+				var message = Encoding.ASCII.GetString(args.Body);
+				var obj = JsonConvert.DeserializeObject<List<ImageToProcessDTO>>(message);
+				await HandleReceivedDataAsync(obj);
+                Log.Logger.Information("Trying to set acknowlende (processor)");
+				_consumer.SetAcknowledge(args.DeliveryTag, true);
+                Log.Logger.Information("Anknowledge is set(processor)");
+			}
+			catch (Exception e)
+			{
+				Log.Logger.Error(e, "During processing message from the queue");
+            }
         }
 
-        public async Task RunAsync(int millisecondsTimeout)
+        public void Run()
         {
             Console.WriteLine("running");
         }
 
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
+            Log.Logger.Information("Received photos");
             var imageToProcessDtos = images.ToList();
             foreach (var image in imageToProcessDtos)
             {
@@ -88,8 +102,10 @@ namespace Processors.BusinessLogic.Services
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
                     new HashDTO { Hash = new List<bool>(hash.HashData)});
             }
+            Log.Logger.Information("Updated hashes");
             await FindDuplicates(imageToProcessDtos);
             await SendImageCategories(imageToProcessDtos.Select(x => x.ImageId));
+            Log.Logger.Information("Duplicates found");
         }
 
         private async Task SendImageCategories(IEnumerable<long> imageToProcessIds)
@@ -138,8 +154,11 @@ namespace Processors.BusinessLogic.Services
             }
 
             var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
+            Log.Logger.Information("trying to send duplicates to PhotoAPI");
             _producer.Send(bytes);
+            Log.Logger.Information("Duplicates sent to PhotoAPI");
         }
+
         private async Task<byte[]> GetImage(ImageType imageType, string fileName)
         {
             switch (imageType)

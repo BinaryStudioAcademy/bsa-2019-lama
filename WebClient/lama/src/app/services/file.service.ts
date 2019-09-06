@@ -30,10 +30,16 @@ export class FileService {
   };
 
   sendPhotos(photos: Photo[]): Observable<UploadPhotoResultDTO[]> {
-    console.log(photos);
     return this.client.post<UploadPhotoResultDTO[]>(
       `${environment.lamaApiUrl}/api/photo`,
       photos,
+      this.httpOptions
+    );
+  }
+
+  get(id: number): Observable<PhotoRaw> {
+    return this.client.get<PhotoRaw>(
+      `${environment.lamaApiUrl}/api/photo/${id}`,
       this.httpOptions
     );
   }

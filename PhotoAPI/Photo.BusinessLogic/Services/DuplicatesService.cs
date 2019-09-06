@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Photo.DataAccess.Interfaces;
 using Photo.Domain.BlobModels;
@@ -16,34 +17,21 @@ namespace Photo.BusinessLogic.Services
         private readonly IElasticStorage _elasticStorage;
         private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public DuplicatesService(IElasticStorage elasticStorage, IMapper mapper)
+        public DuplicatesService(IElasticStorage elasticStorage, IMapper mapper, IConfiguration configuration)
         {
             _elasticStorage = elasticStorage;
             _mapper = mapper;
             _httpClient = new HttpClient();
-        }
-        public async Task SendDuplicates(IEnumerable<int> duplicates)
+            _configuration = configuration;
+        }        
+
+        public async Task SendDuplicates(List<int> duplicates)
         {
-            var photos = new List<PhotoDocument>();
-            foreach (var value in duplicates)
-            {
-                try
-                {
-                    var photo = await _elasticStorage.Get(value);
-                    photos.Add(photo);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-            }
-            var uri = $"http://localhost:5000/api/photo/duplicates_response";
-            var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
-
-            var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync(uri, content);
+            string uri = _configuration["LamaApiUrl"];
+            StringContent content = new StringContent(JsonConvert.SerializeObject(duplicates), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}/api/photo/duplicates_response", content);
         }
     }
 }

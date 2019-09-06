@@ -32,7 +32,7 @@ export class MainLeftActionsSidebarComponent implements OnInit {
       {
         title: 'Places',
         icon: 'place',
-        route: ''
+        route: 'location'
       },
       {
         title: 'Categories',

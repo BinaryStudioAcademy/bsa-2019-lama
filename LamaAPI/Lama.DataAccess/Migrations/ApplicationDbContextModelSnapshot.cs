@@ -131,11 +131,7 @@ namespace Lama.DataAccess.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Locations");
                 });
@@ -146,16 +142,20 @@ namespace Lama.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Activity");
+
                     b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsRead");
 
-                    b.Property<int>("SenderId");
+                    b.Property<string>("Payload");
+
+                    b.Property<int?>("SenderId");
 
                     b.Property<string>("Text")
                         .IsRequired();
 
-                    b.Property<int>("UserId");
+                    b.Property<int?>("UserId");
 
                     b.HasKey("Id");
 
@@ -174,9 +174,13 @@ namespace Lama.DataAccess.Migrations
 
                     b.Property<int>("CategoryId");
 
+                    b.Property<int?>("LocationId");
+
                     b.Property<int>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("UserId");
 
@@ -376,19 +380,11 @@ namespace Lama.DataAccess.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Lama.Domain.DbModels.Location", b =>
-                {
-                    b.HasOne("Lama.Domain.DbModels.User", "User")
-                        .WithMany("Locations")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Lama.Domain.DbModels.Notification", b =>
                 {
                     b.HasOne("Lama.Domain.DbModels.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("SenderId");
 
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Notifications")
@@ -397,6 +393,10 @@ namespace Lama.DataAccess.Migrations
 
             modelBuilder.Entity("Lama.Domain.DbModels.Photo", b =>
                 {
+                    b.HasOne("Lama.Domain.DbModels.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
                     b.HasOne("Lama.Domain.DbModels.User", "User")
                         .WithMany("Photos")
                         .HasForeignKey("UserId")

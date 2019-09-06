@@ -26,6 +26,8 @@ import { GoogleMapComponent } from './google-map/google-map.component';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { CalendarModule } from '../../calendar.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AlbumItemComponent } from './select-album-modal/album-item/album-item.component';
+import { SelectAlbumModalComponent } from './select-album-modal/select-album-modal.component';
 
 @NgModule({
   imports: [
@@ -61,7 +63,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     IsBlockedDirective,
     MemeColorDirective,
     DeleteModalComponent,
-    GoogleMapComponent
+    GoogleMapComponent,
+    AlbumItemComponent,
+    SelectAlbumModalComponent
   ],
   exports: [
     PhotoModalComponent,
@@ -73,7 +77,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ShareAlbumComponent,
     ShareAlbumByLinkComponent,
     ShareAlbumByEmailComponent,
-    DeleteModalComponent
+    DeleteModalComponent,
+    SelectAlbumModalComponent
   ],
   entryComponents: [
     PhotoUploadModalComponent,

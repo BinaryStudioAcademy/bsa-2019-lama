@@ -6,10 +6,16 @@ using Lama.Domain.DTO.Comments;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lama.DataAccess;
+using Lama.Domain.BlobModels;
+using Lama.Domain.DTO.Photo;
+using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -19,16 +25,21 @@ namespace Lama.BusinessLogic.Services
         IUnitOfWork unitOfWork;
         IPhotoService photoService;
         IMapper mapper;
+        private HttpClient httpClient;
         ApplicationDbContext Context;
         INotificationService notificationService;
+
+        private string url;
         // CONSTRUCTORS
-        public CommentService(ApplicationDbContext Context,IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper, INotificationService notificationService)
+        public CommentService(ApplicationDbContext Context,IUnitOfWork unitOfWork, IPhotoService photoService, IMapper mapper, INotificationService notificationService, string url)
         {
             this.unitOfWork = unitOfWork;
             this.photoService = photoService;
             this.mapper = mapper;
             this.Context = Context;
             this.notificationService = notificationService;
+            this.url = url;
+            httpClient = new HttpClient();
         }
 
         // METHODS
@@ -62,7 +73,6 @@ namespace Lama.BusinessLogic.Services
 
             await unitOfWork.GetRepository<Comment>().InsertAsync(comment);
             await unitOfWork.SaveAsync();
-
             var photo  = await Context.Photos.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == createCommentDTO.PhotoId);          
             var user = photo.User;
             var ID = user.Id;
@@ -70,7 +80,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == createCommentDTO.UserId);
                 string noti = "Commented your photo";
-                await notificationService.SendNotification(ID, user, noti);
+                await notificationService.SendNotification(ID, user, noti, ActivityType.Comment, new List<int>() {photo.Id});
             }
             return comment.Id;
         }

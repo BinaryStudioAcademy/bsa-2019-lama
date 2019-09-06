@@ -20,11 +20,13 @@ import { NotifierService } from 'angular-notifier';
 import { environment } from '../../../../environments/environment';
 import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
 import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO';
 import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
+import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -38,6 +40,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   private entry: ViewContainerRef;
   @ViewChild('duplicatesModal', { static: true, read: ViewContainerRef })
   private duplicatesEntry: ViewContainerRef;
+  @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
+  private modalPhotoEntry: ViewContainerRef;
   private resolver: ComponentFactoryResolver;
   avatarUrl: string;
   isActive = false;
@@ -59,18 +63,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   latestSearchAttempt = '';
   tagNames = [];
   showModal = false;
-  duplicates: UploadPhotoResultDTO[] = [];
-  systemNotification = {
-    id: 0,
-    text: 'Duplicates found',
-    date: Date.now(),
-    isRead: false,
-    sender: {
-      name: 'System notification',
-      imageUrl: ''
-    }
-  };
+  duplicates: number[] = [];
   shared: SharedService;
+  photo;
 
   constructor(
     public auth: AuthService,
@@ -87,6 +82,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   async ngOnInit() {
+    if (!this.auth.token) {
+      return;
+    }
     this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
@@ -100,6 +98,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         u => {
           this.notification = u.reverse();
           this.checkNotification(this.notification);
+          console.log(u);
+          u.forEach(item => {
+            if (item.activity === 2) {
+              this.duplicates = JSON.parse(item.payload);
+            } else {
+              this.photo = JSON.parse(item.payload);
+            }
+          });
         },
         error => this.notifier.notify('error', 'Error loading nofitications')
       );
@@ -110,7 +116,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .subscribe(
         u => {
           if (u.photoUrl) {
-            if (u.photoUrl.indexOf('base64') === -1) {
+            if (u.photoUrl.indexOf('assets') === -1) {
               this.file
                 .getPhoto(u.photoUrl)
                 .pipe(takeUntil(this.unsubscribe))
@@ -123,6 +129,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         error => this.notifier.notify('error', 'Error loading user')
       );
   }
+
   sendIsRead(id) {
     this.notificationService
       .sendIsRead(id)
@@ -146,7 +153,17 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   deleteDuplicatesHandler(event: number[]) {
     this.shared.deletedPhotos = event;
     this.duplicates = [];
-    this.checkNotification(this.notification.filter(i => i.id === 0));
+  }
+
+  openPhoto(eventArgs) {
+    this.file.get(eventArgs).subscribe(photo => {
+      this.modalPhotoEntry.clear();
+      const factory = this.resolver.resolveComponentFactory(
+        PhotoModalComponent
+      );
+      const componentRef = this.modalPhotoEntry.createComponent(factory);
+      componentRef.instance.photo = photo;
+    });
   }
 
   MarkAllAsRead() {
@@ -177,10 +194,11 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       if (notification) {
         this.addNotification(notification);
       }
-    });
-    this.Hub.on('DuplicatesFound', (duplicates: UploadPhotoResultDTO[]) => {
-      this.duplicates = duplicates;
-      this.addNotification(this.systemNotification);
+      if (notification.activity === 2) {
+        this.duplicates = JSON.parse(notification.payload);
+      } else {
+        this.photo = JSON.parse(notification.payload);
+      }
     });
   }
 
@@ -346,7 +364,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     });
   }
 
-  openModal() {
+  openModal(id: number) {
     this.duplicatesEntry.clear();
     const factory = this.resolver.resolveComponentFactory(
       DuplicatesModalComponent
@@ -355,17 +373,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     componentRef.instance.Change.subscribe(data => {
       this.deleteDuplicatesHandler(data);
     });
-    componentRef.instance.receivedDuplicates = this.duplicates;
+    componentRef.instance.receivedIds = this.duplicates;
+    this.sendDelete(id);
+    this.notification = this.notification.filter(i => i.id !== id);
+    this.checkNotification(this.notification);
   }
 
   modalHandler(event) {
-    this.openModal();
-  }
-
-  deleteSystemNotification(event) {
-    this.duplicates = [];
-    this.notification = this.notification.filter(z => z.id !== event);
-    this.checkNotification(this.notification);
+    // this.openModal();
   }
 
   markRead(id: number) {
