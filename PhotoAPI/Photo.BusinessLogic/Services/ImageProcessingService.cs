@@ -26,7 +26,7 @@ namespace Photo.BusinessLogic.Services
 
             var content = new StringContent(JsonConvert.SerializeObject(toString), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync(uri, content);
+            var response = await _httpClient.PostAsync($"{uri}/api/photo/photoCategory", content);
         }
     }
 }
