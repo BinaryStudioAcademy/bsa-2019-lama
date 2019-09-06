@@ -29,6 +29,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AlbumItemComponent } from './select-album-modal/album-item/album-item.component';
 import { SelectAlbumModalComponent } from './select-album-modal/select-album-modal.component';
 import { Ng2CarouselamosModule } from 'ng2-carouselamos';
+import { CarouseleComponentComponent } from '../main/carousele-component/carousele-component.component';
 
 @NgModule({
   imports: [
@@ -37,8 +38,8 @@ import { Ng2CarouselamosModule } from 'ng2-carouselamos';
     UiModule,
     BrowserAnimationsModule,
     CalendarModule,
-    NotificationModule,
     Ng2CarouselamosModule,
+    NotificationModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAurCxOEuKDAeV4mGW0Xrf2AoLm-tY6pcI',
@@ -51,6 +52,7 @@ import { Ng2CarouselamosModule } from 'ng2-carouselamos';
     PhotoModalComponent,
     PhotoUploadModalComponent,
     EditModalComponent,
+    CarouseleComponentComponent,
     CropImageComponent,
     RotateImageComponent,
     ShareModalComponent,
@@ -96,4 +98,4 @@ import { Ng2CarouselamosModule } from 'ng2-carouselamos';
   ],
   bootstrap: [DatePickerComponent]
 })
-export class ModalModule {}
+export class ModalModule { }

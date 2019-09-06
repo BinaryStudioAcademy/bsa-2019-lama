@@ -22,7 +22,7 @@ import { SearchSuggestionData } from '../models/searchSuggestionData';
   providedIn: 'root'
 })
 export class FileService {
-  constructor(private client: HttpClient) {}
+  constructor(private client: HttpClient) { }
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -43,8 +43,8 @@ export class FileService {
     );
   }
 
-  getSimilarPhotos(id: number): Observable<PhotoRaw> {
-    return this.client.get<PhotoRaw>(
+  getSimilarPhotos(id: number): Observable<PhotoRaw[]> {
+    return this.client.get<PhotoRaw[]>(
       `${environment.lamaApiUrl}/api/photo/similar/${id}`
     );
   }

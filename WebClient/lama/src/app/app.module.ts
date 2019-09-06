@@ -76,7 +76,7 @@ import { ViewLocationComponent } from '../app/components/location-page/view-loca
     SharedPageAlbumComponent,
     SetAlbumCoverModalComponent,
     ChooseAlbumCoverComponent,
-    DuplicatesModalComponent
+    DuplicatesModalComponent,
   ],
   imports: [
     Ng2ImgToolsModule,
@@ -108,4 +108,4 @@ import { ViewLocationComponent } from '../app/components/location-page/view-loca
   bootstrap: [AppComponent],
   entryComponents: [AddPhotosToAlbumModalComponent, DuplicatesModalComponent]
 })
-export class AppModule {}
+export class AppModule { }
