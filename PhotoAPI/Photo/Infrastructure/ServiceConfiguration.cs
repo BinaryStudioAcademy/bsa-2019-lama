@@ -17,6 +17,7 @@ using Photo.DataAccess.Interfaces;
 using Photo.Infrastructure;
 using AutoMapper;
 using Microsoft.Azure.Storage;
+using Serilog;
 using NestConnectionSettings = Nest.ConnectionSettings;
 using QueueConnectionSettings = Services.Models.ConnectionSettings;
 
@@ -79,6 +80,7 @@ namespace Photo.Infrastructure
 
 		private static MessageService MessageServiceFactory(IServiceProvider serviceProvider, IConfiguration configuration)
 		{
+			Log.Logger.Error($"{configuration["LamaApiUrl"]} lama api url");
 			var connectionProvider = serviceProvider.GetService<IConnectionProvider>();
 
 			var messageServiceSettings = new MessageServiceSettings()
