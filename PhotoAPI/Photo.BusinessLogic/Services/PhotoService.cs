@@ -347,7 +347,7 @@ namespace Photo.BusinessLogic.Services
                 bool doc = false;
                 try
                 {
-                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}/{element.BlobId}")
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
                         .Select(existingUrl => webClient.DownloadData(existingUrl))
                         .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
                 }

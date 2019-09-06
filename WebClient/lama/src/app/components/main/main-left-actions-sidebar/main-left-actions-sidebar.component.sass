@@ -14,7 +14,7 @@
   justify-content: center
   align-items: center
   height: 5rem
-  text-align: center           
+  text-align: center
   span
     color: black
   &:hover
@@ -30,7 +30,7 @@ nav
   left: 0
   background: transparent
 
-nav ul 
+nav ul
   text-align: center
 
 nav ul li
@@ -42,7 +42,7 @@ nav ul li
   transition: all .4s ease-out
   outline: none
 
-nav ul li:after 
+nav ul li:after
   position: absolute
   background: white
   color: black
@@ -55,42 +55,46 @@ nav ul li:after
   transform-origin: 0 100%
   transition: all .4s ease-out
 
-nav ul li.active:after 
+nav ul li.active:after
   color: #00d1b2
 
-nav ul li:nth-child(1):after 
+nav ul li:nth-child(1):after
   content: "Photos"
   line-height: 88px
 
-nav ul li:nth-child(2):after 
+nav ul li:nth-child(2):after
   content: "Albums"
   line-height: 88px
 
-nav ul li:nth-child(3):after 
+nav ul li:nth-child(3):after
   content: "Sharing"
   line-height: 85px
 
-nav ul li:nth-child(4):after 
+nav ul li:nth-child(4):after
   content: "Places"
   line-height: 70px
 
-nav ul li:nth-child(5):after 
+nav ul li:nth-child(5):after
+  content: "Categories"
+  line-height: 70px
+
+nav ul li:nth-child(6):after
   content: "Bin"
   line-height: 70px
 
-nav ul li:hover 
+nav ul li:hover
   transform: translateX(-70px)
 
 nav ul li:hover:after
   opacity: 1
   transform: perspective(400px) rotateY(0deg) scale(1)
 
-nav ul li > div 
+nav ul li > div
   display: inline-block
   padding: 25px 0
   background: transparent
 
-nav ul li div  
+nav ul li div
   position: relative
 
 

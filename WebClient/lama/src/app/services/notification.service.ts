@@ -18,15 +18,18 @@ export class NotificationService {
       `${environment.lamaApiUrl}/api/notification/${id}`
     );
   }
+
   sendIsRead(id: number) {
     return this.client.post(`${environment.lamaApiUrl}/api/notification`, id);
   }
+
   MarkAllAsRead(id: number) {
     return this.client.post(
       `${environment.lamaApiUrl}/api/notification/markAll`,
       id
     );
   }
+
   DeleteNotfication(id: number) {
     return this.client.delete(
       `${environment.lamaApiUrl}/api/notification/${id}`

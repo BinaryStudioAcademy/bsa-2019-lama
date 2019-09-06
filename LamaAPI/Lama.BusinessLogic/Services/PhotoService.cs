@@ -226,8 +226,7 @@ namespace Lama.BusinessLogic.Services
         }
 
         public async Task SendDuplicates(IEnumerable<PhotoDocumentDTO> photos)
-        {   
-            
+        {
             var user = await _unitOfWorkContext.GetRepository<User>().GetAsync(photos.FirstOrDefault().UserId);
             var items = _mapper.Map<IEnumerable<UploadPhotoResultDTO>>(photos);
             await _hub.Clients.User(user.Email).SendAsync("DuplicatesFound", photos);
@@ -356,6 +355,25 @@ namespace Lama.BusinessLogic.Services
             }
         }
 
+        public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId)
+        {
+            var top5Categories = _dbContext.Categories.ToList().OrderByDescending(category => category.Count).Take(5);
+            var top5CategoriesWithPhotos = new List<PhotoCategoryDTO>();
+            foreach (var category in top5Categories)
+            {
+                var photoDocuments = new List<PhotoDocumentDTO>();
+                var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id).Select(x => x.Id);
+                foreach (var id in photoIds)
+                {
+                    var photoDoc = await Get(id);
+                    photoDocuments.Add(_mapper.Map<PhotoDocumentDTO>(photoDoc));
+                }
+                top5CategoriesWithPhotos.Add(new PhotoCategoryDTO{Category = category.Name, Photos = photoDocuments});
+            }
+
+            return top5CategoriesWithPhotos;
+        }
+
         private async Task<int> ProcessPhotoCategoryAsync(int currentUserId,string category)
         {
             var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(existing => existing.Name == category);
@@ -387,6 +405,7 @@ namespace Lama.BusinessLogic.Services
         public Task MarkPhotoAsDeleted(int photoToDeleteId)
         {
             string uri = $"{_url}api/photos/{photoToDeleteId}";
+            RemoveFromCategoriesListById(photoToDeleteId);
 
             return _httpClient.DeleteAsync(uri);
         }
@@ -427,5 +446,25 @@ namespace Lama.BusinessLogic.Services
         }
         #endregion
 
+        private async void RemoveFromCategoriesListById(int photoToDeleteId)
+        {
+            var deletingPhoto = await _dbContext.Photos.FirstOrDefaultAsync(photo => photo.Id == photoToDeleteId);
+            if (deletingPhoto == null) return;
+            var photoCategory =
+                await _dbContext.Categories.FirstAsync(category => category.Id == deletingPhoto.CategoryId);
+            switch (photoCategory.Count)
+            {
+                case 0:
+                    return;
+                case 1:
+                    _dbContext.Categories.Remove(photoCategory);
+                    _dbContext.SaveChanges();
+                    break;
+                default:
+                    photoCategory.Count -= 1;
+                    _dbContext.SaveChanges();
+                    break;
+            }
+        }
     }
 }

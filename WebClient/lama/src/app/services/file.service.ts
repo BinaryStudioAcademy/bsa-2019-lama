@@ -17,6 +17,7 @@ import {
 import { UploadPhotoResultDTO } from '../models/Photo/uploadPhotoResultDTO';
 import { NewLike } from '../models/Reaction/NewLike';
 import { SearchSuggestionData } from '../models/searchSuggestionData';
+import { PhotoCategory } from '../models/photoCategory';
 
 @Injectable({
   providedIn: 'root'
@@ -130,6 +131,10 @@ export class FileService {
         this.httpOptions
       )
       .pipe(map(res => res as PhotoRaw[]));
+  }
+
+  getUserPhotosCategorized() {
+    return this.client.get<PhotoCategory[]>(`${environment.lamaApiUrl}/api/photo/categorized`);
   }
 
   receiveUsersPhotosRange(

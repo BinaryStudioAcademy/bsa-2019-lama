@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +113,14 @@ namespace Lama.Controllers
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
             return await _service.GetUserPhotos(currentUserId);
         }
+
+        [HttpGet("categorized")]
+        public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized()
+        {
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            return await _service.GetUserPhotosCategorized(currentUserId);
+        } 
 
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
