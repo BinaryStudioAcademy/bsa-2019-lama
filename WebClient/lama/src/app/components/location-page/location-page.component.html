@@ -1,5 +1,10 @@
+<spinner *ngIf="showSpinner"></spinner>
 <div class="content-header">
-    <h2 class="photos-container-title">Location albums:</h2>
+    <h2 *ngIf="!isAnyItems" class="photos-container-title">Location albums:</h2>
+    <div class="no-content" *ngIf="isAnyItems">
+        <h2>Nothing here yet..</h2>
+        <img src="assets/nocontent.jpg" alt="" />
+    </div>
     <div class="dropdown is-hoverable" *ngIf="AlbumsViewCities?.length">
         <div class="dropdown-trigger">
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
@@ -20,7 +25,6 @@
         </div>
     </div>
 </div>
-
 <div class="items-container-left" *ngIf="!albumCities">
     <div *ngFor="let item of AlbumsViewCities">
         <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></app-location-album>
@@ -31,5 +35,4 @@
         <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></app-location-album>
     </div>
 </div>
-
 <notifier-container></notifier-container>
