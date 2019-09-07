@@ -8,9 +8,6 @@
             <p>New album</p>
         </div>
     </a>
-    <div class="width-spin">
-        <spinner *ngIf="showSpinner"></spinner>
-    </div>
     <div *ngIf="showFavorite">
         <main-album [_album]="favorite" [currentUser]="currentUser" [_isFavorite]="true" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
@@ -20,5 +17,8 @@
         </main-album>
     </div>
     <template #CreateAlbumnContainer></template>
+</div>
+<div class="width-spin">
+    <spinner *ngIf="showSpinner"></spinner>
 </div>
 <notifier-container></notifier-container>
