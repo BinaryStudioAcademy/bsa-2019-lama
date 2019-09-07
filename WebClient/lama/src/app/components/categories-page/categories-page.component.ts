@@ -19,6 +19,7 @@ export class CategoriesPageComponent implements OnInit {
   unsubscribe = new Subject();
   categoryAlbums: ViewAlbum[];
   showSpinner = true;
+  hasAnyItems = true;
   currentUser: User;
   constructor(private httpService: HttpService, private router: Router, private fileService: FileService) { }
 
@@ -36,6 +37,9 @@ export class CategoriesPageComponent implements OnInit {
     .subscribe(receivedData => {
       this.categoryAlbums = receivedData.map(photoCategory =>
                       new ViewAlbum(-1, photoCategory.category, photoCategory.photos[0], photoCategory.photos));
+      // if (this.categoryAlbums.length > 0) {
+      //   this.hasAnyItems = false;
+      // }
       this.showSpinner = false;
     });
   }

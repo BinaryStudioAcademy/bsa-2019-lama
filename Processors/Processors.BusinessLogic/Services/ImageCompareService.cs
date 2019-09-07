@@ -84,7 +84,7 @@ namespace Processors.BusinessLogic.Services
                 }
                 catch (Exception e)
                 {
-
+                    // ignored
                 }
             }
             return duplicatesFound;
