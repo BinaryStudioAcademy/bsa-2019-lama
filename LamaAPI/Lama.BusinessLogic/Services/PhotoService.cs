@@ -445,6 +445,22 @@ namespace Lama.BusinessLogic.Services
             var locationId = 0;
             foreach (var photoToDelete in photosToDelete)
             {
+                var phots = _dbContext.PhotoAlbums.Where(x => x.PhotoId == photoToDelete.Id);
+                _dbContext.PhotoAlbums.RemoveRange(phots);
+                await _dbContext.SaveChangesAsync();
+
+                var haveCover  = _dbContext.Albums.Where(x => x.CoverId == photoToDelete.Id);
+                if(haveCover.Count() != 0)
+                {
+                    foreach(var item in haveCover)
+                    {
+                        item.CoverId = null;
+                        item.Photo = null;
+                    }
+                    _dbContext.Albums.UpdateRange(haveCover);
+                    await _dbContext.SaveChangesAsync();
+                }
+
                 var photo = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoToDelete.Id);
                 if(photo.LocationId.HasValue)
                 {
