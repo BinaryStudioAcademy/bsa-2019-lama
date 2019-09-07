@@ -44,7 +44,8 @@ export class CategoriesPageComponent implements OnInit {
               -1,
               photoCategory.category,
               photoCategory.photos[0],
-              photoCategory.photos
+              photoCategory.photos,
+              this.currentUser
             )
         );
         this.showSpinner = false;

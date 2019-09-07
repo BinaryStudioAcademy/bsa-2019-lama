@@ -21,6 +21,7 @@ using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Reaction;
 using System.Threading;
 using System.Net.Http.Headers;
+using Lama.Domain.DTO.User;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -350,6 +351,7 @@ namespace Lama.BusinessLogic.Services
         public async Task<List<ReturnAlbumDTO>> FindAll(int UserId)
         {
             var result = await Context.Albums
+                .Include(u => u.User)
                 .Include(t => t.PhotoAlbums)
                  .ThenInclude(x => x.Photo)
                 .Include(x => x.Photo)
@@ -369,7 +371,8 @@ namespace Lama.BusinessLogic.Services
                 var album = new ReturnAlbumDTO()
                 {
                     Id = item.Id,
-                    Title = item.Title
+                    Title = item.Title,
+                    User = _mapper.Map<UserDTO>(item.User)
                 };
                 var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
                 if (item.Photo != null)
@@ -441,6 +444,7 @@ namespace Lama.BusinessLogic.Services
         {
             var result = await Context.Albums
                 .Include(t => t.PhotoAlbums)
+                .Include(u => u.User)
                 .Include(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id == Id);
 
@@ -474,6 +478,7 @@ namespace Lama.BusinessLogic.Services
             {
                 Id = result.Id,
                 Title = result.Title,
+                User = _mapper.Map<UserDTO>(result.User)
             };
             if (result.Photo != null)
             {
