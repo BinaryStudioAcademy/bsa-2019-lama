@@ -27,9 +27,9 @@ export class LandingLoginComponent implements OnInit, OnDestroy {
     this.afAuth.user
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      user => (this.user = user),
-      error => this.notifier.notify('error', 'Error loading')
-    );
+        user => (this.user = user),
+        error => this.notifier.notify('error', 'Error loading')
+      );
   }
 
   public openAuthWindow() {
