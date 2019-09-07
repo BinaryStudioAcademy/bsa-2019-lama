@@ -23,7 +23,9 @@ export class LocationPageComponent implements OnInit {
     private router: Router
   ) {}
   ArchivePhotos = [];
+  showSpinner = true;
   unsubscribe = new Subject();
+  isAnyItems = false;
   @Input() AlbumsViewCities: ViewAlbum[];
   @Input() AlbumsViewCountries: ViewAlbum[];
   albumCities = true;
@@ -34,6 +36,12 @@ export class LocationPageComponent implements OnInit {
     });
     this.locationService.getUserLocationAlbumsByCountry(userId).subscribe(x => {
       this.AlbumsViewCountries = x;
+      if (this.AlbumsViewCountries.length) {
+        this.isAnyItems = false;
+      } else {
+        this.isAnyItems = true;
+      }
+      this.showSpinner = false;
     });
   }
   public albumClicked(eventArgs: ViewAlbum) {
