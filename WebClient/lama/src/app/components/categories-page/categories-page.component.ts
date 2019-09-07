@@ -18,6 +18,7 @@ export class CategoriesPageComponent implements OnInit {
   unsubscribe = new Subject();
   categoryAlbums: ViewAlbum[];
   showSpinner = true;
+  hasAnyItems = true;
   currentUser: User;
   constructor(
     private httpService: HttpService,

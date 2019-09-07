@@ -46,14 +46,17 @@
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
     <div class="title">
-        <h2 class="title is-2" (focusout)="changeAlbumName()" (input)="album.title = $event.target.textContent" [textContent]="album.title" [(ngModel)]="album.title" contenteditable="true" ngDefaultControl>
+        <h2 *ngIf="!isCategoryAlbum" class="title is-2" (focusout)="changeAlbumName()" (input)="album.title = $event.target.textContent" [textContent]="album.title" [(ngModel)]="album.title" contenteditable="true" ngDefaultControl>
             {{ album.title }}
         </h2>
+        <h2 *ngIf="isCategoryAlbum" class="title is-2">
+          {{ album.title }}
+      </h2>
     </div>
     <div *ngIf="loading" class="items-container-centered">
         <div *ngFor="let item of album.photoAlbums">
             <main-photo [_photo]="item" [_id]="favorites.has(item.id) == true ? item.id : -1" (Click)="photoClicked($event)" (Select)="photoSelected($event)"></main-photo>
-        </div>        
+        </div>
         <div *ngIf="!album.photoAlbums?.length" class="title empty-album">
             <img src="assets/icon-no-image.svg" alt="" />
             <h3 class="title is-3">Album empty</h3>
