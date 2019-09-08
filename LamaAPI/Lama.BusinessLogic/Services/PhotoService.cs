@@ -386,7 +386,10 @@ namespace Lama.BusinessLogic.Services
                 foreach (var id in photoIds)
                 {
                     var photoDoc = await Get(id);
-                    photoDocuments.Add(_mapper.Map<PhotoDocumentDTO>(photoDoc));
+                    if (photoDoc.IsDeleted == false)
+                    {
+                        photoDocuments.Add(_mapper.Map<PhotoDocumentDTO>(photoDoc));
+                    }
                 }
                 top5CategoriesWithPhotos.Add(new PhotoCategoryDTO{Category = category.Name, Photos = photoDocuments});
             }
@@ -504,7 +507,6 @@ namespace Lama.BusinessLogic.Services
             if (deletingPhoto == null) return;
             var photoCategory =
                 await _dbContext.Categories.FirstOrDefaultAsync(category => category.Id == deletingPhoto.CategoryId);
-            deletingPhoto.CategoryId = 0;
             if(photoCategory == null) return;
             switch (photoCategory.Count)
             {
