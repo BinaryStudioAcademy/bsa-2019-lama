@@ -1,18 +1,15 @@
-<div id="container" *ngIf="imageUrls.length">
-
-    <div ng2-carouselamos class="slides-wrapper" [items]="imageUrls" [width]="360" [$prev]="prev" [$next]="next"
-        [$item]="item" (onSelectedItem)="selectedItem = $event.item; selectedIndex = $event.index"></div>
-    <ng-template #prev>
-        <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png" style="height: 32px;
+<div id="container" *ngIf="imageUrls.length && isEnabled">
+  <div ng2-carouselamos class="slides-wrapper" [items]="imageUrls" [width]="calculateWidth()" [$prev]="prev"
+    [$next]="next" [$item]="item" (onSelectedItem)="selectedItem = $event.item; selectedIndex = $event.index"></div>
+  <ng-template #prev>
+    <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-left-01-512.png" style="height: 32px; width: 32px;
         margin-left: 5rem;" />
-    </ng-template>
-    <ng-template #next>
-        <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-right-01-512.png" style="height: 32px;
+  </ng-template>
+  <ng-template #next>
+    <img src="https://cdn3.iconfinder.com/data/icons/faticons/32/arrow-right-01-512.png" style="height: 32px; width: 32px;
         margin-right: 5rem;" />
-    </ng-template>
-    <ng-template #item let-item let-i="index">
-        <!-- <div style="max-width: 200px"> -->
-        <img src="{{item}}">
-        <!-- </div> -->
-    </ng-template>
+  </ng-template>
+  <ng-template #item let-item let-i="index">
+    <img src="{{ item }}" />
+  </ng-template>
 </div>

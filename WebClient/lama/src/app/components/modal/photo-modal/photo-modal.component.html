@@ -18,14 +18,14 @@
       <!--image view-->
       <ng-template [ngIf]="!isDeleting && !isEditing">
         <div class="main-container">
-          <div class="main-photo-area">
+          <div class="main-photo-area" (mouseenter)="showCarousele=true" (mouseleave)="showCarousele=false">
             <!--photo-->
             <div class="main-photo">
               <!--image-->
               <spinner *ngIf="isShowSpinner"></spinner>
               <div class="photo" *ngIf="!isShowSpinner">
                 <img src="{{ imageUrl }}" alt="Image" />
-                <app-carousele-component [photoId]="photo.id">
+                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele">
 
                 </app-carousele-component>
               </div>

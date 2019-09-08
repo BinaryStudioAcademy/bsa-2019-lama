@@ -11,6 +11,8 @@ export class CarouseleComponentComponent implements OnInit {
   @Input() photoId: number;
   items: PhotoRaw[] = [];
   imageUrls: string[] = [];
+  style = false;
+  @Input() isEnabled: boolean;
 
   constructor(private fileService: FileService) { }
 
@@ -24,4 +26,11 @@ export class CarouseleComponentComponent implements OnInit {
     });
   }
 
+  calculateWidth() {
+    if (this.imageUrls.length <= 3) {
+      return this.imageUrls.length * 120;
+    } else {
+      return 360;
+    }
+  }
 }
