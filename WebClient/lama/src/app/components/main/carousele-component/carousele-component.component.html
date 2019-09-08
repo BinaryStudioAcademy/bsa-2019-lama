@@ -1,4 +1,4 @@
-<div id="container" *ngIf="isEnabled && imageUrls.length">
+<div id="container" *ngIf="isEnabled && imageUrls.length" [@fadeInOut]>
   <div ng2-carouselamos class="slides-wrapper" [items]="imageUrls" [width]="calculateWidth()" [$prev]="prev"
     [$next]="next" [$item]="item" (onSelectedItem)="selectedItem = $event.item; selectedIndex = $event.index"></div>
   <ng-template #prev>

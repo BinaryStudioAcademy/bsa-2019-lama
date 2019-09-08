@@ -1,12 +1,24 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { PhotoRaw } from 'src/app/models';
 import { FileService } from 'src/app/services';
+import { style, state, animate, transition, trigger } from '@angular/animations';
 
 
 @Component({
   selector: 'app-carousele-component',
   templateUrl: './carousele-component.component.html',
-  styleUrls: ['./carousele-component.component.sass']
+  styleUrls: ['./carousele-component.component.sass'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [   // :enter is alias to 'void => *'
+        style({ opacity: 0 }),
+        animate(500, style({ opacity: 1 }))
+      ]),
+      transition(':leave', [   // :leave is alias to '* => void'
+        animate(500, style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class CarouseleComponentComponent implements OnInit {
   @Input() photoId: number;
