@@ -195,7 +195,7 @@ namespace Photo.BusinessLogic.Services
         {
             var hash = new List<ImgHash>();
             var photo = await _elasticStorage.Get(photoId);
-            var comparisonResult = await _imageComporator.FindDuplicatesWithTollerance(photo.UserId, 95);
+            var comparisonResult = await _imageComporator.FindDuplicatesWithTollerance(photo.UserId, Convert.ToInt32(_configuration["minSimilarity"]));
             foreach (var item in comparisonResult)
             {
                 if (item.Count <= 0) continue;
