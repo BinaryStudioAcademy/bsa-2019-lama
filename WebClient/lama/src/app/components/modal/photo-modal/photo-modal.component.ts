@@ -485,7 +485,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', this.imageUrl, true);
     xhr.responseType = 'blob';
-    xhr.onload = function () {
+    xhr.onload = function() {
       const urlCreator = window.URL;
       const imageUrl = urlCreator.createObjectURL(this.response);
       const tag = document.createElement('a');
