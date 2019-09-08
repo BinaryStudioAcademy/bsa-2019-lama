@@ -191,6 +191,31 @@ namespace Photo.BusinessLogic.Services
             string bodyJson = await response.Content.ReadAsStringAsync();
         }
 
+		 public async Task<IEnumerable<PhotoDocumentDTO>> FindSimilarPhotos(int photoId)
+        {
+            var hash = new List<ImgHash>();
+            var photo = await _elasticStorage.Get(photoId);
+            var comparisonResult = await _imageComporator.FindDuplicatesWithTollerance(photo.UserId, Convert.ToInt32(_configuration["minSimilarity"]));
+            foreach (var item in comparisonResult)
+            {
+                if (item.Count <= 0) continue;
+                if (item.Select(i => i.PhotoId).Contains(photoId))
+                {
+                    hash = item;
+                    break;
+                }
+            }
+            hash.Remove(hash.FirstOrDefault(i => i.PhotoId == photoId));
+            var result = new List<PhotoDocumentDTO>();
+            foreach (var item in hash)
+            {
+                var photoDoc = await _elasticStorage.Get((int)item.PhotoId);
+                var photoDocDto = _mapper.Map<PhotoDocumentDTO>(photoDoc);
+                result.Add(photoDocDto);
+            }
+            return result;
+        }
+
         public async Task<CreateResponse> Create(PhotoDocument item)
         {
             return await _elasticStorage.CreateAsync(item);

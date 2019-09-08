@@ -379,6 +379,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     this.isDeleting = false;
   }
 
+  isAuthor() {
+    return this.album.user && this.currentUser.id === this.album.user.id;
+  }
+
   isFavorite() {
     return this.AlbumId === 0;
   }

@@ -96,6 +96,12 @@ namespace Photo.Controllers
             return await _photoService.FindDuplicates(id);
         }
 
+        [HttpGet("similar/{id}")]
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetSimilarPhotos(int id)
+        {
+            return await _photoService.FindSimilarPhotos(id);
+        }
+
         [HttpPost("ArchivePhotos")]
         public async Task<List<byte[]>> GetPhotos([FromBody] List<string> values)
         {

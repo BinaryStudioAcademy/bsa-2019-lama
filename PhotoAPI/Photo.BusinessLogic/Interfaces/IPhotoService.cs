@@ -13,6 +13,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> item);
         Task<string> CreateAvatar(CreatePhotoDTO item);
         Task SendDuplicates(List<int> duplicates);
+        Task<IEnumerable<PhotoDocumentDTO>> FindSimilarPhotos(int photoId);
         Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates);
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds);

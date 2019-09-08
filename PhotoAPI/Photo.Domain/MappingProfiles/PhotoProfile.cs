@@ -17,6 +17,8 @@ namespace Photo.Domain.MappingProfiles
                 photoDoc => photoDoc.MapFrom(data => JsonConvert.DeserializeObject<IEnumerable<ImageTag>>(data.Tags)));
             CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.Tags,
                 dto => dto.MapFrom(data => JsonConvert.SerializeObject(data.Tags)));
+            CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.TextOnPhoto,
+                dto => dto.MapFrom(data => JsonConvert.SerializeObject(data.Text)));
         }
     }
 }

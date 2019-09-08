@@ -31,7 +31,6 @@ namespace Photo.BusinessLogic.Services
             messageServiceSettings.PhotoProcessorConsumer.Received += Get;
             //messageServiceSettings.PhotoProcessorConsumer.Received += GetPhotoCategory;
             messageServiceSettings.PhotoProcessorConsumer.Connect();
-            Log.Logger.Information("PhotoAPI messageService constuctor");
         }
 
 
@@ -49,7 +48,6 @@ namespace Photo.BusinessLogic.Services
             {
                 case "getDuplicates":
                 {
-                    Log.Logger.Information("Duplication received");
                     var originalList = Enumerable.Range(0, args.Body.Length / 4)
                         .Select(i => BitConverter.ToInt32(args.Body, i * 4))
                         .ToList();
@@ -66,9 +64,7 @@ namespace Photo.BusinessLogic.Services
                     break;
                 }
             }
-            Log.Logger.Information("Trying to set anknowledge(photoApi)");
             _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
-            Log.Logger.Information("Anknowvledge is set");
         }
         
 

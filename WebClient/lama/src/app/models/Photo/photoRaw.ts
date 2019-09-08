@@ -1,6 +1,7 @@
 import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
 import { ImageTagDTO } from './imageTagDTO';
+import { TextOnPhotoDTO } from './textOnPhotoDTO';
 
 export interface PhotoRaw {
   id?: number;
@@ -20,4 +21,5 @@ export interface PhotoRaw {
   coordinates?: string;
   reactions: LikeDTO[];
   tags: ImageTagDTO[];
+  text: TextOnPhotoDTO[];
 }
