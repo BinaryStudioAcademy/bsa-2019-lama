@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { PhotoRaw } from 'src/app/models';
 import { FileService } from 'src/app/services';
+
 
 @Component({
   selector: 'app-carousele-component',
@@ -13,6 +14,7 @@ export class CarouseleComponentComponent implements OnInit {
   imageUrls: string[] = [];
   style = false;
   @Input() isEnabled: boolean;
+  finished = false;
 
   constructor(private fileService: FileService) { }
 
@@ -21,6 +23,7 @@ export class CarouseleComponentComponent implements OnInit {
       images.forEach(element => {
         this.fileService.getPhoto(element.blob256Id).subscribe(url => {
           this.imageUrls.push(url);
+          this.finished = true;
         });
       });
     });
