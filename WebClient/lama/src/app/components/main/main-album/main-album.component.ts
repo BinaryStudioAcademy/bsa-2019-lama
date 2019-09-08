@@ -70,18 +70,17 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
         .subscribe(url => (this.imageUrl = url));
     }
     if (this.isShared && this.album.photoAlbums.length > 0) {
-      this.fileService
-        .getPhoto(this.album.photoAlbums[0].blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.sharedAlbumCover[0] = url));
-      this.fileService
-        .getPhoto(this.album.photoAlbums[1].blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.sharedAlbumCover[1] = url));
-      this.fileService
-        .getPhoto(this.album.photoAlbums[2].blob256Id)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.sharedAlbumCover[2] = url));
+      let i = 0;
+      for (const item of this.album.photoAlbums) {
+        if (i === 3) {
+          break;
+        }
+        this.fileService
+          .getPhoto(item.blob256Id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => this.sharedAlbumCover.push(url));
+        i++;
+      }
     }
     if (this.album.id === -1) {
       this.isFake = true;
