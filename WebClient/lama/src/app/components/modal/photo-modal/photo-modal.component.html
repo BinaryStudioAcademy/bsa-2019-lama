@@ -22,10 +22,10 @@
             <!--photo-->
             <div class="main-photo">
               <!--image-->
-              <spinner></spinner>
+              <spinner *ngIf="showSpinner"></spinner>
               <div class="photo" *ngIf="!isShowSpinner">
                 <img src="{{ imageUrl }}" alt="Image" />
-                <app-carousele-component [photoId]="photo.id" [isEnabled]="isEnabled">
+                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele">
 
                 </app-carousele-component>
               </div>
