@@ -128,7 +128,7 @@ namespace Processors.BusinessLogic.Services
 
             if (first != null)
             {
-                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId);
+                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId, 100);
                 foreach (var item in imageToProcessDtos)
                 {
                     foreach (var result in comparisonResult)
