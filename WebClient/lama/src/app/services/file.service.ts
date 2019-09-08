@@ -23,7 +23,7 @@ import { PhotoCategory } from '../models/photoCategory';
   providedIn: 'root'
 })
 export class FileService {
-  constructor(private client: HttpClient) {}
+  constructor(private client: HttpClient) { }
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -41,6 +41,12 @@ export class FileService {
     return this.client.get<PhotoRaw>(
       `${environment.lamaApiUrl}/api/photo/${id}`,
       this.httpOptions
+    );
+  }
+
+  getSimilarPhotos(id: number): Observable<PhotoRaw[]> {
+    return this.client.get<PhotoRaw[]>(
+      `${environment.lamaApiUrl}/api/photo/similar/${id}`
     );
   }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Photo.DataAccess.Interfaces;
@@ -19,7 +20,7 @@ namespace Photo.BusinessLogic.Services
             _elasticStorage = elasticStorage;
         }
 
-        private List<ImgHash> FindDuplicatesTo(ImgHash hash, int minSimilarity, ref List<ImgHash> alreadyMarkedAsDupl)
+        public List<ImgHash> FindDuplicatesTo(ImgHash hash, int minSimilarity, ref List<ImgHash> alreadyMarkedAsDupl)
         {
             var currHashDupl = new List<ImgHash>();
 
@@ -83,5 +84,6 @@ namespace Photo.BusinessLogic.Services
             }
             return duplicatesFound;
         }
+        
     }
 }

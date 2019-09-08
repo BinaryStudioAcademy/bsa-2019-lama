@@ -69,6 +69,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   isEditing: boolean;
   isDeleting: boolean;
   showEditModal: boolean;
+  showCarousel = false;
 
   // events
   @Output()
@@ -153,6 +154,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
         error => this.notifier.notify('error', 'Error getting user')
       );
   }
+
 
   markerDragEnd($event: MouseEvent) {
     this.latitude = $event.coords.lat;
@@ -483,7 +485,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', this.imageUrl, true);
     xhr.responseType = 'blob';
-    xhr.onload = function() {
+    xhr.onload = function () {
       const urlCreator = window.URL;
       const imageUrl = urlCreator.createObjectURL(this.response);
       const tag = document.createElement('a');
@@ -508,7 +510,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     modalElem.classList.remove('active');
     overlay.classList.remove('active');
   }
-  openModalForPickCoord(event) {}
+  openModalForPickCoord(event) { }
 
   CloseInfo() {
     this.isInfoShown = !this.isInfoShown;

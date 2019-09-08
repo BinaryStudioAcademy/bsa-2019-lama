@@ -15,6 +15,7 @@ import { FileUploadDirective } from '../directives';
 
 import { FileService } from '../services';
 import { SharingPageComponent } from './shared-page/sharing-page/sharing-page.component';
+import { CarouseleComponentComponent } from './main/carousele-component/carousele-component.component';
 
 @NgModule({
   declarations: [FileUploadDirective],
@@ -41,4 +42,4 @@ import { SharingPageComponent } from './shared-page/sharing-page/sharing-page.co
     FileUploadDirective
   ]
 })
-export class SharedModule {}
+export class SharedModule { }
