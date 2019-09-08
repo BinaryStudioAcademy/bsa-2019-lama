@@ -382,7 +382,7 @@ namespace Lama.BusinessLogic.Services
             foreach (var category in top5Categories)
             {
                 var photoDocuments = new List<PhotoDocumentDTO>();
-                var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id).Select(x => x.Id);
+                var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id && photo.UserId == userId).Select(x => x.Id);
                 foreach (var id in photoIds)
                 {
                     var photoDoc = await Get(id);

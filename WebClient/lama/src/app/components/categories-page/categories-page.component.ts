@@ -2,27 +2,33 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FileService } from 'src/app/services';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { PhotoCategory } from 'src/app/models/photoCategory';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
-import { PhotoRaw, User } from 'src/app/models';
+import { User } from 'src/app/models';
 import { HttpService } from 'src/app/services/http.service';
 import { Album } from 'src/app/models/Album/album';
 import { NavigationExtras, Router } from '@angular/router';
+import { AlbumService } from 'src/app/services/album.service';
+import { NotifierService } from 'angular-notifier';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-categories-page',
   templateUrl: './categories-page.component.html',
   styleUrls: ['./categories-page.component.sass']
 })
-export class CategoriesPageComponent implements OnInit {
+export class CategoriesPageComponent implements OnInit, OnDestroy {
   unsubscribe = new Subject();
   categoryAlbums: ViewAlbum[];
   showSpinner = true;
   hasAnyItems = true;
   currentUser: User;
+  ArchivePhotos: any;
   constructor(
     private httpService: HttpService,
     private router: Router,
+    private notifier: NotifierService,
+    private albumService: AlbumService,
     private fileService: FileService
   ) {}
 
@@ -51,10 +57,6 @@ export class CategoriesPageComponent implements OnInit {
         this.showSpinner = false;
       });
   }
-  // ngOnDestroy() {
-  //   this.unsubscribe.next();
-  //   this.unsubscribe.unsubscribe();
-  // }
 
   albumClicked(eventArgs: Album) {
     const navigationExtras: NavigationExtras = {
@@ -63,5 +65,42 @@ export class CategoriesPageComponent implements OnInit {
       }
     };
     this.router.navigate(['main/categories', eventArgs.id], navigationExtras);
+  }
+
+  archiveAlbum(event: ViewAlbum) {
+    if (event.photoAlbums) {
+      const NameOfFiles = [];
+      for (const item of event.photoAlbums) {
+        NameOfFiles.push(item.originalBlobId);
+      }
+      this.albumService
+        .ArchiveAlbum(NameOfFiles)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          x => {
+            this.ArchivePhotos = x;
+            this.convertToImage(event.title);
+          },
+          error => this.notifier.notify('error', 'Error archive album')
+        );
+    } else {
+      this.notifier.notify('error', 'Cannot download the empty album');
+    }
+  }
+
+  convertToImage(name) {
+    const zip = new JSZip();
+    for (let i = 0; i < this.ArchivePhotos.length; i++) {
+      zip.file(`image${i + 1}.jpg`, this.ArchivePhotos[i], { base64: true });
+    }
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      saveAs(content, name);
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }
