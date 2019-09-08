@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 namespace Services.Models
 {
@@ -28,33 +26,30 @@ namespace Services.Models
                 throw new Exception("Cannot compare hashes with different sizes");
             }
             double differenceCounter = 0;
-            if (compareWith.HashData != null)
+            if (compareWith.HashData == null) return (HashData.Count - differenceCounter) / HashData.Count * 100;
+            for (var i = 0; i < HashData.Count; i++)
             {
-                for (int i = 0; i < HashData.Count; i++)
+                if (HashData[i] != compareWith.HashData[i])
                 {
-                    if (HashData[i] != compareWith.HashData[i])
-                    {
-                        differenceCounter++;
-                    }
+                    differenceCounter++;
                 }
             }
 
             return (HashData.Count - differenceCounter) / HashData.Count * 100;
         }
 
-        public List<bool> GenerateFromByteArray(Byte[] bytes)
+        public List<bool> GenerateFromByteArray(byte[] bytes)
         {
-            Bitmap image = (Bitmap)Image.FromStream(new MemoryStream(bytes), true);
+            var image = (Bitmap)Image.FromStream(new MemoryStream(bytes), true);
             return GenerateFromImage(image);
-            image.Dispose();
         }
 
         private List<bool> GenerateFromImage(Bitmap img)
         {
-            List<bool> lResult = new List<bool>();
+            var lResult = new List<bool>();
 
             //resize img to 16x16px (by default) or with configured size 
-            Bitmap bmpMin = new Bitmap(img, new Size(_hashSide, _hashSide));
+            var bmpMin = new Bitmap(img, new Size(_hashSide, _hashSide));
 
             for (int j = 0; j < bmpMin.Height; j++)
             {

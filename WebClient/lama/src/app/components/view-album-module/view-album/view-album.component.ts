@@ -33,6 +33,7 @@ import { FileService } from 'src/app/services';
 export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
   @Input() album: ViewAlbum = {} as ViewAlbum;
   @Input() isShared = false;
+  @Input() isCategoryAlbum = false;
 
   favorites: Set<number> = new Set<number>();
   AlbumId: number;
@@ -83,6 +84,9 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     );
     if (this.returnPath === '/main/sharing/') {
       this.isShared = true;
+    }
+    if (this.returnPath === '/main/categories/') {
+      this.isCategoryAlbum = true;
     }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.httpService
@@ -373,6 +377,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
 
   goBackToImageView(): void {
     this.isDeleting = false;
+  }
+
+  isAuthor() {
+    return this.album.user && this.currentUser.id === this.album.user.id;
   }
 
   isFavorite() {

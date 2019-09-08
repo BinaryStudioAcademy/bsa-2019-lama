@@ -38,7 +38,7 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
   currentUser: User;
   favorite: ViewAlbum = null;
   showFavorite = false;
-
+  showSpinner = true;
   ArchivePhotos = [];
   unsubscribe = new Subject();
   ngOnInit() {
@@ -83,6 +83,7 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
               a.photo = a.photoAlbums[0];
             }
           });
+          this.showSpinner = false;
         },
         error => this.notifier.notify('error', 'Error loading albums')
       );
@@ -169,8 +170,8 @@ export class MainAlbumsContainerComponent implements OnInit, OnDestroy {
       saveAs(content, name);
     });
   }
-  // methods
-  public albumClicked(eventArgs: Album) {
+
+  albumClicked(eventArgs: Album) {
     const navigationExtras: NavigationExtras = {
       state: {
         album: eventArgs

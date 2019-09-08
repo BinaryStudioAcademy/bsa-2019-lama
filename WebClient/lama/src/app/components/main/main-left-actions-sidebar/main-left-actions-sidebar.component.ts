@@ -35,6 +35,11 @@ export class MainLeftActionsSidebarComponent implements OnInit {
         route: 'location'
       },
       {
+        title: 'Categories',
+        icon: 'dashboard',
+        route: 'categories'
+      },
+      {
         title: 'Removed photos',
         icon: 'delete',
         route: 'bin'

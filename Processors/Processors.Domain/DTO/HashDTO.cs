@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Processors.Domain.DTO
 {
-    public class HasDTO
+    public class HashDTO
     {
         public List<bool> Hash { get; set; }
     }

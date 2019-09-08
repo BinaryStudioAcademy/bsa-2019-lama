@@ -28,7 +28,7 @@ import {
   getLatitude,
   getLongitude,
   getShortAddress,
-  getFormattedAdress
+  getFormattedAddress
 } from 'src/app/export-functions/exif';
 import { MapsAPILoader } from '@agm/core';
 
@@ -129,7 +129,7 @@ export class AddPhotosToAlbumModalComponent implements OnInit, OnDestroy {
         const modifiedObject = insert(d, base64);
         if (latitude && longitude) {
           getLocation(latitude, longitude, this.geoCoder).then(location => {
-            const address = getFormattedAdress(location);
+            const address = getFormattedAddress(location);
             const shortname = getShortAddress(location);
             this.photos.push({
               imageUrl: modifiedObject,

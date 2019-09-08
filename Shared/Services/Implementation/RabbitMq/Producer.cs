@@ -8,13 +8,11 @@ namespace Services.Implementation.RabbitMq
     public class Producer : IProducer
     {
         private readonly PublicationAddress _publicationAddress;
-
         private readonly IBroker _broker;
 
         public Producer(IConnectionFactory connectionFactory, Settings settings)
         {
             _broker = new Broker(connectionFactory, settings);
-
             _publicationAddress = new PublicationAddress(
                     settings.ExchangeType,
                     settings.ExchangeName,

@@ -16,7 +16,9 @@
         <main-album [_album]="item" [currentUser]="currentUser" [_isFavorite]="false" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)" (deleteAlbumEvent)="deleteAlbumHandler($event)">
         </main-album>
     </div>
-
     <template #CreateAlbumnContainer></template>
+</div>
+<div class="width-spin">
+    <spinner *ngIf="showSpinner"></spinner>
 </div>
 <notifier-container></notifier-container>

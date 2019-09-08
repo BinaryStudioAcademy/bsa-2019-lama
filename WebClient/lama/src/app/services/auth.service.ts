@@ -8,7 +8,7 @@ import { UserCreate } from '../models/User/userCreate';
 import { NotifierService } from 'angular-notifier';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -17,32 +17,41 @@ export class AuthService implements OnDestroy {
   token: string;
   user: UserCreate;
   httpOptions = {
-    headers: new HttpHeaders({'Content-Type': 'application/json'})
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
   isUserExisted = true;
   unsubscribe = new Subject();
 
-  constructor(public afAuth: AngularFireAuth,
-              private httpClient: HttpClient,
-              private notifier: NotifierService,
-              private userService: UserService) {
-        this.afAuth.idToken.subscribe(token => {
-          this.token =  token;
-          localStorage.setItem('idKey', this.token); });
-        this.userService.getCurrentUserFirebase().then(() => this.isUserExisted = true)
-        .catch(() => this.isUserExisted = false);
-   }
+  constructor(
+    public afAuth: AngularFireAuth,
+    private httpClient: HttpClient,
+    private notifier: NotifierService,
+    private userService: UserService,
+    private router: Router
+  ) {
+    this.afAuth.idToken.subscribe(token => {
+      this.token = token;
+      localStorage.setItem('idKey', this.token);
+    });
+    this.userService
+      .getCurrentUserFirebase()
+      .then(() => (this.isUserExisted = true))
+      .catch(() => (this.isUserExisted = false));
+  }
 
   async loginWithFacebookLinked() {
-     let existingEmail = null;
-     let pendingCredential = null;
-     const facebookProvider = new firebase.auth.FacebookAuthProvider();
-     return this.afAuth.auth.signInWithPopup(facebookProvider)
+    let existingEmail = null;
+    let pendingCredential = null;
+    const facebookProvider = new firebase.auth.FacebookAuthProvider();
+    return this.afAuth.auth
+      .signInWithPopup(facebookProvider)
       .then(result => {
         if (result.user.email === null) {
           this.afAuth.auth.signOut().then(() => {
-            this.notifier.notify('error',
-             'You need to provide your email in order to create an account.');
+            this.notifier.notify(
+              'error',
+              'You need to provide your email in order to create an account.'
+            );
           });
         } else {
           console.log(`${result.user.email}`);
@@ -53,32 +62,41 @@ export class AuthService implements OnDestroy {
         if (error.code === 'auth/account-exists-with-different-credential') {
           existingEmail = error.email;
           pendingCredential = error.credential;
-          return firebase.auth().fetchSignInMethodsForEmail(error.email)
+          return firebase
+            .auth()
+            .fetchSignInMethodsForEmail(error.email)
             .then(providers => {
-              if (providers.indexOf(firebase.auth.GoogleAuthProvider.PROVIDER_ID) !== -1) {
+              if (
+                providers.indexOf(
+                  firebase.auth.GoogleAuthProvider.PROVIDER_ID
+                ) !== -1
+              ) {
                 const googleProvider = new firebase.auth.GoogleAuthProvider();
-                googleProvider.setCustomParameters({login_hint: existingEmail});
-                return firebase.auth().signInWithPopup(googleProvider).then(result => {
-                  return result.user;
+                googleProvider.setCustomParameters({
+                  login_hint: existingEmail
                 });
+                return firebase
+                  .auth()
+                  .signInWithPopup(googleProvider)
+                  .then(result => {
+                    return result.user;
+                  });
               }
             })
-            .then((user) => {
+            .then(user => {
               return user.linkWithCredential(pendingCredential);
             });
         }
         throw error;
       });
-   }
+  }
 
-   loginWithGoogle() {
+  loginWithGoogle() {
     return new Promise<any>((toResolve, toReject) => {
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      this.afAuth.auth
-      .signInWithPopup(provider)
-      .then(res => {
+      this.afAuth.auth.signInWithPopup(provider).then(res => {
         this.saveCredentials(res.user);
         toResolve(res);
       });
@@ -95,13 +113,14 @@ export class AuthService implements OnDestroy {
       }
     });
   }
-
+  async doGoMain() {
+    this.router.navigateByUrl('/landing');
+  }
   getLoggedUserId() {
     return Number(localStorage.getItem('userId'));
   }
 
   async saveCredentials(user: firebase.User) {
-
     localStorage.setItem('email', user.email);
     localStorage.setItem('photoUrl', user.photoURL);
     const names = user.displayName.split(' ');
@@ -118,19 +137,19 @@ export class AuthService implements OnDestroy {
       firstName,
       lastName,
       email: user.email,
-      photo: {imageUrl: user.photoURL}
+      photo: { imageUrl: user.photoURL }
     };
-    this.toDataUrl(user.photoURL, (img) => {
-        localStorage.setItem('firstName', firstName);
-        localStorage.setItem('lastName', lastName);
-        this.user = {
-          firstName,
-          lastName,
-          email: user.email,
-          photo: { imageUrl: img}
-        };
+    this.toDataUrl(user.photoURL, img => {
+      localStorage.setItem('firstName', firstName);
+      localStorage.setItem('lastName', lastName);
+      this.user = {
+        firstName,
+        lastName,
+        email: user.email,
+        photo: { imageUrl: img }
+      };
 
-        this.registerUser(this.user)
+      this.registerUser(this.user)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(id => {
           console.log(id);
@@ -142,11 +161,11 @@ export class AuthService implements OnDestroy {
   toDataUrl(url, callback) {
     const xhr = new XMLHttpRequest();
     xhr.onload = () => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            callback(reader.result);
-        };
-        reader.readAsDataURL(xhr.response);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        callback(reader.result);
+      };
+      reader.readAsDataURL(xhr.response);
     };
     xhr.open('GET', url);
     xhr.responseType = 'blob';
@@ -154,7 +173,11 @@ export class AuthService implements OnDestroy {
   }
 
   registerUser(user: UserCreate) {
-    return this.httpClient.post<number>(`${environment.lamaApiUrl}/api/users`, user, this.httpOptions);
+    return this.httpClient.post<number>(
+      `${environment.lamaApiUrl}/api/users`,
+      user,
+      this.httpOptions
+    );
   }
 
   ngOnDestroy() {

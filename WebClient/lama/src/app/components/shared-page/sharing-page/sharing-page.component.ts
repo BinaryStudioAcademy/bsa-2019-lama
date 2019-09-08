@@ -21,6 +21,7 @@ export class SharingPageComponent implements OnInit, OnDestroy {
   albums: ViewAlbum[] = [];
   currentUser: User;
   ArchivePhotos = [];
+  showSpinner = true;
   unsubscribe = new Subject();
   isAnyItems = true;
   constructor(
@@ -33,15 +34,16 @@ export class SharingPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.httpService.getData('users/' + userId)
+    this.httpService
+      .getData('users/' + userId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      u => {
-        this.currentUser = u;
-        this.getSharedAlbums();
-      },
-      error => this.notifier.notify('error', 'Error loading user')
-    );
+        u => {
+          this.currentUser = u;
+          this.getSharedAlbums();
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
   }
 
   getSharedAlbums() {
@@ -53,6 +55,7 @@ export class SharingPageComponent implements OnInit, OnDestroy {
         if (!this.albums.length) {
           this.isAnyItems = false;
         }
+        this.showSpinner = false;
       });
   }
 

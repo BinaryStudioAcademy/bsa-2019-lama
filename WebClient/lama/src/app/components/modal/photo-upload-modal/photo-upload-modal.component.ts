@@ -25,7 +25,7 @@ import {
   getLatitude,
   getLongitude,
   getShortAddress,
-  getFormattedAdress
+  getFormattedAddress
 } from 'src/app/export-functions/exif';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -73,6 +73,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
       return;
     }
     this.showSpinner = true;
+    this.loaded = false;
     const userId = localStorage.getItem('userId');
     for (let i = 0; i < this.photos.length; i++) {
       this.photos[i] = {
@@ -103,6 +104,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
               'This photos appear to be duplicates. Upload them anyway?'
             );
           }
+          this.loaded = true;
         },
         error => this.notifier.notify('error', 'Error sending photos')
       );
@@ -169,7 +171,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
-                this.address = getFormattedAdress(location);
+                this.address = getFormattedAddress(location);
                 const shortname = getShortAddress(location);
                 this.photos.push({
                   imageUrl: modifiedObject,

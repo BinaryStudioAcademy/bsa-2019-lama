@@ -11,7 +11,7 @@ namespace Photo.BusinessLogic.Services
     public class ImageCompareService
     {
         private readonly IElasticStorage _elasticStorage;
-        private readonly int _hashSize = 128;
+        //private readonly int _hashSize = 128;
 
         private readonly List<ImgHash> _hashLib = new List<ImgHash>();
 
@@ -50,12 +50,11 @@ namespace Photo.BusinessLogic.Services
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-
+                    // ignored
                 }
             }
-
 
             return currHashDupl;
         }
@@ -72,18 +71,16 @@ namespace Photo.BusinessLogic.Services
         public async Task<List<List<ImgHash>>> FindDuplicatesWithTollerance(int userId, int minSimilarity = 90)
         {
             await InitializeHashes(userId);
-            List<ImgHash> alreadyMarkedAsDupl = new List<ImgHash>();
+            var alreadyMarkedAsDupl = new List<ImgHash>();
 
             var duplicatesFound = new List<List<ImgHash>>();
 
             foreach (var hash in _hashLib)
             {
-                if (alreadyMarkedAsDupl.Contains(hash) == false)
-                {
-                    var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
+                if (alreadyMarkedAsDupl.Contains(hash)) continue;
+                var singleImgDuplicates = FindDuplicatesTo(hash, minSimilarity, ref alreadyMarkedAsDupl);
 
-                    duplicatesFound.Add(singleImgDuplicates);
-                }
+                duplicatesFound.Add(singleImgDuplicates);
             }
             return duplicatesFound;
         }

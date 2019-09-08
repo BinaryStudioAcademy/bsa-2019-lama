@@ -261,6 +261,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   getSearchSuggestions(id: number, criteria: string) {
     if (this.searchCriteria.length > 0) {
+      criteria = criteria.trim();
       this.file
         .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))

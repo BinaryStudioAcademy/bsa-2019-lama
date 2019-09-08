@@ -184,58 +184,14 @@ namespace Photo.BusinessLogic.Services
 			string uri = _configuration["LamaApiUrl"];
             var dto = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(photos);
 
-			StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+            StringContent content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
 
-			HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
+            HttpResponseMessage response = await _httpClient.PostAsync(uri, content);
 
-			string bodyJson = await response.Content.ReadAsStringAsync();
-		}
+            string bodyJson = await response.Content.ReadAsStringAsync();
+        }
 
-		public async Task<CreateResponse> Create(PhotoDocument item)
-		{
-			return await _elasticStorage.CreateAsync(item);
-		}
-
-		public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
-		{
-			// TODO: figure out getting updated document without second request to elastic           
-
-			var updateLinkObject = new
-			{
-				SharedLink = sharedLink
-			};
-
-			await _elasticStorage.UpdatePartiallyAsync(id, updateLinkObject);
-
-			return await _elasticStorage.Get(id);
-		}
-
-		public async Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates)
-		{
-			var createdDuplicates = new List<CreatePhotoResultDTO>();
-			foreach (var duplicate in duplicates)
-			{
-				var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
-				await Create(mappedToPhotoDocument);
-				createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
-			}
-
-			var models = new List<ImageToProcessDTO>();
-			foreach (var item in duplicates)
-			{
-				models.Add(new ImageToProcessDTO
-				{
-					ImageId = item.Id,
-					UserId = item.UserId
-				});
-			}
-
-			_messageService.SendPhotoToThumbnailProcessor(models);
-
-			return createdDuplicates;
-		}
-
-        public async Task<IEnumerable<PhotoDocumentDTO>> FindSimilarPhotos(int photoId)
+		 public async Task<IEnumerable<PhotoDocumentDTO>> FindSimilarPhotos(int photoId)
         {
             var hash = new List<ImgHash>();
             var photo = await _elasticStorage.Get(photoId);
@@ -259,162 +215,191 @@ namespace Photo.BusinessLogic.Services
             }
             return result;
         }
- 
-		public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
-		{
-			var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
-			var duplicates = new List<CreatePhotoResultDTO>();
-			foreach (var item in comparisionResult)
-			{
-				if (item.Count <= 1) continue;
-				foreach (var id in item)
-				{
-					var photo = await _elasticStorage.Get((int) id.PhotoId);
-					var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
-					duplicates.Add(mappedPhoto);
-				}
 
-				duplicates.Remove(duplicates.LastOrDefault());
-			}
+        public async Task<CreateResponse> Create(PhotoDocument item)
+        {
+            return await _elasticStorage.CreateAsync(item);
+        }
 
-			return duplicates;
-		}
+        public async Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink)
+        {
+            // TODO: figure out getting updated document without second request to elastic           
 
-		public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
-		{
-			var createdPhotos = new List<CreatePhotoResultDTO>();
-			foreach (var item in items)
-			{
-				var base64 = ConvertToBase64(item.ImageUrl);
-				var blob = Convert.FromBase64String(base64);
-				var blobId = await _storage.LoadPhotoToBlob(blob);
-				var photoDocumentToCreate = new PhotoDocument
-				{
-					Id = item.Id,
-					Name = item.FileName,
-					BlobId = blobId,
-					Blob64Id = blobId,
-					Blob256Id = blobId,
-					OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
-					UserId = item.AuthorId,
-					Location = item.Location,
-					Description = item.Description,
-					Coordinates = item.Coordinates
-				};
+            var updateLinkObject = new { SharedLink = sharedLink };
 
-				await Create(photoDocumentToCreate);
-				createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
-			}
+            await _elasticStorage.UpdatePartiallyAsync(id, updateLinkObject);
 
-			var models = new List<ImageToProcessDTO>();
-			foreach (var item in items)
-			{
-				models.Add(new ImageToProcessDTO
-				{
-					ImageId = item.Id,
-					UserId = item.AuthorId
-				});
-			}
+            return await _elasticStorage.Get(id);
+        }
 
-			_messageService.SendPhotoToThumbnailProcessor(models);
+        public async Task<IEnumerable<CreatePhotoResultDTO>> CreateDuplicates(IEnumerable<CreatePhotoResultDTO> duplicates)
+        {
+            var createdDuplicates = new List<CreatePhotoResultDTO>();
+            foreach (var duplicate in duplicates)
+            {
+                var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
+                await Create(mappedToPhotoDocument);
+                createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
+                
+            }
+            var models = new List<ImageToProcessDTO>();
+            foreach (var item in duplicates)
+            {
+                models.Add(new ImageToProcessDTO
+                {
+                    ImageId = item.Id,
+                    UserId = item.UserId
+                });
+            }
+            _messageService.SendPhotoToThumbnailProcessor(models);
 
-			return createdPhotos;
-		}
+            return createdDuplicates;
+        }
 
-		public async Task<string> CreateAvatar(CreatePhotoDTO item)
-		{
-			var base64 = ConvertToBase64(item.ImageUrl);
-			var blob = Convert.FromBase64String(base64);
-			var blobId = await _storage.LoadAvatarToBlob(blob);
-			return blobId;
-		}
+        public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
+        {
+            var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
+            var duplicates = new List<CreatePhotoResultDTO>();
+            foreach (var item in comparisionResult)
+            {
+                if (item.Count <= 1) continue;
+                foreach (var imgHash in item)
+                {
+                    var photo = await _elasticStorage.Get((int)imgHash.PhotoId);
+                    var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
+                    duplicates.Add(mappedPhoto);
+                }
+                duplicates.Remove(duplicates.LastOrDefault());
+            }
+            return duplicates;
+        }
 
-		private static string ConvertToBase64(string imageUrl)
-		{
-			// TODO: change this to regex
-			return imageUrl
-				.Replace("data:image/jpeg;base64,", String.Empty)
-				.Replace("data:image/png;base64,", String.Empty)
-				.Replace("-", "+")
-				.Replace("_", "/");
-		}
+        public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
+        {
+            var createdPhotos = new List<CreatePhotoResultDTO>();
+            foreach (var item in items)
+            {
+                var base64 = ConvertToBase64(item.ImageUrl);
+                var blob = Convert.FromBase64String(base64);
+                var blobId = await _storage.LoadPhotoToBlob(blob);
+                var photoDocumentToCreate = new PhotoDocument
+                    {
+                        Id = item.Id,
+                        Name = item.FileName,
+                        BlobId = blobId,
+                        Blob64Id = blobId,
+                        Blob256Id = blobId,
+                        OriginalBlobId = await _storage.LoadPhotoToBlob(blob),
+                        UserId = item.AuthorId,
+                        Location = item.Location,
+                        Description = item.Description,
+                        Coordinates = item.Coordinates
+                    };
 
-		#region DELETE
+                    await Create(photoDocumentToCreate);
+                    createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
+            }
 
-		public Task MarkPhotoAsDeleted(int photoId)
-		{
-			var updateDeleteField = new
-			{
-				IsDeleted = true
-			};
+            var models = new List<ImageToProcessDTO>();
+            foreach (var item in items)
+            {
+                models.Add(new ImageToProcessDTO
+                {
+                    ImageId = item.Id,
+                    UserId = item.AuthorId
+                });
+            }
 
-			return _elasticStorage.UpdatePartiallyAsync(photoId, updateDeleteField);
-		}
+            _messageService.SendPhotoToThumbnailProcessor(models);
 
-		public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
-		{
-			var searchResult = await _elasticStorage.GetDeletedPhoto(userId);
+            return createdPhotos;
+        }
 
-			return _mapper.Map<DeletedPhotoDTO[]>(searchResult);
-		}
+        public async Task<string> CreateAvatar(CreatePhotoDTO item)
+        {
+            var base64 = ConvertToBase64(item.ImageUrl);
+            var blob = Convert.FromBase64String(base64);
+            var blobId = await _storage.LoadAvatarToBlob(blob);
+            return blobId;
+        }
+        private static string ConvertToBase64(string imageUrl)
+        {
+            // TODO: change this to regex
+            return imageUrl
+                    .Replace("data:image/jpeg;base64,", String.Empty)
+                    .Replace("data:image/png;base64,", String.Empty)
+                    .Replace("-", "+").Replace("_", "/");
+        }
 
-		public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
-		{
-			// TODO: make this in single request
-			foreach (var deletePhoto in photosToDelete)
-			{
-				await DeleteAllBlobsAsync(deletePhoto.Id);
+        #region DELETE
+        public Task MarkPhotoAsDeleted(int photoId)
+        {
+            var updateDeleteField = new { IsDeleted = true };
 
-				await _elasticStorage.DeleteAsync(deletePhoto.Id);
-			}
-		}
+            return _elasticStorage.UpdatePartiallyAsync(photoId, updateDeleteField);
+        }
 
-		private async Task DeleteAllBlobsAsync(int elasticId)
-		{
-			var photoDocument = await Get(elasticId);
+        public async Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId)
+        {
+            var searchResult = await _elasticStorage.GetDeletedPhoto(userId);
 
-			await _storage.DeleteFileAsync(photoDocument.BlobId);
-			await _storage.DeleteFileAsync(photoDocument.Blob64Id);
-			await _storage.DeleteFileAsync(photoDocument.Blob256Id);
-			await _storage.DeleteFileAsync(photoDocument.OriginalBlobId);
-		}
+            return _mapper.Map<DeletedPhotoDTO[]>(searchResult);
+        }
 
-		public async Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
-		{
-			// TODO: make this in single request
-			foreach (var restorePhoto in photosToRestore)
-			{
-				var updateDeleteField = new
-				{
-					IsDeleted = false
-				};
+        public async Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete)
+        {
+            // TODO: make this in single request
+            foreach (var deletePhoto in photosToDelete)
+            {
+                await DeleteAllBlobsAsync(deletePhoto.Id);
 
-				await _elasticStorage.UpdatePartiallyAsync(restorePhoto.Id, updateDeleteField);
-			}
-		}
+                await _elasticStorage.DeleteAsync(deletePhoto.Id);
+            }
+        }
 
-		#endregion
+        private async Task DeleteAllBlobsAsync(int elasticId)
+        {
+            var photoDocument = await Get(elasticId);
 
-		private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, CreatePhotoDTO item)
-		{
-			var newItemBase64 = ConvertToBase64(item.ImageUrl);
-			var newItemBlob = Convert.FromBase64String(newItemBase64);
-			using (var webClient = new WebClient())
-			{
-				bool doc = false;
-				try
-				{
-					doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
-						.Select(existingUrl => webClient.DownloadData(existingUrl))
-						.Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
-				}
-				catch (Exception e)
-				{
-					// ignored
-				}
+            await _storage.DeleteFileAsync(photoDocument.BlobId);
+            await _storage.DeleteFileAsync(photoDocument.Blob64Id);
+            await _storage.DeleteFileAsync(photoDocument.Blob256Id);
+            await _storage.DeleteFileAsync(photoDocument.OriginalBlobId);
+        }
 
-				return doc;
-			}
-		}
-	}
+
+        public async Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        {
+            // TODO: make this in single request
+            foreach (var restorePhoto in photosToRestore)
+            {
+                var updateDeleteField = new { IsDeleted = false };
+
+                await _elasticStorage.UpdatePartiallyAsync(restorePhoto.Id, updateDeleteField);
+            }
+        }
+        #endregion
+
+        private bool IsSameSized(IEnumerable<PhotoDocument> photoDocumentsCollection, CreatePhotoDTO item)
+        {
+            var newItemBase64 = ConvertToBase64(item.ImageUrl);
+            var newItemBlob = Convert.FromBase64String(newItemBase64);
+            using (var webClient = new WebClient())
+            {
+                bool doc = false;
+                try
+                {
+                    doc = photoDocumentsCollection.Select(element => $"{_blobUrl}{element.BlobId}")
+                        .Select(existingUrl => webClient.DownloadData(existingUrl))
+                        .Any(existingItemBlob => existingItemBlob.SequenceEqual(newItemBlob));
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                return doc;
+            }
+        }
+    }
 }

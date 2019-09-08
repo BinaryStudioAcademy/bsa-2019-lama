@@ -4,13 +4,13 @@ using Processors.DataAccess.Interfaces;
 using Processors.Domain;
 using Processors.Domain.DTO;
 using Services.Interfaces;
-using Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RabbitMQ.Client.Events;
+using Services.Models;
 using Serilog;
 
 namespace Processors.BusinessLogic.Services
@@ -25,16 +25,18 @@ namespace Processors.BusinessLogic.Services
         private readonly IConsumer _consumer;
         private readonly ICognitiveService _cognitiveService;
         private readonly ImageCompareService _comparer;
+        private readonly IProducer _categoryProducer;
 
         // CONSTRUCTORS
         public MessageServices(IImageProcessingService imageProcessingService, ICognitiveService cognitiveService,
-            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer, ImageCompareService comparer)
+            IElasticStorage elasticStorage, IPhotoBlobStorage photoBlobStore, IConsumer consumer, IProducer producer, IProducer categoryProducer, ImageCompareService comparer)
         {
             _imageProcessingService = imageProcessingService;
             _cognitiveService = cognitiveService;
             _elasticStorage = elasticStorage;
             _photoBlobStore = photoBlobStore;
             _producer = producer;
+            _categoryProducer = categoryProducer;
             _consumer = consumer;
             _comparer = comparer;
             _consumer.Received += Get;
@@ -74,7 +76,8 @@ namespace Processors.BusinessLogic.Services
         private async Task HandleReceivedDataAsync(IEnumerable<ImageToProcessDTO> images)
         {
             Log.Logger.Information("Received photos");
-            foreach (var image in images)
+            var imageToProcessDtos = images.ToList();
+            foreach (var image in imageToProcessDtos)
             {
                 var address = await _elasticStorage.GetBlobId(image.ImageId);
                 var fileName = address.Substring(address.LastIndexOf('/') + 1);
@@ -83,6 +86,7 @@ namespace Processors.BusinessLogic.Services
                 var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
                 var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
+                var imageCategory = await _cognitiveService.ProcessImageDescription(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
                 var hash = new ImgHash((int)image.ImageId);
                 hash.GenerateFromByteArray(currentImg);
@@ -91,31 +95,58 @@ namespace Processors.BusinessLogic.Services
                 {
                     Tags = imageTagsAsRawString
                 });
+                await _elasticStorage.UpdateImageDescriptionAsync(image.ImageId, new ImageDescriptionDTO
+                {
+                    Category = imageCategory
+                });
                 await _elasticStorage.UpdateHashAsync(image.ImageId,
-                    new HasDTO { Hash = new List<bool>(hash.HashData) });
+                    new HashDTO { Hash = new List<bool>(hash.HashData)});
             }
             Log.Logger.Information("Updated hashes");
-            //TODO rewrite this
-            await Task.Delay(2000);
-            await FindDuplicates(images);
+            await FindDuplicates(imageToProcessDtos);
+            await SendImageCategories(imageToProcessDtos.Select(x => x.ImageId));
             Log.Logger.Information("Duplicates found");
         }
 
-        public async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
+        private async Task SendImageCategories(IEnumerable<long> imageToProcessIds)
+        {
+            var dataToSend = new List<Tuple<int,long,string>>();
+            foreach (var imageId in imageToProcessIds)
+            {
+                var userId = await _elasticStorage.GetUserAsync(imageId);
+                var category = await _elasticStorage.GetCategoryAsync(imageId);
+                dataToSend.Add(new Tuple<int, long, string>(userId,imageId,category));
+            }
+
+            var serializedData = JsonConvert.SerializeObject(dataToSend);
+            _categoryProducer.Send(serializedData);
+        }
+
+
+        private async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
         {
             var duplicates = new List<int>();
-            var comparison_result = await _comparer.FindDuplicatesWithTollerance(images.FirstOrDefault().UserId);
-            foreach (var item in images)
+            var imageToProcessDtos = images.ToList();
+            ImageToProcessDTO first = null;
+            foreach (var dto in imageToProcessDtos)
             {
-                foreach (var result in comparison_result)
-                {
-                    if (result.Count <= 1) continue;
+                first = dto;
+                break;
+            }
 
-                    foreach (var itm in result)
+            if (first != null)
+            {
+                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId);
+                foreach (var item in imageToProcessDtos)
+                {
+                    foreach (var result in comparisonResult)
                     {
-                        if (itm.PhotoId == item.ImageId)
+                        if (result.Count <= 1) continue;
+
+                        foreach (var itm in result)
                         {
-                            duplicates.Add((int) item.ImageId);
+                            if (itm.PhotoId != item.ImageId) continue;
+                            duplicates.Add((int)item.ImageId);
                             break;
                         }
                     }
@@ -135,7 +166,7 @@ namespace Processors.BusinessLogic.Services
                 case ImageType.Photo: return await _photoBlobStore.GetPhoto(fileName);
                 case ImageType.Avatar: return await _photoBlobStore.GetAvatar(fileName);
 
-                default: throw new System.ArgumentException("Unexpected image type");
+                default: throw new ArgumentException("Unexpected image type");
             }
         }
         private async Task<ThumbnailUpdateDTO> LoadImageToBlob(ImageType imageType, byte[] image64, byte[] image256)

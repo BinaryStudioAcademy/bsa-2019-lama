@@ -24,13 +24,14 @@ namespace Photo.BusinessLogic.Services
             _elasticStorage = elasticStorage;
             _mapper = mapper;
             _httpClient = new HttpClient();
-			_configuration = configuration;
-		}
+            _configuration = configuration;
+        }        
+
         public async Task SendDuplicates(List<int> duplicates)
         {
             string uri = _configuration["LamaApiUrl"];
             StringContent content = new StringContent(JsonConvert.SerializeObject(duplicates), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}/api/photo/duplicates_response", content);
+            HttpResponseMessage response = await _httpClient.PostAsync($"{uri}api/photo/duplicates_response", content);
         }
     }
 }
