@@ -504,6 +504,7 @@ namespace Lama.BusinessLogic.Services
             if (deletingPhoto == null) return;
             var photoCategory =
                 await _dbContext.Categories.FirstOrDefaultAsync(category => category.Id == deletingPhoto.CategoryId);
+            deletingPhoto.CategoryId = 0;
             if(photoCategory == null) return;
             switch (photoCategory.Count)
             {
