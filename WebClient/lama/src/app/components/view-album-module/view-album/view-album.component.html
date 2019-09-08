@@ -13,21 +13,23 @@
                 <div class="dropdown-item" *ngIf="
             album?.photoAlbums?.length &&
             !isShared &&
-            !this.isAtLeastOnePhotoSelected
+            !this.isAtLeastOnePhotoSelected &&
+            !isCategoryAlbum
           " (mousedown)="showSharedModal = true">
                     <p>Share</p>
                 </div>
                 <div class="dropdown-item" *ngIf="
             album?.photoAlbums?.length &&
+            !isCategoryAlbum &&
             !isShared &&
             !this.isAtLeastOnePhotoSelected
           " (mousedown)="showSetCoverModal = true">
                     <p>Set Cover</p>
                 </div>
-                <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected" (mousedown)="addPhoto($event)">
+                <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isCategoryAlbum" (mousedown)="addPhoto($event)">
                     <p>Add photos</p>
                 </div>
-                <div class="dropdown-item" (mousedown)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared">
+                <div class="dropdown-item" (mousedown)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared && !isCategoryAlbum">
                     <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
                 </div>
                 <div class="dropdown-item" (mousedown)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">

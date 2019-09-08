@@ -1,7 +1,7 @@
 <h2>Most popular categories</h2>
 <div class="items-container-left" *ngIf="hasAnyItems">
     <div *ngFor="let item of categoryAlbums">
-        <main-album [_album]="item" [isCategoryAlbum]="true" [currentUser]="currentUser" (Click)="albumClicked($event)">
+        <main-album [_album]="item" [isCategoryAlbum]="true" [currentUser]="currentUser" (ClickDownload)="archiveAlbum($event)" (Click)="albumClicked($event)">
         </main-album>
     </div>
     <div class="no-content" *ngIf="!hasAnyItems">
