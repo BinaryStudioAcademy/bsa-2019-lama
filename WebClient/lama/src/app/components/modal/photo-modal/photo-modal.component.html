@@ -18,13 +18,16 @@
       <!--image view-->
       <ng-template [ngIf]="!isDeleting && !isEditing">
         <div class="main-container">
-          <div class="main-photo-area">
+          <div class="main-photo-area" (mouseenter)="showCarousele=true" (mouseleave)="showCarousele=false">
             <!--photo-->
             <div class="main-photo">
               <!--image-->
-              <spinner *ngIf="isShowSpinner"></spinner>
+              <spinner *ngIf="showSpinner"></spinner>
               <div class="photo" *ngIf="!isShowSpinner">
-                <img src="{{ imageUrl }}" alt="Image">
+                <img src="{{ imageUrl }}" alt="Image" />
+                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele">
+
+                </app-carousele-component>
               </div>
             </div>
             <div class="overlay">
@@ -38,7 +41,7 @@
                   <div [ngSwitch]="item.title">
                     <ng-template ngSwitchCase="Remove">
                       <div [title]="item.title" [appIsBlocked]="isBlockById()">
-                        <i class="material-icons is-block">{{item.icon}}</i>
+                        <i class="material-icons is-block">{{ item.icon }}</i>
                       </div>
                     </ng-template>
                     <ng-template ngSwitchCase="Edit">
@@ -48,7 +51,7 @@
                     </ng-template>
                     <ng-template ngSwitchCase="Share">
                       <div [title]="item.title" [appIsBlocked]="isBlockById()">
-                        <i class="material-icons is-block">{{item.icon}}</i>
+                        <i class="material-icons is-block">{{ item.icon }}</i>
                       </div>
                     </ng-template>
                     <ng-template ngSwitchCase="Save">
@@ -77,20 +80,21 @@
                 <i class="fa fa-angle-left" left aria-hidden="true"></i>
               </span>
             </div>
-            <div class="navigation-button nav-btn-right" *ngIf="currentIndex != photosArrayLength-1"
+            <div class="navigation-button nav-btn-right" *ngIf="currentIndex != photosArrayLength - 1"
               (click)="nextPhoto()">
               <span class="icon is-large">
                 <i class="fa fa-angle-right" left aria-hidden="true"></i>
               </span>
             </div>
           </div>
+
           <!--right panel-->
           <div class="photo-info-area">
             <div class="reactions" *ngIf="!isInfoShown">
               <a>
                 <i [ngStyle]="{ color: hasUserReaction ? '#d75a4a' : 'white' }" class="fa fa-heart"
                   (click)="ReactionPhoto()"></i>
-                <span class="count">{{photo?.reactions?.length || 0}} loved it</span>
+                <span class="count">{{ photo?.reactions?.length || 0 }} loved it</span>
               </a>
             </div>
             <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId" *ngIf="!isInfoShown">
@@ -119,8 +123,8 @@
                   </div>
                   <div class="flex-album">
                     <div *ngFor="let album of albums" class="album">
-                      <img src="{{album.photo?.imageUrl}}" alt="">
-                      <h4 class="subtitle is-5">{{album.title}}</h4>
+                      <img src="{{ album.photo?.imageUrl }}" alt="" />
+                      <h4 class="subtitle is-5">{{ album.title }}</h4>
                     </div>
                   </div>
                 </div>
@@ -135,8 +139,8 @@
                   <h4 class="subtitle is-5 submarg">Location</h4>
                   <a>
                     <div class="adress">
-                      <h4>{{address || 'Location is not presented'}}</h4>
-                      <div class="location-icon" (click)=openModalForPicklocation($event)>
+                      <h4>{{ address || 'Location is not presented' }}</h4>
+                      <div class="location-icon" (click)="openModalForPicklocation($event)">
                         <i class="fa fa-map-marker" aria-hidden="true"></i>
                       </div>
                     </div>
@@ -156,9 +160,9 @@
     </div>
   </div>
 
-  <app-share-by-email-modal [receivedPhoto]='photo' *ngIf="showSharedModal" (Close)="showSharedModal=false">
+  <app-share-by-email-modal [receivedPhoto]="photo" *ngIf="showSharedModal" (Close)="showSharedModal = false">
   </app-share-by-email-modal>
-  <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal=false" (Done)="imageHandler($event)">
+  <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal = false" (Done)="imageHandler($event)">
   </app-edit-modal>
 </div>
 <notifier-container></notifier-container>

@@ -1,0 +1,15 @@
+<div id="container" *ngIf="isEnabled && imageUrls.length" [@fadeInOut]>
+  <div ng2-carouselamos class="slides-wrapper" [items]="imageUrls" [width]="calculateWidth()" [$prev]="prev"
+    [$next]="next" [$item]="item" (onSelectedItem)="selectedItem = $event.item; selectedIndex = $event.index"></div>
+  <ng-template #prev>
+    <img src="../../../../assets/arrow-left.png" style="height: 32px; width: 32px;
+        margin-left: 5rem;" />
+  </ng-template>
+  <ng-template #next>
+    <img src="../../../../assets/arrow-right.png" style="height: 32px; width: 32px;
+        margin-right: 5rem;" />
+  </ng-template>
+  <ng-template #item let-item let-i="index">
+    <img src="{{ item }}" />
+  </ng-template>
+</div>

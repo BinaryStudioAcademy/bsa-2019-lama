@@ -26,10 +26,10 @@
           " (mousedown)="showSetCoverModal = true">
                     <p>Set Cover</p>
                 </div>
-                <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isCategoryAlbum" (mousedown)="addPhoto($event)">
+                <div class="dropdown-item" *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isCategoryAlbum && (!isShared || isAuthor())" (mousedown)="addPhoto($event)">
                     <p>Add photos</p>
                 </div>
-                <div class="dropdown-item" (mousedown)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isShared && !isCategoryAlbum">
+                <div class="dropdown-item" (mousedown)="deleteWindow()" *ngIf="album?.photoAlbums?.length && !isCategoryAlbum && (!isShared || isAuthor())">
                     <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
                 </div>
                 <div class="dropdown-item" (mousedown)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">

@@ -50,7 +50,8 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
               -1,
               photoCategory.category,
               photoCategory.photos[0],
-              photoCategory.photos
+              photoCategory.photos,
+              this.currentUser
             )
         );
         this.showSpinner = false;

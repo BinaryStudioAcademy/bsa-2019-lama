@@ -1,6 +1,6 @@
 @import '~compass-mixins/lib/compass/css3'
 
-@mixin transition($transition...) 
+@mixin transition($transition...)
     -moz-transition:    $transition
     -o-transition:      $transition
     -webkit-transition: $transition
@@ -34,9 +34,26 @@
     position: relative
     background: white
     border-left: 1px solid lightgray
-    padding: 10px    
+    padding: 10px
+#container
+    position: absolute
+    bottom: 0
+    color: white
+    width: 100%
+    height: 20%
+    text-shadow: 0 0 2px #000
+.items
+    margin: 1rem
+    width: 200px
+    height: auto
 
-.overlay 
+app-carousele-component
+    display: flex
+    flex-direction: row
+    justify-content: center
+
+
+.overlay
     position: absolute
     top: 0
     color: white
@@ -50,6 +67,20 @@
         text-align: center
         width: 28px
 
+#container 
+    width: 100%
+    margin: 5em auto
+    padding: 0
+    background:#fff
+
+.items 
+    max-width:300px
+    height:300px
+    background:#ECECEC
+
+#left, #right
+    margin: 30px
+
 .overlay-items
     position: absolute
     right: 0
@@ -62,7 +93,7 @@
 .back-icon
     height: 50px
     width: 50px
-    border-radius: 50% 
+    border-radius: 50%
     cursor: pointer
     position: absolute
     left: 0
@@ -74,35 +105,36 @@
     justify-content: center
     span
         height: 100%
-    &:hover 
+    &:hover
         background: #00000017
 
 .overlay-item
     height: 50px
     width: 50px
-    border-radius: 50% 
+    border-radius: 50%
     display: flex !important
     align-items: center
     justify-content: center
     cursor: pointer
     & div
         height: 28px
-    &:hover 
+    &:hover
         background: #00000017
 
 .main-photo
-  display: flex
-  flex-direction: column
-  justify-content: center
-  align-items: center
-  width: auto
-  height: 100%
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    width: auto
+    height: 100%
 
 .navigation-button
     position: absolute
-    height: calc(100% - 50px)
+    height: calc(100% - 170px)
     width: 100px
     top: 50px
+    bottom: 120px
     background-color: transparent
     color: white
     font-size: 80px
@@ -157,7 +189,7 @@
 
 .info-title
     overflow: hidden
-    width: 100%    
+    width: 100%
     display: flex
     height: auto
     justify-content: space-between
@@ -177,7 +209,6 @@
     &:hover
         background: lightgray
 
-
 .item-location
     margin-top: 15px
     a
@@ -189,9 +220,9 @@
     flex-direction: row
     align-items: center
     h4
-        width: 85%
-        color: gray
-        cursor: default
+    width: 85%
+    color: gray
+    cursor: default
 
 .location-icon
     height: 50px
@@ -207,7 +238,7 @@
 
 .photo
     display: flex
-    align-items: center    
+    align-items: center
     flex-direction: column
     width: 100%
     justify-content: center
@@ -215,15 +246,11 @@
 .photo img
     width: auto !important
 
-
 .menu-items
     margin: 0
     height: 100%
-
-
-agm-map 
+agm-map
     height: 200px
-
 article
     margin: 5px
     padding: 5px
@@ -238,15 +265,13 @@ article
 .info
     flex-direction: column
 
-
-
 .subtitl
     max-height: 25px
     overflow: hidden
 
 .submarg
     margin-bottom: 5px
-     
+
 .item-description
     margin-top: 25px
     & textarea
@@ -279,7 +304,7 @@ article
     margin-top: 3px
     height: 60px
     width: 200px
-    
+
 .album img
     height: 55px
     width: 80px
@@ -289,31 +314,31 @@ article
     margin-left: 5px
     height: 55px
     display: inline-block
-    
-.overlay-date  
-   opacity: 0
-   visibility: hidden   
-   position: fixed
-   top: 0
-   left: 0
-   width: 100%
-   height: 100%
-   background-color: rgba(0, 0, 0, .5)
-   z-index: 30
-   transition: .3s all
 
-.overlay-location  
-   opacity: 0
-   visibility: hidden   
-   position: fixed
-   top: 0
-   left: 0
-   width: 100%
-   height: 100%
-   background-color: rgba(0, 0, 0, .5)
-   z-index: 30
-   transition: .3s all
-    
+.overlay-date
+    opacity: 0
+    visibility: hidden
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(0, 0, 0, .5)
+    z-index: 30
+    transition: .3s all
+
+.overlay-location
+    opacity: 0
+    visibility: hidden
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(0, 0, 0, .5)
+    z-index: 30
+    transition: .3s all
+
 .size
     min-width: 100%
 
@@ -321,51 +346,45 @@ article
     width: 100%
 
 .modal-date
-   opacity: 0
-   visibility: hidden
-   width: 352px
-   margin: -178px 0 0 -178px
-   position: fixed
-   background: black
-   top: 50%
-   left: 50%
-   z-index: 40
-   
-   text-align: center
-   border-radius: 3px
-   background-color: #fff
-   transition: 0.3s all
+    opacity: 0
+    visibility: hidden
+    width: 352px
+    margin: -178px 0 0 -178px
+    position: fixed
+    background: black
+    top: 50%
+    left: 50%
+    z-index: 40
+    text-align: center
+    border-radius: 3px
+    background-color: #fff
+    transition: 0.3s all
 
-.close 
+.close
     float: right
     margin-right: 4px
     margin-top: 4px
 
 .modal-location
-   opacity: 0
-   visibility: hidden
-   width: 700px
-   margin: -350px 0 0 -350px
-   position: fixed
-   background: black
-   top: 50%
-   left: 50%
-   z-index: 40
-   
-   text-align: center
-   border-radius: 3px
-   background-color: #fff
-   transition: 0.3s all
+    opacity: 0
+    visibility: hidden
+    width: 700px
+    margin: -350px 0 0 -350px
+    position: fixed
+    background: black
+    top: 50%
+    left: 50%
+    z-index: 40
+    text-align: center
+    border-radius: 3px
+    background-color: #fff
+    transition: 0.3s all
 
 .active
-   opacity: 1
-   visibility: visible
-   
+    opacity: 1
+    visibility: visible
+
 .share-container
-   position: absolute
-   top: -100%
-   left: -100%
-
-
-
-
+    position: absolute
+    top: -100%
+    left: -100%

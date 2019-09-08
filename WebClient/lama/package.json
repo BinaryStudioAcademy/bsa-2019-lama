@@ -42,6 +42,7 @@
         "jszip": "^3.2.2",
         "jszip-utils": "^0.1.0",
         "moment": "^2.24.0",
+        "ng2-carouselamos": "^3.2.0",
         "ng2-img-tools": "^1.1.5",
         "ngx-image-cropper": "^1.4.1",
         "ngx-infinite-scroll": "^8.0.0",

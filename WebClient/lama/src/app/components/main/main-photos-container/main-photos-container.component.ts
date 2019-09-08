@@ -23,6 +23,7 @@ import { ZipService } from 'src/app/services/zip.service';
 import { NotifierService } from 'angular-notifier';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-photos-container',
@@ -61,7 +62,8 @@ export class MainPhotosContainerComponent
     private favoriteService: FavoriteService,
     private zipService: ZipService,
     private userService: UserService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private router: Router
   ) {
     this.favorites = new Set<number>();
     this.shared = shared;
