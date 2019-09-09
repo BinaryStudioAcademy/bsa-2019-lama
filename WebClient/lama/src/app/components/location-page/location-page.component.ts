@@ -31,18 +31,24 @@ export class LocationPageComponent implements OnInit {
   albumCities = true;
   ngOnInit() {
     const userId = parseInt(localStorage.getItem('userId'), 10);
-    this.locationService.getUserLocationAlbums(userId).subscribe(x => {
-      this.AlbumsViewCities = x;
-    });
-    this.locationService.getUserLocationAlbumsByCountry(userId).subscribe(x => {
-      this.AlbumsViewCountries = x;
-      if (this.AlbumsViewCountries.length) {
-        this.isAnyItems = false;
-      } else {
-        this.isAnyItems = true;
-      }
-      this.showSpinner = false;
-    });
+    this.locationService
+      .getUserLocationAlbums(userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(x => {
+        this.AlbumsViewCities = x;
+      });
+    this.locationService
+      .getUserLocationAlbumsByCountry(userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(x => {
+        this.AlbumsViewCountries = x;
+        if (this.AlbumsViewCountries.length) {
+          this.isAnyItems = false;
+        } else {
+          this.isAnyItems = true;
+        }
+        this.showSpinner = false;
+      });
   }
   public albumClicked(eventArgs: ViewAlbum) {
     const navigationExtras: NavigationExtras = {

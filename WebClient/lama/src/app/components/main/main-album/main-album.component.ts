@@ -100,12 +100,14 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
   removeSharedAlbum() {
     this.sharingService
       .deleteSharedAlbum(this.album.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
 
   removeSharedAlbumForUser() {
     this.sharingService
       .deleteSharedAlbumForUser(this.album.id, this.currentUser.id)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(() => this.deleteAlbumEvent.emit(this.album));
   }
 
