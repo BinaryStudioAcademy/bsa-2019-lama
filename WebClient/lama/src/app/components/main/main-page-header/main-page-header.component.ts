@@ -262,6 +262,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   getSearchSuggestions(id: number, criteria: string) {
     if (this.searchCriteria.length > 0) {
       criteria = criteria.trim();
+      criteria = this.escapeRegExp(criteria);
+      console.log(criteria);
       this.file
         .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))
@@ -278,7 +280,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         });
     }
   }
-
+  escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+  }
   getThumbnailByName(item: string) {
     const nameIndex = this.searchSuggestions.names.indexOf(item);
     const thumb = this.searchSuggestions.thumbnails[nameIndex];
