@@ -8,6 +8,7 @@ namespace Lama.Domain.Enums
     {
         Like,
         Comment,
-        Duplicates
+        Duplicates,
+        Shared
     }
 }

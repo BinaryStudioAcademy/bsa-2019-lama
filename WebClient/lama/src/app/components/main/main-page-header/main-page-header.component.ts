@@ -142,7 +142,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       );
   }
   sendDelete(id) {
-    this.notificationService.DeleteNotfication(id).subscribe(
+    this.notificationService.DeleteNotfication(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       x => {
         this.notification = this.notification.filter(z => z.id !== id);
       },
@@ -156,7 +158,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   openPhoto(eventArgs) {
-    this.file.get(eventArgs).subscribe(photo => {
+    this.file.get(eventArgs)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(photo => {
       this.modalPhotoEntry.clear();
       const factory = this.resolver.resolveComponentFactory(
         PhotoModalComponent
@@ -333,7 +337,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       this.searchHistory.pop();
     }
     const id = localStorage.getItem('userId');
-    this.http.findPhotos(id, this.searchCriteria).subscribe(
+    this.http.findPhotos(id, this.searchCriteria)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       p => {
         this.shared.isSearchTriggeredAtLeastOnce = true;
         this.shared.isSearchTriggered = true;
@@ -347,7 +353,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   restore() {
-    this.file.receivePhoto().subscribe(
+    this.file.receivePhoto()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       p => {
         this.shared.foundPhotos = p;
       },
