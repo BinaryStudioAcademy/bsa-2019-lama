@@ -195,7 +195,9 @@ namespace Lama.Controllers
         [Route("restore")]
         public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
         {
-            return _service.RestoresDeletedPhotos(photosToRestore);
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            return _service.RestoresDeletedPhotos(currentUserId,photosToRestore);
         } 
     }
 }
