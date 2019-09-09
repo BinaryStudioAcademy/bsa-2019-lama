@@ -142,6 +142,7 @@ namespace Lama.Controllers
             await _service.SetPhotoCategory(photoData);
         }
 
+        [AllowAnonymous]
         [HttpGet("images/{blobId}")]
         public async Task<string> GetPhoto(string blobId)
         {
