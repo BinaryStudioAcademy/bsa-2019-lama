@@ -69,7 +69,11 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(url => (this.imageUrl = url));
     }
-    if (this.isShared && this.album.photoAlbums.length > 0) {
+    if (
+      this.album.photoAlbums !== null &&
+      this.isShared &&
+      this.album.photoAlbums.length > 0
+    ) {
       let i = 0;
       for (const item of this.album.photoAlbums) {
         if (i === 3) {

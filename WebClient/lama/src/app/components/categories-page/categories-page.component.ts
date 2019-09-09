@@ -64,7 +64,10 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
         album: eventArgs
       }
     };
-    this.router.navigate(['main/categories', eventArgs.id], navigationExtras);
+    this.router.navigate(
+      ['main/categories', eventArgs.title],
+      navigationExtras
+    );
   }
 
   archiveAlbum(event: ViewAlbum) {
