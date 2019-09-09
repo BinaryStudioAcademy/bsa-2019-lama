@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Album } from '../models/Album/album';
@@ -8,21 +8,23 @@ import { NewAlbumWithExistPhotos } from '../models/Album/NewAlbumWithExistPhotos
 import { PhotoRaw, PhotoToDeleteRestoreDTO } from '../models';
 import { PhotoDetailsAlbum } from '../models/Album/PhotodetailsAlbum';
 import { UpdateAlbum } from '../models/Album/updatedAlbum';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ReturnAlbumDTO } from '../models/Album/return-album-dto';
 import { AlbumExistPhotos } from '../models/Album/AlbumExistPhotos';
 import { AlbumNewPhotos } from '../models/Album/AlbumNewPhotos';
+import { takeUntil } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AlbumService {
+export class AlbumService implements OnDestroy {
   public baseUrl: string = environment.lamaApiUrl;
   public routeAlbum = '/api/album';
 
   public headers = new HttpHeaders();
 
   constructor(private http: HttpClient) {}
+  unsubscribe = new Subject();
 
   public GetPhotoDetailsAlbums(photoId: number, httpParams?: any) {
     return this.http.get<PhotoDetailsAlbum[]>(
@@ -98,13 +100,17 @@ export class AlbumService {
     const headers = new HttpHeaders().set('content-type', 'application/json');
     return this.http
       .put<UpdateAlbum>(this.baseUrl + this.routeAlbum, album, { headers })
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe(e => console.log(e));
   }
 
   public updateAlbumTitle(album: UpdateAlbum) {
     const headers = new HttpHeaders().set('content-type', 'application/json');
-    return this.http
-      .put<UpdateAlbum>(`${this.baseUrl}${this.routeAlbum}/title/`, album, { headers });
+    return this.http.put<UpdateAlbum>(
+      `${this.baseUrl}${this.routeAlbum}/title/`,
+      album,
+      { headers }
+    );
   }
 
   public ArchiveAlbum(photos: string[]) {
@@ -139,5 +145,10 @@ export class AlbumService {
       `${this.baseUrl}${this.routeAlbum}/photos/${albumId}`,
       httpOptions
     );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.unsubscribe();
   }
 }

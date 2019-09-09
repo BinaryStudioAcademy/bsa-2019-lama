@@ -52,7 +52,9 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
       return;
     }
     for (const p of photos) {
-      this.fileService.markPhotoAsDeleted(p.id).subscribe(fs => fs);
+      this.fileService.markPhotoAsDeleted(p.id)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(fs => fs);
     }
     if (photos.length === 1) {
       this.notifier.notify('success', 'Photo removed to bin');
@@ -67,6 +69,7 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
       }
       this.favoriteService
         .removeSelectedFavorites(this.userId, ids)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe();
     }
     this.emitToUp(this.photos.map(i => i.id));
@@ -78,6 +81,7 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
     if (this.isFavorite()) {
       this.favoriteService
         .removeSelectedFavorites(this.userId, photos)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           fs => {
             this.notifier.notify(
@@ -92,7 +96,9 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
             )
         );
     } else {
-      this.albumService.removePhotosFromAlbum(this.albumId, photos).subscribe(
+      this.albumService.removePhotosFromAlbum(this.albumId, photos)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         as => {
           this.notifier.notify('success', 'Photos deleted from album');
         },

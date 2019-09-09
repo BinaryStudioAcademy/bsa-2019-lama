@@ -179,7 +179,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       );
   }
   UpdateLocation(e: NewLocation) {
-    this.photodetailsService.updateLocation(e).subscribe(
+    this.photodetailsService.updateLocation(e)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       a => {
         this.address = a;
         this.photo.location = a;
@@ -194,7 +196,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     );
   }
   DeleteLocation(e) {
-    this.photodetailsService.DeleteLocation(this.photo.id).subscribe(
+    this.photodetailsService.DeleteLocation(this.photo.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       a => {
         this.address = '';
         this.photo.location = '';

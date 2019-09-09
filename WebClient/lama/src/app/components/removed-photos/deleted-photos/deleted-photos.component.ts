@@ -62,6 +62,7 @@ export class DeletedPhotosComponent implements OnInit, OnDestroy {
     const photosToRestore: PhotoToDeleteRestoreDTO[] = this.getPhotos();
     this.fileService
         .restoresDeletedPhotos(photosToRestore)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           response => this.removeSelectedPhotoFromView(),
           error => this.notifier.notify('error', 'Error restoring photo')

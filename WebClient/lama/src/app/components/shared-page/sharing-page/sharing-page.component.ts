@@ -80,7 +80,9 @@ export class SharingPageComponent implements OnInit, OnDestroy {
       for (const item of event.photoAlbums) {
         NameOfFiles.push(item.originalBlobId);
       }
-      this.albumService.ArchiveAlbum(NameOfFiles).subscribe(
+      this.albumService.ArchiveAlbum(NameOfFiles)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
         x => {
           this.ArchivePhotos = x;
           this.ConvertToImage(event.title);
