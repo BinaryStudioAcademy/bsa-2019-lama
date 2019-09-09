@@ -6,14 +6,15 @@ import { Directive, Input, ElementRef, OnInit } from '@angular/core';
 export class IsBlockedDirective implements OnInit {
   @Input('appIsBlocked') blocked: boolean;
 
-  constructor(private elem: ElementRef) { }
+  constructor(private elem: ElementRef) {}
 
   ngOnInit() {
     if (this.blocked) {
-      this.elem.nativeElement.parentElement.parentElement.style.display = 'none';
+      this.elem.nativeElement.parentElement.parentElement.style.display =
+        'none';
     } else {
-      this.elem.nativeElement.parentElement.parentElement.style.display = 'block';
+      this.elem.nativeElement.parentElement.parentElement.style.display =
+        'block';
     }
   }
-
 }

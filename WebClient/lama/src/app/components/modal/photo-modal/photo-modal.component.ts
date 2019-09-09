@@ -150,11 +150,13 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
               x => x.userId === this.currentUser.id
             );
           }
+          if (this.isBlockById()) {
+            this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
+          }
         },
         error => this.notifier.notify('error', 'Error getting user')
       );
   }
-
 
   markerDragEnd($event: MouseEvent) {
     this.latitude = $event.coords.lat;
@@ -260,8 +262,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
-      { title: 'Info', icon: 'info' },
-      { title: 'Save', icon: 'save' }
+      { title: 'Info', icon: 'info' }
     ];
   }
 
@@ -514,7 +515,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     modalElem.classList.remove('active');
     overlay.classList.remove('active');
   }
-  openModalForPickCoord(event) { }
+  openModalForPickCoord(event) {}
 
   CloseInfo() {
     this.isInfoShown = !this.isInfoShown;
