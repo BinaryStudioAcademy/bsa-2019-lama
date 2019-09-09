@@ -5,18 +5,38 @@
         <div class="memeArea">
           <img src="{{ imageToEditBase64 }}" alt="image" />
           <div *ngIf="!memeSaved">
-            <textarea [(ngModel)]="upText" rows="2" class="upTextArea" [appMemeColor]="colorPicker"
-              maxlength="55"></textarea>
-            <textarea [(ngModel)]="downText" rows="2" class="downTextArea" [appMemeColor]="colorPicker"
-              maxlength="55"></textarea>
+            <textarea
+              [(ngModel)]="upText"
+              rows="2"
+              class="upTextArea"
+              [appMemeColor]="colorPicker"
+              maxlength="55"
+            ></textarea>
+            <textarea
+              [(ngModel)]="downText"
+              rows="2"
+              class="downTextArea"
+              [appMemeColor]="colorPicker"
+              maxlength="55"
+            ></textarea>
           </div>
         </div>
       </ng-template>
 
+      <ng-template #filtersMode>
+        <img id="imageToFilter" src="{{ imageUpdatedBase64 }}" />
+      </ng-template>
+
       <ng-template #defaultMode>
-        <image-cropper #editor [imageBase64]="imageToEditBase64" [cropperMinWidth]="cropperMinWidth"
-          [cropperMinHeight]="cropperMinHeight" [maintainAspectRatio]="false" format="jpeg"
-          (imageCropped)="imageCroppedHandler($event)">
+        <image-cropper
+          #editor
+          [imageBase64]="imageToEditBase64"
+          [cropperMinWidth]="cropperMinWidth"
+          [cropperMinHeight]="cropperMinHeight"
+          [maintainAspectRatio]="false"
+          format="jpeg"
+          (imageCropped)="imageCroppedHandler($event)"
+        >
         </image-cropper>
       </ng-template>
 
@@ -26,7 +46,15 @@
           <div class="main-photo">
             <!--image-->
             <div class="photo">
-              <div *ngIf="isMemeMode; then memeMode; else defaultMode"></div>
+              <div *ngIf="isFiltersMode; then filtersMode"></div>
+            </div>
+            <div class="photo">
+              <div *ngIf="isMemeMode; then memeMode"></div>
+            </div>
+            <div class="photo">
+              <div
+                *ngIf="!isFiltersMode && !isMemeMode; then defaultMode"
+              ></div>
             </div>
           </div>
           <div class="overlay">
@@ -53,14 +81,30 @@
           <div>
             <div class="tabs is-centered is-boxed is-medium">
               <ul>
-                <li class="tab is-active" (click)="displayRotateAndCrop()" [class.is-active]="showRotateAndCrop">
+                <li
+                  class="tab is-active"
+                  (click)="displayRotateAndCrop()"
+                  [class.is-active]="showRotateAndCrop"
+                >
                   <a>
-                    <img src="assets/crop-rotate-icon.svg" alt="Crop and rotate" />
+                    <img
+                      src="assets/crop-rotate-icon.svg"
+                      alt="Crop and rotate"
+                    />
                   </a>
                 </li>
-                <li class="tab" (click)="displayMeme()" [class.is-active]="showMeme">
+                <li
+                  class="tab"
+                  (click)="displayMeme()"
+                  [class.is-active]="showMeme"
+                >
                   <a>
                     <img src="assets/meme-icon.svg" alt="Meme" />
+                  </a>
+                </li>
+                <li class="tab" (click)="enableFilters()">
+                  <a>
+                    <img src="assets/photo-settings.svg" alt="Filters" />
                   </a>
                 </li>
               </ul>
@@ -91,10 +135,42 @@
             <div class="drop-content" *ngIf="showMeme">
               <div class="columns">
                 <div class="column has-text-centered">
-                  <input class="input-color" type="color" [(ngModel)]="colorPicker" />
+                  <input
+                    class="input-color"
+                    type="color"
+                    [(ngModel)]="colorPicker"
+                  />
                   <h5 class="subtitle is-5">Choose text color</h5>
                 </div>
               </div>
+            </div>
+            <div class="sliders" *ngIf="isFiltersMode">
+              <h5>Brightness</h5>
+              <ng5-slider
+                [value]="brightness"
+                [options]="brightnessOptions"
+                (userChangeEnd)="setBrightness($event)"
+              >
+              </ng5-slider>
+              <h5>Contrast</h5>
+              <ng5-slider
+                [value]="contrast"
+                [options]="brightnessOptions"
+                (userChangeEnd)="setContrast($event)"
+              ></ng5-slider>
+              <h5 (click)="setFilter('vintage')">Vintage</h5>
+              <h5 (click)="setFilter('twenties')">Twenties</h5>
+              <h5 (click)="setFilter('evening')">Evening</h5>
+              <h5 (click)="setFilter('cosmic')">Cosmic</h5>
+              <h5 (click)="setFilter('Warmth')">Warmth</h5>
+              <h5 (click)="setFilter('darkify')">Darkify</h5>
+              <!-- <div class="filters" *ngFor="let item of filters; let i = index">
+                <img
+                  id="{{ i }}"
+                  src="{{ imageUpdatedBase64 }}"
+                  (load)="setFilter(i, item)"
+                />
+              </div> -->
             </div>
           </div>
         </div>

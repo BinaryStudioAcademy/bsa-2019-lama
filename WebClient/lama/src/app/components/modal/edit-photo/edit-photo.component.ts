@@ -13,7 +13,10 @@ import { FileService } from 'src/app/services';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { environment } from 'src/environments/environment';
 import { createMem } from 'src/app/export-functions/meme';
+import { Options } from 'ng5-slider';
+import ImageFilters from 'node_modules/canvas-filters';
 
+declare const pixelsJS: any;
 @Component({
   selector: 'app-edit-photo',
   templateUrl: './edit-photo.component.html',
@@ -25,24 +28,39 @@ export class EditPhotoComponent {
   imageToEditBase64: string;
   @Input()
   imageToEditBlobId: string;
+  imageUpdatedBase64: string;
   isMemeMode: boolean;
+  isFiltersMode: boolean;
   upText: string;
   memeSaved: boolean;
   downText: string;
   colorPicker: string;
+  brightness = 0;
+  contrast = 0;
+
   private imageService: FileService;
   showRotateAndCrop = true;
   showMeme = false;
   isShown = false;
+  brightnessOptions: Options = {
+    floor: -100,
+    ceil: 100
+  };
+  posterize = 16;
+  posterizeOptions: Options = {
+    floor: 2,
+    ceil: 32
+  };
 
   // properties
   @Input()
   public set imageToEdit(imageToCropUrl: string) {
     this.imageUrl = imageToCropUrl;
 
-    this.imageService
-      .getImageBase64(imageToCropUrl)
-      .then(res => (this.imageToEditBase64 = res));
+    this.imageService.getImageBase64(imageToCropUrl).then(res => {
+      this.imageToEditBase64 = res;
+      this.imageUpdatedBase64 = this.imageToEditBase64;
+    });
   }
 
   @ViewChild('editor', { static: false, read: ImageCropperComponent })
@@ -70,6 +88,8 @@ export class EditPhotoComponent {
     this.cropperMinWidth = environment.photoEditing.crop.cropMinWidth;
     this.colorPicker = '#ffffff';
   }
+
+  changeBrightness() {}
 
   // methods
   public rotateLeftHandler() {
@@ -108,6 +128,11 @@ export class EditPhotoComponent {
           base64
         )
       });
+    } else if (this.isFiltersMode) {
+      this.saveClickedEvent.emit({
+        originalImageUrl: this.imageToEditBlobId,
+        editedImageBase64: this.imageUpdatedBase64
+      });
     } else {
       const event: ImageCroppedEvent = await this.imageEditor.crop();
       this.saveClickedEvent.emit({
@@ -135,6 +160,47 @@ export class EditPhotoComponent {
 
   disableMeme() {
     this.isMemeMode = false;
+  }
+
+  enableFilters() {
+    this.disableAll();
+    this.isFiltersMode = !this.isFiltersMode;
+  }
+
+  setFilter(filter: string) {
+    const img = document.getElementById('imageToFilter');
+    const obj = pixelsJS.filterImg(img, filter);
+    console.log(obj);
+  }
+
+  setBrightness(changeContext) {
+    this.brightness = changeContext.value;
+    this.updatePictureExplosure();
+  }
+
+  setContrast(changeContext) {
+    this.contrast = changeContext.value;
+    this.updatePictureExplosure();
+  }
+
+  updatePictureExplosure() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = this.imageToEditBase64;
+    canvas.height = image.height;
+    canvas.width = image.width;
+    image.onload = () => {
+      ctx.drawImage(image, 0, 0);
+      const imageData = ctx.getImageData(0, 0, image.width, image.height);
+      const filtered = ImageFilters.BrightnessContrastPhotoshop(
+        imageData,
+        this.brightness,
+        this.contrast
+      );
+      ctx.putImageData(filtered, 0, 0);
+      this.imageUpdatedBase64 = canvas.toDataURL();
+    };
   }
 
   displayRotateAndCrop() {
