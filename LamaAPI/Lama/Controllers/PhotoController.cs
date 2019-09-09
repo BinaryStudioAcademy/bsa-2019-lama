@@ -127,7 +127,13 @@ namespace Lama.Controllers
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
             return await _service.GetUserPhotosCategorized(currentUserId);
         } 
-
+        [HttpGet("categorized/{value}")]
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserCategory(string value)
+        {
+            var currentUserEmail = this.GetUserEmail();
+            var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
+            return await _service.GetUserCategory(value,currentUserId);
+        }
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
         public async Task SendDuplicates(IEnumerable<int> photos)

@@ -34,5 +34,6 @@ namespace Lama.BusinessLogic.Interfaces
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count);
         Task SetPhotoCategory(string photoData);
         Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId);
+        Task<IEnumerable<PhotoDocumentDTO>> GetUserCategory(string value,int userId);
     }
 }

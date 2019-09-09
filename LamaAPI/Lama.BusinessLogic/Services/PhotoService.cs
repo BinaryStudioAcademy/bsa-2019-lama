@@ -374,7 +374,24 @@ namespace Lama.BusinessLogic.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
-
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserCategory(string value,int UserId)
+        {
+            var photoDocuments = new List<PhotoDocumentDTO>();
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Name == value && x.UserId == UserId);
+            if(category!=null)
+            {
+                var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id && photo.UserId == UserId).Select(x => x.Id);
+                foreach (var id in photoIds)
+                {
+                    var photoDoc = await Get(id);
+                    if (photoDoc.IsDeleted == false)
+                    {
+                        photoDocuments.Add(photoDoc);
+                    }
+                }
+            }
+            return photoDocuments;
+        }
         public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId)
         {
             var top5Categories = _dbContext.Categories.Where(category => category.UserId == userId).ToList().OrderByDescending(category => category.Count).Take(5);
