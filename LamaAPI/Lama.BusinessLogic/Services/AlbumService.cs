@@ -374,7 +374,15 @@ namespace Lama.BusinessLogic.Services
                     Title = item.Title,
                     User = _mapper.Map<UserDTO>(item.User)
                 };
-                var AlbumPhotos = _mapper.Map<PhotoDocumentDTO[]>(Photos);
+                try
+                {
+                    var AlbumPhotos = _mapper.Map<IEnumerable<PhotoDocumentDTO>>(Photos);
+                }
+                catch (Exception ex)
+                {
+                    int x = 0;
+                    ++x;
+                }
                 if (item.Photo != null)
                 {
                    album.Photo = _mapper.Map<PhotoDocumentDTO>(ListOfPhotos.FirstOrDefault(x => x.Id == item.Photo.Id));

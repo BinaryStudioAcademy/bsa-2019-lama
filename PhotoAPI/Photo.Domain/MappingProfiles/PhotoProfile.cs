@@ -15,9 +15,11 @@ namespace Photo.Domain.MappingProfiles
             CreateMap<PhotoDocument, CreatePhotoResultDTO>().ReverseMap();
             CreateMap<PhotoDocument, PhotoDocumentDTO>().ForMember(dto => dto.Tags,
                 photoDoc => photoDoc.MapFrom(data => JsonConvert.DeserializeObject<IEnumerable<ImageTag>>(data.Tags)));
+            CreateMap<PhotoDocument, PhotoDocumentDTO>().ForMember(dto => dto.Text,
+                photoDoc => photoDoc.MapFrom(data => JsonConvert.DeserializeObject<IEnumerable<OcrResult>>(data.Text)));
             CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.Tags,
                 dto => dto.MapFrom(data => JsonConvert.SerializeObject(data.Tags)));
-            CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.TextOnPhoto,
+            CreateMap<PhotoDocumentDTO, PhotoDocument>().ForMember(photoDoc => photoDoc.Text,
                 dto => dto.MapFrom(data => JsonConvert.SerializeObject(data.Text)));
         }
     }

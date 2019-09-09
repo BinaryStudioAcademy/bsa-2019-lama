@@ -1,4 +1,3 @@
-import { Like } from '../Reaction/Like';
 import { LikeDTO } from '../Reaction/LikeDTO';
 import { ImageTagDTO } from './imageTagDTO';
 import { TextOnPhotoDTO } from './textOnPhotoDTO';

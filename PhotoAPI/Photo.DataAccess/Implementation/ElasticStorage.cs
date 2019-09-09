@@ -140,6 +140,10 @@ namespace Photo.DataAccess.Implementation
                                  .MatchPhrasePrefix(w => w
                                      .Field(f => f.Tags)
                                      .Query($"{criteria}")
+                                 ), s => s
+                                 .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Text)
+                                     .Query($"{criteria}")
                               )
                           )
                      )
@@ -158,6 +162,7 @@ namespace Photo.DataAccess.Implementation
                     .Field(f => f.Location)
                     .Field(f => f.Description)
                     .Field(f => f.Tags)
+                    .Field(f => f.Text)
                  )
               )
              .Query(q => q
@@ -192,6 +197,10 @@ namespace Photo.DataAccess.Implementation
                                  ), s => s
                                  .MatchPhrasePrefix(w => w
                                      .Field(f => f.Tags)
+                                     .Query($"{criteria}")
+                                  ), s => s
+                                  .MatchPhrasePrefix(w => w
+                                     .Field(f => f.Text)
                                      .Query($"{criteria}")
                                   )
                               )
@@ -231,6 +240,12 @@ namespace Photo.DataAccess.Implementation
                         .Select(m => m.Tags)
                         .Distinct()
                         .ToList();
+            var text = requestResult.Documents
+                .Where(p => p.Text != null && p.Text.ToLower()
+                        .Contains(criteria.ToLower()))
+                        .Select(m => m.Text)
+                        .Distinct()
+                        .ToList();
 
             var dict = new Dictionary<string, List<string>>()
             {
@@ -238,7 +253,8 @@ namespace Photo.DataAccess.Implementation
                 {"thumbnails", thumbnails },
                 {"description", description },
                 {"locations", locations },
-                {"tags", tags}
+                {"tags", tags},
+                {"text", text}
             };
             return dict;
         }

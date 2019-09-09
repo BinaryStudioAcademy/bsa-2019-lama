@@ -1,13 +1,13 @@
-export class TextOnPhotoDTO {
+export interface TextOnPhotoDTO {
   language: string;
   textAngle: number;
   orientation: string;
   regions: Region[];
 }
 
-class Word {
+class Region {
   boundingBox: string;
-  text: string;
+  lines: Line[];
 }
 
 class Line {
@@ -15,7 +15,7 @@ class Line {
   words: Word[];
 }
 
-class Region {
+class Word {
   boundingBox: string;
-  lines: Line[];
+  text: string;
 }
