@@ -142,14 +142,15 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       );
   }
   sendDelete(id) {
-    this.notificationService.DeleteNotfication(id)
+    this.notificationService
+      .DeleteNotfication(id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      x => {
-        this.notification = this.notification.filter(z => z.id !== id);
-      },
-      error => this.notifier.notify('error', 'Error deleting notification')
-    );
+        x => {
+          this.notification = this.notification.filter(z => z.id !== id);
+        },
+        error => this.notifier.notify('error', 'Error deleting notification')
+      );
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -158,16 +159,17 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   openPhoto(eventArgs) {
-    this.file.get(eventArgs)
+    this.file
+      .get(eventArgs)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(photo => {
-      this.modalPhotoEntry.clear();
-      const factory = this.resolver.resolveComponentFactory(
-        PhotoModalComponent
-      );
-      const componentRef = this.modalPhotoEntry.createComponent(factory);
-      componentRef.instance.photo = photo;
-    });
+        this.modalPhotoEntry.clear();
+        const factory = this.resolver.resolveComponentFactory(
+          PhotoModalComponent
+        );
+        const componentRef = this.modalPhotoEntry.createComponent(factory);
+        componentRef.instance.photo = photo;
+      });
   }
 
   MarkAllAsRead() {
@@ -266,6 +268,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   getSearchSuggestions(id: number, criteria: string) {
     if (this.searchCriteria.length > 0) {
       criteria = criteria.trim();
+      criteria = this.escapeHtml(criteria);
       this.file
         .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))
@@ -282,7 +285,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         });
     }
   }
-
+  escapeHtml(unsafe) {
+    const s = unsafe.replace(/[^a-zA-Z0-9]/g, '');
+    return s;
+  }
   getThumbnailByName(item: string) {
     const nameIndex = this.searchSuggestions.names.indexOf(item);
     const thumb = this.searchSuggestions.thumbnails[nameIndex];
@@ -333,30 +339,32 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       this.searchHistory.pop();
     }
     const id = localStorage.getItem('userId');
-    this.http.findPhotos(id, this.searchCriteria)
+    this.http
+      .findPhotos(id, this.searchCriteria)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      p => {
-        this.shared.isSearchTriggeredAtLeastOnce = true;
-        this.shared.isSearchTriggered = true;
-        this.shared.foundPhotos = p;
-        this.shared.searchCriteria = this.searchCriteria;
-        this.searchCriteria = '';
-        this.router.navigate(['main/photos']);
-      },
-      error => this.notifier.notify('error', 'Error find photos')
-    );
+        p => {
+          this.shared.isSearchTriggeredAtLeastOnce = true;
+          this.shared.isSearchTriggered = true;
+          this.shared.foundPhotos = p;
+          this.shared.searchCriteria = this.searchCriteria;
+          this.searchCriteria = '';
+          this.router.navigate(['main/photos']);
+        },
+        error => this.notifier.notify('error', 'Error find photos')
+      );
   }
 
   restore() {
-    this.file.receivePhoto()
+    this.file
+      .receivePhoto()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      p => {
-        this.shared.foundPhotos = p;
-      },
-      error => this.notifier.notify('error', 'Error restoring')
-    );
+        p => {
+          this.shared.foundPhotos = p;
+        },
+        error => this.notifier.notify('error', 'Error restoring')
+      );
   }
 
   sendItemToSearchbar(item: string) {
