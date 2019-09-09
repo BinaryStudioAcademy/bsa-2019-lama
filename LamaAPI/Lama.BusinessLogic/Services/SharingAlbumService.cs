@@ -15,6 +15,7 @@ using Lama.Domain.DTO.Photo;
 using Lama.Domain.DTO.Album;
 using Lama.Domain.DTO.Reaction;
 using Remotion.Linq.Utilities;
+using Lama.Domain.Enums;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -23,12 +24,14 @@ namespace Lama.BusinessLogic.Services
         private IPhotoService _photoService;
         private IAlbumService albumService;
         private IMapper _mapper;
-        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper, IAlbumService albumService)
+        private readonly INotificationService _notificationService;
+        public SharingAlbumService(ApplicationDbContext context, IPhotoService photoService, IMapper mapper, IAlbumService albumService, INotificationService notificationService)
             : base(context)
         {
             this._photoService = photoService;
             this._mapper = mapper;
 			this.albumService = albumService;
+            this._notificationService = notificationService;
         }
 
         public async Task<ReturnAlbumDTO> Get(int id)
@@ -174,7 +177,17 @@ namespace Lama.BusinessLogic.Services
 			{
 				await Context.SharedAlbums.AddAsync(sharedAlbum);
 				await Context.SaveChangesAsync();
-			}
+
+                var existAlbum = await albumService.FindAlbum(sharedAlbum.AlbumId);
+                var authorId = existAlbum.User.Id;
+                var author = await Context.Users.SingleOrDefaultAsync(user => user.Id == authorId);
+
+                if (author != null)
+                {
+                    const string notification = "Shared album";
+                    await _notificationService.SendNotification(sharedAlbum.UserId, author, notification, ActivityType.Shared);
+                }
+            }
         }
     }
 }
