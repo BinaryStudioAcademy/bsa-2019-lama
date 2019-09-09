@@ -57,7 +57,8 @@ namespace Lama.Infrastructure
                     serviceProvider.GetService<ApplicationDbContext>(),
                     serviceProvider.GetService<IMapper>(),
                     serviceProvider.GetService<IPhotoService>(),
-                    configuration["PhotoApiUrl"]));
+                    configuration["PhotoApiUrl"],
+                    serviceProvider.GetService<INotificationService>()));
         }
         public static void AddSiteAuthentications(this IServiceCollection services, IConfiguration configuration)
         {
