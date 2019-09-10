@@ -33,7 +33,7 @@
 
                     <div class="storage">
                         <h4 class="title is-4">Upload photo from storage</h4>
-                        <a class="button is-primary is-fullwidth" (click)="ChoosePhoto()">upload</a>
+                        <a class="button is-primary is-fullwidth" (click)="ChoosePhoto()">Upload</a>
                     </div>
 
                     <div class="upload-file">
@@ -47,15 +47,12 @@
                     <div class="photo" *ngFor="let photo of photos; let i = index">
                         <div class="uploaded-image" [ngStyle]="{'opacity': isDuplicate(photo)? '0.3': '1'}">
                             <img src="{{ photo.imageUrl }}" class="image"/>
-                            <div class="overlay" (mouseenter)="mouseEnterOverlayHandler()" (mouseleave)="mouseLeftOverlayHandler()">
-                              <div *ngIf="showRemoveButton" (click)="removePhoto(i)" class="remove-button">
-                                <i class="material-icons is-block">clear</i>
-                              </div>
+                            <div class="overlay">
+                                <div (click)="removePhoto(i)" class="remove-button">
+                                    <i class="material-icons is-block">clear</i>
+                                </div>
                             </div>
                           </div>
-                        <div class="desc">
-                            <textarea class="textarea has-fixed-size" placeholder="Description" id="{{ i }}" [(ngModel)]="photo.description" rows="2"></textarea>
-                        </div>
                     </div>
                 </div>
             </div>
