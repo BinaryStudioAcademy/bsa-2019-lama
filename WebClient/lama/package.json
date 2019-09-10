@@ -51,6 +51,7 @@
     "ng5-slider": "^1.2.4",
     "ngx-image-cropper": "^1.4.1",
     "ngx-infinite-scroll": "^8.0.0",
+    "node-gyp": "^5.0.3",
     "node-loader": "^0.6.0",
     "piexifjs": "^1.0.6",
     "rxjs": "~6.4.0",
