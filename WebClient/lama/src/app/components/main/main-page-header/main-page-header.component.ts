@@ -108,9 +108,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           u.forEach(item => {
             if (item.activity === 2) {
               this.duplicates = JSON.parse(item.payload);
-            } else if (item.activity === 3) {
-
-            } else if (item.activity === 4) {
+            } else if (item.activity === 3 || item.activity === 4) {
+              this.sharedItemId = JSON.parse(item.payload);
             } else {
               this.photo = JSON.parse(item.payload);
             }
@@ -155,12 +154,12 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .DeleteNotfication(id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      x => {
-        this.notification = this.notification.filter(z => z.id !== id);
-        this.checkNotification(this.notification);
-      },
-      error => this.notifier.notify('error', 'Error deleting notification')
-    );
+        x => {
+          this.notification = this.notification.filter(z => z.id !== id);
+          this.checkNotification(this.notification);
+        },
+        error => this.notifier.notify('error', 'Error deleting notification')
+      );
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -452,7 +451,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
             album: album.body
           }
         };
-        this.router.navigate(['/main/sharing', album.body.id ], navigationExtras);
+        this.router.navigate(
+          ['/main/sharing', album.body.id],
+          navigationExtras
+        );
       });
   }
 
