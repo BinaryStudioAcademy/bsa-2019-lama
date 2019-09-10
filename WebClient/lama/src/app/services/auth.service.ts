@@ -148,11 +148,9 @@ export class AuthService implements OnDestroy {
         email: user.email,
         photo: { imageUrl: img }
       };
-
       this.registerUser(this.user)
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(id => {
-          console.log(id);
           localStorage.setItem('userId', id.toString());
         });
     });
@@ -172,7 +170,7 @@ export class AuthService implements OnDestroy {
     xhr.send();
   }
 
-  registerUser(user: UserCreate) {
+  registerUser(user?: UserCreate) {
     return this.httpClient.post<number>(
       `${environment.lamaApiUrl}/api/users`,
       user,
