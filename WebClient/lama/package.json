@@ -33,7 +33,6 @@
     "blueimp-canvas-to-blob": "^3.16.0",
     "bulma": "^0.7.5",
     "bulma-calendar": "^6.0.7",
-    "canvas": "^2.6.0",
     "canvas-filters": "^1.0.1",
     "compass-mixins": "^0.12.10",
     "exif-js": "^2.3.0",
