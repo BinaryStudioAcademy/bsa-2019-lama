@@ -22,7 +22,7 @@
                             <spinner *ngIf="showSpinner"></spinner>
                             <div class="photo" *ngIf="!isShowSpinner">
                                 <img src="{{ imageUrl }}" alt="Image" />
-                                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele">
+                                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele && currentUser?.id === photo.userId">
 
                                 </app-carousele-component>
                             </div>
