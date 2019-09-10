@@ -99,7 +99,11 @@
                     <img src="assets/meme-icon.svg" alt="Meme" />
                   </a>
                 </li>
-                <li class="tab" (click)="displayFilters()">
+                <li
+                  class="tab"
+                  (click)="displayFilters()"
+                  [class.is-active]="isFiltersMode"
+                >
                   <a>
                     <img src="assets/photo-settings.svg" alt="Filters" />
                   </a>
