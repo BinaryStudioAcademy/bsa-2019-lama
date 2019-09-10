@@ -2,7 +2,6 @@ $tabs-toggle-link-active-background-color: #00d1b2
 $tabs-toggle-link-active-border-color: #00d1b2
 $tabs-toggle-link-active-color: #fff
 
-
 .modal-content
     max-width: 100%
     max-height: 100%
@@ -15,7 +14,9 @@ $tabs-toggle-link-active-color: #fff
         max-width: 100%
         margin: 0
         height: 100%
-
+.tab a img
+    height: 26px
+    width: 26px
 .main-container
     height: 100%
     display: flex
@@ -31,9 +32,9 @@ $tabs-toggle-link-active-color: #fff
     position: relative
     background: white
     border-left: 1px solid lightgray
-    padding: 10px    
+    padding: 10px
 
-.overlay 
+.overlay
     position: absolute
     top: 0
     color: white
@@ -59,7 +60,7 @@ $tabs-toggle-link-active-color: #fff
 .back-icon
     height: 50px
     width: 50px
-    border-radius: 50% 
+    border-radius: 50%
     cursor: pointer
     position: absolute
     left: 0
@@ -71,7 +72,7 @@ $tabs-toggle-link-active-color: #fff
     justify-content: center
     span
         height: 100%
-    &:hover 
+    &:hover
         background: #00000017
     .icon i
         font-size: 40px
@@ -79,27 +80,27 @@ $tabs-toggle-link-active-color: #fff
 .overlay-item
     height: 50px
     width: 50px
-    border-radius: 50% 
+    border-radius: 50%
     display: flex !important
     align-items: center
     justify-content: center
     cursor: pointer
     & div
         height: 28px
-    &:hover 
+    &:hover
         background: #00000017
 
 .main-photo
-  display: flex
-  flex-direction: column
-  justify-content: center
-  align-items: center
-  width: auto
-  height: 100%
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    width: auto
+    height: 100%
 
 .photo
     display: flex
-    align-items: center    
+    align-items: center
     flex-direction: column
     width: 100%
     height: 100%
@@ -123,12 +124,12 @@ $tabs-toggle-link-active-color: #fff
         display: flex
         flex-direction: column
         span
-            margin: 10px 0
-            font-size: 18px
+        margin: 10px 0
+        font-size: 18px
     .icon
         width: 70px
         height: 70px
-        border-radius: 50% 
+        border-radius: 50%
         margin: 10px
         cursor: pointer
         background: #00d1b2
@@ -139,7 +140,7 @@ $tabs-toggle-link-active-color: #fff
     width: fit-content
     height: fit-content
     margin: auto
-    textarea 
+    textarea
         position: absolute
         resize: none
         width: 90%
@@ -162,12 +163,30 @@ $tabs-toggle-link-active-color: #fff
         height: 100%
         margin: auto
         display: block
-
 image-cropper
-    margin: auto
+        margin: auto
 
 .tabs
     width: 100%
+
+.filters
+    display: flex
+    flex-wrap: wrap
+
+.filter
+    margin: 3px
+    width: 30%
+    cursor: pointer
+
+.filter:hover img
+    opacity: .8
+
+.filter img
+    width: 100%
+    border-radius: 4px
+
+ng5-slider
+    margin-bottom: 1rem
 
 .input-color
     width: 100px

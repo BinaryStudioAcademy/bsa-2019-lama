@@ -3,8 +3,16 @@
         <div class="container">
             <!--content-->
             <ng-template [ngIf]="isEditing">
-                <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl" (saveClickedEvent)="saveEditedImageHandler($event)" (resetClickedEvent)="resetImageHandler()" (cancelClickedEvent)="goBackToImageView()">
-                </app-edit-photo>
+                <app-edit-photo
+                [photoToEdit]="photo"
+                [imageToEditBlobId]="photo.blobId"
+                [thumbnailUpdatedBase64]="thumbnailBase64"
+                [imageToEdit]="imageUrl"
+                (saveClickedEvent)="saveEditedImageHandler($event)"
+                (resetClickedEvent)="resetImageHandler()"
+                (cancelClickedEvent)="goBackToImageView()"
+              >
+              </app-edit-photo>
             </ng-template>
 
             <ng-template [ngIf]="isDeleting">

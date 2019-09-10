@@ -6,9 +6,7 @@
     "sourceMap": true,
     "declaration": false,
     "paths": {
-      "jszip": [
-        "node_modules/jszip/dist/jszip.min.js"
-      ]
+      "jszip": ["node_modules/jszip/dist/jszip.min.js"]
     },
     "downlevelIteration": true,
     "experimentalDecorators": true,
@@ -16,13 +14,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom", "dom.iterable"]
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": false,
