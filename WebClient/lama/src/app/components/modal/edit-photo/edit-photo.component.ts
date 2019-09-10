@@ -157,10 +157,7 @@ export class EditPhotoComponent {
     } else if (this.isFiltersMode) {
       this.saveClickedEvent.emit({
         originalImageUrl: this.imageToEditBlobId,
-        editedImageBase64: this.imageService.copyExif(
-          this.imageToEditBase64,
-          this.imageUpdated
-        )
+        editedImageBase64: this.imageUpdated
       });
     } else {
       const event: ImageCroppedEvent = await this.imageEditor.crop();
