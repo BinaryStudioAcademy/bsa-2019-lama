@@ -1,14 +1,16 @@
-<h2>Most popular categories</h2>
-<div class="items-container-left" *ngIf="hasAnyItems">
+<div class="content-header">
+  <h2 *ngIf="hasAnyItems" class="photos-container-title">Most popular categories:</h2>
+  <div class="no-content" *ngIf="!hasAnyItems">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="" />
+  </div>
+  <div class="items-container-left" *ngIf="hasAnyItems">
     <div *ngFor="let item of categoryAlbums">
-        <main-album [_album]="item" [isCategoryAlbum]="true" [currentUser]="currentUser" (Click)="albumClicked($event)">
-        </main-album>
+      <main-album [_album]="item" [isCategoryAlbum]="true" [currentUser]="currentUser"
+        (ClickDownload)="archiveAlbum($event)" (Click)="albumClicked($event)">
+      </main-album>
     </div>
-    <div class="no-content" *ngIf="!hasAnyItems">
-      <h2>Nothing here yet..</h2>
-      <img src="assets/nocontent.jpg" alt="">
-    </div>
+  </div>
 </div>
-
 <spinner *ngIf="showSpinner"></spinner>
 <notifier-container></notifier-container>

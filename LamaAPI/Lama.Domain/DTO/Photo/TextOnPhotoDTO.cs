@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using System.Collections.Generic;
 
-namespace Photo.Domain.DataTransferObjects
+namespace Lama.Domain.DTO.Photo
 {
     public class TextOnPhotoDTO
     {

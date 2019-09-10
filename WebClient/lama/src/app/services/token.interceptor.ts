@@ -8,7 +8,7 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, EMPTY } from 'rxjs';
 import { mergeMap, map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
@@ -19,6 +19,9 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler) {
     return this.authService.afAuth.idToken.pipe(
       mergeMap(token => {
+        if (token === null) {
+          return EMPTY;
+        }
         this.authService.token = token;
         request = request.clone({
           setHeaders: {
@@ -32,9 +35,18 @@ export class TokenInterceptor implements HttpInterceptor {
             return event;
           }),
           catchError((error: HttpErrorResponse) => {
-            if (error.url.includes('api/users')) {
-              this.authService.doLogout();
-              this.router.navigateByUrl('/landing');
+            if (
+              error.url.includes('api/users') ||
+              error.url.includes('/negotiate')
+            ) {
+              this.authService
+                .doLogout()
+                .then((this.authService.token = null))
+                .then(() => {
+                  this.authService.user = null;
+                  this.router.navigate(['/']);
+                  localStorage.clear();
+                });
             }
             return throwError(error);
           })

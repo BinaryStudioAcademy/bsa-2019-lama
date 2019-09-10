@@ -16,5 +16,5 @@ export interface UploadPhotoResultDTO {
   reactions: LikeDTO[];
   isDuplicate: boolean;
   tags: ImageTagDTO[];
-  text: TextOnPhotoDTO[];
+  text: TextOnPhotoDTO;
 }

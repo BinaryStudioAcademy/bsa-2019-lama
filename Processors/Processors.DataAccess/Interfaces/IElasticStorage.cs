@@ -15,6 +15,7 @@ namespace Processors.DataAccess.Interfaces
         Task UpdateThumbnailsAsync(long id, Processors.Domain.ThumbnailUpdateDTO thumbnailUpdate);
         Task<bool> ExistAsync(long id);
         Task UpdateImageTagsAsync(long imageId, ImageTagsAsRaw imageTagsAsRawString);
+        Task UpdateImageTextAsync(long imageId, ImageTextAsRaw imageTextAsRawString);
         Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription);
         Task<IEnumerable<PhotoDocument>> GetUserPhotos(int userId);
         Task<int> GetUserAsync(long imageId);

@@ -23,7 +23,7 @@ import { PhotoCategory } from '../models/photoCategory';
   providedIn: 'root'
 })
 export class FileService {
-  constructor(private client: HttpClient) { }
+  constructor(private client: HttpClient) {}
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -146,9 +146,15 @@ export class FileService {
   }
 
   getUserPhotosCategorized() {
-    return this.client.get<PhotoCategory[]>(`${environment.lamaApiUrl}/api/photo/categorized`);
+    return this.client.get<PhotoCategory[]>(
+      `${environment.lamaApiUrl}/api/photo/categorized`
+    );
   }
-
+  getUserCategory(category: string) {
+    return this.client.get<PhotoRaw[]>(
+      `${environment.lamaApiUrl}/api/photo/categorized/${category}`
+    );
+  }
   receiveUsersPhotosRange(
     userId: number,
     startId: number,

@@ -21,5 +21,5 @@ export interface PhotoRaw {
   coordinates?: string;
   reactions: LikeDTO[];
   tags: ImageTagDTO[];
-  text: TextOnPhotoDTO[];
+  text: TextOnPhotoDTO;
 }

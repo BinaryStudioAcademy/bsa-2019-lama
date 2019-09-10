@@ -84,16 +84,20 @@ export class ViewLocationComponent implements OnInit, OnDestroy, DoCheck {
         },
         error => this.notifier.notify('error', 'Error loading favourites')
       );
-    this.httpService.getData('users/' + userId).subscribe(
-      u => {
-        this.currentUser = u;
-      },
-      error => this.notifier.notify('error', 'Error loading user')
-    );
+    this.httpService
+      .getData('users/' + userId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        u => {
+          this.currentUser = u;
+        },
+        error => this.notifier.notify('error', 'Error loading user')
+      );
     this.selectedPhotos = [];
     if (this.albumCities === true) {
       this.locationService
         .getUserLocationAlbumsByCountry(userId)
+        .pipe(takeUntil(this.unsubscribe))
         .subscribe(albums => {
           for (const alb of albums) {
             if (alb.title === this.AlbumName) {
@@ -116,9 +120,10 @@ export class ViewLocationComponent implements OnInit, OnDestroy, DoCheck {
 
   downloadImages() {
     if (!this.isAtLeastOnePhotoSelected) {
-      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+      this.zipService.downloadImages(this.album.photoAlbums);
+    } else {
+      this.zipService.downloadImages(this.selectedPhotos);
     }
-    this.zipService.downloadImages(this.selectedPhotos);
   }
   ngOnDestroy() {
     this.unsubscribe.next();

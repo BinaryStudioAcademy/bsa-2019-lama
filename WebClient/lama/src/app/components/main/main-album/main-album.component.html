@@ -12,34 +12,34 @@
       class="dropdown-content"
       (mouseleave)="leave($event)"
     >
-      <a *ngIf="!isShared" class="dropdown-item" (click)="openShareModal()"
+      <a *ngIf="!isShared && !isCategoryAlbum" class="dropdown-item" (click)="openShareModal()"
         >Share</a
       >
-      <a class="dropdown-item" (click)="toggleSetCoverModal()"
+      <a *ngIf="!isCategoryAlbum" class="dropdown-item" (click)="toggleSetCoverModal()"
         >Set cover</a
       >
       <a class="dropdown-item" (click)="DownloadAlbum($event)">Download</a>
       <a
-        *ngIf="!isFavorite"
+        *ngIf="!isFavorite && !isCategoryAlbum"
         class="dropdown-item"
         (click)="addPhotos($event)"
         >Add Photos</a
       >
       <!--<a class="dropdown-item" (click)="removeDuplicates()">Remove Duplicates</a> -->
       <a
-        *ngIf="isOwners && !isShared"
+        *ngIf="isOwners && !isShared && !isCategoryAlbum"
         class="dropdown-item"
         (click)="removeAlbum()"
         >Remove</a
       >
       <a
-        *ngIf="isOwners && isShared && !isFake"
+        *ngIf="isOwners && isShared && !isFake && !isCategoryAlbum"
         class="dropdown-item"
         (click)="removeSharedAlbum()"
         >Remove</a
       >
       <a
-        *ngIf="isOwners && isShared && isFake"
+        *ngIf="isOwners && isShared && isFake && !isCategoryAlbum"
         class="dropdown-item"
         (click)="removeFakeSharedAlbum()"
         >Remove</a

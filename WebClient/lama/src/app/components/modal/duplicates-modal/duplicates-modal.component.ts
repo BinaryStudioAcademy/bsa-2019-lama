@@ -48,7 +48,9 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
           photo => new PhotoToDeleteRestoreDTO(photo.id)
         )
       : this.receivedIds.map(id => new PhotoToDeleteRestoreDTO(id));
-    this.fileService.deletePhotosPermanently(toDelete).subscribe(
+    this.fileService.deletePhotosPermanently(toDelete)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       response => {
         this.notifier.notify('success', 'Duplicates removed successfully');
       },
@@ -71,7 +73,9 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
       });
     } else if (this.receivedIds) {
       this.receivedIds.forEach(item => {
-        this.fileService.get(item).subscribe(it => {
+        this.fileService.get(item)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(it => {
           this.fileService
             .getPhoto(it.blob256Id)
             .pipe(takeUntil(this.unsubscribe))

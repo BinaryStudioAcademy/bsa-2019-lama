@@ -15,6 +15,7 @@ using Lama.Domain.DbModels;
 using Lama.Domain.DTO;
 using Lama.Domain.DTO.Photo;
 using Lama.Domain.DTO.User;
+using Lama.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -28,14 +29,16 @@ namespace Lama.BusinessLogic.Services
         private readonly string _photoApiUrl;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly INotificationService _notificationService;
 
         //TODO: move services declaration to startup and pass only url instead of configuration
-        public SharingPhotoService(ApplicationDbContext context,IMapper mapper, IPhotoService photoService, string url)
+        public SharingPhotoService(ApplicationDbContext context,IMapper mapper, IPhotoService photoService, string url, INotificationService notificationService)
             :base(context)
         {
             _photoApiUrl = url;
             _mapper = mapper;
             _photoService = photoService;
+            _notificationService = notificationService;
         }
 
 
@@ -136,6 +139,16 @@ namespace Lama.BusinessLogic.Services
             {
                 await Context.SharedPhotos.AddAsync(sharedPhoto);
                 await Context.SaveChangesAsync();
+
+                var photo = await _photoService.Get(sharedPhoto.PhotoId);
+                var authorId = photo.UserId;
+                var author = await Context.Users.SingleOrDefaultAsync(user => user.Id == authorId);
+
+                if (author != null)
+                {
+                    const string notification = "Shared photo";
+                    await _notificationService.SendNotification(sharedPhoto.UserId, author, notification, ActivityType.Shared, new List<int>() {sharedPhoto.PhotoId});
+                }
             }
         }
     }

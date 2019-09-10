@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
   Component,
@@ -27,6 +27,9 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { forkJoin } from 'rxjs';
+import { Album } from 'src/app/models/Album/album';
+import { SharingService } from 'src/app/services/sharing.service';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -66,6 +69,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   duplicates: number[] = [];
   shared: SharedService;
   photo;
+  sharedItemId: number;
 
   constructor(
     public auth: AuthService,
@@ -75,7 +79,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     private http: HttpService,
     private file: FileService,
     private notifier: NotifierService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sharingService: SharingService,
+    private albumService: AlbumService
   ) {
     this.resolver = resolver;
     this.shared = shared;
@@ -102,6 +108,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           u.forEach(item => {
             if (item.activity === 2) {
               this.duplicates = JSON.parse(item.payload);
+            } else if (item.activity === 3 || item.activity === 4) {
+              this.sharedItemId = JSON.parse(item.payload);
             } else {
               this.photo = JSON.parse(item.payload);
             }
@@ -142,12 +150,16 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       );
   }
   sendDelete(id) {
-    this.notificationService.DeleteNotfication(id).subscribe(
-      x => {
-        this.notification = this.notification.filter(z => z.id !== id);
-      },
-      error => this.notifier.notify('error', 'Error deleting notification')
-    );
+    this.notificationService
+      .DeleteNotfication(id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        x => {
+          this.notification = this.notification.filter(z => z.id !== id);
+          this.checkNotification(this.notification);
+        },
+        error => this.notifier.notify('error', 'Error deleting notification')
+      );
   }
 
   deleteDuplicatesHandler(event: number[]) {
@@ -155,15 +167,19 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.duplicates = [];
   }
 
-  openPhoto(eventArgs) {
-    this.file.get(eventArgs).subscribe(photo => {
-      this.modalPhotoEntry.clear();
-      const factory = this.resolver.resolveComponentFactory(
-        PhotoModalComponent
-      );
-      const componentRef = this.modalPhotoEntry.createComponent(factory);
-      componentRef.instance.photo = photo;
-    });
+  openPhoto(item: NotificationDTO) {
+    const photoId = JSON.parse(item.payload);
+    this.file
+      .get(photoId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(photo => {
+        this.modalPhotoEntry.clear();
+        const factory = this.resolver.resolveComponentFactory(
+          PhotoModalComponent
+        );
+        const componentRef = this.modalPhotoEntry.createComponent(factory);
+        componentRef.instance.photo = photo;
+      });
   }
 
   MarkAllAsRead() {
@@ -262,6 +278,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   getSearchSuggestions(id: number, criteria: string) {
     if (this.searchCriteria.length > 0) {
       criteria = criteria.trim();
+      criteria = this.escapeHtml(criteria);
+      if (criteria.length === 0) {
+        return;
+      }
       this.file
         .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))
@@ -278,7 +298,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         });
     }
   }
-
+  escapeHtml(unsafe) {
+    const s = unsafe
+      .replace(/#/g, '')
+      .split('/')
+      .join('');
+    return s;
+  }
   getThumbnailByName(item: string) {
     const nameIndex = this.searchSuggestions.names.indexOf(item);
     const thumb = this.searchSuggestions.thumbnails[nameIndex];
@@ -324,31 +350,41 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   find() {
+    this.searchCriteria = this.escapeHtml(this.searchCriteria);
+    if (this.searchCriteria.length === 0) {
+      return;
+    }
     this.searchHistory.unshift(this.searchCriteria);
     if (this.searchHistory.length > 5) {
       this.searchHistory.pop();
     }
     const id = localStorage.getItem('userId');
-    this.http.findPhotos(id, this.searchCriteria).subscribe(
-      p => {
-        this.shared.isSearchTriggeredAtLeastOnce = true;
-        this.shared.isSearchTriggered = true;
-        this.shared.foundPhotos = p;
-        this.shared.searchCriteria = this.searchCriteria;
-        this.searchCriteria = '';
-        this.router.navigate(['main/photos']);
-      },
-      error => this.notifier.notify('error', 'Error find photos')
-    );
+    this.http
+      .findPhotos(id, this.searchCriteria)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        p => {
+          this.shared.isSearchTriggeredAtLeastOnce = true;
+          this.shared.isSearchTriggered = true;
+          this.shared.foundPhotos = p;
+          this.shared.searchCriteria = this.searchCriteria;
+          this.searchCriteria = '';
+          this.router.navigate(['main/photos']);
+        },
+        error => this.notifier.notify('error', 'Error find photos')
+      );
   }
 
   restore() {
-    this.file.receivePhoto().subscribe(
-      p => {
-        this.shared.foundPhotos = p;
-      },
-      error => this.notifier.notify('error', 'Error restoring')
-    );
+    this.file
+      .receivePhoto()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        p => {
+          this.shared.foundPhotos = p;
+        },
+        error => this.notifier.notify('error', 'Error restoring')
+      );
   }
 
   sendItemToSearchbar(item: string) {
@@ -408,6 +444,24 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   getCountOfUnreadNotifications() {
     return this.notification.filter(x => !x.isRead).length;
+  }
+
+  public sharedItemClicked(item: NotificationDTO) {
+    const albumId = JSON.parse(item.payload);
+    this.albumService
+      .getAlbum(albumId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(album => {
+        const navigationExtras: NavigationExtras = {
+          state: {
+            album: album.body
+          }
+        };
+        this.router.navigate(
+          ['/main/sharing', album.body.id],
+          navigationExtras
+        );
+      });
   }
 
   ngOnDestroy() {

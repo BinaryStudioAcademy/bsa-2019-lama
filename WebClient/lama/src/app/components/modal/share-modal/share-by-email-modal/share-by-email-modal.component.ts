@@ -15,6 +15,7 @@ import { NotifierService } from 'angular-notifier';
 import { SharingService } from 'src/app/services/sharing.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'app-share-by-email-modal',
@@ -42,7 +43,8 @@ export class ShareByEmailModalComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private notifier: NotifierService,
-    private sharingService: SharingService
+    private sharingService: SharingService,
+    private albumService: AlbumService
   ) {}
 
   ngOnInit() {}
@@ -121,16 +123,7 @@ export class ShareByEmailModalComponent implements OnInit, OnDestroy {
     this.showAvailable = true;
     if (this.userEmails.length) {
       this.availableAll = false;
-      this.userIds.forEach(item => {
-        this.sharingService
-          .sendSharedPhoto({
-            photoId: this.sharedPhoto.photoId,
-            userId: item,
-            sharedImageUrl: this.sharedPhoto.sharedImageUrl
-          })
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(e => console.log(e));
-      });
+      this.sharingPhotoAsAlbum();
     } else {
       this.availableAll = true;
     }
@@ -139,8 +132,6 @@ export class ShareByEmailModalComponent implements OnInit, OnDestroy {
     } else if (!this.availableAll && this.showAvailable) {
       this.notifier.notify('success', 'Link is sent to specified users');
     }
-    this.userEmails = [];
-    this.userIds = [];
   }
 
   clearInput() {
@@ -157,6 +148,44 @@ export class ShareByEmailModalComponent implements OnInit, OnDestroy {
     serchfind = regexp.test(search);
 
     return serchfind;
+  }
+
+  sharingPhoto() {
+    this.availableAll = false;
+    this.userIds.forEach(item => {
+      this.sharingService
+        .sendSharedPhoto({
+          photoId: this.sharedPhoto.photoId,
+          userId: item,
+          sharedImageUrl: this.sharedPhoto.sharedImageUrl
+        })
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(e => console.log(e));
+    });
+  }
+
+  sharingPhotoAsAlbum() {
+    const albumWithExistPhotos = {
+      title: new Date().toLocaleDateString(),
+      photosId: [this.sharedPhoto.photoId],
+      authorId: -1
+    };
+    this.albumService
+      .createAlbumWithExistPhotos(albumWithExistPhotos)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(createdAlbum => {
+        this.userIds.forEach(item => {
+          this.sharingService
+            .sendSharedAlbum({
+              albumId: createdAlbum.id,
+              userId: item
+            })
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(e => e);
+        });
+        this.userEmails = [];
+        this.userIds = [];
+      });
   }
 
   ngOnDestroy() {

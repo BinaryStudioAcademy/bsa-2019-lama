@@ -154,6 +154,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
               x => x.userId === this.currentUser.id
             );
           }
+          if (this.isBlockById()) {
+            this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
+          }
         },
         error => this.notifier.notify('error', 'Error getting user')
       );
@@ -182,7 +185,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       );
   }
   UpdateLocation(e: NewLocation) {
-    this.photodetailsService.updateLocation(e).subscribe(
+    this.photodetailsService.updateLocation(e)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       a => {
         this.address = a;
         this.photo.location = a;
@@ -197,7 +202,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     );
   }
   DeleteLocation(e) {
-    this.photodetailsService.DeleteLocation(this.photo.id).subscribe(
+    this.photodetailsService.DeleteLocation(this.photo.id)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
       a => {
         this.address = '';
         this.photo.location = '';
@@ -259,8 +266,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
-      { title: 'Info', icon: 'info' },
-      { title: 'Save', icon: 'save' }
+      { title: 'Info', icon: 'info' }
     ];
   }
 

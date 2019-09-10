@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { ViewAlbum } from 'src/app/models/Album/ViewAlbum';
 import { User } from 'src/app/models/User/user';
 import { SharingService } from 'src/app/services/sharing.service';
@@ -80,13 +80,17 @@ export class SharingPageComponent implements OnInit, OnDestroy {
       for (const item of event.photoAlbums) {
         NameOfFiles.push(item.originalBlobId);
       }
-      this.albumService.ArchiveAlbum(NameOfFiles).subscribe(
-        x => {
-          this.ArchivePhotos = x;
-          this.ConvertToImage(event.title);
-        },
-        error => this.notifier.notify('error', 'Error archive album')
-      );
+      this.albumService
+        .ArchiveAlbum(NameOfFiles)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          x => {
+            this.ArchivePhotos = x;
+            const name = this.replaceDots(event.title);
+            this.ConvertToImage(name);
+          },
+          error => this.notifier.notify('error', 'Error archive album')
+        );
     } else {
       this.notifier.notify('error', 'Cannot download the empty album');
     }
@@ -101,7 +105,10 @@ export class SharingPageComponent implements OnInit, OnDestroy {
       saveAs(content, name);
     });
   }
-
+  replaceDots(title: string) {
+    const newtitle = title.split('.').join('_');
+    return newtitle;
+  }
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();

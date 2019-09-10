@@ -87,6 +87,24 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     }
     if (this.returnPath === '/main/categories/') {
       this.isCategoryAlbum = true;
+      const AlbumId = (this.returnPath = this.router.url.substr(
+        this.router.url.lastIndexOf('/') + 1,
+        this.router.url.length
+      ));
+      this.fileService.getUserCategory(AlbumId).subscribe(
+        x => {
+          const album: ViewAlbum = {
+            title: AlbumId,
+            id: 0,
+            photo: null,
+            photoAlbums: [],
+            user: null,
+            name: AlbumId
+          };
+          this.album.photoAlbums = x;
+        },
+        error => this.notifier.notify('error', 'Error loading album')
+      );
     }
     const userId: number = parseInt(localStorage.getItem('userId'), 10);
     this.httpService
@@ -102,9 +120,17 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
     if (this.album.id) {
       this.AlbumId = this.album.id;
     } else {
-      this.AlbumId = parseInt(this.router.url.slice(this.router.url.lastIndexOf('/') + 1), 10);
+      this.AlbumId = parseInt(
+        this.router.url.slice(this.router.url.lastIndexOf('/') + 1),
+        10
+      );
     }
-    if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
+    if (
+      this.loading === false &&
+      this.AlbumId !== 0 &&
+      this.AlbumId !== -1 &&
+      !isNaN(this.AlbumId)
+    ) {
       this.albumService
         .getAlbum(this.AlbumId)
         .pipe(takeUntil(this.unsubscribe))
@@ -219,12 +245,14 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       this.AddToAlbumNewPhotos.bind(this)
     );
   }
+
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
     }
     this.album.photoAlbums.unshift(...photos);
   }
+
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
     if (
@@ -299,9 +327,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
 
   downloadImages() {
     if (!this.isAtLeastOnePhotoSelected) {
-      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+      this.zipService.downloadImages(this.album.photoAlbums);
+    } else {
+      this.zipService.downloadImages(this.selectedPhotos);
     }
-    this.zipService.downloadImages(this.selectedPhotos);
   }
 
   async savePhotos() {
