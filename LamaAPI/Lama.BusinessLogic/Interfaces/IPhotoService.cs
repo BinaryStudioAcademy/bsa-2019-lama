@@ -3,6 +3,7 @@ using Lama.Domain.BlobModels;
 using Lama.Domain.DTO.Photo;
 using Lama.Domain.DbModels;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Lama.Domain.DTO.Reaction;
 
@@ -27,12 +28,13 @@ namespace Lama.BusinessLogic.Interfaces
         Task MarkPhotoAsDeleted(int photosToDeleteId);
         Task<DeletedPhotoDTO[]> GetDeletedPhotos(int userId);
         Task DeletePhotosPermanently(PhotoToDeleteRestoreDTO[] photosToDelete);
-        Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore);
+        Task<Task<HttpResponseMessage>> RestoresDeletedPhotos(int userId, PhotoToDeleteRestoreDTO[] photosToRestore);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotos(int id);
         Task<int> AddReaction(NewLikeDTO newLike);
         Task RemoveReaction(NewLikeDTO removeLike);
         Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count);
         Task SetPhotoCategory(string photoData);
         Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId);
+        Task<IEnumerable<PhotoDocumentDTO>> GetUserCategory(string value,int userId);
     }
 }

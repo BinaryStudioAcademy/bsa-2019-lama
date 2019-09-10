@@ -9,5 +9,6 @@ namespace Processors.BusinessLogic.Interfaces
     {
         Task<IEnumerable<ImageTag>> ProcessImageTags(byte[] imageAsByteArray);
         Task<string> ProcessImageDescription(byte[] imageAsByteArray);
+        Task<OcrResult> ProcessImageText(byte[] imageAsByteArray);
     }
 }

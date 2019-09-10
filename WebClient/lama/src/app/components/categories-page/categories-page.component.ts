@@ -21,7 +21,7 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
   unsubscribe = new Subject();
   categoryAlbums: ViewAlbum[];
   showSpinner = true;
-  hasAnyItems = true;
+  hasAnyItems = false;
   currentUser: User;
   ArchivePhotos: any;
   constructor(
@@ -44,6 +44,11 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
       .getUserPhotosCategorized()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(receivedData => {
+        receivedData.forEach(x => {
+          if (x.photos.length > 0) {
+            this.hasAnyItems = true;
+          }
+        });
         this.categoryAlbums = receivedData.map(
           photoCategory =>
             new ViewAlbum(
@@ -64,7 +69,10 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
         album: eventArgs
       }
     };
-    this.router.navigate(['main/categories', eventArgs.id], navigationExtras);
+    this.router.navigate(
+      ['main/categories', eventArgs.title],
+      navigationExtras
+    );
   }
 
   archiveAlbum(event: ViewAlbum) {

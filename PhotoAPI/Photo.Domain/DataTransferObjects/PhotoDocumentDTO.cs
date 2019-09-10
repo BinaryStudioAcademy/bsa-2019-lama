@@ -18,9 +18,9 @@ namespace Photo.Domain.DataTransferObjects
         public string Description { get; set; }
         public string Location { get; set; }
         public int UserId { get; set; }
-        public int CategoryId { get; set; }
+        public string Category { get; set; }
         public ReactionDTO[] Reactions { set; get; }
         public IEnumerable<ImageTagDTO> Tags { get; set; }
-        public IEnumerable<TextOnPhotoDTO> Text { get; set; }
+        public TextOnPhotoDTO Text { get; set; }
     }
 }

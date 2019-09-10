@@ -10,12 +10,11 @@ using Processors.BusinessLogic.Interfaces;
 namespace Processors.BusinessLogic.Services
 {
     public class CognitiveService: ICognitiveService
-    {
-        
+    {    
         private readonly string _endpoint;
         private readonly string _endpointKey;
 
-        public CognitiveService( string url, string endpointKey)
+        public CognitiveService(string url, string endpointKey)
         {
             _endpoint = url;
             _endpointKey = endpointKey;
@@ -31,11 +30,32 @@ namespace Processors.BusinessLogic.Services
                     try
                     {
                         var response = await client.TagImageInStreamAsync(stream, "en");
-                        
+
                         return response.Tags;
 
                     }
                     catch (Exception)
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        public async Task<OcrResult> ProcessImageText(byte[] imageAsByteArray)
+        {
+            var text = new List<string>();
+            using (var client = new ComputerVisionClient(new ApiKeyServiceClientCredentials(_endpointKey)))
+            {
+                client.Endpoint = _endpoint;
+                using (Stream stream = new MemoryStream(imageAsByteArray))
+                {
+                    try
+                    {
+                        var response = await client.RecognizePrintedTextInStreamWithHttpMessagesAsync(true, stream, OcrLanguages.Unk);
+                        return response.Body;
+                    }
+                    catch (Exception ex)
                     {
                         return null;
                     }

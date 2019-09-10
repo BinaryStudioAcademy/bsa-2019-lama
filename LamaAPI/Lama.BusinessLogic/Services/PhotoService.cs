@@ -374,12 +374,31 @@ namespace Lama.BusinessLogic.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
-
+        public async Task<IEnumerable<PhotoDocumentDTO>> GetUserCategory(string value,int UserId)
+        {
+            var photoDocuments = new List<PhotoDocumentDTO>();
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Name == value && x.UserId == UserId);
+            if(category!=null)
+            {
+                var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id && photo.UserId == UserId).Select(x => x.Id);
+                foreach (var id in photoIds)
+                {
+                    var photoDoc = await Get(id);
+                    if (photoDoc.IsDeleted == false)
+                    {
+                        photoDocuments.Add(photoDoc);
+                    }
+                }
+            }
+            return photoDocuments;
+        }
         public async Task<IEnumerable<PhotoCategoryDTO>> GetUserPhotosCategorized(int userId)
         {
             var top5Categories = _dbContext.Categories.Where(category => category.UserId == userId).ToList().OrderByDescending(category => category.Count).Take(5);
             var top5CategoriesWithPhotos = new List<PhotoCategoryDTO>();
-            foreach (var category in top5Categories)
+            var categories = top5Categories.ToList();
+            if (!categories.Any()) return top5CategoriesWithPhotos;
+            foreach (var category in categories)
             {
                 var photoDocuments = new List<PhotoDocumentDTO>();
                 var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id && photo.UserId == userId).Select(x => x.Id);
@@ -393,11 +412,10 @@ namespace Lama.BusinessLogic.Services
                 }
                 top5CategoriesWithPhotos.Add(new PhotoCategoryDTO{Category = category.Name, Photos = photoDocuments});
             }
-
             return top5CategoriesWithPhotos;
         }
 
-        private async Task<int> ProcessPhotoCategoryAsync(int currentUserId,string category)
+        private async Task<int> ProcessPhotoCategoryAsync(int currentUserId, string category)
         {
             var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(existing => existing.Name == category);
             if (existingCategory == null)
@@ -491,17 +509,54 @@ namespace Lama.BusinessLogic.Services
                
         }        
 
-        public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        public async Task<Task<HttpResponseMessage>> RestoresDeletedPhotos(int userId,
+            PhotoToDeleteRestoreDTO[] photosToRestore)
         {
             var uri = $"{_url}api/photos/restore";
 
             var content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
+            await RestoreCategoryIfNeeded(userId, photosToRestore);
 
             return _httpClient.PostAsync(uri, content);
         }
+
+        private async Task RestoreCategoryIfNeeded(int userId, IEnumerable<PhotoToDeleteRestoreDTO> photosToRestore)
+        {
+            foreach (var photo in photosToRestore)
+            {
+                var photoDoc = await Get(photo.Id);
+                var photoCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category && category.UserId == userId);
+                var foundPhoto = await _dbContext.Photos.FirstOrDefaultAsync(pht => pht.Id == photo.Id);
+                if (photoCategory == null)
+                {
+                    _dbContext.Categories.Add(new Category
+                    {
+                        Name = photoDoc.Category,
+                        Count = 1,
+                        UserId = userId
+                    });
+                    await _dbContext.SaveChangesAsync();
+                    var createdCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category &&
+                                                                                                                category.UserId == userId);
+                    foundPhoto.CategoryId = createdCategory.Id;
+                    await _dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    if (foundPhoto != null)
+                    {
+                        foundPhoto.CategoryId = photoCategory.Id;
+                        photoCategory.Count += 1;
+                    }
+                    await _dbContext.SaveChangesAsync();
+                 }
+                
+            }
+        }
+
         #endregion
 
-        private async void RemoveFromCategoriesListById(int photoToDeleteId)
+        private async Task RemoveFromCategoriesListById(int photoToDeleteId)
         {
             var deletingPhoto = await _dbContext.Photos.FirstOrDefaultAsync(photo => photo.Id == photoToDeleteId);
             if (deletingPhoto == null) return;
@@ -514,11 +569,11 @@ namespace Lama.BusinessLogic.Services
                     return;
                 case 1:
                     _dbContext.Categories.Remove(photoCategory);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     break;
                 default:
                     photoCategory.Count -= 1;
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     break;
             }
         }
