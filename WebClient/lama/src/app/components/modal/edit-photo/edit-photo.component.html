@@ -47,17 +47,12 @@
           <!--photo-->
           <div class="main-photo">
             <!--image-->
-            <div class="photo">
-              <div *ngIf="isFiltersMode; then filtersMode"></div>
-            </div>
-            <div class="photo">
-              <div *ngIf="isMemeMode; then memeMode"></div>
-            </div>
-            <div class="photo">
-              <div
-                *ngIf="!isFiltersMode && !isMemeMode; then defaultMode"
-              ></div>
-            </div>
+            <div class="photo" *ngIf="isFiltersMode; then filtersMode"></div>
+            <div class="photo" *ngIf="isMemeMode; then memeMode"></div>
+            <div
+              class="photo"
+              *ngIf="!isFiltersMode && !isMemeMode; then defaultMode"
+            ></div>
           </div>
           <div class="overlay">
             <div class="back-icon" (click)="cancelClickHandler()">
