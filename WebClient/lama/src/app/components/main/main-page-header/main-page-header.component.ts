@@ -286,7 +286,13 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     }
   }
   escapeHtml(unsafe) {
-    const s = unsafe.replace(/[^a-zA-Z0-9]/g, '');
+    const s = unsafe
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace('/', '&#039;');
     return s;
   }
   getThumbnailByName(item: string) {
