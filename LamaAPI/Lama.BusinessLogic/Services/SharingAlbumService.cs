@@ -185,7 +185,7 @@ namespace Lama.BusinessLogic.Services
                 if (author != null)
                 {
                     const string notification = "Shared album";
-                    await _notificationService.SendNotification(sharedAlbum.UserId, author, notification, ActivityType.Shared);
+                    await _notificationService.SendNotification(sharedAlbum.UserId, author, notification, ActivityType.Shared, new List<int>() {sharedAlbum.AlbumId});
                 }
             }
         }
