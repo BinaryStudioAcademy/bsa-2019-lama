@@ -8,7 +8,7 @@ import {
   DoCheck,
   ElementRef
 } from '@angular/core';
-import { ImageEditedArgs } from 'src/app/models';
+import { ImageEditedArgs, PhotoRaw } from 'src/app/models';
 import { FileService } from 'src/app/services';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 import { environment } from 'src/environments/environment';
@@ -27,6 +27,9 @@ declare const pixelsJS: any;
 export class EditPhotoComponent {
   // fields
   private imageUrl: string;
+  @Input()
+  photoToEdit: PhotoRaw;
+  @Input()
   imageToEditBase64: string;
   @Input()
   imageToEditBlobId: string;
@@ -191,7 +194,6 @@ export class EditPhotoComponent {
   enableFilters() {
     this.disableMeme();
     this.disableAll();
-    this.showMeme = false;
     this.isFiltersMode = !this.isFiltersMode;
   }
 
@@ -210,7 +212,9 @@ export class EditPhotoComponent {
         const newImageData = pixelsJS.filterImgData(imageData, filter);
         ctx.putImageData(newImageData, 0, 0);
       }
-      const updatedImage = canvas.toDataURL('image/jpeg');
+      const updatedImage = canvas.toDataURL(
+        `image/${this.photoToEdit.name.split('.').pop()}`
+      );
       this.updatePictureExplosure(updatedImage);
     };
   }
@@ -231,9 +235,9 @@ export class EditPhotoComponent {
         const imageData = ctx.getImageData(0, 0, img.width, img.height);
         const newImageData = pixelsJS.filterImgData(imageData, item);
         ctx.putImageData(newImageData, 0, 0);
-        console.log(canvas.width);
-        console.log(canvas.height);
-        image.src = canvas.toDataURL('image/jpeg');
+        image.src = canvas.toDataURL(
+          `image/${this.photoToEdit.name.split('.').pop()}`
+        );
       };
     });
     const points = Array.from(

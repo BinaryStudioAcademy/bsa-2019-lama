@@ -4,6 +4,7 @@
       <!--content-->
       <ng-template [ngIf]="isEditing">
         <app-edit-photo
+          [photoToEdit]="photo"
           [imageToEditBlobId]="photo.blobId"
           [thumbnailUpdatedBase64]="thumbnailBase64"
           [imageToEdit]="imageUrl"
