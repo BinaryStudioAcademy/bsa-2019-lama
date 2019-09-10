@@ -414,7 +414,7 @@ namespace Lama.BusinessLogic.Services
             return top5CategoriesWithPhotos;
         }
 
-        private async Task<int> ProcessPhotoCategoryAsync(int currentUserId,string category)
+        private async Task<int> ProcessPhotoCategoryAsync(int currentUserId, string category)
         {
             var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(existing => existing.Name == category);
             if (existingCategory == null)
@@ -508,14 +508,51 @@ namespace Lama.BusinessLogic.Services
                
         }        
 
-        public Task RestoresDeletedPhotos(PhotoToDeleteRestoreDTO[] photosToRestore)
+        public async Task<Task<HttpResponseMessage>> RestoresDeletedPhotos(int userId,
+            PhotoToDeleteRestoreDTO[] photosToRestore)
         {
             var uri = $"{_url}api/photos/restore";
 
             var content = new StringContent(JsonConvert.SerializeObject(photosToRestore), Encoding.UTF8, "application/json");
+            await RestoreCategoryIfNeeded(userId, photosToRestore);
 
             return _httpClient.PostAsync(uri, content);
         }
+
+        private async Task RestoreCategoryIfNeeded(int userId, IEnumerable<PhotoToDeleteRestoreDTO> photosToRestore)
+        {
+            foreach (var photo in photosToRestore)
+            {
+                var photoDoc = await Get(photo.Id);
+                var photoCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category && category.UserId == userId);
+                var foundPhoto = await _dbContext.Photos.FirstOrDefaultAsync(pht => pht.Id == photo.Id);
+                if (photoCategory == null)
+                {
+                    _dbContext.Categories.Add(new Category
+                    {
+                        Name = photoDoc.Category,
+                        Count = 1,
+                        UserId = userId
+                    });
+                    await _dbContext.SaveChangesAsync();
+                    var createdCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category &&
+                                                                                                                category.UserId == userId);
+                    foundPhoto.CategoryId = createdCategory.Id;
+                    await _dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    if (foundPhoto != null)
+                    {
+                        foundPhoto.CategoryId = photoCategory.Id;
+                        photoCategory.Count += 1;
+                    }
+                    await _dbContext.SaveChangesAsync();
+                 }
+                
+            }
+        }
+
         #endregion
 
         private async void RemoveFromCategoriesListById(int photoToDeleteId)

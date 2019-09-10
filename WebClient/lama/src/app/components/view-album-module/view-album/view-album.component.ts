@@ -245,12 +245,14 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
       this.AddToAlbumNewPhotos.bind(this)
     );
   }
+
   AddToAlbumNewPhotos(photos: PhotoRaw[]) {
     if (this.album.photoAlbums === null) {
       this.album.photoAlbums = [];
     }
     this.album.photoAlbums.unshift(...photos);
   }
+
   ngDoCheck() {
     this.isAtLeastOnePhotoSelected = this.selectedPhotos.length > 0;
     if (
