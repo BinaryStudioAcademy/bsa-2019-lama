@@ -24,5 +24,6 @@ namespace Lama.Domain.DTO.Photo
         public string Coordinates { set; get; }
         public IEnumerable<like.LikeDTO> Reactions {set;get;}
         public IEnumerable<ImageTagDTO> Tags { get; set; }
+        public TextOnPhotoDTO Text { get; set; }
     }
 }

@@ -80,14 +80,20 @@ namespace Processors.BusinessLogic.Services
                 var image256 = _imageProcessingService.CreateThumbnail(currentImg, 256);
                 var blob = await LoadImageToBlob(ImageType.Photo, image64, image256);
                 var imageTags = await _cognitiveService.ProcessImageTags(currentImg);
+                var imageText = await _cognitiveService.ProcessImageText(currentImg);
                 var imageCategory = await _cognitiveService.ProcessImageDescription(currentImg);
                 var imageTagsAsRawString = JsonConvert.SerializeObject(imageTags);
+                var imageTextAsRawString = JsonConvert.SerializeObject(imageText);
                 var hash = new ImgHash((int)image.ImageId);
                 hash.GenerateFromByteArray(currentImg);
                 await _elasticStorage.UpdateThumbnailsAsync(image.ImageId, blob);
                 await _elasticStorage.UpdateImageTagsAsync(image.ImageId, new ImageTagsAsRaw
                 {
                     Tags = imageTagsAsRawString
+                });
+                await _elasticStorage.UpdateImageTextAsync(image.ImageId, new ImageTextAsRaw
+                {
+                    Text = imageTextAsRawString
                 });
                 await _elasticStorage.UpdateImageDescriptionAsync(image.ImageId, new ImageDescriptionDTO
                 {
