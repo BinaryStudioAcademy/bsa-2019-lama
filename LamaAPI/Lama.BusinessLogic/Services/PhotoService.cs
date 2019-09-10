@@ -556,7 +556,7 @@ namespace Lama.BusinessLogic.Services
 
         #endregion
 
-        private async void RemoveFromCategoriesListById(int photoToDeleteId)
+        private async Task RemoveFromCategoriesListById(int photoToDeleteId)
         {
             var deletingPhoto = await _dbContext.Photos.FirstOrDefaultAsync(photo => photo.Id == photoToDeleteId);
             if (deletingPhoto == null) return;
@@ -569,11 +569,11 @@ namespace Lama.BusinessLogic.Services
                     return;
                 case 1:
                     _dbContext.Categories.Remove(photoCategory);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     break;
                 default:
                     photoCategory.Count -= 1;
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                     break;
             }
         }

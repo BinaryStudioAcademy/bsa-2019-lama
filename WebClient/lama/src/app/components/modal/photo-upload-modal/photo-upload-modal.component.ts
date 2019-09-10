@@ -98,13 +98,13 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             this.toggleModal();
           } else {
             this.removeUploaded(filteredPhotos);
-            this.showSpinner = false;
             this.notifier.notify(
               'warning',
               'This photos appear to be duplicates. Upload them anyway?'
             );
           }
           this.loaded = true;
+          this.showSpinner = false;
         },
         error => this.notifier.notify('error', 'Error sending photos')
       );
