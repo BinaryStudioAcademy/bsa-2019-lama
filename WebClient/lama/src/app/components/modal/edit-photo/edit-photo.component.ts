@@ -15,8 +15,10 @@ import { environment } from 'src/environments/environment';
 import { createMem } from 'src/app/export-functions/meme';
 import { Options } from 'ng5-slider';
 import ImageFilters from 'node_modules/canvas-filters';
+import { DomSanitizer } from '@angular/platform-browser';
 
 declare const pixelsJS: any;
+
 @Component({
   selector: 'app-edit-photo',
   templateUrl: './edit-photo.component.html',
@@ -30,7 +32,8 @@ export class EditPhotoComponent {
   imageToEditBlobId: string;
   @Input()
   thumbnailUpdatedBase64: string;
-  imageUpdatedBase64: string;
+  imageUpdated: string;
+  imageUpdatedBase64: any;
   isMemeMode: boolean;
   isFiltersMode: boolean;
   upText: string;
@@ -55,7 +58,6 @@ export class EditPhotoComponent {
     'coral',
     'serenity',
     'mellow',
-    'haze',
     'ocean'
   ];
 
@@ -102,7 +104,7 @@ export class EditPhotoComponent {
   public cancelClickedEvent = new EventEmitter();
 
   // constructors
-  constructor(imageService: FileService) {
+  constructor(imageService: FileService, private sanitizer: DomSanitizer) {
     this.isShown = true;
     this.imageService = imageService;
     this.cropperMinHeight = environment.photoEditing.crop.cropMinHeight;
@@ -152,7 +154,7 @@ export class EditPhotoComponent {
     } else if (this.isFiltersMode) {
       this.saveClickedEvent.emit({
         originalImageUrl: this.imageToEditBlobId,
-        editedImageBase64: this.imageUpdatedBase64
+        editedImageBase64: this.imageUpdated
       });
     } else {
       const event: ImageCroppedEvent = await this.imageEditor.crop();
@@ -184,7 +186,9 @@ export class EditPhotoComponent {
   }
 
   enableFilters() {
+    this.disableMeme();
     this.disableAll();
+    this.showMeme = false;
     this.isFiltersMode = !this.isFiltersMode;
   }
 
@@ -203,8 +207,8 @@ export class EditPhotoComponent {
         const newImageData = pixelsJS.filterImgData(imageData, filter);
         ctx.putImageData(newImageData, 0, 0);
       }
-      this.imageUpdatedBase64 = canvas.toDataURL('image/jpeg');
-      this.updatePictureExplosure(this.imageUpdatedBase64);
+      const updatedImage = canvas.toDataURL('image/jpeg');
+      this.updatePictureExplosure(updatedImage);
     };
   }
 
@@ -229,18 +233,25 @@ export class EditPhotoComponent {
         image.src = canvas.toDataURL('image/jpeg');
       };
     });
+    const points = Array.from(
+      document.getElementsByClassName('ng5-slider-pointer')
+    );
+    const slides = Array.from(document.getElementsByClassName('ng5-slider'));
+    const sliders = points.concat(slides);
+    sliders.forEach(element => {
+      const el = element as HTMLElement;
+      el.style.backgroundColor = '#00B89C';
+    });
   }
 
   setBrightness(changeContext) {
     this.brightness = changeContext.value;
     this.setFilter(this.filter);
-    // this.updatePictureExplosure(this.imageToEditBase64);
   }
 
   setContrast(changeContext) {
     this.contrast = changeContext.value;
     this.setFilter(this.filter);
-    // this.updatePictureExplosure(this.imageToEditBase64);
   }
 
   updatePictureExplosure(imageBase64) {
@@ -259,13 +270,24 @@ export class EditPhotoComponent {
         this.contrast
       );
       ctx.putImageData(filtered, 0, 0);
-      this.imageUpdatedBase64 = canvas.toDataURL('image/jpeg');
+      const imageUrl = canvas.toDataURL('image/jpeg');
+      this.imageUpdated = imageUrl;
+      this.imageUpdatedBase64 = this.sanitizer.bypassSecurityTrustResourceUrl(
+        imageUrl
+      );
     };
   }
 
   displayRotateAndCrop() {
     this.disableAll();
     this.showRotateAndCrop = true;
+    this.disableMeme();
+  }
+
+  displayFilters() {
+    this.disableAll();
+    this.showRotateAndCrop = false;
+    this.isFiltersMode = true;
     this.disableMeme();
   }
 
@@ -283,5 +305,6 @@ export class EditPhotoComponent {
   disableAll() {
     this.showRotateAndCrop = false;
     this.showMeme = false;
+    this.isFiltersMode = false;
   }
 }

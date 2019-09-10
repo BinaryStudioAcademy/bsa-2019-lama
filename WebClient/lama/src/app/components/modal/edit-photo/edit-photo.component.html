@@ -25,7 +25,7 @@
 
       <ng-template #filtersMode>
         <div id="image-wrapper">
-          <img id="imageToFilter" src="{{ imageUpdatedBase64 }}" />
+          <img id="imageToFilter" [src]="imageUpdatedBase64" />
         </div>
       </ng-template>
 
@@ -104,7 +104,7 @@
                     <img src="assets/meme-icon.svg" alt="Meme" />
                   </a>
                 </li>
-                <li class="tab" (click)="enableFilters()">
+                <li class="tab" (click)="displayFilters()">
                   <a>
                     <img src="assets/photo-settings.svg" alt="Filters" />
                   </a>
@@ -167,7 +167,7 @@
                   *ngFor="let item of filters; let i = index"
                   (click)="setFilter(item)"
                 >
-                  <img id="{{ i }}" src="{{ thumbnailUpdatedBase64 }}" />
+                  <img id="{{ i }}" [src]="thumbnailUpdatedBase64" />
                 </div>
                 <img
                   src="../../../../assets/arrow-right.png"

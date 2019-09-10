@@ -205,6 +205,7 @@ namespace Photo.BusinessLogic.Services
                     break;
                 }
             }
+            hash.Remove(hash.FirstOrDefault(i => i.PhotoId == photoId));
             var result = new List<PhotoDocumentDTO>();
             foreach (var item in hash)
             {
