@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterContentInit
+} from '@angular/core';
 import { AuthService, UserService } from 'src/app/services';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -6,13 +13,16 @@ import { NotifierService } from 'angular-notifier';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
+declare var $: any;
+
 @Component({
   // tslint:disable-next-line: component-selector
   selector: 'landing-login',
   templateUrl: './landing-login.component.html',
   styleUrls: ['./landing-login.component.sass']
 })
-export class LandingLoginComponent implements OnInit, OnDestroy {
+export class LandingLoginComponent
+  implements OnInit, OnDestroy, AfterContentInit {
   showAuthModal = false;
   private user: any;
   unsubscribe = new Subject();
@@ -22,6 +32,14 @@ export class LandingLoginComponent implements OnInit, OnDestroy {
     public afAuth: AngularFireAuth,
     private notifier: NotifierService
   ) {}
+
+  @ViewChild('foo', { static: true }) fooElement: ElementRef<any>;
+
+  ngAfterContentInit(): void {
+    $(this.fooElement.nativeElement).animatedHeadline({
+      animationType: 'rotate-3'
+    });
+  }
 
   ngOnInit() {
     this.afAuth.user

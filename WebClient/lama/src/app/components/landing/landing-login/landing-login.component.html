@@ -1,18 +1,24 @@
 <div class="container">
-  <div class="content-container">
-    <img src="assets/lama.jpg" />
-    <div class="title">
-      Lama
+    <div class="content-container">
+        <img src="assets/lama.jpg" />
+        <div class="title">
+            Lama
+        </div>
+        <div class="description">
+            <div #foo class="selector">
+                <h1 class="ah-headline">
+                    <span>Look At My Awesome </span>
+                    <span class="ah-words-wrapper">
+                    <b class="is-visible">Pet</b>
+                    <b>Face</b>
+                    <b>House</b>
+                </span>
+                </h1>
+            </div>
+        </div>
+        <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
+        <app-auth-modal *ngIf="showAuthModal" (Close)="showAuthModal = false"></app-auth-modal>
     </div>
-    <div class="description">
-      Free storage and automatic organization for all your memories.
-    </div>
-    <button mat-flat-button (click)="openAuthWindow()">Go to photos</button>
-    <app-auth-modal
-      *ngIf="showAuthModal"
-      (Close)="showAuthModal = false"
-    ></app-auth-modal>
-  </div>
-  <img src="assets/many-photos.jpg" />
+    <img src="assets/many-photos.jpg" />
 </div>
 <notifier-container></notifier-container>
