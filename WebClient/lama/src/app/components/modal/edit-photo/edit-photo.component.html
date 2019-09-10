@@ -24,7 +24,9 @@
       </ng-template>
 
       <ng-template #filtersMode>
-        <img id="imageToFilter" src="{{ imageUpdatedBase64 }}" />
+        <div id="image-wrapper">
+          <img id="imageToFilter" src="{{ imageUpdatedBase64 }}" />
+        </div>
       </ng-template>
 
       <ng-template #defaultMode>
@@ -158,19 +160,21 @@
                 [options]="brightnessOptions"
                 (userChangeEnd)="setContrast($event)"
               ></ng5-slider>
-              <h5 (click)="setFilter('vintage')">Vintage</h5>
-              <h5 (click)="setFilter('twenties')">Twenties</h5>
-              <h5 (click)="setFilter('evening')">Evening</h5>
-              <h5 (click)="setFilter('cosmic')">Cosmic</h5>
-              <h5 (click)="setFilter('Warmth')">Warmth</h5>
-              <h5 (click)="setFilter('darkify')">Darkify</h5>
-              <!-- <div class="filters" *ngFor="let item of filters; let i = index">
+              <h5>Filters:</h5>
+              <div class="filters">
+                <div
+                  class="filter"
+                  *ngFor="let item of filters; let i = index"
+                  (click)="setFilter(item)"
+                >
+                  <img id="{{ i }}" src="{{ thumbnailUpdatedBase64 }}" />
+                </div>
                 <img
-                  id="{{ i }}"
-                  src="{{ imageUpdatedBase64 }}"
-                  (load)="setFilter(i, item)"
+                  src="../../../../assets/arrow-right.png"
+                  style="opacity: 0"
+                  (load)="setFilterForThumbnail()"
                 />
-              </div> -->
+              </div>
             </div>
           </div>
         </div>

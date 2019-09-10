@@ -3,30 +3,44 @@
     <div class="container">
       <!--content-->
       <ng-template [ngIf]="isEditing">
-        <app-edit-photo [imageToEditBlobId]="photo.blobId" [imageToEdit]="imageUrl"
-          (saveClickedEvent)="saveEditedImageHandler($event)" (resetClickedEvent)="resetImageHandler()"
-          (cancelClickedEvent)="goBackToImageView()">
+        <app-edit-photo
+          [imageToEditBlobId]="photo.blobId"
+          [thumbnailUpdatedBase64]="thumbnailBase64"
+          [imageToEdit]="imageUrl"
+          (saveClickedEvent)="saveEditedImageHandler($event)"
+          (resetClickedEvent)="resetImageHandler()"
+          (cancelClickedEvent)="goBackToImageView()"
+        >
         </app-edit-photo>
       </ng-template>
 
       <ng-template [ngIf]="isDeleting">
-        <app-delete-modal (cancelClickedEvent)="goBackToImageView()" [photos]="photos"
-          (deleteEvent)="deleteImages($event)">
+        <app-delete-modal
+          (cancelClickedEvent)="goBackToImageView()"
+          [photos]="photos"
+          (deleteEvent)="deleteImages($event)"
+        >
         </app-delete-modal>
       </ng-template>
 
       <!--image view-->
       <ng-template [ngIf]="!isDeleting && !isEditing">
         <div class="main-container">
-          <div class="main-photo-area" (mouseenter)="showCarousele=true" (mouseleave)="showCarousele=false">
+          <div
+            class="main-photo-area"
+            (mouseenter)="showCarousele = true"
+            (mouseleave)="showCarousele = false"
+          >
             <!--photo-->
             <div class="main-photo">
               <!--image-->
               <spinner *ngIf="showSpinner"></spinner>
               <div class="photo" *ngIf="!isShowSpinner">
                 <img src="{{ imageUrl }}" alt="Image" />
-                <app-carousele-component [photoId]="photo.id" [isEnabled]="showCarousele">
-
+                <app-carousele-component
+                  [photoId]="photo.id"
+                  [isEnabled]="showCarousele"
+                >
                 </app-carousele-component>
               </div>
             </div>
@@ -37,7 +51,11 @@
                 </span>
               </div>
               <div class="overlay-items">
-                <div class="overlay-item" (click)="menuClickHandler(item)" *ngFor="let item of shownMenuItems">
+                <div
+                  class="overlay-item"
+                  (click)="menuClickHandler(item)"
+                  *ngFor="let item of shownMenuItems"
+                >
                   <div [ngSwitch]="item.title">
                     <ng-template ngSwitchCase="Remove">
                       <div [title]="item.title" [appIsBlocked]="isBlockById()">
@@ -66,7 +84,11 @@
                     </ng-template>
                     <ng-template ngSwitchCase="Download">
                       <div [title]="item.title">
-                        <a download attr.data-href="{{ imageUrl }}" (click)="forceDownload()">
+                        <a
+                          download
+                          attr.data-href="{{ imageUrl }}"
+                          (click)="forceDownload()"
+                        >
                           <i class="fa fa-download"></i>
                         </a>
                       </div>
@@ -75,13 +97,20 @@
                 </div>
               </div>
             </div>
-            <div class="navigation-button nav-btn-left" *ngIf="currentIndex != 0" (click)="previousPhoto()">
+            <div
+              class="navigation-button nav-btn-left"
+              *ngIf="currentIndex != 0"
+              (click)="previousPhoto()"
+            >
               <span class="icon is-large">
                 <i class="fa fa-angle-left" left aria-hidden="true"></i>
               </span>
             </div>
-            <div class="navigation-button nav-btn-right" *ngIf="currentIndex != photosArrayLength - 1"
-              (click)="nextPhoto()">
+            <div
+              class="navigation-button nav-btn-right"
+              *ngIf="currentIndex != photosArrayLength - 1"
+              (click)="nextPhoto()"
+            >
               <span class="icon is-large">
                 <i class="fa fa-angle-right" left aria-hidden="true"></i>
               </span>
@@ -92,12 +121,21 @@
           <div class="photo-info-area">
             <div class="reactions" *ngIf="!isInfoShown">
               <a>
-                <i [ngStyle]="{ color: hasUserReaction ? '#d75a4a' : 'white' }" class="fa fa-heart"
-                  (click)="ReactionPhoto()"></i>
-                <span class="count">{{ photo?.reactions?.length || 0 }} loved it</span>
+                <i
+                  [ngStyle]="{ color: hasUserReaction ? '#d75a4a' : 'white' }"
+                  class="fa fa-heart"
+                  (click)="ReactionPhoto()"
+                ></i>
+                <span class="count"
+                  >{{ photo?.reactions?.length || 0 }} loved it</span
+                >
               </a>
             </div>
-            <app-comments-list [photoId]="photo.id" [photoAuthorId]="photo.userId" *ngIf="!isInfoShown">
+            <app-comments-list
+              [photoId]="photo.id"
+              [photoAuthorId]="photo.userId"
+              *ngIf="!isInfoShown"
+            >
             </app-comments-list>
             <div *ngIf="isInfoShown" id="info-content" class="information">
               <div class="flex-content info">
@@ -111,9 +149,14 @@
                   <h4 class="subtitle is-5 submarg">Description</h4>
                   <div class="field">
                     <div class="control">
-                      <textarea class="textarea is-primary" (blur)="ChangeDescription($event.target.value)"
-                        [(ngModel)]="photo.description" placeholder="Description" rows="2"
-                        [disabled]="isBlockById()"></textarea>
+                      <textarea
+                        class="textarea is-primary"
+                        (blur)="ChangeDescription($event.target.value)"
+                        [(ngModel)]="photo.description"
+                        placeholder="Description"
+                        rows="2"
+                        [disabled]="isBlockById()"
+                      ></textarea>
                     </div>
                   </div>
                 </div>
@@ -131,7 +174,10 @@
                 <div class="item-date">
                   <h4 class="subtitle is-5 submarg">Date Upload</h4>
                   <div>
-                    <app-date-picker [date]="photo.uploadDate" (UpdateTime)="UpdateDate($event)">Loading
+                    <app-date-picker
+                      [date]="photo.uploadDate"
+                      (UpdateTime)="UpdateDate($event)"
+                      >Loading
                     </app-date-picker>
                   </div>
                 </div>
@@ -140,17 +186,29 @@
                   <a>
                     <div class="adress">
                       <h4>{{ address || 'Location is not presented' }}</h4>
-                      <div class="location-icon" (click)="openModalForPicklocation($event)">
+                      <div
+                        class="location-icon"
+                        (click)="openModalForPicklocation($event)"
+                      >
                         <i class="fa fa-map-marker" aria-hidden="true"></i>
                       </div>
                     </div>
                   </a>
                   <div class="modal-location">
-                    <a class="delete is-medium close" (click)="CloseModalForPicklocation($event)"></a>
-                    <app-google-map [photo]="photo" (Deletelocation)="DeleteLocation($event)"
-                      (Updatelocation)="UpdateLocation($event)"></app-google-map>
+                    <a
+                      class="delete is-medium close"
+                      (click)="CloseModalForPicklocation($event)"
+                    ></a>
+                    <app-google-map
+                      [photo]="photo"
+                      (Deletelocation)="DeleteLocation($event)"
+                      (Updatelocation)="UpdateLocation($event)"
+                    ></app-google-map>
                   </div>
-                  <div class="overlay-location" (click)="CloseModalForPicklocation($event)"></div>
+                  <div
+                    class="overlay-location"
+                    (click)="CloseModalForPicklocation($event)"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -160,9 +218,18 @@
     </div>
   </div>
 
-  <app-share-by-email-modal [receivedPhoto]="photo" *ngIf="showSharedModal" (Close)="showSharedModal = false">
+  <app-share-by-email-modal
+    [receivedPhoto]="photo"
+    *ngIf="showSharedModal"
+    (Close)="showSharedModal = false"
+  >
   </app-share-by-email-modal>
-  <app-edit-modal [photo]="photo" *ngIf="showEditModal" (Close)="showSharedModal = false" (Done)="imageHandler($event)">
+  <app-edit-modal
+    [photo]="photo"
+    *ngIf="showEditModal"
+    (Close)="showSharedModal = false"
+    (Done)="imageHandler($event)"
+  >
   </app-edit-modal>
 </div>
 <notifier-container></notifier-container>

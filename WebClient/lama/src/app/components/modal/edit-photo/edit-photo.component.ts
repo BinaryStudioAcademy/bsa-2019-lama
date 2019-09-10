@@ -28,6 +28,8 @@ export class EditPhotoComponent {
   imageToEditBase64: string;
   @Input()
   imageToEditBlobId: string;
+  @Input()
+  thumbnailUpdatedBase64: string;
   imageUpdatedBase64: string;
   isMemeMode: boolean;
   isFiltersMode: boolean;
@@ -37,6 +39,25 @@ export class EditPhotoComponent {
   colorPicker: string;
   brightness = 0;
   contrast = 0;
+  filter = '';
+  filters = [
+    'vintage',
+    'twenties',
+    'evening',
+    'cosmic',
+    'darkify',
+    'specks_redscale',
+    'offset',
+    'wood',
+    'bluescale',
+    'phase',
+    'crimson',
+    'coral',
+    'serenity',
+    'mellow',
+    'haze',
+    'ocean'
+  ];
 
   private imageService: FileService;
   showRotateAndCrop = true;
@@ -168,26 +189,65 @@ export class EditPhotoComponent {
   }
 
   setFilter(filter: string) {
-    const img = document.getElementById('imageToFilter');
-    const obj = pixelsJS.filterImg(img, filter);
-    console.log(obj);
-  }
-
-  setBrightness(changeContext) {
-    this.brightness = changeContext.value;
-    this.updatePictureExplosure();
-  }
-
-  setContrast(changeContext) {
-    this.contrast = changeContext.value;
-    this.updatePictureExplosure();
-  }
-
-  updatePictureExplosure() {
+    this.filter = filter;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const image = new Image();
     image.src = this.imageToEditBase64;
+    image.onload = () => {
+      canvas.height = image.height;
+      canvas.width = image.width;
+      ctx.drawImage(image, 0, 0);
+      const imageData = ctx.getImageData(0, 0, image.width, image.height);
+      if (filter !== '') {
+        const newImageData = pixelsJS.filterImgData(imageData, filter);
+        ctx.putImageData(newImageData, 0, 0);
+      }
+      this.imageUpdatedBase64 = canvas.toDataURL('image/jpeg');
+      this.updatePictureExplosure(this.imageUpdatedBase64);
+    };
+  }
+
+  setFilterForThumbnail() {
+    this.filters.forEach(item => {
+      const image = document.getElementById(
+        this.filters.indexOf(item).toString()
+      ) as HTMLImageElement;
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      img.src = this.thumbnailUpdatedBase64;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+        const newImageData = pixelsJS.filterImgData(imageData, item);
+        ctx.putImageData(newImageData, 0, 0);
+        console.log(canvas.width);
+        console.log(canvas.height);
+        image.src = canvas.toDataURL('image/jpeg');
+      };
+    });
+  }
+
+  setBrightness(changeContext) {
+    this.brightness = changeContext.value;
+    this.setFilter(this.filter);
+    // this.updatePictureExplosure(this.imageToEditBase64);
+  }
+
+  setContrast(changeContext) {
+    this.contrast = changeContext.value;
+    this.setFilter(this.filter);
+    // this.updatePictureExplosure(this.imageToEditBase64);
+  }
+
+  updatePictureExplosure(imageBase64) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = imageBase64;
     canvas.height = image.height;
     canvas.width = image.width;
     image.onload = () => {
@@ -199,7 +259,7 @@ export class EditPhotoComponent {
         this.contrast
       );
       ctx.putImageData(filtered, 0, 0);
-      this.imageUpdatedBase64 = canvas.toDataURL();
+      this.imageUpdatedBase64 = canvas.toDataURL('image/jpeg');
     };
   }
 

@@ -165,10 +165,24 @@ image-cropper
 .tabs
     width: 100%
 
-.filters img
-    width: 100%
-    height: auto
+.filters
+    display: flex
+    flex-wrap: wrap
 
+.filter
+    margin: 3px
+    width: 30%
+
+.filter img::hover
+    opacity: 0.8
+
+
+.filter img
+    width: 100%
+    border-radius: 4px
+
+ng5-slider
+    margin-bottom: 1rem
 
 .input-color
     width: 100px
