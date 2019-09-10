@@ -396,7 +396,9 @@ namespace Lama.BusinessLogic.Services
         {
             var top5Categories = _dbContext.Categories.Where(category => category.UserId == userId).ToList().OrderByDescending(category => category.Count).Take(5);
             var top5CategoriesWithPhotos = new List<PhotoCategoryDTO>();
-            foreach (var category in top5Categories)
+            var categories = top5Categories.ToList();
+            if (!categories.Any()) return top5CategoriesWithPhotos;
+            foreach (var category in categories)
             {
                 var photoDocuments = new List<PhotoDocumentDTO>();
                 var photoIds = _dbContext.Photos.Where(photo => photo.CategoryId == category.Id && photo.UserId == userId).Select(x => x.Id);
@@ -410,7 +412,6 @@ namespace Lama.BusinessLogic.Services
                 }
                 top5CategoriesWithPhotos.Add(new PhotoCategoryDTO{Category = category.Name, Photos = photoDocuments});
             }
-
             return top5CategoriesWithPhotos;
         }
 
