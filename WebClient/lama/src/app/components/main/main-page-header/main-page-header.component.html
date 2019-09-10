@@ -110,11 +110,15 @@
   </div>
   <div class="notification-content" *ngIf="notification && notification.length !== 0">
     <div *ngFor="let item of notification">
-      <app-main-notification *ngIf="item.activity !== 2" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
+      <app-main-notification *ngIf="item.activity === 1" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
         (click)="openPhoto(photo)" class="systemNotification" [notification]="item"></app-main-notification>
       <app-main-notification *ngIf="item.activity === 2" class="systemNotification" [notification]="item"
         (click)="openModal(item.id)" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)">
       </app-main-notification>
+      <app-main-notification *ngIf="item.activity === 3" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
+        (click)="sharedItemClicked(photo)" class="systemNotification" [notification]="item"></app-main-notification>
+      <app-main-notification *ngIf="item.activity === 4" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
+        (click)="sharedItemClicked(photo)" class="systemNotification" [notification]="item"></app-main-notification>
     </div>
   </div>
   <div class="no-notifications" *ngIf="notification && notification.length === 0">

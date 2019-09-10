@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
   Component,
@@ -27,6 +27,9 @@ import { UploadPhotoResultDTO } from 'src/app/models/Photo/uploadPhotoResultDTO'
 import { DuplicatesModalComponent } from '../../modal/duplicates-modal/duplicates-modal.component';
 import { PhotoModalComponent } from '../../modal/photo-modal/photo-modal.component';
 import { forkJoin } from 'rxjs';
+import { Album } from 'src/app/models/Album/album';
+import { SharingService } from 'src/app/services/sharing.service';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -66,6 +69,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   duplicates: number[] = [];
   shared: SharedService;
   photo;
+  sharedItemId: number;
 
   constructor(
     public auth: AuthService,
@@ -75,7 +79,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     private http: HttpService,
     private file: FileService,
     private notifier: NotifierService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sharingService: SharingService,
+    private albumService: AlbumService
   ) {
     this.resolver = resolver;
     this.shared = shared;
@@ -102,6 +108,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           u.forEach(item => {
             if (item.activity === 2) {
               this.duplicates = JSON.parse(item.payload);
+            } else if (item.activity === 3) {
+
+            } else if (item.activity === 4) {
             } else {
               this.photo = JSON.parse(item.payload);
             }
@@ -147,6 +156,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .subscribe(
       x => {
         this.notification = this.notification.filter(z => z.id !== id);
+        this.checkNotification(this.notification);
       },
       error => this.notifier.notify('error', 'Error deleting notification')
     );
@@ -416,6 +426,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
 
   getCountOfUnreadNotifications() {
     return this.notification.filter(x => !x.isRead).length;
+  }
+
+  public sharedItemClicked(eventArgs: number) {
+    this.albumService
+      .getAlbum(eventArgs)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(album => {
+        const navigationExtras: NavigationExtras = {
+          state: {
+            album: album.body
+          }
+        };
+        this.router.navigate(['/main/sharing', album.body.id ], navigationExtras);
+      });
   }
 
   ngOnDestroy() {
