@@ -176,7 +176,21 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       this.fileService
         .getPhoto(this.album.photo.blob256Id)
         .pipe(takeUntil(this.unsubscribe))
-        .subscribe(url => (this.imageUrl = url));
+        .subscribe(url => {
+          this.imageUrl = url;
+        });
+    }
+    if (
+      this.album.photoAlbums !== null &&
+      this.isShared &&
+      this.album.photoAlbums.length <= 3
+    ) {
+      for (const item of photos) {
+        this.fileService
+          .getPhoto(item.blob256Id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(url => this.sharedAlbumCover.push(url));
+      }
     }
   }
 
