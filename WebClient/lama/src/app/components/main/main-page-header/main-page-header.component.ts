@@ -279,6 +279,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     if (this.searchCriteria.length > 0) {
       criteria = criteria.trim();
       criteria = this.escapeHtml(criteria);
+      if (criteria.length === 0) {
+        return;
+      }
       this.file
         .getSearchSuggestions(id, criteria)
         .pipe(takeUntil(this.unsubscribe))
@@ -297,12 +300,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
   escapeHtml(unsafe) {
     const s = unsafe
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-      .replace('/', '&#039;');
+      .replace(/#/g, '')
+      .split('/')
+      .join('');
     return s;
   }
   getThumbnailByName(item: string) {
@@ -350,6 +350,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   find() {
+    this.searchCriteria = this.escapeHtml(this.searchCriteria);
+    if (this.searchCriteria.length === 0) {
+      return;
+    }
     this.searchHistory.unshift(this.searchCriteria);
     if (this.searchHistory.length > 5) {
       this.searchHistory.pop();

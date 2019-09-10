@@ -327,9 +327,10 @@ export class ViewAlbumComponent implements OnInit, DoCheck, OnDestroy {
 
   downloadImages() {
     if (!this.isAtLeastOnePhotoSelected) {
-      Object.assign(this.selectedPhotos, this.album.photoAlbums);
+      this.zipService.downloadImages(this.album.photoAlbums);
+    } else {
+      this.zipService.downloadImages(this.selectedPhotos);
     }
-    this.zipService.downloadImages(this.selectedPhotos);
   }
 
   async savePhotos() {

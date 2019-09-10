@@ -1,16 +1,21 @@
-import { Directive, Output, EventEmitter, HostListener, HostBinding} from '@angular/core';
-import {Photo} from '../models/Photo/photo';
+import {
+  Directive,
+  Output,
+  EventEmitter,
+  HostListener,
+  HostBinding
+} from '@angular/core';
+import { Photo } from '../models/Photo/photo';
 
 @Directive({
   // tslint:disable-next-line: directive-selector
   selector: '[fileDrop]'
 })
 export class FileUploadDirective {
-
   @Output() fileDropped = new EventEmitter<any>();
-  constructor() { }
+  constructor() {}
 
-  @HostBinding('style.background-color') private background = '#f5fcff';
+  @HostBinding('style.background-color') private background = 'white';
   @HostBinding('style.opacity') private opacity = '1';
 
   @HostListener('dragover', ['$event']) onDragOver(evt) {
@@ -37,5 +42,4 @@ export class FileUploadDirective {
       this.fileDropped.emit(files);
     }
   }
-
 }
