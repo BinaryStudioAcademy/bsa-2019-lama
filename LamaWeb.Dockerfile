@@ -4,9 +4,7 @@ WORKDIR /app
 
 COPY WebClient/lama .
 
-RUN apt-get update && \
-    apt-get install python && \
-    npm install && \
+RUN npm install && \
     npm run prod
 
 FROM nginx:alpine
