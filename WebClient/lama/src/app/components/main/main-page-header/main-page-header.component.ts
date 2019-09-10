@@ -167,9 +167,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     this.duplicates = [];
   }
 
-  openPhoto(eventArgs) {
+  openPhoto(item: NotificationDTO) {
+    const photoId = JSON.parse(item.payload);
     this.file
-      .get(eventArgs)
+      .get(photoId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(photo => {
         this.modalPhotoEntry.clear();
@@ -441,9 +442,10 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     return this.notification.filter(x => !x.isRead).length;
   }
 
-  public sharedItemClicked(eventArgs: number) {
+  public sharedItemClicked(item: NotificationDTO) {
+    const albumId = JSON.parse(item.payload);
     this.albumService
-      .getAlbum(eventArgs)
+      .getAlbum(albumId)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(album => {
         const navigationExtras: NavigationExtras = {
