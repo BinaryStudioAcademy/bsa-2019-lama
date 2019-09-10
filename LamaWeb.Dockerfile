@@ -5,7 +5,6 @@ WORKDIR /app
 COPY WebClient/lama .
 
 RUN apk add --update python && \
-    apk add --update pkgconfig && \
     npm install && \
     npm run prod
 
