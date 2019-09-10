@@ -266,9 +266,9 @@ export class EditPhotoComponent {
     const ctx = canvas.getContext('2d');
     const image = new Image();
     image.src = imageBase64;
-    canvas.height = image.height;
-    canvas.width = image.width;
     image.onload = () => {
+      canvas.height = image.height;
+      canvas.width = image.width;
       ctx.drawImage(image, 0, 0);
       const imageData = ctx.getImageData(0, 0, image.width, image.height);
       const filtered = ImageFilters.BrightnessContrastPhotoshop(
@@ -277,7 +277,9 @@ export class EditPhotoComponent {
         this.contrast
       );
       ctx.putImageData(filtered, 0, 0);
-      const imageUrl = canvas.toDataURL('image/jpeg');
+      const imageUrl = canvas.toDataURL(
+        `image/${this.photoToEdit.name.split('.').pop()}`
+      );
       this.imageUpdated = imageUrl;
       this.imageUpdatedBase64 = this.sanitizer.bypassSecurityTrustResourceUrl(
         imageUrl
