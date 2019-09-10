@@ -508,6 +508,7 @@ namespace Lama.BusinessLogic.Services
             {
                 var photoDoc = await Get(photo.Id);
                 var photoCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category && category.UserId == userId);
+                var foundPhoto = await _dbContext.Photos.FirstOrDefaultAsync(pht => pht.Id == photo.Id);
                 if (photoCategory == null)
                 {
                     _dbContext.Categories.Add(new Category
@@ -516,17 +517,22 @@ namespace Lama.BusinessLogic.Services
                         Count = 1,
                         UserId = userId
                     });
+                    await _dbContext.SaveChangesAsync();
+                    var createdCategory = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name == photoDoc.Category &&
+                                                                                                                category.UserId == userId);
+                    foundPhoto.CategoryId = createdCategory.Id;
+                    await _dbContext.SaveChangesAsync();
                 }
                 else
                 {
-                    var foundPhoto = await _dbContext.Photos.FirstOrDefaultAsync(pht => pht.Id == photo.Id);
                     if (foundPhoto != null)
                     {
                         foundPhoto.CategoryId = photoCategory.Id;
                         photoCategory.Count += 1;
                     }
+                    await _dbContext.SaveChangesAsync();
                  }
-                await _dbContext.SaveChangesAsync();
+                
             }
         }
 

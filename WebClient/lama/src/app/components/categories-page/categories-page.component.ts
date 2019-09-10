@@ -44,7 +44,7 @@ export class CategoriesPageComponent implements OnInit, OnDestroy {
       .getUserPhotosCategorized()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(receivedData => {
-        receivedData.some(x => {
+        receivedData.forEach(x => {
           if (x.photos.length > 0) {
             this.hasAnyItems = true;
           }
