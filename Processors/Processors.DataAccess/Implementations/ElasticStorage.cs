@@ -50,6 +50,11 @@ namespace Processors.DataAccess.Implementations
             await _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTagsAsRaw));
         }
 
+        public async Task UpdateImageTextAsync(long imageId, ImageTextAsRaw imageTextAsRaw)
+        {
+            await _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageTextAsRaw));
+        }
+
         public async Task UpdateImageDescriptionAsync(long imageId, ImageDescriptionDTO imageDescription)
         {
             await _elasticClient.UpdateAsync<PhotoDocument, object>(imageId, p => p.Doc(imageDescription));

@@ -21,5 +21,6 @@ namespace Lama.Domain.BlobModels
         public int CategoryId { get; set; }
         public string Coordinates { set; get; }
         public string Tags { get; set; }
+        public string Text { get; set; }
     }
 }
