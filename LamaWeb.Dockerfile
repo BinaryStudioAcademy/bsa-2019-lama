@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY WebClient/lama .
 
-RUN npm install && \
+RUN apk add --update python && \
+    npm install && \
     npm run prod
 
 FROM nginx:alpine
