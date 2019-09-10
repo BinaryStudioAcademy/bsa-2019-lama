@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY WebClient/lama .
 
-RUN sudo apt-get update && \
-    sudo apt-get install python && \
+RUN apt-get update && \
+    apt-get install python && \
     npm install && \
     npm run prod
 
