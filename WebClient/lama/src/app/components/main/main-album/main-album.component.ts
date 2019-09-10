@@ -90,6 +90,7 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       this.isFake = true;
     }
     if (
+      this.album.photo !== undefined &&
       this.album.photo !== null &&
       this.album.photo.userId !== this.currentUser.id
     ) {
