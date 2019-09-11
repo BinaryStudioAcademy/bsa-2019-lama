@@ -340,7 +340,8 @@ namespace Lama.BusinessLogic.Services
                 item.Reactions = new List<LikeDTO>();
             }
             Log.Logger.Error($"{BdAlbum.Entity.Id}, {BdAlbum.Entity.Title}, {returnPhotos[0]}");
-            var Album = new ReturnAlbumDTO()
+            
+            var Album = new ReturnAlbumDTO
             {
                 Id = BdAlbum.Entity.Id,
                 Title = BdAlbum.Entity.Title,
