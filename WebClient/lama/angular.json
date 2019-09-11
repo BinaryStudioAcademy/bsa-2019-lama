@@ -23,10 +23,7 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.app.json",
                         "aot": false,
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ],
+                        "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "node_modules/bulma/css/bulma.min.css",
                             "node_modules/bulma-calendar/dist/css/bulma-calendar.min.css",
@@ -34,6 +31,7 @@
                             "node_modules/jquery-animated-headlines/dist/css/jquery.animatedheadline.css"
                         ],
                         "scripts": [
+                            "src/assets/Pixels.js",
                             "node_modules/jquery/dist/jquery.js",
                             "node_modules/jquery-animated-headlines/dist/js/jquery.animatedheadline.js"
                         ]
@@ -85,27 +83,17 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.spec.json",
                         "karmaConfig": "karma.conf.js",
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ],
-                        "styles": [
-                            "src/styles.sass"
-                        ],
+                        "assets": ["src/favicon.ico", "src/assets"],
+                        "styles": ["src/styles.sass"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-devkit/build-angular:tslint",
                     "options": {
-                        "tsConfig": [
-                            "tsconfig.app.json",
-                            "tsconfig.spec.json"
-                        ],
+                        "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json"],
                         "tslintConfig": "tslint.json",
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {

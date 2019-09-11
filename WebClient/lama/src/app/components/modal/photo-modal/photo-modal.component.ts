@@ -70,6 +70,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   isDeleting: boolean;
   showEditModal: boolean;
   showCarousel = false;
+  thumbnailBase64: string;
 
   // events
   @Output()
@@ -122,6 +123,9 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.fileService.getPhoto(this.photo.blob64Id).subscribe(res => {
+      this.thumbnailBase64 = res;
+    });
     this.lastDescription = this.photo.description;
     this.mapsAPILoader.load().then(() => {
       this.geoCoder = new google.maps.Geocoder();
@@ -181,38 +185,40 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       );
   }
   UpdateLocation(e: NewLocation) {
-    this.photodetailsService.updateLocation(e)
+    this.photodetailsService
+      .updateLocation(e)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      a => {
-        this.address = a;
-        this.photo.location = a;
-        this.photo.coordinates = e.coordinates;
-        this.notifier.notify('success', 'Location updated');
-        this.CloseModalForPicklocation(e);
-      },
-      error => {
-        this.notifier.notify('error', 'Error updating location');
-        this.CloseModalForPicklocation(e);
-      }
-    );
+        a => {
+          this.address = a;
+          this.photo.location = a;
+          this.photo.coordinates = e.coordinates;
+          this.notifier.notify('success', 'Location updated');
+          this.CloseModalForPicklocation(e);
+        },
+        error => {
+          this.notifier.notify('error', 'Error updating location');
+          this.CloseModalForPicklocation(e);
+        }
+      );
   }
   DeleteLocation(e) {
-    this.photodetailsService.DeleteLocation(this.photo.id)
+    this.photodetailsService
+      .DeleteLocation(this.photo.id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      a => {
-        this.address = '';
-        this.photo.location = '';
-        this.photo.coordinates = '';
-        this.notifier.notify('success', 'Location updated');
-        this.CloseModalForPicklocation(e);
-      },
-      error => {
-        this.notifier.notify('error', 'Error updating location');
-        this.CloseModalForPicklocation(e);
-      }
-    );
+        a => {
+          this.address = '';
+          this.photo.location = '';
+          this.photo.coordinates = '';
+          this.notifier.notify('success', 'Location updated');
+          this.CloseModalForPicklocation(e);
+        },
+        error => {
+          this.notifier.notify('error', 'Error updating location');
+          this.CloseModalForPicklocation(e);
+        }
+      );
   }
   getAddress(latitude, longitude) {
     getLocation(latitude, longitude, this.geoCoder).then(
@@ -242,7 +248,10 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   GetFile() {
     if (this.photo.location !== null && this.photo.location !== undefined) {
       this.address = this.photo.location;
-    } else if (this.photo.name.endsWith('.png')) {
+    } else if (
+      this.photo.name.endsWith('.png') ||
+      this.imageUrl.indexOf('image/png') !== -1
+    ) {
       return;
     } else {
       const src = this.imageUrl;
