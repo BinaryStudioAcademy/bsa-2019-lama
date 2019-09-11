@@ -174,6 +174,15 @@ export class MainPhotosContainerComponent
   }
 
   ngDoCheck() {
+    if (this.shared.restorePhotos) {
+      this.shared.restorePhotos = false;
+      const userId: string = localStorage.getItem('userId');
+      this.GetUserPhotosRange(
+        parseInt(userId, 10),
+        this.photos.length,
+        this.numberLoadPhoto
+      );
+    }
     if (this.shared.photos) {
       this.shared.photos.forEach(element => {
         this.photos.unshift(element);
@@ -343,7 +352,6 @@ export class MainPhotosContainerComponent
 
   onScroll() {
     this.showSpinner = true;
-
     this.GetUserPhotosRange(
       this.currentUser.id,
       this.photos.length,
