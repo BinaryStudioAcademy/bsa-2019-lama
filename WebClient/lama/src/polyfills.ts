@@ -15,7 +15,7 @@ import 'hammerjs';
  *
  * Learn more in https://angular.io/guide/browser-support
  */
-import 'core-js/es/reflect';
+
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */

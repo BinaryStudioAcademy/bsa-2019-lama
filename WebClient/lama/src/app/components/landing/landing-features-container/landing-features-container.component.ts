@@ -19,7 +19,7 @@ export class LandingFeaturesContainerComponent implements OnInit {
         title: 'We have got your backup',
         description:
           // tslint:disable-next-line: max-line-length
-          'Back up unlimited photos and videos for free, up to 16MP and 1080p HD. Access them from any phone, tablet, or computer on photos.google.com – your photos will be safe, secure, and always with you.',
+          'Back up unlimited photos for free. Access them from computer – your photos will be safe, secure, and always with you.',
         image:
           'https://www.google.com/photos/about/static/images/devices_family.jpg',
         backgroundColor: 'white',
@@ -35,19 +35,9 @@ export class LandingFeaturesContainerComponent implements OnInit {
         icon: 'search'
       },
       {
-        title: 'Make room for more memories',
-        description:
-          // tslint:disable-next-line: max-line-length
-          'Never worry about running out of space on your phone again. Photos that are safely backed up can be removed from your device’s storage in just a tap.',
-        image:
-          'https://www.google.com/photos/about/static/images/dev_management.png',
-        backgroundColor: '#B5FFDD',
-        icon: 'cloud_upload'
-      },
-      {
         title: 'Everyones photos, together at last',
         description:
-          'Pool photos with friends and family using shared albums. So you never miss a moment, no matter what device everyone has.',
+          'Pool photos with friends and family using shared albums. So you never miss a moment.',
         image:
           'https://www.google.com/photos/about/static/images/charlie-2.png',
         backgroundColor: '#FFFCD3',
