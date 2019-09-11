@@ -22,7 +22,7 @@
         <div class="dropdown-item" (mousedown)="downloadImages()">
           <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
         </div>
-        <div class="dropdown-item" (mousedown)="addToAlbum()" *ngIf="isAtLeastOnePhotoSelected">
+        <div class="dropdown-item" [ngStyle]="{ display: isAtLeastOnePhotoSelected ? 'block' : 'none' }"(mousedown)="addToAlbum()">
           <p>Add to album</p>
         </div>
       </div>

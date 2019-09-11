@@ -11,6 +11,14 @@
     </header>
     <section class="modal-card-body">
       <div class="items-container-centered height">
+          <div class="album">
+              <div class="new-album" (click)="CreateAlbum()">
+                  <a><img src="assets/plus.svg" alt="" /></a>
+              </div>
+              <div class="description has-text-centered">
+                  <p>New album</p>
+              </div>
+            </div>
         <div *ngFor="let item of albums" class="has-text-centered photo">
           <app-album-item
             [_album]="item"
@@ -27,4 +35,5 @@
     </footer>
   </div>
 </div>
+<template #CreateAlbumnContainer></template>
 <notifier-container></notifier-container>
