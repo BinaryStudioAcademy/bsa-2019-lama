@@ -156,11 +156,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     if (searchSuggestions.text.length > 0) {
       const obj = JSON.parse(searchSuggestions.text);
       const results = obj.regions.forEach(item => {
-        console.log(item);
         item.lines.forEach(line => {
-          console.log(line);
           line.words.forEach(word => {
-            console.log(word);
             if (word.text.indexOf(`${this.searchCriteria}`) !== -1) {
               this.words.push(word.text.replace(/[.,?!]/g, ''));
             }
