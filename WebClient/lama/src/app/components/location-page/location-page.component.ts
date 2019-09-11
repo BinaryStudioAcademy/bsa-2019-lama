@@ -43,9 +43,9 @@ export class LocationPageComponent implements OnInit {
       .subscribe(x => {
         this.AlbumsViewCountries = x;
         if (this.AlbumsViewCountries.length) {
-          this.isAnyItems = false;
-        } else {
           this.isAnyItems = true;
+        } else {
+          this.isAnyItems = false;
         }
         this.showSpinner = false;
       });
