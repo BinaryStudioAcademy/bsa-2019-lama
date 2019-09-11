@@ -55,6 +55,7 @@
     (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
   <template #modalPhotoContainer></template>
   <template #modalUploadPhoto></template>
-  <app-select-album-modal *ngIf="showAddToAlbumModal" (Close)="showAddToAlbumModal = false" [photos]="selectedPhotos"></app-select-album-modal>
+  <app-select-album-modal *ngIf="showAddToAlbumModal" (Close)="showAddToAlbumModal = false" [photos]="selectedPhotos">
+  </app-select-album-modal>
 </div>
 <notifier-container></notifier-container>

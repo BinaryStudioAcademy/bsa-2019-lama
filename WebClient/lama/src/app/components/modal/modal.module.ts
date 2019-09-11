@@ -15,6 +15,7 @@ import { ShareAlbumByEmailComponent } from './share-modal/share-album-by-email/s
 import { ShareModalComponent } from './share-modal/share-modal/share-modal.component';
 import { CommentsListComponent } from './comments-list/comments-list.component';
 import { CommentService } from 'src/app/services';
+import { Ng5SliderModule } from 'ng5-slider';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AgmCoreModule } from '@agm/core';
 import { EditPhotoComponent } from './edit-photo/edit-photo.component';
@@ -39,6 +40,7 @@ import { CarouseleComponentComponent } from '../main/carousele-component/carouse
     BrowserAnimationsModule,
     CalendarModule,
     Ng2CarouselamosModule,
+    Ng5SliderModule,
     NotificationModule,
     CreateAlbumModule,
     AgmCoreModule.forRoot({
@@ -98,4 +100,4 @@ import { CarouseleComponentComponent } from '../main/carousele-component/carouse
   ],
   bootstrap: [DatePickerComponent]
 })
-export class ModalModule { }
+export class ModalModule {}
