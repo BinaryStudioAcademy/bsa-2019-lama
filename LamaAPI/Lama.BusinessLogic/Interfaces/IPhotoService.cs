@@ -19,7 +19,7 @@ namespace Lama.BusinessLogic.Interfaces
         Task SendDuplicates(IEnumerable<int> photos);
         Task<IEnumerable<UploadPhotoResultDTO>> CreateDuplicates(UploadPhotoResultDTO[] duplicates);
         Task<IEnumerable<PhotoDocumentDTO>> GetAll();
-        Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int userId);
+        Task<IEnumerable<IEnumerable<UploadPhotoResultDTO>>> GetDuplicates(int userId);
         Task<UpdatedPhotoResultDTO> UpdatePhoto(UpdatePhotoDTO updatePhotoDTO);
         Task<PhotoDocumentDTO> Get(int id);
         Task<IEnumerable<string>> GetHistory(int userId);

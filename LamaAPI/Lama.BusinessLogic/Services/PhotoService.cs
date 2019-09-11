@@ -276,14 +276,14 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
-        public async Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int userId)
+        public async Task<IEnumerable<IEnumerable<UploadPhotoResultDTO>>> GetDuplicates(int userId)
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = await _httpClient.GetAsync($"{_url}api/photos/duplicates/{userId}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
+            return JsonConvert.DeserializeObject<IEnumerable<IEnumerable<UploadPhotoResultDTO>>>(responseContent);
         }
 
         public async Task<string> GetPhoto(string blobId)

@@ -18,7 +18,7 @@ namespace Photo.BusinessLogic.Interfaces
         Task<UpdatedPhotoResultDTO> UpdateImage(UpdatePhotoDTO updatePhotoDTO);
         Task<IEnumerable<PhotoDocument>> GetManyByIds(IEnumerable<int> elasticIds);
         Task<PhotoDocument> UpdateWithSharedLink(int id, string sharedLink);
-        Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId);
+        Task<IEnumerable<IEnumerable<CreatePhotoResultDTO>>> FindDuplicates(int userId);
         Task<IEnumerable<PhotoDocument>> Find(int id, string criteria);
         Task<Dictionary<string, List<string>>> FindFields(int id, string criteria);
         Task MarkPhotoAsDeleted(int photoId);
