@@ -328,13 +328,13 @@ namespace Lama.BusinessLogic.Services
         public async Task<PhotoDocumentDTO> Get(int id)
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
             var response = await _httpClient.GetAsync($"{_url}api/photos/{id}");
-
             var responseContent = await response.Content.ReadAsStringAsync();
-
             var photo =  JsonConvert.DeserializeObject<PhotoDocument>(responseContent);
-            return _mapper.Map<PhotoDocumentDTO>(photo);
+            var likes = _dbContext.Likes.Where(l => l.PhotoId == photo.Id);
+            var photoDto = _mapper.Map<PhotoDocumentDTO>(photo);
+            photoDto.Reactions = _mapper.Map<IEnumerable<LikeDTO>>(likes);
+            return photoDto;
         }
 
         public async Task<IEnumerable<PhotoDocumentDTO>> GetUserPhotosRange(int userId, int startId, int count)
