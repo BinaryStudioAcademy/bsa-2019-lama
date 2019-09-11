@@ -4,7 +4,10 @@ import {
   OnDestroy,
   Input,
   Output,
-  EventEmitter
+  EventEmitter,
+  ComponentFactoryResolver,
+  ViewContainerRef,
+  ViewChild
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { NotifierService } from 'angular-notifier';
@@ -16,6 +19,9 @@ import { PhotoRaw } from 'src/app/models/Photo/photoRaw';
 import { AlbumExistPhotos } from 'src/app/models/Album/AlbumExistPhotos';
 import { FileService } from 'src/app/services/file.service';
 import { UserService } from 'src/app/services/user.service';
+import { environment } from '../../../../environments/environment';
+import { CreateAlbumModalComponent } from '../../create-album-module/create-album-modal/create-album-modal.component';
+import { Photo } from 'src/app/models';
 
 @Component({
   selector: 'app-select-album-modal',
@@ -23,6 +29,10 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./select-album-modal.component.sass']
 })
 export class SelectAlbumModalComponent implements OnInit, OnDestroy {
+  @ViewChild('CreateAlbumnContainer', { static: true, read: ViewContainerRef })
+  private entry: ViewContainerRef;
+  private resolver: ComponentFactoryResolver;
+
   unsubscribe = new Subject();
   selectedAlbum: ViewAlbum;
   AlbumExistPhotos: AlbumExistPhotos;
@@ -37,16 +47,19 @@ export class SelectAlbumModalComponent implements OnInit, OnDestroy {
   @Output()
   currentUser: User;
 
-  @Output() Close = new EventEmitter();
+  @Output() Close = new EventEmitter<boolean>();
 
   imgname = require('../../../../assets/icon-no-image.svg');
 
   constructor(
+    resolver: ComponentFactoryResolver,
     private albumService: AlbumService,
     private notifier: NotifierService,
     private fileService: FileService,
     private userService: UserService
-  ) {}
+  ) {
+    this.resolver = resolver;
+  }
 
   ngOnInit() {
     this.GetCurrentUser();
@@ -87,7 +100,7 @@ export class SelectAlbumModalComponent implements OnInit, OnDestroy {
   }
 
   toggleModal() {
-    this.Close.emit(null);
+    this.Close.emit(false);
   }
 
   clickPerformed(album: ViewAlbum) {
@@ -120,8 +133,30 @@ export class SelectAlbumModalComponent implements OnInit, OnDestroy {
       );
   }
 
+  CreateAlbum() {
+    this.entry.clear();
+    const factory = this.resolver.resolveComponentFactory(
+      CreateAlbumModalComponent
+    );
+    const componentRef = this.entry.createComponent(factory);
+    componentRef.instance.currentUser = this.currentUser;
+    componentRef.instance.albumsTitles = this.albums.map(item => item.title);
+    componentRef.instance.ExistPhotosId = this.photos.map(photo => photo.id);
+
+    componentRef.instance.photos = this.convertPhotos(this.photos);
+  }
+
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.unsubscribe();
+  }
+
+  convertPhotos(photos: PhotoRaw[]) {
+    const convertedPhotos: Photo[] = [];
+    photos.forEach(photo => {
+      this.fileService.getPhoto(photo.blob256Id).pipe(takeUntil(this.unsubscribe))
+      .subscribe(base64 => convertedPhotos.push(new Photo(base64, this.currentUser.id, photo.name)));
+    });
+    return convertedPhotos;
   }
 }
