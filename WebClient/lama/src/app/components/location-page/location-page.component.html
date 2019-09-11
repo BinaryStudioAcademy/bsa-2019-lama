@@ -1,38 +1,40 @@
 <div class="content-header">
-    <h2 *ngIf="!isAnyItems" class="photos-container-title">Location albums:</h2>
-    <div class="no-content" *ngIf="isAnyItems">
-        <h2>Nothing here yet..</h2>
-        <img src="assets/nocontent.jpg" alt="" />
+  <h2 *ngIf="isAnyItems" class="photos-container-title">Location albums:</h2>
+  <div class="no-content" *ngIf="!isAnyItems && !showSpinner">
+    <h2>Nothing here yet..</h2>
+    <img src="assets/nocontent.jpg" alt="" />
+  </div>
+  <div class="dropdown is-hoverable" *ngIf="AlbumsViewCities?.length">
+    <div class="dropdown-trigger">
+      <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
+        <span *ngIf="!albumCities">Cities</span>
+        <span *ngIf="albumCities">Countries</span>
+        <span class="icon is-small">
+          <i class="fa fa-angle-down" aria-hidden="true"></i>
+        </span>
+      </button>
     </div>
-    <div class="dropdown is-hoverable" *ngIf="AlbumsViewCities?.length">
-        <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu4">
-            <span *ngIf="!albumCities">Cities</span>
-            <span *ngIf="albumCities">Countries</span>
-            <span class="icon is-small">
-              <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </button>
+    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+      <div class="dropdown-content">
+        <div class="dropdown-item" (click)="ChangeAlbum()">
+          <p *ngIf="!albumCities">Countries</p>
+          <p *ngIf="albumCities">Cities</p>
         </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-            <div class="dropdown-content">
-                <div class="dropdown-item" (click)="ChangeAlbum()">
-                    <p *ngIf="!albumCities">Countries</p>
-                    <p *ngIf="albumCities">Cities</p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 </div>
 <div class="items-container-left" *ngIf="!albumCities">
-    <div *ngFor="let item of AlbumsViewCities">
-        <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></app-location-album>
-    </div>
+  <div *ngFor="let item of AlbumsViewCities">
+    <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)">
+    </app-location-album>
+  </div>
 </div>
 <div class="items-container-left" *ngIf="albumCities">
-    <div *ngFor="let item of AlbumsViewCountries">
-        <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)"></app-location-album>
-    </div>
+  <div *ngFor="let item of AlbumsViewCountries">
+    <app-location-album [_album]="item" (Click)="albumClicked($event)" (ClickDownload)="ArchiveAlbum($event)">
+    </app-location-album>
+  </div>
 </div>
 <spinner *ngIf="showSpinner"></spinner>
 <notifier-container></notifier-container>
