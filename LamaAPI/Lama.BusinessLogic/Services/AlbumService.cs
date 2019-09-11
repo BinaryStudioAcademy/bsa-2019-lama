@@ -22,6 +22,7 @@ using Lama.Domain.DTO.Reaction;
 using System.Threading;
 using System.Net.Http.Headers;
 using Lama.Domain.DTO.User;
+using Serilog;
 
 namespace Lama.BusinessLogic.Services
 {
@@ -338,6 +339,7 @@ namespace Lama.BusinessLogic.Services
             {
                 item.Reactions = new List<LikeDTO>();
             }
+            Log.Logger.Error($"{BdAlbum.Entity.Id}, {BdAlbum.Entity.Title}, {returnPhotos[0]}");
             var Album = new ReturnAlbumDTO()
             {
                 Id = BdAlbum.Entity.Id,
