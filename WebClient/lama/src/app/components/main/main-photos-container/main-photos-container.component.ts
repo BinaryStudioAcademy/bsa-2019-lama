@@ -352,7 +352,6 @@ export class MainPhotosContainerComponent
 
   onScroll() {
     this.showSpinner = true;
-
     this.GetUserPhotosRange(
       this.currentUser.id,
       this.photos.length,

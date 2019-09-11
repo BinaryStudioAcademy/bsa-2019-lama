@@ -53,7 +53,7 @@ export class MainLeftActionsSidebarComponent implements OnInit {
     return route && this.router.url.search(route) !== -1;
   }
   EnterPhotos(e) {
-    if (e === 'photos') {
+    if (e === 'photos' && this.router.url.search('photos') !== -1) {
       this.photos.emit();
     }
   }
