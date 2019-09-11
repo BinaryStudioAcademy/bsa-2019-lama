@@ -331,6 +331,8 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
 
   saveEditedImageHandler(editedImage: ImageEditedArgs): void {
+    this.isEditing = false;
+    this.isDeleting = false;
     this.isShowSpinner = true;
     const updatePhotoDTO: UpdatePhotoDTO = {
       id: this.photo.id,
@@ -347,11 +349,13 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
           this.fileService
             .getPhoto(this.photo.blobId)
             .pipe(takeUntil(this.unsubscribe))
-            .subscribe(url => (this.imageUrl = url));
+            .subscribe(url => {
+              this.imageUrl = url;
+              this.isShowSpinner = false;
+              this.notifier.notify('success', 'Photo updated');
+            });
           this.updatePhotoEvent.emit(this.photo);
           this.goBackToImageView();
-          this.notifier.notify('success', 'Photo updated');
-          this.isShowSpinner = false;
         },
         error => this.notifier.notify('error', 'Error updating photo')
       );
