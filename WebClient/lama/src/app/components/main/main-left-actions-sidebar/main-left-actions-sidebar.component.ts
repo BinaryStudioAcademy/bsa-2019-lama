@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActionItem } from 'src/app/models/View/action-item';
 import { Router } from '@angular/router';
 
@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 })
 export class MainLeftActionsSidebarComponent implements OnInit {
   constructor(private router: Router) {}
+
+  @Output() photos = new EventEmitter();
 
   items: ActionItem[];
   ngOnInit() {
@@ -49,5 +51,10 @@ export class MainLeftActionsSidebarComponent implements OnInit {
 
   isCurrentRouteRight(route: string) {
     return route && this.router.url.search(route) !== -1;
+  }
+  EnterPhotos(e) {
+    if (e === 'photos') {
+      this.photos.emit();
+    }
   }
 }

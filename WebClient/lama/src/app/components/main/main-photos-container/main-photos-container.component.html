@@ -1,61 +1,56 @@
 <div class="content-header">
-  <h2 *ngIf="isHaveAnyPhotos && !isSearchTriggered" id="photos-container-title">Recent images:</h2>
-  <h2 *ngIf="isSearchTriggered" id="photos-container-title">Search results "<b>{{ shared.searchCriteria }}</b>":</h2>
-  <div class="dropdown" *ngIf="photos?.length">
-    <div class="dropdown-trigger">
-      <button class="button" aria-haspopup="true" (click)="handleDropdownDisplay(dropdownMenu)"
-        (focusout)="handleDropdownOutsideClick(dropdownMenu)">
+    <h2 *ngIf="isHaveAnyPhotos && !isSearchTriggered" id="photos-container-title">Recent images:</h2>
+    <h2 *ngIf="isSearchTriggered" id="photos-container-title">Search results "<b>{{ shared.searchCriteria }}</b>":</h2>
+    <div class="dropdown" *ngIf="photos?.length">
+        <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" (click)="handleDropdownDisplay(dropdownMenu)" (focusout)="handleDropdownOutsideClick(dropdownMenu)">
         <span>Options</span>
         <span class="icon is-small">
           <i class="fa fa-angle-down" aria-hidden="true"></i>
         </span>
       </button>
+        </div>
+        <div #dropdownMenu class="dropdown-menu">
+            <div class="dropdown-content">
+                <div class="dropdown-item" (mousedown)="findDuplicates()">
+                    <p>Find Duplicates</p>
+                </div>
+                <div class="dropdown-item" (mousedown)="deleteImages()">
+                    <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+                </div>
+                <div class="dropdown-item" (mousedown)="downloadImages()">
+                    <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
+                </div>
+                <div class="dropdown-item" (mousedown)="addToAlbum()" *ngIf="isAtLeastOnePhotoSelected">
+                    <p>Add to album</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <div #dropdownMenu class="dropdown-menu">
-      <div class="dropdown-content">
-        <div class="dropdown-item" (mousedown)="findDuplicates()">
-          <p>Find Duplicates</p>
-        </div>
-        <div class="dropdown-item" (mousedown)="deleteImages()">
-          <p>Delete<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
-        </div>
-        <div class="dropdown-item" (mousedown)="downloadImages()">
-          <p>Download<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
-        </div>
-        <div class="dropdown-item" (mousedown)="addToAlbum()" *ngIf="isAtLeastOnePhotoSelected">
-          <p>Add to album</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
-<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll
-  [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
-  <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
-    <h2 *ngIf="!isSearchTriggered">Nothing here yet..</h2>
-    <h2 *ngIf="isNothingFound">Nothing found..</h2>
-    <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary"
-      *ngIf="isSearchTriggered">
+<div class="items-container-centered" fileDrop (fileDropped)="uploadFile($event)" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollDistance]="500" (scrolled)="onScroll()">
+    <div class="no-content" *ngIf="!isHaveAnyPhotos && !showSpinner">
+        <h2 *ngIf="!isSearchTriggered">Nothing here yet..</h2>
+        <h2 *ngIf="isNothingFound">Nothing found..</h2>
+        <a (click)="GetUserPhotosRange(currentUser.id, 0, numberLoadPhoto)" class="button is-primary" *ngIf="isSearchTriggered">
       Show all photos
     </a>
-    <img src="assets/nocontent.jpg" alt="">
-  </div>
-  <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
-  <!--photo list-->
-  <div *ngFor="let item of photos">
-    <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)"
-      [_id]="favorites.has(item.id) == true ? item.id : -1">
-    </main-photo>
-  </div>
-  <spinner *ngIf="showSpinner"></spinner>
+        <img src="assets/nocontent.jpg" alt="">
+    </div>
+    <!-- <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">  -->
+    <!--photo list-->
+    <div *ngFor="let item of photos">
+        <main-photo [_photo]="item" (Click)="photoClicked($event)" (Select)="photoSelected($event)" [_id]="favorites.has(item.id) == true ? item.id : -1">
+        </main-photo>
+    </div>
+    <spinner *ngIf="showSpinner"></spinner>
 
-  <!--modal-->
-  <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deleteDuplicatesHandler($event)"
-    (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
-  <template #modalPhotoContainer></template>
-  <template #modalUploadPhoto></template>
-  <app-select-album-modal *ngIf="showAddToAlbumModal" (Close)="showAddToAlbumModal = false" [photos]="selectedPhotos">
-  </app-select-album-modal>
+    <!--modal-->
+    <app-duplicates-modal *ngIf="duplicatesFound" (Change)="deleteDuplicatesHandler($event)" (Click)="modalHandler($event)" [duplicatePhotos]="duplicates"></app-duplicates-modal>
+    <template #modalPhotoContainer></template>
+    <template #modalUploadPhoto></template>
+    <app-select-album-modal *ngIf="showAddToAlbumModal" (Close)="showAddToAlbumModal = false" [photos]="selectedPhotos">
+    </app-select-album-modal>
 </div>
 <notifier-container></notifier-container>

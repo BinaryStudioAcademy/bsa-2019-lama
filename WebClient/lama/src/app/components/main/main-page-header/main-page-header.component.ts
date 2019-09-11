@@ -1,5 +1,10 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Router, NavigationExtras } from '@angular/router';
+import {
+  Router,
+  NavigationExtras,
+  RouterEvent,
+  NavigationEnd
+} from '@angular/router';
 import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
   Component,
@@ -19,7 +24,7 @@ import { FileService } from 'src/app/services';
 import { NotifierService } from 'angular-notifier';
 import { environment } from '../../../../environments/environment';
 import { NotificationDTO } from 'src/app/models/Notification/notificationDTO';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { SearchSuggestionData } from 'src/app/models/searchSuggestionData';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -55,6 +60,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   searchSuggestionsEmpty = true;
   searchCriteria = '';
   id: number;
+  toched = false;
   timeout = null;
   objectKeys = Object.keys;
   unicodeSearch = '\u2315';
@@ -237,7 +243,11 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }
     });
   }
-
+  onChanged($event) {
+    this.shared.isSearchTriggered = false;
+    this.shared.restorePhotos = true;
+    this.shared.isSearchTriggeredAtLeastOnce = false;
+  }
   addNotification(notification) {
     this.notification.unshift(notification);
     this.checkNotification(this.notification);
@@ -286,9 +296,19 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       }, 300);
     }
   }
-
+  find2(e) {
+    if (e.length === 0) {
+      this.searchSuggestionsEmpty = true;
+    }
+  }
   showSearchDropdown() {
-    this.isSearchDropdownExpanded = true;
+    if (
+      this.searchSuggestions !== undefined ||
+      !this.searchSuggestionsEmpty ||
+      this.searchHistory.length > 0
+    ) {
+      this.isSearchDropdownExpanded = true;
+    }
   }
 
   hideSearchDropdown() {
@@ -296,6 +316,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   getSearchSuggestions(id: number, criteria: string) {
+    this.toched = true;
     if (this.searchCriteria.length > 0) {
       criteria = criteria.trim();
       criteria = this.escapeHtml(criteria);
@@ -322,6 +343,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   escapeHtml(unsafe) {
     const s = unsafe
       .replace(/#/g, '')
+      .replace(/\\/g, '')
       .split('/')
       .join('');
     return s;
@@ -417,6 +439,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   checkSearchSuggestions() {
     Object.values(this.searchSuggestions).forEach(field => {
       if (field.length > 0) {
+        this.searchSuggestionsEmpty = false;
+      } else {
         this.searchSuggestionsEmpty = false;
       }
     });
