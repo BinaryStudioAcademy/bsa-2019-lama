@@ -11,51 +11,110 @@
   <div class="search-bar is-hidden-mobile" *ngIf="auth.token">
     <div class="field has-addons">
       <div class="control input-form">
-        <input (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo"
-          [(ngModel)]="searchCriteria" list="values" (click)="showSearchDropdown()" />
-        <div class="dropdown control is-expanded" [ngStyle]="{ display: isSearchDropdownExpanded ? 'block' : 'none' }"
-          (mouseover)="showSearchDropdown()" (mouseout)="hideSearchDropdown()">
+        <input
+          (keyup.enter)="find()"
+          class="input search-bar"
+          type="search"
+          placeholder="Find a photo"
+          [(ngModel)]="searchCriteria"
+          list="values"
+          (click)="showSearchDropdown()"
+        />
+        <div
+          class="dropdown control is-expanded"
+          [ngStyle]="{ display: isSearchDropdownExpanded ? 'block' : 'none' }"
+          (mouseover)="showSearchDropdown()"
+          (mouseout)="hideSearchDropdown()"
+        >
           <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
-            <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchHistory">
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of searchHistory"
+            >
               <a class="dropdown-item">
                 <i class="material-icons">history</i> {{ item }}
               </a>
             </div>
           </div>
-          <div class="dropdown-content" *ngIf="
+          <div
+            class="dropdown-content"
+            *ngIf="
               !searchSuggestionsEmpty && searchSuggestions.names.length > 0
-            ">
-            <div (click)="sendItemToSearchbar(item)" class="row"
-              *ngFor="let item of searchSuggestions.names.slice(0, 5)">
+            "
+          >
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of searchSuggestions.names.slice(0, 5)"
+            >
               <a class="dropdown-item">
-                <i><img class="image is-24x24" *ngIf="searchSuggestions" [src]="getThumbnailByName(item)" /></i>
+                <i
+                  ><img
+                    class="image is-24x24"
+                    *ngIf="searchSuggestions"
+                    [src]="getThumbnailByName(item)"
+                /></i>
                 {{ item }}
               </a>
             </div>
           </div>
-          <div class="dropdown-content" *ngIf="
+          <div
+            class="dropdown-content"
+            *ngIf="
               !searchSuggestionsEmpty &&
               searchSuggestions.description.length > 0
-            ">
-            <div (click)="sendItemToSearchbar(item)" class="row"
-              *ngFor="let item of searchSuggestions.description.slice(0, 5)">
+            "
+          >
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of searchSuggestions.description.slice(0, 5)"
+            >
               <a class="dropdown-item">
                 <i class="material-icons">text_format</i> {{ item }}
               </a>
             </div>
           </div>
-          <div class="dropdown-content" *ngIf="
+          <div
+            class="dropdown-content"
+            *ngIf="
               !searchSuggestionsEmpty && searchSuggestions.locations.length > 0
-            ">
-            <div (click)="sendItemToSearchbar(item)" class="row"
-              *ngFor="let item of searchSuggestions.locations.slice(0, 5)">
+            "
+          >
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of searchSuggestions.locations.slice(0, 5)"
+            >
               <a class="dropdown-item">
                 <i class="material-icons">room</i> {{ item }}
               </a>
             </div>
           </div>
-          <div class="dropdown-content" *ngIf="!searchSuggestionsEmpty && tagNames.length > 0">
-            <div (click)="sendItemToSearchbar(item)" class="row" *ngFor="let item of tagNames.slice(0, 5)">
+          <div
+            class="dropdown-content"
+            *ngIf="!searchSuggestionsEmpty && searchSuggestions.text.length > 0"
+          >
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of words"
+            >
+              <a class="dropdown-item">
+                <i class="material-icons"> label </i> {{ item }}
+              </a>
+            </div>
+          </div>
+          <div
+            class="dropdown-content"
+            *ngIf="!searchSuggestionsEmpty && tagNames.length > 0"
+          >
+            <div
+              (click)="sendItemToSearchbar(item)"
+              class="row"
+              *ngFor="let item of tagNames.slice(0, 5)"
+            >
               <a class="dropdown-item">
                 <i class="material-icons">label</i> {{ item }}
               </a>
@@ -64,14 +123,22 @@
         </div>
       </div>
       <div class="control">
-        <a (click)="find()" class="button is-primary" id="button-search"
-          [ngClass]="{ 'not-active': !(searchCriteria.length > 0) }">
+        <a
+          (click)="find()"
+          class="button is-primary"
+          id="button-search"
+          [ngClass]="{ 'not-active': !(searchCriteria.length > 0) }"
+        >
           Search
         </a>
       </div>
 
       <!--upload-->
-      <a *ngIf="auth.token" (click)="openModalClicked()" class="button is-primary is-hidden-mobile add">
+      <a
+        *ngIf="auth.token"
+        (click)="openModalClicked()"
+        class="button is-primary is-hidden-mobile add"
+      >
         <i class="material-icons">cloud_upload</i>
         <p>Add</p>
       </a>
@@ -82,16 +149,30 @@
   <div class="align-right" *ngIf="auth.token">
     <!--notification-->
     <a class="image is-48x48 profile">
-      <img [src]="avatarUrl || 'assets/default_avatar.png'" class="is-rounded" routerLink="/main/profile" />
+      <img
+        [src]="avatarUrl || 'assets/default_avatar.png'"
+        class="is-rounded"
+        routerLink="/main/profile"
+      />
     </a>
-    <a class="image notification-icon is-rounded" (click)="ShowHideNotification()">
-      <i class="fa" [ngClass]="{ 'fa-bell-o': !newNotify, 'fa-bell': newNotify }"></i>
+    <a
+      class="image notification-icon is-rounded"
+      (click)="ShowHideNotification()"
+    >
+      <i
+        class="fa"
+        [ngClass]="{ 'fa-bell-o': !newNotify, 'fa-bell': newNotify }"
+      ></i>
       <span class="notification-count" *ngIf="newNotify">{{
         getCountOfUnreadNotifications()
       }}</span>
     </a>
     <!--log-out-->
-    <a class="logout" (click)="logOut(); $event.preventDefault()" *ngIf="auth.token">
+    <a
+      class="logout"
+      (click)="logOut(); $event.preventDefault()"
+      *ngIf="auth.token"
+    >
       <i class="fa fa-sign-out"></i>
     </a>
   </div>
@@ -108,20 +189,50 @@
       </a>
     </div>
   </div>
-  <div class="notification-content" *ngIf="notification && notification.length !== 0">
+  <div
+    class="notification-content"
+    *ngIf="notification && notification.length !== 0"
+  >
     <div *ngFor="let item of notification">
-      <app-main-notification *ngIf="item.activity === 0" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
-        (click)="openPhoto(item)" class="systemNotification" [notification]="item"></app-main-notification>
-      <app-main-notification *ngIf="item.activity === 1" class="systemNotification" [notification]="item"
-        (click)="openModal(item.id)" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)">
+      <app-main-notification
+        *ngIf="item.activity === 0"
+        (id)="sendIsRead($event)"
+        (deleteId)="sendDelete($event)"
+        (click)="openPhoto(item)"
+        class="systemNotification"
+        [notification]="item"
+      ></app-main-notification>
+      <app-main-notification
+        *ngIf="item.activity === 1"
+        class="systemNotification"
+        [notification]="item"
+        (click)="openModal(item.id)"
+        (id)="sendIsRead($event)"
+        (deleteId)="sendDelete($event)"
+      >
       </app-main-notification>
-      <app-main-notification *ngIf="item.activity === 2" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
-        (click)="sharedItemClicked(item)" class="systemNotification" [notification]="item"></app-main-notification>
-      <app-main-notification *ngIf="item.activity === 3" (id)="sendIsRead($event)" (deleteId)="sendDelete($event)"
-        (click)="sharedItemClicked(item)" class="systemNotification" [notification]="item"></app-main-notification>
+      <app-main-notification
+        *ngIf="item.activity === 2"
+        (id)="sendIsRead($event)"
+        (deleteId)="sendDelete($event)"
+        (click)="sharedItemClicked(item)"
+        class="systemNotification"
+        [notification]="item"
+      ></app-main-notification>
+      <app-main-notification
+        *ngIf="item.activity === 3"
+        (id)="sendIsRead($event)"
+        (deleteId)="sendDelete($event)"
+        (click)="sharedItemClicked(item)"
+        class="systemNotification"
+        [notification]="item"
+      ></app-main-notification>
     </div>
   </div>
-  <div class="no-notifications" *ngIf="notification && notification.length === 0">
+  <div
+    class="no-notifications"
+    *ngIf="notification && notification.length === 0"
+  >
     Here is nothing
   </div>
 </aside>
