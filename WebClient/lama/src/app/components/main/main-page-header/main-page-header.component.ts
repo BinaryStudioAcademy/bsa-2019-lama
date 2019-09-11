@@ -65,6 +65,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   unsubscribe = new Subject();
   latestSearchAttempt = '';
   tagNames = [];
+  words = [];
   showModal = false;
   duplicates: number[] = [];
   shared: SharedService;
@@ -148,6 +149,26 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         },
         error => this.notifier.notify('error', 'Error update notification')
       );
+  }
+
+  extractWords(searchSuggestions: SearchSuggestionData) {
+    this.words = [];
+    if (searchSuggestions.text.length > 0) {
+      const obj = JSON.parse(searchSuggestions.text);
+      const results = obj.regions.forEach(item => {
+        console.log(item);
+        item.lines.forEach(line => {
+          console.log(line);
+          line.words.forEach(word => {
+            console.log(word);
+            if (word.text.indexOf(`${this.searchCriteria}`) !== -1) {
+              this.words.push(word.text.replace(/[.,?!]/g, ''));
+            }
+          });
+        });
+      });
+      this.words = Array.from(new Set(this.words)).splice(0, 5);
+    }
   }
   sendDelete(id) {
     this.notificationService
@@ -289,6 +310,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.latestSearchAttempt = criteria;
           this.searchSuggestions = items;
           this.checkSearchSuggestions();
+          this.extractWords(this.searchSuggestions);
           this.tagNames = this.extractTagNames(this.searchSuggestions)
             .filter((tagname: string) => tagname.includes(criteria))
             .filter(
