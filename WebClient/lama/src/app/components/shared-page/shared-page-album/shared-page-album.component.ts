@@ -57,6 +57,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
   showSetCoverModal: boolean;
   showSharedModal: boolean;
   sharedAlbumId: number;
+  userSubject: Subject<any> = new Subject<any>();
 
   @ViewChild('modalPhotoContainer', { static: true, read: ViewContainerRef })
   private modalPhotoEntry: ViewContainerRef;
@@ -95,7 +96,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
       0,
       this.router.url.lastIndexOf('/') + 1
     );
-    const userId: number = parseInt(localStorage.getItem('userId'), 10);
+    this.getUserData();
     this.selectedPhotos = [];
     if (this.loading === false && this.AlbumId !== 0 && this.AlbumId !== -1) {
       this.sharingService
@@ -118,7 +119,7 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
       0,
       this.router.url.lastIndexOf('/') + 1
     );
-    if (this.returnPath === '/main/shared/') {
+    if (this.returnPath === '/main/shared/album/') {
       this.isShared = true;
     }
   }
@@ -226,5 +227,20 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
     let jsonData = atob(encodedData.replace('___', '/'));
     jsonData = jsonData.replace('[]', '');
     this.AlbumId = JSON.parse(jsonData).albumId;
+  }
+
+  private getUserData() {
+    const userId = parseInt(localStorage.getItem('userId'), 10);
+    if (userId) {
+      this.httpService
+        .getData('users/' + userId)
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe(
+          u => {
+            this.currentUser = u;
+          },
+          error => this.notifier.notify('error', 'Error loading user')
+        );
+    }
   }
 }
