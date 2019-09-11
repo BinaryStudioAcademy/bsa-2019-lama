@@ -11,7 +11,7 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
             <div class="dropdown-content">
-                <div class="dropdown-item" (click)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared">
+                <div class="dropdown-item" (click)="savePhotos()" *ngIf="album?.photoAlbums?.length && isShared && currentUser">
                     <p>Save<span *ngIf="!isAtLeastOnePhotoSelected"> all</span></p>
                 </div>
                 <div class="dropdown-item" (click)="downloadImages()" *ngIf="album?.photoAlbums?.length">

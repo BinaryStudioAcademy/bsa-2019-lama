@@ -49,6 +49,8 @@ namespace Lama.Controllers
             var createdAlbumId = await _service.CreateEmptyAlbum(album);
             return await _service.FindAlbum(createdAlbumId);
         }
+
+        [AllowAnonymous]
         [HttpPost("ArchivePhotos")]
         public async Task<List<byte[]>> GetPhotos([FromBody] List<string> photoDocuments)
         {

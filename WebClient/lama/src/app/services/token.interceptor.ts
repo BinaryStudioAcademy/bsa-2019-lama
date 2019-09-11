@@ -17,6 +17,14 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(public authService: AuthService, private router: Router) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler) {
+    const currentRoute = this.router.url;
+    if (
+      !this.authService.getLoggedUserId() &&
+      (currentRoute.includes('/main/shared') ||
+        currentRoute.includes('/main/shared/album'))
+    ) {
+      return next.handle(request);
+    }
     return this.authService.afAuth.idToken.pipe(
       mergeMap(token => {
         if (token === null) {

@@ -106,7 +106,7 @@ export class AddPhotosToAlbumModalComponent implements OnInit, OnDestroy {
   }
 
   async LoadFile(files) {
-    if (files.type === 'click') {
+    if (files.type === 'click' || files.type === 'mousedown') {
       return;
     }
     if (this.LoadNewImage === false) {

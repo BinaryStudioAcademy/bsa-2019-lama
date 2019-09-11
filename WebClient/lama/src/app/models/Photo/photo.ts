@@ -9,4 +9,10 @@ export class Photo {
   shortLocation?: string;
   // tslint:disable-next-line: whitespace
   isDuplicate? = false;
+
+  constructor(url: string, authorId: number, filename: string) {
+    this.imageUrl = url;
+    this.authorId = authorId;
+    this.filename = filename;
+  }
 }
