@@ -95,14 +95,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.auth.getLoggedUserId()) {
-      return;
-    }
     this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
       await this.delay(500);
       this.id = parseInt(localStorage.getItem('userId'), 10);
+    }
+    if (!this.id) {
+      return;
     }
     this.notificationService
       .getNotifications(this.id)
