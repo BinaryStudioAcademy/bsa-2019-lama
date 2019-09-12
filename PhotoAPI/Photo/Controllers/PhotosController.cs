@@ -10,6 +10,7 @@ using Photo.BusinessLogic.Interfaces;
 
 using Photo.Domain.BlobModels;
 using Photo.Domain.DataTransferObjects;
+using Serilog;
 
 namespace Photo.Controllers
 {

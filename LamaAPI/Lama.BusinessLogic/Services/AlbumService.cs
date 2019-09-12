@@ -12,9 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-
 using System.Threading.Tasks;
-
 using Lama.BusinessLogic.Exceptions;
 using Lama.Domain.DTO;
 using Lama.Domain.DTO.Album;

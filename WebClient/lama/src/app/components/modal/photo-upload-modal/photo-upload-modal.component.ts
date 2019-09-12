@@ -168,7 +168,6 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
             const base64 = await this.toBase64(result);
             remove(base64);
             const modifiedObject = insert(d, base64);
-            this.showSpinner = false;
             if (latitude && longitude) {
               getLocation(latitude, longitude, this.geoCoder).then(location => {
                 this.address = getFormattedAddress(location);
@@ -194,7 +193,6 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
           .compress([file], environment.compressionOptions.maxSizeMB)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(async result => {
-            this.showSpinner = false;
             this.photos.push({
               imageUrl: await this.toBase64(result),
               filename: file.name,
@@ -203,6 +201,7 @@ export class PhotoUploadModalComponent implements OnInit, OnDestroy {
           });
       }
     }
+    this.showSpinner = false;
     this.loaded = true;
   }
 

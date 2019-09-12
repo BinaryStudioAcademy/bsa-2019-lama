@@ -8,6 +8,8 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.DTO.Reaction;
 using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
+using Serilog.Core;
 
 namespace Lama.Controllers
 {

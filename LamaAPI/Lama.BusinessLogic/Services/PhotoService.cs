@@ -183,6 +183,7 @@ namespace Lama.BusinessLogic.Services
             {
                 photo.Reactions = new Like[0];
             }
+
             return uploadPhotoResultDtos;
         }
 
