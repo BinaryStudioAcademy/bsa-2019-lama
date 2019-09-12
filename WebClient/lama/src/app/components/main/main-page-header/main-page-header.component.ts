@@ -299,6 +299,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   find2(e) {
     if (e.length === 0) {
       this.searchSuggestionsEmpty = true;
+    } else {
+      this.isSearchDropdownExpanded = true;
     }
   }
   showSearchDropdown() {
@@ -346,7 +348,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
       .replace(/\\/g, '')
       .split('/')
       .join('');
-    return s;
+    const k = s.split('.').join('');
+    return k;
   }
   getThumbnailByName(item: string) {
     const nameIndex = this.searchSuggestions.names.indexOf(item);
