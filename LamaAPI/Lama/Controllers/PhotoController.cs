@@ -136,7 +136,7 @@ namespace Lama.Controllers
         }
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
-        public async Task SendDuplicates(IEnumerable<int> photos)
+        public async Task SendDuplicates(IEnumerable<IEnumerable<int>> photos)
         {
             await _service.SendDuplicates(photos);
         }

@@ -124,6 +124,7 @@ namespace Processors.BusinessLogic.Services
         private async Task FindDuplicates(IEnumerable<ImageToProcessDTO> images)
         {
             var duplicates = new List<int>();
+            var groupedDuplicates = new List<List<int>>();
             var imageToProcessDtos = images.ToList();
             ImageToProcessDTO first = null;
             foreach (var dto in imageToProcessDtos)
@@ -135,23 +136,25 @@ namespace Processors.BusinessLogic.Services
             if (first != null)
             {
                 var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId, 100);
-                foreach (var item in imageToProcessDtos)
+                foreach (var result in comparisonResult)
                 {
-                    foreach (var result in comparisonResult)
+                    foreach (var item in imageToProcessDtos)
                     {
                         if (result.Count <= 1) continue;
 
                         foreach (var itm in result)
                         {
                             if (itm.PhotoId != item.ImageId) continue;
-                            duplicates.Add((int)item.ImageId);
-                            break;
+                            duplicates.Add((int) item.ImageId);
                         }
                     }
+                    if (duplicates.Count > 0)
+                        groupedDuplicates.Add(duplicates);
+                    duplicates = new List<int>();
                 }
             }
-
-            var bytes = duplicates.SelectMany(BitConverter.GetBytes).ToArray();
+            Console.WriteLine(groupedDuplicates);
+            var bytes = groupedDuplicates.SelectMany(i => i.SelectMany(BitConverter.GetBytes)).ToArray();
             _producer.Send(bytes);
         }
 

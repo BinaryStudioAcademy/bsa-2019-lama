@@ -21,7 +21,7 @@ import { Subject } from 'rxjs';
 })
 export class DuplicatesModalComponent implements OnInit, OnDestroy {
   @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[][] = [];
-  receivedIds: number[] = [];
+  receivedIds: number[][] = [];
   @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
@@ -45,14 +45,11 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
 
   removeDuplicates() {
     const flattenedDuplicates = [].concat.apply([], this.receivedDuplicates);
+    const flattenedDuplicatesIds = [].concat.apply([], this.receivedIds);
     const toDelete = flattenedDuplicates.length
-      ? flattenedDuplicates.map(
-          photo => new PhotoToDeleteRestoreDTO(photo.id)
-        )
-      : flattenedDuplicates.map(id => new PhotoToDeleteRestoreDTO(id));
-    this.fileService.deletePhotosPermanently(toDelete)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(
+      ? flattenedDuplicates.map(photo => new PhotoToDeleteRestoreDTO(photo.id))
+      : flattenedDuplicatesIds.map(id => new PhotoToDeleteRestoreDTO(id));
+    this.fileService.deletePhotosPermanently(toDelete).subscribe(
       response => {
         this.notifier.notify('success', 'Duplicates removed successfully');
       },
@@ -75,14 +72,18 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
       });
     } else if (this.receivedIds) {
       this.receivedIds.forEach(item => {
-        this.fileService.get(item)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(it => {
+        item.forEach(element => {
           this.fileService
-            .getPhoto(it.blob256Id)
+            .get(element)
             .pipe(takeUntil(this.unsubscribe))
-            .subscribe(url => {
-              this.duplicatesUrls.push(url);
+            .subscribe(it => {
+              this.fileService
+                .getPhoto(it.blob256Id)
+                .pipe(takeUntil(this.unsubscribe))
+                .subscribe(url => {
+                  this.duplicatesWithCount.set(url, item.length);
+                  this.duplicatesUrls.push(url);
+                });
             });
         });
       });

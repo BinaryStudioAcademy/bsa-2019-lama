@@ -134,7 +134,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 const string notification = "Liked your photo";
-                await _notificationService.SendNotification(id, user, notification, ActivityType.Like, new List<int>() {photo.Id});
+                await _notificationService.SendNotification(id, user, notification, ActivityType.Like, new List<List<int>>() { { new List<int>() { photo.Id } } });
             }
             return like.Id;
         }
@@ -242,11 +242,11 @@ namespace Lama.BusinessLogic.Services
             return JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(bodyJson);
         }
 
-        public async Task SendDuplicates(IEnumerable<int> photos)
+        public async Task SendDuplicates(IEnumerable<IEnumerable<int>> photos)
         {
             Log.Logger.Information("Duplicates received on LamaAPI");
             var photosList = photos.ToList();
-            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photosList.FirstOrDefault())).UserId;
+            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photosList.FirstOrDefault().FirstOrDefault())).UserId;
             await _notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photosList);
 
         }

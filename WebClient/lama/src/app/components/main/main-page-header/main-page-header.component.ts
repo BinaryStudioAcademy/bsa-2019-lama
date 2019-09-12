@@ -67,7 +67,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   tagNames = [];
   words = [];
   showModal = false;
-  duplicates: number[] = [];
+  duplicates: number[][] = [];
   shared: SharedService;
   photo;
   sharedItemId: number;
