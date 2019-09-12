@@ -50,13 +50,19 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
     const toDelete = flattenedDuplicates.length
       ? flattenedDuplicates.map(photo => new PhotoToDeleteRestoreDTO(photo.id))
       : flattenedDuplicatesIds.map(id => new PhotoToDeleteRestoreDTO(id));
-    this.fileService.deletePhotosPermanently(toDelete).subscribe(
-      response => {
-        this.notifier.notify('success', 'Duplicates removed successfully');
-      },
-      error =>
-        this.notifier.notify('error', 'Error occured while removing duplicates')
-    );
+    this.fileService
+      .deletePhotosPermanently(toDelete)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        () => {
+          this.notifier.notify('success', 'Duplicates removed successfully');
+        },
+        error =>
+          this.notifier.notify(
+            'error',
+            'Error occured while removing duplicates'
+          )
+      );
     this.Change.emit(toDelete.map(x => x.id));
     this.toggleModal();
   }
