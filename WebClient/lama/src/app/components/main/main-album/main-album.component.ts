@@ -230,8 +230,9 @@ export class MainAlbumComponent implements OnInit, OnDestroy {
       .getDuplicates(this.currentUser.id)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(duplicates => {
+        const flattenDuplicates = [].concat.apply([], duplicates);
         this.album.photoAlbums.forEach(photo => {
-          if (duplicates.map(x => x.name).includes(photo.name)) {
+          if (flattenDuplicates.map(x => x.name).includes(photo.name)) {
             deletingArray.push(photo.id);
           }
         });

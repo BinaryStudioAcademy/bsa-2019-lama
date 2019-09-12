@@ -134,7 +134,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == newLike.UserId);
                 const string notification = "Liked your photo";
-                await _notificationService.SendNotification(id, user, notification, ActivityType.Like, new List<int>() {photo.Id});
+                await _notificationService.SendNotification(id, user, notification, ActivityType.Like, new List<List<int>>() { { new List<int>() { photo.Id } } });
             }
             return like.Id;
         }
@@ -243,11 +243,11 @@ namespace Lama.BusinessLogic.Services
             return JsonConvert.DeserializeObject<IEnumerable<PhotoDocumentDTO>>(bodyJson);
         }
 
-        public async Task SendDuplicates(IEnumerable<int> photos)
+        public async Task SendDuplicates(IEnumerable<IEnumerable<int>> photos)
         {
             Log.Logger.Information("Duplicates received on LamaAPI");
             var photosList = photos.ToList();
-            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photosList.FirstOrDefault())).UserId;
+            var userId = (await _unitOfWorkContext.GetRepository<Photo>().GetAsync(photosList.FirstOrDefault().FirstOrDefault())).UserId;
             await _notificationService.SendNotification(userId, null, "Duplicates found", ActivityType.Duplicates, photosList);
 
         }
@@ -277,14 +277,14 @@ namespace Lama.BusinessLogic.Services
             return photos;
         }
 
-        public async Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int userId)
+        public async Task<IEnumerable<IEnumerable<UploadPhotoResultDTO>>> GetDuplicates(int userId)
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = await _httpClient.GetAsync($"{_url}api/photos/duplicates/{userId}");
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<UploadPhotoResultDTO>>(responseContent);
+            return JsonConvert.DeserializeObject<IEnumerable<IEnumerable<UploadPhotoResultDTO>>>(responseContent);
         }
 
         public async Task<string> GetPhoto(string blobId)

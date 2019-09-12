@@ -80,7 +80,7 @@ namespace Lama.BusinessLogic.Services
             {
                 user = await Context.Users.FirstOrDefaultAsync(x => x.Id == createCommentDTO.UserId);
                 string noti = "Commented your photo";
-                await notificationService.SendNotification(ID, user, noti, ActivityType.Comment, new List<int>() {photo.Id});
+                await notificationService.SendNotification(ID, user, noti, ActivityType.Comment, new List<List<int>>() { {new List<int>() {photo.Id} }});
             }
             return comment.Id;
         }

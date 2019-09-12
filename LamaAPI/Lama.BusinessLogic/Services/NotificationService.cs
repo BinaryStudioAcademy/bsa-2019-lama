@@ -25,7 +25,7 @@ namespace Lama.BusinessLogic.Services
             this.Context = Context;
             this.Hub = Hub;
         }
-        public async Task SendNotification(int? id, User user, string notification, ActivityType type, IEnumerable<int> payload = null)
+        public async Task SendNotification(int? id, User user, string notification, ActivityType type, IEnumerable<IEnumerable<int>> payload = null)
         {
             var model = await CreateNotification(notification, id, user, type, payload);
 
@@ -62,7 +62,7 @@ namespace Lama.BusinessLogic.Services
             await Hub.Clients.User(email).SendAsync("Notification", message);
         }
 
-        private async Task<Notification> CreateNotification(string Notification, int? UserId, User user, ActivityType type, IEnumerable<int> payload)
+        private async Task<Notification> CreateNotification(string Notification, int? UserId, User user, ActivityType type, IEnumerable<IEnumerable<int>> payload)
         {
             var notification = new Notification()
             {
