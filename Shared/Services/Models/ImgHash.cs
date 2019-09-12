@@ -12,7 +12,7 @@ namespace Services.Models
         public List<bool> HashData { get; set; }
         public string BlobId { get; set; }
 
-        public ImgHash(long id, List<bool> hash = null, int hashSideSize = 16)
+        public ImgHash(long id, List<bool> hash = null, int hashSideSize = 24)
         {
             _hashSide = hashSideSize;
             HashData = hash;
