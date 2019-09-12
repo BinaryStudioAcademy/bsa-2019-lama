@@ -240,8 +240,8 @@ namespace Photo.BusinessLogic.Services
             {
                 var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
                 var r = await Create(mappedToPhotoDocument);
-				Log.Logger.Debug(r.ToString());
-				Log.Logger.Debug(
+				Log.Logger.Information(r.ToString());
+				Log.Logger.Information(
 					$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
                 createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
                 
@@ -301,8 +301,8 @@ namespace Photo.BusinessLogic.Services
                     };
 
                     var r = await Create(photoDocumentToCreate);
-					Log.Logger.Debug(r.ToString());
-					Log.Logger.Debug(
+					Log.Logger.Information(r.ToString());
+					Log.Logger.Information(
 						$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
                 createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
             }
@@ -318,7 +318,7 @@ namespace Photo.BusinessLogic.Services
             }
 
             _messageService.SendPhotoToThumbnailProcessor(models);
-			Log.Logger.Debug("LamaAPI service Create method finished");
+			Log.Logger.Information("LamaAPI service Create method finished");
             return createdPhotos;
         }
 
