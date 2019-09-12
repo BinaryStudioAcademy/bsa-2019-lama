@@ -137,8 +137,7 @@ namespace Processors.BusinessLogic.Services
             {
                 var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId, 100);
                 foreach (var result in comparisonResult)
-                {
-                    var count = 0;
+                { 
                     foreach (var item in imageToProcessDtos)
                     {
                         if (result.Count <= 1) continue;
@@ -146,11 +145,8 @@ namespace Processors.BusinessLogic.Services
                         {
                             if (itm.PhotoId != item.ImageId) continue;
                             duplicates.Add((int) item.ImageId);
-                            count++;
                         }
                     }
-                    if (duplicates.Count == count)
-                        duplicates.Skip(1);
                     if (duplicates.Count > 0)
                         groupedDuplicates.Add(duplicates);
                     duplicates = new List<int>();

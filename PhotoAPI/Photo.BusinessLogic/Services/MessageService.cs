@@ -67,14 +67,22 @@ namespace Photo.BusinessLogic.Services
                                 foreach (var item in originalList)
                                 {
                                     if (result.Count <= 1) continue;
-
                                     foreach (var itm in result)
                                     {
                                         if (itm.PhotoId != item) continue;
                                         duplicates.Add(item);
                                     }
                                 }
-
+                                var count = 0;
+                                foreach (var it in originalList)
+                                {
+                                    if (duplicates.Contains(it))
+                                        count++;
+                                }
+                                if (count == result.Count)
+                                {
+                                    duplicates.Remove(duplicates.FirstOrDefault());
+                                }
                                 if (duplicates.Count > 0)
                                     groupedDuplicates.Add(duplicates);
                                 duplicates = new List<int>();
