@@ -346,6 +346,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     const s = unsafe
       .replace(/#/g, '')
       .replace(/\\/g, '')
+      .replace(/\?/g, '')
       .split('/')
       .join('');
     const k = s.split('.').join('');
@@ -445,6 +446,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.searchSuggestionsEmpty = false;
       } else {
         this.searchSuggestionsEmpty = false;
+      }
+      if (this.searchCriteria.length === 0) {
+        this.searchSuggestionsEmpty = true;
       }
     });
   }
