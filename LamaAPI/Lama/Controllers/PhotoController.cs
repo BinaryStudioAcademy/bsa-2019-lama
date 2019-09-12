@@ -47,7 +47,7 @@ namespace Lama.Controllers
         }
 
         [HttpGet("duplicates/{id}")]
-        public Task<IEnumerable<UploadPhotoResultDTO>> GetDuplicates(int id)
+        public Task<IEnumerable<IEnumerable<UploadPhotoResultDTO>>> GetDuplicates(int id)
         {
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
@@ -138,7 +138,7 @@ namespace Lama.Controllers
         }
         [AllowAnonymous]
         [HttpPost("duplicates_response")]
-        public async Task SendDuplicates(IEnumerable<int> photos)
+        public async Task SendDuplicates(IEnumerable<IEnumerable<int>> photos)
         {
             await _service.SendDuplicates(photos);
         }

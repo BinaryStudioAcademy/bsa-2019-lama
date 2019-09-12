@@ -147,7 +147,7 @@ namespace Lama.BusinessLogic.Services
                 if (author != null)
                 {
                     const string notification = "Shared photo";
-                    await _notificationService.SendNotification(sharedPhoto.UserId, author, notification, ActivityType.Shared, new List<int>() {sharedPhoto.PhotoId});
+                    await _notificationService.SendNotification(sharedPhoto.UserId, author, notification, ActivityType.Shared, new List<List<int>>() { {new List<int>() { sharedPhoto.PhotoId} } });
                 }
             }
         }

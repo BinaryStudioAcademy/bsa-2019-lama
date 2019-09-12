@@ -20,13 +20,15 @@ import { Subject } from 'rxjs';
   styleUrls: ['./duplicates-modal.component.sass']
 })
 export class DuplicatesModalComponent implements OnInit, OnDestroy {
-  @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
-  receivedIds: number[] = [];
+  @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[][] = [];
+  receivedIds: number[][] = [];
   @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
+  duplicatesWithCount = new Map<string, number>();
   isActive = true;
   isShow = false;
+  isShowSpinner = true;
   unsubscribe = new Subject();
   constructor(
     private fileService: FileService,
@@ -43,44 +45,53 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   }
 
   removeDuplicates() {
-    const toDelete = this.receivedDuplicates.length
-      ? this.receivedDuplicates.map(
-          photo => new PhotoToDeleteRestoreDTO(photo.id)
-        )
-      : this.receivedIds.map(id => new PhotoToDeleteRestoreDTO(id));
-    this.fileService.deletePhotosPermanently(toDelete)
-      .pipe(takeUntil(this.unsubscribe))
+    const flattenedDuplicates = [].concat.apply([], this.receivedDuplicates);
+    const flattenedDuplicatesIds = [].concat.apply([], this.receivedIds);
+    const toDelete = flattenedDuplicates.length
+      ? flattenedDuplicates.map(photo => new PhotoToDeleteRestoreDTO(photo.id))
+      : flattenedDuplicatesIds.map(id => new PhotoToDeleteRestoreDTO(id));
+    this.fileService
+      .deletePhotosPermanently(toDelete)
+      // .pipe(takeUntil(this.unsubscribe))
       .subscribe(
-      response => {
-        this.notifier.notify('success', 'Duplicates removed successfully');
-      },
-      error =>
-        this.notifier.notify('error', 'Error occured while removing duplicates')
-    );
+        () => {
+          this.notifier.notify('success', 'Duplicates removed successfully');
+        },
+        error =>
+          this.notifier.notify(
+            'error',
+            'Error occured while removing duplicates'
+          )
+      );
     this.Change.emit(toDelete.map(x => x.id));
     this.toggleModal();
   }
 
   getDuplicatesUrls() {
     if (this.receivedDuplicates.length) {
-      this.receivedDuplicates.forEach(duplicate => {
+      this.receivedDuplicates.forEach(duplicatesArray => {
         this.fileService
-          .getPhoto(duplicate.blob256Id)
+          .getPhoto(duplicatesArray[0].blob256Id)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(url => {
-            this.duplicatesUrls.push(url);
+            this.duplicatesWithCount.set(url, duplicatesArray.length);
+            this.isShowSpinner = false;
           });
       });
     } else if (this.receivedIds) {
       this.receivedIds.forEach(item => {
-        this.fileService.get(item)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe(it => {
+        item.forEach(element => {
           this.fileService
-            .getPhoto(it.blob256Id)
+            .get(element)
             .pipe(takeUntil(this.unsubscribe))
-            .subscribe(url => {
-              this.duplicatesUrls.push(url);
+            .subscribe(it => {
+              this.fileService
+                .getPhoto(it.blob256Id)
+                .pipe(takeUntil(this.unsubscribe))
+                .subscribe(url => {
+                  this.duplicatesWithCount.set(url, item.length);
+                  this.isShowSpinner = false;
+                });
             });
         });
       });

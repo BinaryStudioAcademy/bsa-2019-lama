@@ -260,22 +260,24 @@ namespace Photo.BusinessLogic.Services
             return createdDuplicates;
         }
 
-        public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
+        public async Task<IEnumerable<IEnumerable<CreatePhotoResultDTO>>> FindDuplicates(int userId)
         {
             var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
+            var groupedDuplicates = new List<List<CreatePhotoResultDTO>>();
             var duplicates = new List<CreatePhotoResultDTO>();
             foreach (var item in comparisionResult)
             {
                 if (item.Count <= 1) continue;
                 foreach (var imgHash in item)
                 {
-                    var photo = await _elasticStorage.Get((int)imgHash.PhotoId);
+                    var photo = await _elasticStorage.Get((int) imgHash.PhotoId);
                     var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
                     duplicates.Add(mappedPhoto);
                 }
-                duplicates.Remove(duplicates.LastOrDefault());
+                groupedDuplicates.Add(duplicates.Skip(1).ToList());
+                duplicates = new List<CreatePhotoResultDTO>();
             }
-            return duplicates;
+            return groupedDuplicates;
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)

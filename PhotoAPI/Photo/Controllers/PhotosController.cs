@@ -92,7 +92,7 @@ namespace Photo.Controllers
         }
 
         [HttpGet("duplicates/{id}")]
-        public async Task<IEnumerable<CreatePhotoResultDTO>> GetDuplicates(int id)
+        public async Task<IEnumerable<IEnumerable<CreatePhotoResultDTO>>> GetDuplicates(int id)
         {
             return await _photoService.FindDuplicates(id);
         }
