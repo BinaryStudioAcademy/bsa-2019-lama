@@ -7,6 +7,7 @@ const ProfileActions = require('./ProfilePage_pa');
 const profileSteps = new ProfileActions();
 const newFirstName = `Lama-${random}`;
 const newLastName = `Moore-${random}`;
+const notificationText = 'Changes Saved';
 
 describe('Profile', () => {
     beforeEach(() => {
@@ -15,7 +16,7 @@ describe('Profile', () => {
         loginWithGoogle(browser);
     });
     
-    it('Should edit profile page', () => {
+    xit('Should edit profile page', () => {
         profileSteps.moveToProfile();
 
         profileSteps.enterFirstName(newFirstName);
@@ -23,22 +24,21 @@ describe('Profile', () => {
         profileSteps.saveChanges();
 
         wait.forNotification();
-        assert.equal(profileSteps.getNotificationText(), 'Changes Saved');
+        assert.equal(profileSteps.getNotificationText(), notificationText);
         assert.equal(profileSteps.getFirstName(), newFirstName);
         assert.equal(profileSteps.getLastName(), newLastName);
         assert.equal(profileSteps.isEmailEnabled(), false); 
     });
 
     // TODO: implement test
-    xit('Should upload new avatar', () => {
+    it('Should upload new avatar', () => {
         profileSteps.moveToProfile();
-        waitForSpinner();
+        //waitForSpinner();
 
         const imagePath = 'C:\fakepath\appay-clipart-small[1].png';
 
         profileSteps.uploadAvatar(imagePath);
         console.log('---> AVATAR: ', profileSteps.getAvatarPath());
-        // profileSteps.deleteAvatar();
     });
 
     // TODO: implement test
