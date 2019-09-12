@@ -34,7 +34,7 @@ namespace Lama.Controllers
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
             photos.ToAsyncEnumerable().ForEach(photo => photo.AuthorId = currentUserId);
-			Log.Logger.Information("LamaAPI api/photo UploadPhoto method");
+			Log.Logger.Error("LamaAPI api/photo UploadPhoto method");
             return _service.CreateAll(photos);
         }
 
