@@ -82,7 +82,6 @@ namespace Photo.Controllers
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)
         {
-			Log.Logger.Debug("PhotoAPI api/photos Post method");
             return await _photoService.Create(values);
         }
 
@@ -93,7 +92,7 @@ namespace Photo.Controllers
         }
 
         [HttpGet("duplicates/{id}")]
-        public async Task<IEnumerable<CreatePhotoResultDTO>> GetDuplicates(int id)
+        public async Task<IEnumerable<IEnumerable<CreatePhotoResultDTO>>> GetDuplicates(int id)
         {
             return await _photoService.FindDuplicates(id);
         }

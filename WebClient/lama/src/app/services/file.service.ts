@@ -124,7 +124,7 @@ export class FileService {
   }
 
   getDuplicates(id: number) {
-    return this.client.get<UploadPhotoResultDTO[]>(
+    return this.client.get<UploadPhotoResultDTO[][]>(
       `${environment.lamaApiUrl}/api/photo/duplicates/${id}`
     );
   }

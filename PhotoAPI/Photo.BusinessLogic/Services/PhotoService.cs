@@ -240,8 +240,8 @@ namespace Photo.BusinessLogic.Services
             {
                 var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
                 var r = await Create(mappedToPhotoDocument);
-				Log.Logger.Debug(r.ToString());
-				Log.Logger.Debug(
+				Log.Logger.Information(r.ToString());
+				Log.Logger.Information(
 					$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
                 createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
                 
@@ -260,22 +260,24 @@ namespace Photo.BusinessLogic.Services
             return createdDuplicates;
         }
 
-        public async Task<IEnumerable<CreatePhotoResultDTO>> FindDuplicates(int userId)
+        public async Task<IEnumerable<IEnumerable<CreatePhotoResultDTO>>> FindDuplicates(int userId)
         {
             var comparisionResult = await _imageComporator.FindDuplicatesWithTollerance(userId, 100);
+            var groupedDuplicates = new List<List<CreatePhotoResultDTO>>();
             var duplicates = new List<CreatePhotoResultDTO>();
             foreach (var item in comparisionResult)
             {
                 if (item.Count <= 1) continue;
                 foreach (var imgHash in item)
                 {
-                    var photo = await _elasticStorage.Get((int)imgHash.PhotoId);
+                    var photo = await _elasticStorage.Get((int) imgHash.PhotoId);
                     var mappedPhoto = _mapper.Map<CreatePhotoResultDTO>(photo);
                     duplicates.Add(mappedPhoto);
                 }
-                duplicates.Remove(duplicates.LastOrDefault());
+                groupedDuplicates.Add(duplicates.Skip(1).ToList());
+                duplicates = new List<CreatePhotoResultDTO>();
             }
-            return duplicates;
+            return groupedDuplicates;
         }
 
         public async Task<IEnumerable<CreatePhotoResultDTO>> Create(IEnumerable<CreatePhotoDTO> items)
@@ -300,11 +302,8 @@ namespace Photo.BusinessLogic.Services
                         Coordinates = item.Coordinates
                     };
 
-                    var r = await Create(photoDocumentToCreate);
-					Log.Logger.Debug(r.ToString());
-					Log.Logger.Debug(
-						$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
-                createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
+				await Create(photoDocumentToCreate);
+				createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
             }
 
             var models = new List<ImageToProcessDTO>();
@@ -318,7 +317,6 @@ namespace Photo.BusinessLogic.Services
             }
 
             _messageService.SendPhotoToThumbnailProcessor(models);
-			Log.Logger.Debug("LamaAPI service Create method finished");
             return createdPhotos;
         }
 

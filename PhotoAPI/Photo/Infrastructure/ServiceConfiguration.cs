@@ -89,8 +89,11 @@ namespace Photo.Infrastructure
 				PhotoProcessorProducer = connectionProvider.Open(configuration.Bind<Settings>("Queues:FromPhotoToPhotoProcessor"))
 			};
 
-			return new MessageService(messageServiceSettings, serviceProvider.GetService<DuplicatesService>(),
-															   serviceProvider.GetService<ImageProcessingService>());
+			return new MessageService(messageServiceSettings,
+                serviceProvider.GetService<DuplicatesService>(),
+                serviceProvider.GetService<ImageProcessingService>(), 
+                serviceProvider.GetService<ImageCompareService>(),
+                serviceProvider.GetService<IElasticStorage>());
 		}
 	}
 }

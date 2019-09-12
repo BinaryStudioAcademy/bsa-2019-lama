@@ -39,7 +39,7 @@ export class MainPhotosContainerComponent
   isSearchTriggered: boolean;
   currentUser: User;
   selectedPhotos: PhotoRaw[];
-  duplicates: UploadPhotoResultDTO[] = [];
+  duplicates: UploadPhotoResultDTO[][] = [];
   isAtLeastOnePhotoSelected = false;
   favorites: Set<number> = new Set<number>();
   isHaveAnyPhotos = false;
@@ -234,6 +234,7 @@ export class MainPhotosContainerComponent
     componentRef.instance.toggleModal();
   }
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
+    this.router.navigate(['main/photos']);
     this.photos.push(...uploadedPhotos);
   }
 
