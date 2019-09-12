@@ -52,7 +52,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
       : flattenedDuplicatesIds.map(id => new PhotoToDeleteRestoreDTO(id));
     this.fileService
       .deletePhotosPermanently(toDelete)
-      .pipe(takeUntil(this.unsubscribe))
+      // .pipe(takeUntil(this.unsubscribe))
       .subscribe(
         () => {
           this.notifier.notify('success', 'Duplicates removed successfully');
