@@ -55,33 +55,40 @@ namespace Photo.BusinessLogic.Services
                         var originalList = Enumerable.Range(0, args.Body.Length / 4)
                             .Select(i => BitConverter.ToInt32(args.Body, i * 4))
                             .ToList();
-                        var photo = await _elasticStorage.Get(originalList.FirstOrDefault());
-                        var user = photo.UserId;
-                        var comparisonResult = await _imageCompareService.FindDuplicatesWithTollerance(user);
-                        var duplicates = new List<int>();
-                        var groupedDuplicates = new List<List<int>>();
-                        foreach (var result in comparisonResult)
+                        if (originalList.Count > 0)
                         {
-                            foreach (var item in originalList)
+                            var photo = await _elasticStorage.Get(originalList.FirstOrDefault());
+                            var user = photo.UserId;
+                            var comparisonResult = await _imageCompareService.FindDuplicatesWithTollerance(user);
+                            var duplicates = new List<int>();
+                            var groupedDuplicates = new List<List<int>>();
+                            foreach (var result in comparisonResult)
                             {
-                                if (result.Count <= 1) continue;
-
-                                foreach (var itm in result)
+                                foreach (var item in originalList)
                                 {
-                                    if (itm.PhotoId != item) continue;
-                                    duplicates.Add(item);
+                                    if (result.Count <= 1) continue;
+
+                                    foreach (var itm in result)
+                                    {
+                                        if (itm.PhotoId != item) continue;
+                                        duplicates.Add(item);
+                                    }
                                 }
+
+                                if (duplicates.Count > 0)
+                                    groupedDuplicates.Add(duplicates);
+                                duplicates = new List<int>();
                             }
-                            if (duplicates.Count > 0)
-                                groupedDuplicates.Add(duplicates);
-                            duplicates = new List<int>();
+
+                            if (groupedDuplicates.Count > 0)
+                            {
+                                await _duplicatesService.SendDuplicates(groupedDuplicates);
+                            }
+
+                            _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
                         }
-                        if (groupedDuplicates.Count > 0)
-                        { 
-                            await _duplicatesService.SendDuplicates(groupedDuplicates);
-                        }
-                        _serviceData.PhotoProcessorConsumer.SetAcknowledge(args.DeliveryTag, true);
                         break;
+                        
                     }
                 case "getImageCategory":
                     {
