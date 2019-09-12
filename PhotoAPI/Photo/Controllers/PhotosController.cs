@@ -82,7 +82,6 @@ namespace Photo.Controllers
         [HttpPost]
         public async Task<IEnumerable<CreatePhotoResultDTO>> Post([FromBody] CreatePhotoDTO[] values)
         {
-			Log.Logger.Error("PhotoAPI api/photos Post method");
             return await _photoService.Create(values);
         }
 

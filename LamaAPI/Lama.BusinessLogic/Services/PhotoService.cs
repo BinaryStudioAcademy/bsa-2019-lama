@@ -184,7 +184,6 @@ namespace Lama.BusinessLogic.Services
                 photo.Reactions = new Like[0];
             }
 
-			Log.Logger.Error("LamaAPI service CreateAll method finished");
             return uploadPhotoResultDtos;
         }
 
