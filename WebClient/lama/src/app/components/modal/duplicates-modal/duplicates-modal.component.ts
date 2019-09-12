@@ -35,7 +35,6 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.countDuplicates();
     this.getDuplicatesUrls();
   }
 
@@ -64,21 +63,14 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
     this.toggleModal();
   }
 
-  countDuplicates() {
-    this.receivedDuplicates.forEach(duplicateArray => {
-      this.duplicatesWithCount.set(duplicateArray[0].blob256Id, duplicateArray.length);
-    });
-  }
-
   getDuplicatesUrls() {
-    // const firstDuplicateOfEachSet = this.receivedDuplicates.map(x => x[0]);
     if (this.receivedDuplicates.length) {
-      this.receivedDuplicates.forEach(duplicate => {
+      this.receivedDuplicates.forEach(duplicatesArray => {
         this.fileService
-          .getPhoto(duplicate[0].blob256Id)
+          .getPhoto(duplicatesArray[0].blob256Id)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(url => {
-            this.duplicatesWithCount.set(url, duplicate.length);
+            this.duplicatesWithCount.set(url, duplicatesArray.length);
           });
       });
     } else if (this.receivedIds) {
