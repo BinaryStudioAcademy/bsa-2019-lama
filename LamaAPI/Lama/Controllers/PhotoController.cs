@@ -8,6 +8,8 @@ using Lama.BusinessLogic.Interfaces;
 using Lama.Domain.DTO.Reaction;
 using Lama.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
+using Serilog.Core;
 
 namespace Lama.Controllers
 {
@@ -32,6 +34,7 @@ namespace Lama.Controllers
             var currentUserEmail = this.GetUserEmail();
             var currentUserId = _userProtectionService.GetCurrentUserId(currentUserEmail);
             photos.ToAsyncEnumerable().ForEach(photo => photo.AuthorId = currentUserId);
+			Log.Logger.Debug("LamaAPI api/photo UploadPhoto method");
             return _service.CreateAll(photos);
         }
 
