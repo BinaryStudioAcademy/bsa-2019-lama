@@ -478,6 +478,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.addToListEvent.subscribe(
       data => {
+        this.router.navigate(['main/photos']);
         this.shared.photos.push(...data);
       },
       err => {
