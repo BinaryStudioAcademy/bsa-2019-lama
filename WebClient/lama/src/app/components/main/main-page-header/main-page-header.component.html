@@ -13,7 +13,7 @@
             <div class="control input-form">
                 <input (ngModelChange)="find2($event)" (keyup.enter)="find()" class="input search-bar" type="search" placeholder="Find a photo" [(ngModel)]="searchCriteria" list="values" (click)="showSearchDropdown()" (focusout)="hideSearchDropdown()" />
                 <div class="dropdown control is-expanded" [ngStyle]="{ display: isSearchDropdownExpanded ? 'block' : 'none' }">
-                    <div class="dropdown-content" *ngIf="searchSuggestionsEmpty">
+                    <div class="dropdown-content" *ngIf="searchSuggestionsEmpty && searchHistory !== undefined && searchHistory.length !== 0">
                         <div (mousedown)="sendItemToSearchbar(item)" class="row" *ngFor="let item of searchHistory">
                             <a class="dropdown-item">
                                 <i class="material-icons">history</i> {{ item }}
