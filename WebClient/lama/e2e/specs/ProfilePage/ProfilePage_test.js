@@ -8,6 +8,8 @@ const profileSteps = new ProfileActions();
 const newFirstName = `Lama-${random}`;
 const newLastName = `Moore-${random}`;
 const notificationText = 'Changes Saved';
+const imagePath = 'C:\\Users\\VLADOS\\Downloads\\appay-clipart-small[1].png';
+
 
 describe('Profile', () => {
     beforeEach(() => {
@@ -30,19 +32,25 @@ describe('Profile', () => {
         assert.equal(profileSteps.isEmailEnabled(), false); 
     });
 
-    // TODO: implement test
-    it('Should upload new avatar', () => {
+    xit('Should upload new avatar', () => {
         profileSteps.moveToProfile();
-        //waitForSpinner();
-
-        const imagePath = 'C:\fakepath\appay-clipart-small[1].png';
-
+        const oldPath = profileSteps.getAvatarPath();
         profileSteps.uploadAvatar(imagePath);
-        console.log('---> AVATAR: ', profileSteps.getAvatarPath());
+        profileSteps.saveChanges();
+        const newPath = profileSteps.getAvatarPath();
+        
+        assert.notEqual(oldPath, newPath);
+
     });
 
-    // TODO: implement test
-    xit('Should delete avatar', () => {
+    it('Should delete avatar', () => {
+        profileSteps.moveToProfile();
+        profileSteps.uploadAvatar(imagePath);
+        const oldSrc = profileSteps.getImageSrc();
         profileSteps.deleteAvatar();
+        profileSteps.saveChanges();
+        const newSrc = profileSteps.getImageSrc();
+
+        assert.notEqual(oldSrc, newSrc);
     })
 });

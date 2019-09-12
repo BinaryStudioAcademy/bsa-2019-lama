@@ -20,20 +20,15 @@ class ProfileActions {
         profile.lastNameInput.setValue(value);
     }
 
-    // enterEmail(value) {
-    //     profile.emailInput.waitForDisplayed(2000);
-    //     profile.emailInput.clearValue();
-    //     profile.emailInput.setValue(value);
-    // }
-
     uploadAvatar(path) {
-        profile.imageInput.waitForDisplayed(2000);
-        // profile.imageInput.setValue(path);
-        profile.imageInput.sendKeys(path);
+        browser.pause(5000)
+        profile.imageInput.setValue(path);
     }
 
     deleteAvatar() {
-        profile.deleteAvatarButton.waitForDisplayed(2000);
+        browser.pause(5000)
+        profile.photoContainer.moveTo();
+        browser.pause(1000);
         profile.deleteAvatarButton.click();
     }
 
@@ -55,12 +50,8 @@ class ProfileActions {
         return profile.lastNameInput.getValue();
     }
 
-    // getEmail() {
-    //     return profile.emailInput.getText();
-    // }
-
     getAvatarPath() {
-        return profile.imageInput.value;
+        return profile.imageInput.getValue();
     }
 
     getNotificationText() {
@@ -69,6 +60,10 @@ class ProfileActions {
 
     isEmailEnabled() {
        return profile.emailInput.isEnabled();
+    }
+
+    getImageSrc() {
+        return profile.avatarImage.getAttribute('src');
     }
 }
 
