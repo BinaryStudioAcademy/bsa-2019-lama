@@ -1,6 +1,5 @@
 const credentials = require('../../testdata');
 const path = require('path');
-//const wait = require('./../../helpers/waiters');
 const pageSteps = require('./authorization_PA');
 const googleAuth = require('./Google Page/GooglePage_PA');
 const validate = require('../../helpers/validators');
