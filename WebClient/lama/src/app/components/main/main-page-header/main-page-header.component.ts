@@ -342,15 +342,21 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         });
     }
   }
-  escapeHtml(unsafe) {
-    const s = unsafe
+  escapeHtml(unsafe: string) {
+    let s = unsafe
       .replace(/#/g, '')
       .replace(/\\/g, '')
       .replace(/\?/g, '')
       .split('/')
       .join('');
-    const k = s.split('.').join('');
-    return k;
+    if (unsafe.length === 1 && unsafe[0] === '.') {
+      s = '';
+    } else if (unsafe.length > 1 && unsafe[0] === '.') {
+      s = s.substring(1, unsafe.length - 1);
+    } else if (unsafe.length > 1 && unsafe[unsafe.length - 1] === '.') {
+      s = s.substring(0, unsafe.length - 1);
+    }
+    return s;
   }
   getThumbnailByName(item: string) {
     const nameIndex = this.searchSuggestions.names.indexOf(item);
@@ -416,6 +422,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.shared.foundPhotos = p;
           this.shared.searchCriteria = this.searchCriteria;
           this.searchCriteria = '';
+          this.searchSuggestionsEmpty = true;
           this.router.navigate(['main/photos']);
         },
         error => this.notifier.notify('error', 'Error find photos')
