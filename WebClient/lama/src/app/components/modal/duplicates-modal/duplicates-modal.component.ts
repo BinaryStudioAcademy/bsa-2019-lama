@@ -20,11 +20,12 @@ import { Subject } from 'rxjs';
   styleUrls: ['./duplicates-modal.component.sass']
 })
 export class DuplicatesModalComponent implements OnInit, OnDestroy {
-  @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[] = [];
+  @Input('duplicatePhotos') receivedDuplicates: UploadPhotoResultDTO[][] = [];
   receivedIds: number[] = [];
   @Output() Change = new EventEmitter<number[]>();
   @Output() Click = new EventEmitter<boolean>();
   duplicatesUrls: string[] = [];
+  duplicatesWithCount = new Map<string, number>();
   isActive = true;
   isShow = false;
   unsubscribe = new Subject();
@@ -34,6 +35,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // this.countDuplicates();
     this.getDuplicatesUrls();
   }
 
@@ -43,11 +45,12 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   }
 
   removeDuplicates() {
-    const toDelete = this.receivedDuplicates.length
-      ? this.receivedDuplicates.map(
+    const flattenedDuplicates = [].concat.apply([], this.receivedDuplicates);
+    const toDelete = flattenedDuplicates.length
+      ? flattenedDuplicates.map(
           photo => new PhotoToDeleteRestoreDTO(photo.id)
         )
-      : this.receivedIds.map(id => new PhotoToDeleteRestoreDTO(id));
+      : flattenedDuplicates.map(id => new PhotoToDeleteRestoreDTO(id));
     this.fileService.deletePhotosPermanently(toDelete)
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(
@@ -61,14 +64,21 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
     this.toggleModal();
   }
 
+  countDuplicates() {
+    this.receivedDuplicates.forEach(duplicateArray => {
+      this.duplicatesWithCount.set(duplicateArray[0].blob256Id, duplicateArray.length);
+    });
+  }
+
   getDuplicatesUrls() {
+    // const firstDuplicateOfEachSet = this.receivedDuplicates.map(x => x[0]);
     if (this.receivedDuplicates.length) {
       this.receivedDuplicates.forEach(duplicate => {
         this.fileService
-          .getPhoto(duplicate.blob256Id)
+          .getPhoto(duplicate[0].blob256Id)
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(url => {
-            this.duplicatesUrls.push(url);
+            this.duplicatesWithCount.set(url, duplicate.length);
           });
       });
     } else if (this.receivedIds) {

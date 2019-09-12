@@ -10,15 +10,20 @@
       ></button>
     </header>
     <section class="modal-card-body">
-      <div *ngFor="let photo of duplicatesUrls; let i = index">
+      <div *ngFor="let duplicate of duplicatesWithCount | keyvalue ">
         <div class="uploaded-image">
-          <img src="{{ photo }}" class="image" />
+          <img src="{{ duplicate.key }}" class="image" />
+          <div *ngIf="duplicate.value > 1" class="card-content is-overlay is-clipped">
+              <span class="tag is-primary is-pulled-right is-unselectable">
+                {{ duplicate.value }} copies
+              </span>
+            </div>
         </div>
       </div>
       <!-- Content ... -->
     </section>
     <footer class="modal-card-foot buttons is-right">
-      <button class="button is-success" (click)="removeDuplicates()">
+      <button class="button is-primary" (click)="removeDuplicates()">
         Remove duplicates
       </button>
       <button class="button" (click)="toggleModal()">Cancel</button>
