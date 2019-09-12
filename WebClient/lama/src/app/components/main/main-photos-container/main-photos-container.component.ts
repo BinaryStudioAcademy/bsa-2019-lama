@@ -234,6 +234,7 @@ export class MainPhotosContainerComponent
     componentRef.instance.toggleModal();
   }
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
+    this.router.navigate(['main/photos']);
     this.photos.push(...uploadedPhotos);
   }
 
