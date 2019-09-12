@@ -53,12 +53,12 @@
 </ng-template>
 <div class="container" fileDrop (fileDropped)="addPhoto($event)">
   <div class="title">
-    <h2 *ngIf="!isCategoryAlbum && !isFavorite()" class="title is-2" (focusout)="changeAlbumName()"
+    <h2 *ngIf="!isCategoryAlbum && !isFavorite() && isAuthor()" class="title is-2" (focusout)="changeAlbumName()"
       (input)="album.title = $event.target.textContent" [textContent]="album.title" [(ngModel)]="album.title"
       contenteditable="true" ngDefaultControl>
       {{ album.title }}
     </h2>
-    <h2 *ngIf="isCategoryAlbum || isFavorite()" class="title is-2">
+    <h2 *ngIf="isCategoryAlbum || isFavorite() || !isAuthor()" class="title is-2">
       {{ album.title }}
     </h2>
   </div>
