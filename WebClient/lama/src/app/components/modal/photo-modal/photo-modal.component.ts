@@ -87,6 +87,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   private userService: UserService;
   private lastDescription: string;
   private defaultMenuItem: MenuItem[];
+  private unregisteredMenuItem: MenuItem[];
   currentUser: User;
 
   // location
@@ -118,7 +119,11 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     this.userService = userService;
 
     this.initializeMenuItem();
-    this.shownMenuItems = this.defaultMenuItem;
+    if (this.userId) {
+      this.shownMenuItems = this.defaultMenuItem;
+    } else {
+      this.shownMenuItems = this.unregisteredMenuItem;
+    }
     this.clickedMenuItem = null;
   }
 
@@ -274,6 +279,11 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
+      { title: 'Info', icon: 'info' }
+    ];
+
+    this.unregisteredMenuItem = [
+      { title: 'Download', icon: 'cloud_download' },
       { title: 'Info', icon: 'info' }
     ];
   }
