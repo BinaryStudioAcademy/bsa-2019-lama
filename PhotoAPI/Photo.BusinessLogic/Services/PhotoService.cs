@@ -15,6 +15,7 @@ using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Nest;
 using Newtonsoft.Json;
+using Serilog;
 using Services.Models;
 
 namespace Photo.BusinessLogic.Services
@@ -238,7 +239,10 @@ namespace Photo.BusinessLogic.Services
             foreach (var duplicate in duplicates)
             {
                 var mappedToPhotoDocument = _mapper.Map<PhotoDocument>(duplicate);
-                await Create(mappedToPhotoDocument);
+                var r = await Create(mappedToPhotoDocument);
+				Log.Debug(r.ToString());
+				Log.Debug(
+					$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
                 createdDuplicates.Add(_mapper.Map<CreatePhotoResultDTO>(mappedToPhotoDocument));
                 
             }
@@ -296,8 +300,11 @@ namespace Photo.BusinessLogic.Services
                         Coordinates = item.Coordinates
                     };
 
-                    await Create(photoDocumentToCreate);
-                    createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
+                    var r = await Create(photoDocumentToCreate);
+					Log.Debug(r.ToString());
+					Log.Debug(
+						$"{Environment.NewLine}{r.IsValid}{Environment.NewLine}{r.OriginalException}{Environment.NewLine}{r.Result}{Environment.NewLine}{r.ServerError}");
+                createdPhotos.Add(_mapper.Map<CreatePhotoResultDTO>(photoDocumentToCreate));
             }
 
             var models = new List<ImageToProcessDTO>();
@@ -311,7 +318,7 @@ namespace Photo.BusinessLogic.Services
             }
 
             _messageService.SendPhotoToThumbnailProcessor(models);
-
+			Log.Debug("LamaAPI service Create method finished");
             return createdPhotos;
         }
 
