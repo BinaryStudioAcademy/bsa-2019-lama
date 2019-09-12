@@ -28,7 +28,7 @@
           <p>Set Cover</p>
         </div>
         <div class="dropdown-item"
-          *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isCategoryAlbum && (!isShared || isAuthor())"
+          *ngIf="!isFavorite() && !this.isAtLeastOnePhotoSelected && !isCategoryAlbum"
           (mousedown)="addPhoto($event)">
           <p>Add photos</p>
         </div>

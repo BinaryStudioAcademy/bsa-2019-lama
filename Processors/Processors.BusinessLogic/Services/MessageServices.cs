@@ -126,16 +126,9 @@ namespace Processors.BusinessLogic.Services
             var duplicates = new List<int>();
             var groupedDuplicates = new List<List<int>>();
             var imageToProcessDtos = images.ToList();
-            ImageToProcessDTO first = null;
-            foreach (var dto in imageToProcessDtos)
+            if (imageToProcessDtos.Count != 0)
             {
-                first = dto;
-                break;
-            }
-
-            if (first != null)
-            {
-                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(first.UserId, 100);
+                var comparisonResult = await _comparer.FindDuplicatesWithTollerance(imageToProcessDtos.FirstOrDefault().UserId, 100);
                 foreach (var result in comparisonResult)
                 { 
                     foreach (var item in imageToProcessDtos)
