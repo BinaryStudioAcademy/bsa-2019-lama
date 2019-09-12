@@ -2,7 +2,7 @@
     <div class="align-right">
         <main-left-actions-sidebar style="height: 100%" *ngIf="auth.token" (photos)="onChanged($event)">
         </main-left-actions-sidebar>
-        <div class="logo" routerLink="/main/photos/">
+        <div class="logo" (click)="onChanged($event)" routerLink="/main/photos/">
             <img src="assets/lama.jpg" />
             <p>Lama</p>
         </div>

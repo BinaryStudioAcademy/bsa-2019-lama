@@ -422,6 +422,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.shared.foundPhotos = p;
           this.shared.searchCriteria = this.searchCriteria;
           this.searchCriteria = '';
+          this.searchSuggestionsEmpty = true;
           this.router.navigate(['main/photos']);
         },
         error => this.notifier.notify('error', 'Error find photos')
