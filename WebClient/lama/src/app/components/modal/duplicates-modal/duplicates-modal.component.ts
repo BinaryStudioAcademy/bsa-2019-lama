@@ -28,6 +28,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
   duplicatesWithCount = new Map<string, number>();
   isActive = true;
   isShow = false;
+  isShowSpinner = true;
   unsubscribe = new Subject();
   constructor(
     private fileService: FileService,
@@ -68,6 +69,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.unsubscribe))
           .subscribe(url => {
             this.duplicatesWithCount.set(url, duplicatesArray.length);
+            this.isShowSpinner = false;
           });
       });
     } else if (this.receivedIds) {
@@ -82,7 +84,7 @@ export class DuplicatesModalComponent implements OnInit, OnDestroy {
                 .pipe(takeUntil(this.unsubscribe))
                 .subscribe(url => {
                   this.duplicatesWithCount.set(url, item.length);
-                  this.duplicatesUrls.push(url);
+                  this.isShowSpinner = false;
                 });
             });
         });

@@ -10,14 +10,20 @@
       ></button>
     </header>
     <section class="modal-card-body">
-      <div *ngFor="let duplicate of duplicatesWithCount | keyvalue ">
-        <div class="uploaded-image">
-          <img src="{{ duplicate.key }}" class="image" />
-          <div *ngIf="duplicate.value > 1" class="card-content is-overlay is-clipped">
+      <spinner *ngIf="isShowSpinner"></spinner>
+      <div *ngIf="!isShowSpinner">
+        <div *ngFor="let duplicate of duplicatesWithCount | keyvalue">
+          <div class="uploaded-image">
+            <img src="{{ duplicate.key }}" class="image" />
+            <div
+              *ngIf="duplicate.value > 1"
+              class="card-content is-overlay is-clipped"
+            >
               <span class="tag is-primary is-pulled-right is-unselectable">
                 {{ duplicate.value }} copies
               </span>
             </div>
+          </div>
         </div>
       </div>
       <!-- Content ... -->
