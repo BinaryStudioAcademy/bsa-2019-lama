@@ -152,16 +152,12 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
           user => {
             this.currentUser = user;
             let reactions = this.photo.reactions;
-            console.log(reactions);
             if (reactions === null) {
               reactions = [];
             } else {
               this.hasUserReaction = reactions.some(
                 x => x.userId === this.currentUser.id
               );
-            }
-            if (this.isBlockById()) {
-              this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
             }
           },
           error => this.notifier.notify('error', 'Error getting user')
@@ -278,7 +274,8 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
-      { title: 'Info', icon: 'info' }
+      { title: 'Info', icon: 'info' },
+      { title: 'Save', icon: 'save' }
     ];
 
     this.unregisteredMenuItem = [

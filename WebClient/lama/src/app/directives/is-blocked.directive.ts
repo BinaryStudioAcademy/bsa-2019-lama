@@ -1,20 +1,19 @@
-import { Directive, Input, ElementRef, OnInit } from '@angular/core';
+import { Directive, Input, ElementRef, Renderer2, OnChanges } from '@angular/core';
 
 @Directive({
   selector: '[appIsBlocked]'
 })
-export class IsBlockedDirective implements OnInit {
+export class IsBlockedDirective implements OnChanges {
   @Input('appIsBlocked') blocked: boolean;
 
-  constructor(private elem: ElementRef) {}
+  constructor(private elem: ElementRef, private renderer: Renderer2) {}
 
-  ngOnInit() {
+  ngOnChanges() {
+    const elem = this.elem.nativeElement.parentElement.parentElement;
     if (this.blocked) {
-      this.elem.nativeElement.parentElement.parentElement.style.display =
-        'none';
+      this.renderer.setAttribute(elem, 'style', 'display: none!important');
     } else {
-      this.elem.nativeElement.parentElement.parentElement.style.display =
-        'block';
+      elem.style.display = 'block';
     }
   }
 }
