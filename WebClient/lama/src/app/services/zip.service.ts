@@ -29,10 +29,12 @@ export class ZipService {
     });
   }
 
-  ConvertToImage(ArchivePhotos) {
+  ConvertToImage(ArchivePhotos, names) {
     const zip = new JSZip();
     for (let i = 0; i < ArchivePhotos.length; i++) {
-      zip.file(`image${i + 1}.jpg`, ArchivePhotos[i], { base64: true });
+      zip.file(`${names[i]}`, ArchivePhotos[i], {
+        base64: true
+      });
     }
     zip.generateAsync({ type: 'blob' }).then(content => {
       saveAs(content, 'images.zip');
@@ -40,26 +42,13 @@ export class ZipService {
   }
   public downloadImages(photos: PhotoRaw[]) {
     const NameOfFiles = [];
+    const names = [];
     for (const item of photos) {
-      NameOfFiles.push(item.originalBlobId);
+      NameOfFiles.push(item.blobId);
+      names.push(item.name);
     }
     this.albumService.ArchiveAlbum(NameOfFiles).subscribe(x => {
-      this.ConvertToImage(x);
-    }); /*
-    const zip = new JSZip();
-    const filenames: string[] = [];
-    const observables: Observable<string>[] = [];
-    photos.forEach(element => {
-      filenames.push(element.name);
-      observables.push(this.fileService.getPhoto(element.blobId));
+      this.ConvertToImage(x, names);
     });
-    forkJoin(observables).subscribe(data => {
-      for (let i = 0; i < filenames.length; i++) {
-        zip.file(filenames[i], this.urlToPromise(data[i]), { binary: true });
-      }
-      zip.generateAsync({ type: 'blob' }).then(blob => {
-        saveAs(blob, 'images.zip');
-      });
-    });*/
   }
 }
