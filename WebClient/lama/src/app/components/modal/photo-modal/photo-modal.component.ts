@@ -280,8 +280,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
-      { title: 'Info', icon: 'info' },
-      { title: 'Save', icon: 'save' }
+      { title: 'Info', icon: 'info' }
     ];
 
     this.unregisteredMenuItem = [
