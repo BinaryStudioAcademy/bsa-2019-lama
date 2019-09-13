@@ -104,10 +104,10 @@ export class SharedPageAlbumComponent implements OnInit, DoCheck, OnDestroy {
         .pipe(takeUntil(this.unsubscribe))
         .subscribe(
           x => {
-            this.album = x;
-            if (this.album.photoAlbums !== null) {
-              this.album.photoAlbums = this.album.photoAlbums.reverse();
+            if (x.photoAlbums !== null) {
+              x.photoAlbums = x.photoAlbums.reverse();
             }
+            this.album = x;
             this.loading = true;
           },
           error => this.notifier.notify('error', 'Error loading album')

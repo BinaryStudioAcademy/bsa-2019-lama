@@ -3,24 +3,18 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Duplicates found</p>
-      <button
-        (click)="toggleModal()"
-        class="delete"
-        aria-label="close"
-      ></button>
+      <button (click)="toggleModal()" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body">
       <spinner *ngIf="isShowSpinner"></spinner>
-      <div *ngIf="!isShowSpinner">
+      <h2 class="info" *ngIf="!isShowSpinner">There are already such photos in our system:</h2>
+      <div *ngIf="!isShowSpinner" class="photos-container">
         <div *ngFor="let duplicate of duplicatesWithCount | keyvalue">
           <div class="uploaded-image">
             <img src="{{ duplicate.key }}" class="image" />
-            <div
-              *ngIf="duplicate.value > 1"
-              class="card-content is-overlay is-clipped"
-            >
-              <span class="tag is-primary is-pulled-right is-unselectable">
-                {{ duplicate.value }} copies
+            <div class="card-content is-overlay is-clipped">
+              <span class="tag duplicates-count is-primary is-pulled-right is-unselectable">
+                {{ duplicate.value }} cop{{duplicate.value > 1 ? 'ies' : 'y'}}
               </span>
             </div>
           </div>
