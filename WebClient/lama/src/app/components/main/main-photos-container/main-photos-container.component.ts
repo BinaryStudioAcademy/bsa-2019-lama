@@ -235,7 +235,8 @@ export class MainPhotosContainerComponent
   }
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
     this.router.navigate(['main/photos']);
-    this.photos.push(...uploadedPhotos);
+    uploadedPhotos.reverse();
+    this.photos.unshift(...uploadedPhotos);
   }
 
   photoSelected(eventArgs: PhotoRawState) {
