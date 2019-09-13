@@ -6,7 +6,7 @@ const googleAuth = require('./Google Page/GooglePage_PA');
 const validate = require('../../helpers/validators');
 const handleWindow = require('../../helpers/helpers');
 
-xdescribe('Auth with Google', () => {
+describe('Auth with Google', () => {
     beforeEach(() => {
         browser.maximizeWindow();
         browser.url(credentials.appUrl);
@@ -16,7 +16,7 @@ xdescribe('Auth with Google', () => {
         browser.reloadSession();
     });
 
-    xit('should authorizate user', () => {
+    it('should authorizate user', () => {
         const parentGUID = browser.getWindowHandle();
         pageSteps.goToMainPage();
         pageSteps.loginWithGoogle();

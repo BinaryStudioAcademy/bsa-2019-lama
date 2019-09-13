@@ -11,11 +11,16 @@ class AlbumPageActions {
     }
     uploadPhoto(path) {
         browser.pause(5000);
+
+        // const a = ($('input' [2]));
+        // console.log(a);
+
         page.uploadPhotos.setValue(path);
-        page.uploadedPhotos.waitForDisplayed();
+        //page.uploadPhotos.setValue(path);
+        page.uploadedPhotos.waitForDisplayed(3000);
     }
     savePhotos() {
-        page.saveButton.waitForDisplayed();
+        page.saveButton.waitForDisplayed(3000);
         page.saveButton.click();
     }
 }

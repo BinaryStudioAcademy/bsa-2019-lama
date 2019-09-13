@@ -3,7 +3,7 @@ const page = new GooglePage();
 
 class GoogleActions {
     enterMail(value) {
-        page.userEmail.waitForDisplayed(5000);
+        page.userEmail.waitForDisplayed(8000);
         page.userEmail.clearValue();
         page.userEmail.setValue(value);
         page.nextButton.waitForDisplayed(5000);

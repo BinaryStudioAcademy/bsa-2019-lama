@@ -25,5 +25,23 @@ class MainPageActions {
         page.binPage.waitForDisplayed(3000);
         page.binPage.click();
     }
+
+    putUploadPhotoButton() {
+        page.uploadPhotoButton.waitForDisplayed(3000);
+        page.uploadPhotoButton.click();
+    }
+
+    uploadPhoto(path) {
+        browser.pause(1000);
+        // page.uploadPhotoInput.waitForDisplayed(7000);
+        page.uploadPhotoInput.setValue(path);
+        page.uploadedPhoto.waitForDisplayed(3000);
+    }
+
+    savePhoto() {
+        page.saveButton.waitForDisplayed(5000);
+        page.saveButton.click();
+    }
+
 }
 module.exports = new MainPageActions;

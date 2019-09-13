@@ -14,8 +14,9 @@ class AssertHelper {
     }
 
     successNotificationTextIs(expectedText) {
-        const notification = $$('p.notifier__notification-message')[0];
-        const actualText = notification.getText()
+        const notification = $('p.notifier__notification-message');
+        notification.waitForExist(3000);
+        const actualText = notification.getText();
         assert.equal(actualText, expectedText, `Expected ${actualText} to be equal to ${expectedText}`);
     }
 }
