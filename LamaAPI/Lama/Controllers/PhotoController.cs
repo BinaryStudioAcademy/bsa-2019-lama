@@ -108,6 +108,7 @@ namespace Lama.Controllers
             return await _service.GetAll();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<PhotoDocumentDTO> GetPhoto(int id)
         {
