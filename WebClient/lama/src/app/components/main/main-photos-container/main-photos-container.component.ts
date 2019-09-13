@@ -234,7 +234,7 @@ export class MainPhotosContainerComponent
     componentRef.instance.toggleModal();
   }
   uploadPhotoHandler(uploadedPhotos: UploadPhotoResultDTO[]): void {
-    this.photos.push(...uploadedPhotos);
+    this.photos.unshift(...uploadedPhotos);
   }
 
   photoSelected(eventArgs: PhotoRawState) {
