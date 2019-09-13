@@ -22,6 +22,7 @@ namespace Lama.Controllers
             _userProtectionService = userProtectionService;
         }
 
+        [AllowAnonymous]
         [HttpGet("{photoId}")]
         public Task<IEnumerable<CommentListDTO>> FindPhotos(int photoId)
         {
