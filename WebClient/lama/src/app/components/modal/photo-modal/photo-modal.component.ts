@@ -119,15 +119,15 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
     this.userService = userService;
 
     this.initializeMenuItem();
-    if (this.userId) {
-      this.shownMenuItems = this.defaultMenuItem;
-    } else {
-      this.shownMenuItems = this.unregisteredMenuItem;
-    }
+    this.shownMenuItems = this.defaultMenuItem;
     this.clickedMenuItem = null;
   }
 
   ngOnInit() {
+    this.userId = this.authService.getLoggedUserId();
+    if (!this.userId) {
+      this.shownMenuItems = this.unregisteredMenuItem;
+    }
     this.fileService.get(this.photo.id).subscribe(photo => {
       this.photo = photo;
       this.fileService.getPhoto(this.photo.blob64Id).subscribe(res => {
@@ -145,7 +145,6 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
           this.isShowSpinner = false;
           this.GetFile();
         });
-      this.userId = this.authService.getLoggedUserId();
       this.userService
         .getUser(this.userId)
         .pipe(takeUntil(this.unsubscribe))
