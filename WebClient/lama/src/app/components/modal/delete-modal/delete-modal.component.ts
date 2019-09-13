@@ -115,7 +115,7 @@ export class DeleteModalComponent implements OnInit, OnDestroy {
   }
 
   permitDeleteFromAlbum() {
-    return this.router.url.includes('album');
+    return this.router.url.includes('album') || this.router.url.includes('sharing');
   }
 
   isFavorite() {

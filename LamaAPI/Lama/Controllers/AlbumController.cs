@@ -106,6 +106,7 @@ namespace Lama.Controllers
             return await _service.RemovePhotosFromAlbum(albumId, photos);
         }
 
+        [AllowAnonymous]
         [HttpGet("details/{id}")]
         public async Task<List<AlbumPhotoDetails>> GetAlbumsPhotoDetails(int id)
         {

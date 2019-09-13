@@ -87,6 +87,7 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   private userService: UserService;
   private lastDescription: string;
   private defaultMenuItem: MenuItem[];
+  private unregisteredMenuItem: MenuItem[];
   currentUser: User;
 
   // location
@@ -123,6 +124,10 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userId = this.authService.getLoggedUserId();
+    if (!this.userId) {
+      this.shownMenuItems = this.unregisteredMenuItem;
+    }
     this.fileService.get(this.photo.id).subscribe(photo => {
       this.photo = photo;
       this.fileService.getPhoto(this.photo.blob64Id).subscribe(res => {
@@ -140,28 +145,29 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
           this.isShowSpinner = false;
           this.GetFile();
         });
-      this.userId = this.authService.getLoggedUserId();
-      this.userService
-        .getUser(this.userId)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          user => {
-            this.currentUser = user;
-            let reactions = this.photo.reactions;
-            console.log(reactions);
-            if (reactions === null) {
-              reactions = [];
-            } else {
-              this.hasUserReaction = reactions.some(
-                x => x.userId === this.currentUser.id
-              );
-            }
-            if (this.isBlockById()) {
-              this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
-            }
-          },
-          error => this.notifier.notify('error', 'Error getting user')
-        );
+      if (this.userId) {
+        this.userService
+          .getUser(this.userId)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            user => {
+              this.currentUser = user;
+              let reactions = this.photo.reactions;
+              console.log(reactions);
+              if (reactions === null) {
+                reactions = [];
+              } else {
+                this.hasUserReaction = reactions.some(
+                  x => x.userId === this.currentUser.id
+                );
+              }
+              if (this.isBlockById()) {
+                this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
+              }
+            },
+            error => this.notifier.notify('error', 'Error getting user')
+          );
+      }
     });
   }
 
@@ -274,6 +280,12 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
       { title: 'Remove', icon: 'clear' },
       { title: 'Download', icon: 'cloud_download' },
       { title: 'Edit', icon: 'edit' },
+      { title: 'Info', icon: 'info' },
+      { title: 'Save', icon: 'save' }
+    ];
+
+    this.unregisteredMenuItem = [
+      { title: 'Download', icon: 'cloud_download' },
       { title: 'Info', icon: 'info' }
     ];
   }

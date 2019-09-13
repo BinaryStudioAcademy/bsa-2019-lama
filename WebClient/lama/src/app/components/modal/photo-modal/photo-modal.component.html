@@ -39,7 +39,7 @@
                 <img src="{{ imageUrl }}" alt="Image" />
                 <app-carousele-component
                   [photoId]="photo.id"
-                  [isEnabled]="showCarousele"
+                  [isEnabled]="showCarousele && !isBlockById()"
                 >
                 </app-carousele-component>
               </div>
@@ -50,7 +50,7 @@
                   <i class="fa fa-angle-left" left aria-hidden="true"></i>
                 </span>
               </div>
-              <div class="overlay-items">
+              <div class="overlay-items" *ngIf="userId">
                 <div
                   class="overlay-item"
                   (click)="menuClickHandler(item)"
@@ -96,6 +96,35 @@
                   </div>
                 </div>
               </div>
+
+              <!--Unregistered user-->
+              <div class="overlay-items unregistered" *ngIf="!userId">
+                <div
+                  class="overlay-item"
+                  (click)="menuClickHandler(item)"
+                  *ngFor="let item of shownMenuItems"
+                >
+                  <div [ngSwitch]="item.title">
+                    <ng-template ngSwitchCase="Info">
+                      <div [title]="item.title" [appIsBlocked]="isBlockById()">
+                        <i class="fa fa-info-circle"></i>
+                      </div>
+                    </ng-template>
+                    <ng-template ngSwitchCase="Download">
+                      <div [title]="item.title">
+                        <a
+                          download
+                          attr.data-href="{{ imageUrl }}"
+                          (click)="forceDownload()"
+                        >
+                          <i class="fa fa-download"></i>
+                        </a>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+              
             </div>
             <div
               class="navigation-button nav-btn-left"

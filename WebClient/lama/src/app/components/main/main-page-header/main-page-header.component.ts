@@ -95,14 +95,14 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.auth.getLoggedUserId()) {
-      return;
-    }
     this.registerHub();
     this.id = parseInt(localStorage.getItem('userId'), 10);
     while (!this.id) {
       await this.delay(500);
       this.id = parseInt(localStorage.getItem('userId'), 10);
+    }
+    if (!this.id) {
+      return;
     }
     this.notificationService
       .getNotifications(this.id)
@@ -299,6 +299,8 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
   find2(e) {
     if (e.length === 0) {
       this.searchSuggestionsEmpty = true;
+    } else {
+      this.isSearchDropdownExpanded = true;
     }
   }
   showSearchDropdown() {
@@ -340,12 +342,20 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         });
     }
   }
-  escapeHtml(unsafe) {
-    const s = unsafe
+  escapeHtml(unsafe: string) {
+    let s = unsafe
       .replace(/#/g, '')
       .replace(/\\/g, '')
+      .replace(/\?/g, '')
       .split('/')
       .join('');
+    if (unsafe.length === 1 && unsafe[0] === '.') {
+      s = '';
+    } else if (unsafe.length > 1 && unsafe[0] === '.') {
+      s = s.substring(1, unsafe.length - 1);
+    } else if (unsafe.length > 1 && unsafe[unsafe.length - 1] === '.') {
+      s = s.substring(0, unsafe.length - 1);
+    }
     return s;
   }
   getThumbnailByName(item: string) {
@@ -412,6 +422,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
           this.shared.foundPhotos = p;
           this.shared.searchCriteria = this.searchCriteria;
           this.searchCriteria = '';
+          this.searchSuggestionsEmpty = true;
           this.router.navigate(['main/photos']);
         },
         error => this.notifier.notify('error', 'Error find photos')
@@ -442,6 +453,9 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
         this.searchSuggestionsEmpty = false;
       } else {
         this.searchSuggestionsEmpty = false;
+      }
+      if (this.searchCriteria.length === 0) {
+        this.searchSuggestionsEmpty = true;
       }
     });
   }
@@ -478,6 +492,7 @@ export class MainPageHeaderComponent implements OnInit, DoCheck, OnDestroy {
     const componentRef = this.entry.createComponent(factory);
     componentRef.instance.addToListEvent.subscribe(
       data => {
+        this.router.navigate(['main/photos']);
         this.shared.photos.push(...data);
       },
       err => {
