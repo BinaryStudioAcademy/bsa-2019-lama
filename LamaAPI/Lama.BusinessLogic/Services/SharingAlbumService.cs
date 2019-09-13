@@ -101,6 +101,7 @@ namespace Lama.BusinessLogic.Services
                     PhotoAlbums = new List<PhotoDocumentDTO>() { photoDto}
                 };
                 albums.Add(fakeAlbum);
+                
             }
             foreach (var result in results)
             {
