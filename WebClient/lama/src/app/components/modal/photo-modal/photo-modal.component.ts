@@ -145,23 +145,29 @@ export class PhotoModalComponent implements OnInit, OnDestroy {
           this.isShowSpinner = false;
           this.GetFile();
         });
-      this.userService
-        .getUser(this.userId)
-        .pipe(takeUntil(this.unsubscribe))
-        .subscribe(
-          user => {
-            this.currentUser = user;
-            let reactions = this.photo.reactions;
-            if (reactions === null) {
-              reactions = [];
-            } else {
-              this.hasUserReaction = reactions.some(
-                x => x.userId === this.currentUser.id
-              );
-            }
-          },
-          error => this.notifier.notify('error', 'Error getting user')
-        );
+      if (this.userId) {
+        this.userService
+          .getUser(this.userId)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
+            user => {
+              this.currentUser = user;
+              let reactions = this.photo.reactions;
+              console.log(reactions);
+              if (reactions === null) {
+                reactions = [];
+              } else {
+                this.hasUserReaction = reactions.some(
+                  x => x.userId === this.currentUser.id
+                );
+              }
+              if (this.isBlockById()) {
+                this.defaultMenuItem.push({ title: 'Save', icon: 'save' });
+              }
+            },
+            error => this.notifier.notify('error', 'Error getting user')
+          );
+      }
     });
   }
 
